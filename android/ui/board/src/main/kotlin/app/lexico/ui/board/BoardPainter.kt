@@ -35,12 +35,18 @@ internal class BoardPainter(
     arrow?.let { drawArrow(style, it, geometry.corner(it.position), side) }
   }
 
-  /** Los puntos de la ultima jugada, subiendo sobre su ultima ficha y desvaneciendose. */
+  /** Los puntos de la ultima jugada, subiendo desde su ficha ancla y desvaneciendose. */
   fun DrawScope.drawScore(popup: ScorePopup) {
     if (!popup.visible) return
-    val square = geometry.corner(popup.square) + Offset(side / 2, -side * 0.1f)
     val text = measurer.measure("+${popup.score}", scoreTextStyle(side * SCORE_SIZE, popup.ink(style)))
-    drawScoreText(text, square - Offset(0f, popup.rise * side * 0.8f), popup.alpha)
+    val start = scoreStart(popup, text.size.height.toFloat())
+    drawScoreText(text, start - Offset(0f, popup.rise * side * 0.8f), popup.alpha)
+  }
+
+  /** En vertical, el texto arranca apoyado sobre el borde superior de la palabra. */
+  private fun scoreStart(popup: ScorePopup, textHeight: Float): Offset {
+    val lift = if (popup.vertical) textHeight / 2 else side * 0.1f
+    return geometry.corner(popup.square) + Offset(side / 2, -lift)
   }
 
   /** Los puntos de la jugada que se esta colocando, en una etiqueta sobre la esquina de su ultima ficha. */

@@ -35,12 +35,25 @@ internal fun rememberScorePopup(board: Board, score: Int?): ScorePopup? {
     progress.snapTo(if (shown) 0f else 1f)
     progress.animateTo(1f, tween(SCORE_MS, easing = LinearEasing))
   }
-  return if (shown) ScorePopup(score!!, lastSquare(board.latest), progress) else null
+  return if (shown) scorePopup(board, score!!, progress) else null
+}
+
+/** En horizontal los puntos salen de la ultima ficha; en vertical, por encima de la palabra entera. */
+private fun scorePopup(board: Board, score: Int, progress: Animatable<Float, AnimationVector1D>): ScorePopup {
+  val vertical = isVertical(board)
+  val square = if (vertical) wordTop(board) else lastSquare(board.latest)
+  return ScorePopup(score, square, vertical, progress)
 }
 
 /** La animacion en curso. `rise` va de 0 a 1 a lo largo de toda la animacion. */
 @Stable
-internal class ScorePopup(val score: Int, val square: Position, private val progress: Animatable<Float, AnimationVector1D>) {
+internal class ScorePopup(
+  val score: Int,
+  val square: Position,
+  /** Si la palabra va en vertical: los puntos arrancan por encima de `square` para no tapar letras. */
+  val vertical: Boolean,
+  private val progress: Animatable<Float, AnimationVector1D>,
+) {
   /** El color de los puntos: rojo en las jugadas grandes. */
   fun ink(style: BoardStyle): Color = if (score >= HIGH_SCORE) style.highScoreInk else style.scoreInk
 
@@ -70,3 +83,26 @@ private fun DrawScope.clampedTopLeft(center: Offset, box: Size): Offset = Offset
 
 /** La ultima ficha de la palabra: la de mas abajo a la derecha. */
 internal fun lastSquare(latest: Set<Position>): Position = latest.maxWith(compareBy({ it.row }, { it.column }))
+
+/** La jugada va en vertical: varias fichas en una columna, o una sola que solo forma palabra en vertical. */
+private fun isVertical(board: Board): Boolean {
+  val latest = board.latest
+  if (latest.size > 1) return latest.map { it.column }.distinct().size == 1
+  val p = latest.first()
+  val column = hasTile(board, p, -1, 0) || hasTile(board, p, 1, 0)
+  val row = hasTile(board, p, 0, -1) || hasTile(board, p, 0, 1)
+  return column && !row
+}
+
+/** La primera ficha de la palabra vertical, contando las que ya estaban encima. */
+private fun wordTop(board: Board): Position {
+  var top = board.latest.minBy { it.row }
+  while (hasTile(board, top, -1, 0)) top = Position(top.row - 1, top.column)
+  return top
+}
+
+private fun hasTile(board: Board, p: Position, dRow: Int, dColumn: Int): Boolean {
+  val row = p.row + dRow
+  val column = p.column + dColumn
+  return row in 0 until Board.SIZE && column in 0 until Board.SIZE && board[row, column] != null
+}
