@@ -13,11 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.lexico.ui.common.MoveText
+import app.lexico.ui.common.moveNumberWidth
 import app.lexico.ui.common.MovesTableDialog
 
 /** Un turno de la planilla: tu jugada y la del rival (cualquiera puede faltar). */
@@ -47,20 +47,27 @@ private fun byTurn(moves: List<Move>): List<Turn> = moves.fold(mutableListOf()) 
 @Composable
 private fun MovesHeader(opponent: String) {
   Row(Modifier.fillMaxWidth().padding(bottom = 4.dp)) {
-    Text("#", Modifier.width(20.dp), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+    Text("#", Modifier.width(moveNumberWidth()), fontSize = 11.sp, fontWeight = FontWeight.Bold)
     Text("Tú", Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
-    Text(opponent, Modifier.weight(1f).padding(start = 6.dp), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+    Separator()
+    Text(opponent, Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1)
   }
 }
 
 @Composable
 private fun TurnRow(number: Int, turn: Turn) {
   Row(Modifier.fillMaxWidth().padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
-    Text("$number", Modifier.width(20.dp), fontSize = 12.sp)
+    Text("$number", Modifier.width(moveNumberWidth()), fontSize = 11.sp)
     MoveCell(turn.first)
-    Text("|", Modifier.padding(horizontal = 3.dp), color = MaterialTheme.colorScheme.outline, fontSize = 12.sp)
+    Separator()
     MoveCell(turn.second)
   }
+}
+
+/** La raya entre tu jugada y la del rival; la cabecera la lleva tambien, para alinear columnas. */
+@Composable
+private fun Separator() {
+  Text("|", Modifier.padding(horizontal = 3.dp), color = MaterialTheme.colorScheme.outline, fontSize = 12.sp)
 }
 
 /** "H4 CASA 14 [14]": jugada, puntos y total resaltado. */
@@ -68,7 +75,7 @@ private fun TurnRow(number: Int, turn: Turn) {
 private fun RowScope.MoveCell(m: Move?) {
   Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
     if (m == null) return@Row
-    Text(moveText(m), Modifier.weight(1f), fontFamily = FontFamily.Monospace, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    MoveText(moveText(m), Modifier.weight(1f))
     Text("${m.points}", Modifier.padding(horizontal = 3.dp), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     TotalBadge(if (m.side == Side.ME) m.myTotal else m.opponentTotal)
   }
