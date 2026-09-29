@@ -18,8 +18,6 @@ data class ClassicState(
   val bag: Int,
   /** Las fichas que no ves: la bolsa y el atril del rival. */
   val unseen: List<String>,
-  /** false = la bolsa solo dice cuantas fichas quedan, no cuales. */
-  val showUnseen: Boolean,
   val moves: List<PlayedMove>,
   /** null = partida sin tiempo. */
   val clocks: ClassicClocks?,

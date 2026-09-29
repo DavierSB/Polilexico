@@ -40,8 +40,12 @@ fun folderOf(mode: Mode): GameFolder = when (mode) {
   Mode.ENDGAME -> GameFolder.MINIGAMES
 }
 
-fun reviewView(review: GameReview): ReviewView =
-  ReviewView("${modeName(review.game.mode)} · ${review.game.myScore}–${review.game.opponentScore}", review.turns.map(::turnView), review.startTurn)
+/** En duplicada gana quien mas puntos hace, asi que sus jugadas van sin equity. */
+fun reviewView(review: GameReview): ReviewView {
+  val equity = review.game.mode != Mode.DUPLICATE
+  val title = "${modeName(review.game.mode)} · ${review.game.myScore}–${review.game.opponentScore}"
+  return ReviewView(title, review.turns.map { turnView(it, equity) }, review.startTurn)
+}
 
 private fun modeName(mode: Mode): String = when (mode) {
   Mode.CLASSIC -> "Clásica"
@@ -50,7 +54,7 @@ private fun modeName(mode: Mode): String = when (mode) {
 }
 
 private fun title(g: FinishedGame): String = when (g.mode) {
-  Mode.DUPLICATE -> "Duplicada contra el máster"
+  Mode.DUPLICATE -> "Duplicada"
   else -> "${modeName(g.mode)} contra ${alias(g.opponent)}"
 }
 
@@ -69,13 +73,14 @@ private fun won(outcome: Outcome): Boolean? = when (outcome) {
   Outcome.TIE -> null
 }
 
-private fun turnView(t: ReviewTurn): ReviewTurnView =
-  ReviewTurnView(t.number, t.player, t.rack, t.board, candidates(t), t.marks.map(::markView))
+private fun turnView(t: ReviewTurn, equity: Boolean): ReviewTurnView =
+  ReviewTurnView(t.number, t.player, t.rack, t.board, candidates(t, equity), t.marks.map { markView(it, equity) })
 
 /** Las mejores jugadas, cada una con quien la jugo (si alguien). */
-private fun candidates(t: ReviewTurn): List<RankedMove> =
-  t.candidates.mapIndexed { i, m -> rankedMove(m, t.marks.filter { it.rank == i }.joinToString(" ") { alias(it.who) }) }
+private fun candidates(t: ReviewTurn, equity: Boolean): List<RankedMove> =
+  t.candidates.mapIndexed { i, m -> rankedMove(m, equity, t.marks.filter { it.rank == i }.joinToString(" ") { alias(it.who) }) }
 
-private fun markView(m: ReviewMark): MarkView = MarkView(alias(m.who), rankedMove(m.move), m.rank)
+private fun markView(m: ReviewMark, equity: Boolean): MarkView = MarkView(alias(m.who), rankedMove(m.move, equity), m.rank)
 
-private fun rankedMove(m: ReviewMove, playedBy: String = ""): RankedMove = RankedMove(m.text, m.score, m.equity, m.placement, playedBy)
+private fun rankedMove(m: ReviewMove, equity: Boolean, playedBy: String = ""): RankedMove =
+  RankedMove(m.text, m.score, m.equity?.takeIf { equity }, m.placement, playedBy)

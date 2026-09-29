@@ -3,7 +3,7 @@ package app.lexico.game.records
 import android.content.Context
 import app.lexico.game.modes.sprint.SprintSetup
 
-/** El record de Scrabble Sprint (manos resueltas) de cada combinacion de tiempo y vidas. */
+/** El record de Scrabble Sprint (manos resueltas) de cada combinacion de tiempo, vidas y comprobacion. */
 class SprintRecords(context: Context) {
   private val prefs = context.getSharedPreferences("records_sprint", Context.MODE_PRIVATE)
 
@@ -17,7 +17,8 @@ class SprintRecords(context: Context) {
     return SprintRecord(maxOf(previous, solved), isNew = solved > previous)
   }
 
-  private fun key(setup: SprintSetup): String = "${setup.totalMs}_${setup.lives}"
+  // Las series void guardan la clave de antes de poder elegir: sus records siguen valiendo.
+  private fun key(setup: SprintSetup): String = "${setup.totalMs}_${setup.lives}" + if (setup.invalidCostsLife) "_single" else ""
 }
 
 data class SprintRecord(val best: Int, val isNew: Boolean)

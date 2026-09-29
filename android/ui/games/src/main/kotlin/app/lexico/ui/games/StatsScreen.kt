@@ -11,7 +11,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.lexico.ui.common.BarTextButton
 import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.Header
 
@@ -39,7 +39,7 @@ fun StatsScreen(
   var filter by remember { mutableStateOf(StatsFilter(StatsMode.CLASSIC)) }
   var confirmReset by remember { mutableStateOf(false) }
   Column(Modifier.fillMaxSize()) {
-    Header("Mis estadísticas", onBack) { TextButton(onClick = { confirmReset = true }) { Text("Reiniciar") } }
+    Header("Mis estadísticas", onBack) { BarTextButton("Reiniciar") { confirmReset = true } }
     ModeTabs(filter.mode) { filter = StatsFilter(it) }
     StatsContent(filter, opponents, photo, remember(filter, pageFor) { pageFor(filter) }) { filter = filter.copy(opponent = it) }
   }

@@ -20,7 +20,7 @@ fun classicView(state: ClassicState, opponent: String, notice: String?): Classic
   myScore = state.myScore, opponentScore = state.opponentScore, turn = turn(state),
   myClock = state.clocks?.let { Clock(it.myMs, it.myOvertimeMs) },
   opponentClock = state.clocks?.let { Clock(it.opponentMs, it.opponentOvertimeMs) },
-  bag = state.bag, unseen = state.unseen, showUnseen = state.showUnseen,
+  bag = state.bag, unseen = state.unseen,
   moves = state.moves.map(::move), end = state.result?.let(::gameEnd),
   notice = notice ?: state.botError, paused = state.paused,
 )

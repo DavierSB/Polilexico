@@ -17,6 +17,4 @@ data class EndgameConfig(
   val timed: Boolean = true,
   val timeMs: Long = 5 * 60_000L,
   val overtimeMs: Long = 60_000L,
-  /** Si la bolsa muestra las fichas por salir o solo cuantas quedan. */
-  val showUnseen: Boolean = true,
 )

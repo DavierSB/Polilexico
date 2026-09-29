@@ -63,8 +63,6 @@ data class ClassicView(
   val bag: Int,
   /** Las fichas que no ves: la bolsa mas el atril del rival. */
   val unseen: List<String>,
-  /** false = la bolsa solo dice cuantas fichas quedan, no cuales. */
-  val showUnseen: Boolean = true,
   val moves: List<Move>,
   val end: GameEnd? = null,
   /** Mensaje para el jugador (una jugada rechazada...); null = ninguno. */

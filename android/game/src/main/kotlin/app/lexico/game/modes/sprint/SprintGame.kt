@@ -48,7 +48,7 @@ class SprintGame private constructor(
     /** Crea la serie en el motor y la conecta a sus avisos. */
     suspend fun start(setup: SprintSetup, id: String, saves: SavedGames, scope: CoroutineScope): SprintGame {
       val listener = EngineListener()
-      val game = engine { SprintGame(Sprint.newMatch(setup.totalMs, setup.lives.toLong(), listener), id, saves, scope) }
+      val game = engine { SprintGame(Sprint.newMatch(setup.totalMs, setup.lives.toLong(), setup.invalidCostsLife, listener), id, saves, scope) }
       listener.target = game.listen()
       listener.onChange()
       return game

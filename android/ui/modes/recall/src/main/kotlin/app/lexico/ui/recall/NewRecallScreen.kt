@@ -1,6 +1,7 @@
 package app.lexico.ui.recall
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.rememberScrollState
@@ -13,10 +14,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.Header
-import app.lexico.ui.common.Hint
+import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
 import kotlin.math.roundToInt
 
@@ -55,8 +57,7 @@ fun NewRecallScreen(onBack: () -> Unit, onStart: (RecallConfig) -> Unit) {
 private fun IntervalSetting(seconds: Float, onChange: (Float) -> Unit) {
   val range = RecallConfig.INTERVAL_MS
   Setting("Tiempo entre jugadas", "%.1f s".format(seconds), seconds, range.first / 1000f..range.last / 1000f,
-    steps = ((range.last - range.first) / 100 - 1).toInt(), onChange = onChange)
-  Hint("Menos tiempo, más difícil recordar.")
+    steps = ((range.last - range.first) / 100 - 1).toInt(), info = "Menos tiempo, más difícil recordar.", onChange = onChange)
 }
 
 /** Una cantidad entera dentro de `range`. */
@@ -65,15 +66,15 @@ private fun CountSetting(title: String, value: Float, range: IntRange, onChange:
   Setting(title, "${value.roundToInt()}", value, range.range(), steps = range.steps(), onChange = onChange)
 }
 
-/** Un valor con su deslizador: el titulo y, a la derecha, el valor elegido. */
+/** Un valor con su deslizador: el titulo (con su ⓘ, si hay `info`) y, a la derecha, el valor elegido. */
 @Composable
 private fun Setting(
   title: String, shown: String, value: Float, range: ClosedFloatingPointRange<Float>, steps: Int,
-  onChange: (Float) -> Unit,
+  info: String? = null, onChange: (Float) -> Unit,
 ) {
   Column {
-    Row {
-      Text(title, Modifier.weight(1f), style = MaterialTheme.typography.labelLarge)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      Box(Modifier.weight(1f)) { SectionTitle(title, info) }
       Text(shown, style = MaterialTheme.typography.labelLarge)
     }
     Slider(value, onChange, valueRange = range, steps = steps)

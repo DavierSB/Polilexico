@@ -53,7 +53,7 @@ class ClassicGame private constructor(
   internal companion object {
     suspend fun start(setup: ClassicSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame =
       open(id, Mode.CLASSIC, saves, scope) {
-        Classic.newMatch(setup.bot, setup.timeMs, setup.overtimeMs, setup.invalidLosesTurn, it).apply { setShowUnseen(setup.showUnseen) }
+        Classic.newMatch(setup.bot, setup.timeMs, setup.overtimeMs, setup.invalidLosesTurn, it)
       }
 
     /** Busca la partida de Finales (HastyBot contra si mismo) y la empieza; si se cancela, la busqueda se detiene. */
@@ -61,7 +61,7 @@ class ClassicGame private constructor(
       val search = Classic.newEndgameSearch(setup.maxBag.toLong(), setup.minLead.toLong(), setup.maxLead.toLong())
       return stoppingOnCancel(search::stop) {
         open(id, Mode.ENDGAME, saves, scope) {
-          search.match(setup.timeMs, setup.overtimeMs, setup.invalidLosesTurn, it).apply { setShowUnseen(setup.showUnseen) }
+          search.match(setup.timeMs, setup.overtimeMs, setup.invalidLosesTurn, it)
         }
       }
     }

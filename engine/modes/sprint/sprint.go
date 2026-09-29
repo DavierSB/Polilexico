@@ -2,8 +2,8 @@
 // cuando, se para en un turno en que el jugador en turno podia colocar un scrabble (las 7
 // fichas del atril) y te lo propone: el tablero y ese atril. Es un arcade: hay un reloj para
 // toda la serie, que solo corre mientras piensas una mano, y unas vidas (de 1 a MaxLives);
-// rendirte en una mano cuesta una. La serie termina al agotarse el reloj o las vidas, y cuenta
-// las manos resueltas.
+// rendirte en una mano cuesta una y, en modo single, tambien poner palabras no validas. La serie
+// termina al agotarse el reloj o las vidas, y cuenta las manos resueltas.
 //
 // Cuando se para: se cuentan los turnos con scrabble posible y se para al llegar a un numero
 // elegido al azar entre 1 y 20 (uniforme); entonces se vuelve a contar desde cero con un
@@ -47,6 +47,7 @@ const (
 	OutcomeSolved  = "solved"  // colocaste un scrabble
 	OutcomeTimeout = "timeout" // se agoto el reloj de la serie: se acabo
 	OutcomeGaveUp  = "gave_up" // te rendiste
+	OutcomeInvalid = "invalid" // pusiste palabras no validas (en modo single)
 )
 
 var (
@@ -61,9 +62,11 @@ type Match struct {
 	clock     *timing.Countdown
 	totalTime time.Duration
 	maxLives  int
-	notifier  *notify.Notifier
-	phase    string
-	puzzle   *puzzle
+	// invalidCostsLife: modo single, en que poner palabras no validas cierra la mano y cuesta una vida.
+	invalidCostsLife bool
+	notifier         *notify.Notifier
+	phase            string
+	puzzle           *puzzle
 	// Marcador: vidas que quedan, manos resueltas y manos propuestas.
 	lives, solved, posed int
 	outcome              string
@@ -73,17 +76,22 @@ type Match struct {
 }
 
 // NewMatch empieza una serie con totalMs en el reloj (0 = MatchSeconds) y `lives` vidas (fuera
-// de 1..MaxLives, Lives). Empieza buscando el primer problema; l recibe un aviso con cada cambio.
-func NewMatch(totalMs int64, lives int, l events.Listener) (*Match, error) {
+// de 1..MaxLives, Lives). Con invalidCostsLife (single), poner palabras no validas cierra la mano
+// y cuesta una vida; si no (void), solo se rechazan. Empieza buscando el primer problema; l
+// recibe un aviso con cada cambio.
+func NewMatch(totalMs int64, lives int, invalidCostsLife bool, l events.Listener) (*Match, error) {
 	if err := core.Ready(); err != nil {
 		return nil, err
 	}
-	return startMatch(totalDuration(totalMs), startingLives(lives), timing.Real(), randomTarget, l), nil
+	m := startMatch(totalDuration(totalMs), startingLives(lives), timing.Real(), randomTarget, l)
+	m.invalidCostsLife = invalidCostsLife
+	return m, nil
 }
 
 // Propose comprueba tu respuesta ("h8 CASADOS" u "8h CASADOS"): tiene que colocar las 7
 // fichas del atril y formar palabras validas. Si lo es, la mano queda resuelta; si no, se
-// rechaza con el motivo y puedes seguir intentandolo mientras quede reloj.
+// rechaza con el motivo y puedes seguir intentandolo mientras quede reloj. En single, si forma
+// palabras no validas, ademas se cierra la mano y cuesta una vida.
 func (m *Match) Propose(input string) (*Solution, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -91,6 +99,11 @@ func (m *Match) Propose(input string) (*Solution, error) {
 		return nil, err
 	}
 	s, err := m.puzzle.check(input)
+	if _, invalid := core.AsInvalidWords(err); invalid && m.invalidCostsLife {
+		m.reveal(OutcomeInvalid, nil)
+		m.afterChange()
+		return nil, err
+	}
 	if err != nil {
 		return nil, err
 	}

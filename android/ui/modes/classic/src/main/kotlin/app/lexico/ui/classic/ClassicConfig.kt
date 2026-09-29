@@ -10,6 +10,4 @@ data class ClassicConfig(
   val timeMs: Long = 20 * 60_000L,
   /** Tiempo de descuento, cuando se acaba el principal. */
   val overtimeMs: Long = 60_000L,
-  /** Si la bolsa muestra las fichas por salir o solo cuantas quedan. */
-  val showUnseen: Boolean = true,
 )

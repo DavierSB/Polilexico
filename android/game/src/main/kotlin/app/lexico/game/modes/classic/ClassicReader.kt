@@ -23,7 +23,7 @@ internal class ClassicReader(private val match: Match) {
       opponentTiles = status.opponentTiles.toInt(), opponentRack = rackTiles(game.opponentRack()),
       myScore = status.humanScore.toInt(), opponentScore = status.botScore.toInt(), myTurn = status.humanToMove,
       bag = status.bagCount.toInt(), unseen = rackTiles(game.unseen()),
-      showUnseen = match.showUnseen(), moves = moves, clocks = clocks(),
+      moves = moves, clocks = clocks(),
       paused = match.paused(), result = game.result()?.let(::result), botError = match.botError().ifEmpty { null },
     )
   }

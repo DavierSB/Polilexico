@@ -12,11 +12,12 @@ import app.lexico.ui.board.AppThemes
 
 /**
  * Las preferencias del usuario: el tema de la app (solo mientras esta abierta), si se cuentan
- * los puntos al colocar y desde cuando cuentan las estadisticas.
+ * los puntos al colocar, si la bolsa muestra las fichas por salir y desde cuando cuentan las
+ * estadisticas.
  */
 @Stable
 class Settings(ctx: Context) {
-  private val prefs = ctx.getSharedPreferences("ajustes", Context.MODE_PRIVATE)
+  private val prefs = ctx.getSharedPreferences("settings", Context.MODE_PRIVATE)
 
   /**
    * El tema de la app fuera de las partidas contra un rival. Cada vez que se abre la app sale uno
@@ -27,6 +28,10 @@ class Settings(ctx: Context) {
 
   /** Mostrar sobre el tablero los puntos de la jugada mientras se coloca. */
   var liveScore: Boolean by mutableStateOf(prefs.getBoolean(LIVE_SCORE_KEY, true))
+    private set
+
+  /** En la clasica, si la bolsa muestra las fichas por salir o solo cuantas quedan. */
+  var showUnseen: Boolean by mutableStateOf(prefs.getBoolean(SHOW_UNSEEN_KEY, true))
     private set
 
   /** Desde cuando cuentan las estadisticas (0 = desde siempre), en milisegundos. */
@@ -44,6 +49,12 @@ class Settings(ctx: Context) {
     prefs.edit { putBoolean(LIVE_SCORE_KEY, on) }
   }
 
+  /** Muestra u oculta las fichas por salir y lo recuerda. */
+  fun showUnseenTiles(on: Boolean) {
+    showUnseen = on
+    prefs.edit { putBoolean(SHOW_UNSEEN_KEY, on) }
+  }
+
   /** Las estadisticas empiezan de cero: solo cuentan las partidas que se terminen desde ahora. */
   fun resetStats() {
     statsSince = System.currentTimeMillis()
@@ -51,7 +62,8 @@ class Settings(ctx: Context) {
   }
 
   private companion object {
-    const val LIVE_SCORE_KEY = "puntosAlColocar"
-    const val STATS_SINCE_KEY = "estadisticasDesde"
+    const val LIVE_SCORE_KEY = "liveScore"
+    const val SHOW_UNSEEN_KEY = "showUnseen"
+    const val STATS_SINCE_KEY = "statsSince"
   }
 }

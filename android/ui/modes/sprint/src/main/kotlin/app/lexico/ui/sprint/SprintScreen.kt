@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,11 +29,13 @@ import app.lexico.ui.board.PlacingRack
 import app.lexico.ui.board.RackRenewal
 import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.board.rememberTilePlacer
-import app.lexico.ui.common.Compact
+import app.lexico.ui.common.BarTitle
+import app.lexico.ui.common.ExitButton
 import app.lexico.ui.common.NOT_IN_A_LINE
 import app.lexico.ui.common.Notice
-import app.lexico.ui.common.PauseButton
 import app.lexico.ui.common.Pausable
+import app.lexico.ui.common.PauseButton
+import app.lexico.ui.common.ThemeButton
 import app.lexico.ui.common.TurnClock
 import app.lexico.ui.common.rememberNotice
 
@@ -67,18 +69,18 @@ private fun SprintLayout(
     PhasePanel(view, c, style, actions, onNotice, shown, onShow)
     message?.let { Notice(it, bold = true) }
     Spacer(Modifier.weight(1f))
-    Lives(view.lives, view.maxLives, view.solved)
+    Lives(view.lives, view.maxLives, view.solved, view.best)
   }
 }
 
 /** Salir, cambiar el tema y, mientras la serie sigue, pausar. */
 @Composable
 private fun TopBar(view: SprintView, actions: SprintActions, onTheme: (() -> Unit)?) {
-  Row(Modifier.fillMaxWidth().height(36.dp), verticalAlignment = Alignment.CenterVertically) {
-    TextButton(contentPadding = Compact, onClick = actions::exit) { Text("‹ Salir") }
-    Text("Scrabble Sprint", Modifier.weight(1f))
+  Row(Modifier.fillMaxWidth().height(44.dp), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
+    ExitButton(actions::exit)
+    BarTitle("Scrabble Sprint", Modifier.weight(1f).padding(start = 6.dp))
     if (view.phase !is Phase.Finished) PauseButton(actions::pause)
-    if (onTheme != null) TextButton(contentPadding = Compact, onClick = onTheme) { Text("Tema") }
+    if (onTheme != null) ThemeButton(onTheme)
   }
 }
 

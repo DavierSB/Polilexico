@@ -25,6 +25,7 @@ import app.lexico.modes.scoring.engineScorer
 import app.lexico.ui.board.LocalPlayScorer
 import app.lexico.ui.board.ThemeDialog
 import app.lexico.ui.board.Themed
+import app.lexico.ui.classic.LocalShowUnseen
 
 /**
  * La aplicacion, con el tema en pantalla: el menu lateral y, dentro, la pantalla actual de
@@ -59,12 +60,15 @@ private fun Dialogs(settings: Settings, themes: ThemeState, menu: MenuState, ver
   if (themes.picking) ThemeDialog(themes.current, themes::choose) { themes.picking = false }
 }
 
-/** La pantalla actual, una vez cargado el motor; con los puntos al colocar si estan encendidos. */
+/** La pantalla actual, una vez cargado el motor; con los puntos al colocar y las letras faltantes segun las opciones. */
 @Composable
 private fun Screens(engine: Result<Unit>?, lexico: Lexico, nav: Navigator, settings: Settings, themes: ThemeState, menu: MenuState) {
   val scorer = remember(lexico) { engineScorer(lexico) }
   WhenReady(engine, "Cargando el motor…") {
-    CompositionLocalProvider(LocalPlayScorer provides scorer.takeIf { settings.liveScore }) {
+    CompositionLocalProvider(
+      LocalPlayScorer provides scorer.takeIf { settings.liveScore },
+      LocalShowUnseen provides settings.showUnseen,
+    ) {
       Content(nav.current, lexico, nav, settings, themes, onMenu = menu::open)
     }
   }

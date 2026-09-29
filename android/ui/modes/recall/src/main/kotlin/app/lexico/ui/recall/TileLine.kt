@@ -1,6 +1,5 @@
 package app.lexico.ui.recall
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,11 +35,13 @@ internal fun TileLine(count: Int, tile: @Composable (index: Int, size: Dp) -> Un
   }
 }
 
-/** Una ficha que ya esta en el tablero: sobre su casilla, que asoma alrededor. */
+/** Una ficha que ya esta en el tablero: del tamaño de las demas, con un borde del color del tema. */
 @Composable
 internal fun FixedTile(letter: String, style: BoardStyle, size: Dp) {
-  Box(Modifier.size(size).background(style.square), contentAlignment = Alignment.Center) {
-    RackTile(letter, style, size * 0.84f)
+  val shape = RoundedCornerShape(size * style.rounding)
+  Box(Modifier.size(size), contentAlignment = Alignment.Center) {
+    RackTile(letter, style, size)
+    Box(Modifier.size(size).border(3.dp, MaterialTheme.colorScheme.primary, shape))
   }
 }
 

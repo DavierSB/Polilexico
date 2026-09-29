@@ -33,11 +33,11 @@ internal fun ClassicDialogsShown(view: ClassicView, c: TilePlacer, actions: Clas
   if (dialogs.resign) ResignDialog(onResign = actions::resign, onContinue = { dialogs.resign = false })
 }
 
-/** Las fichas por salir o, si la partida no las muestra, solo cuantas son. */
+/** Las fichas por salir o, si las opciones no las muestran, solo cuantas son. */
 @Composable
 private fun UnseenDialog(view: ClassicView, close: () -> Unit) {
   val title = "Por salir (bolsa ${view.bag} + atril del rival)"
-  if (view.showUnseen) BagDialog(title, view.unseen, close) else BagCountDialog(title, view.unseen.size, close)
+  if (LocalShowUnseen.current) BagDialog(title, view.unseen, close) else BagCountDialog(title, view.unseen.size, close)
 }
 
 @Composable

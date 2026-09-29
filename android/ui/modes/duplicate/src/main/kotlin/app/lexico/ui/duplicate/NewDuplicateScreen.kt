@@ -15,7 +15,6 @@ import app.lexico.ui.common.Header
 import app.lexico.ui.common.TimeField
 import app.lexico.ui.common.ChallengeModeSelector
 import app.lexico.ui.common.Durations
-import app.lexico.ui.common.Hint
 import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
 
@@ -38,9 +37,8 @@ fun NewDuplicateScreen(onBack: () -> Unit, onStart: (DuplicateConfig) -> Unit) {
   Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     Header("Duplicada", onBack)
     ChallengeModeSelector(single, { single = it }, penalty = "pierdes el turno (0 puntos)")
-    SectionTitle("Tiempo")
+    SectionTitle("Tiempo", info = "Si no juegas a tiempo, 0 puntos ese turno.")
     TimeField(turn, { turn = it }, "Tiempo por turno")
-    Hint("Si no juegas a tiempo, 0 puntos ese turno.")
     StartButton(enabled = turnMs != null) { onStart(DuplicateConfig(single, turnMs ?: DEFAULT_TURN_MS)) }
   }
 }

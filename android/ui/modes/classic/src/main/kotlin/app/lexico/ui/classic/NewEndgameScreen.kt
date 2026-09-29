@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.Durations
 import app.lexico.ui.common.Header
-import app.lexico.ui.common.Hint
 import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
 import app.lexico.ui.common.Stepper
@@ -23,7 +22,7 @@ import app.lexico.ui.common.Stepper
 /** Tope de fichas en la bolsa que se puede pedir (al empezar quedan 86). */
 private const val MAX_BAG_LIMIT = 50
 
-/** Las opciones de Finales: la bolsa, tu ventaja y, como en la clasica, la comprobacion, el tiempo y las letras faltantes. */
+/** Las opciones de Finales: la bolsa, tu ventaja y, como en la clasica, la comprobacion y el tiempo. */
 @Composable
 fun NewEndgameScreen(onBack: () -> Unit, onStart: (EndgameConfig) -> Unit) {
   val form = remember { EndgameForm() }
@@ -33,23 +32,20 @@ fun NewEndgameScreen(onBack: () -> Unit, onStart: (EndgameConfig) -> Unit) {
     LeadSection(form)
     ChallengeSection(form.classic)
     TimeSection(form.classic)
-    UnseenSection(form.classic)
     StartButton(enabled = form.classic.valid) { onStart(form.toConfig()) }
   }
 }
 
 @Composable
 private fun BagSection(form: EndgameForm) {
-  SectionTitle("Fichas en la bolsa")
+  SectionTitle("Fichas en la bolsa", info = "Empiezas la primera vez que en la bolsa quedan ${form.maxBag} fichas o menos.")
   Stepper(form.maxBag, 0..MAX_BAG_LIMIT) { form.maxBag = it }
-  Hint("Empiezas la primera vez que en la bolsa quedan ${form.maxBag} fichas o menos.")
 }
 
 @Composable
 private fun LeadSection(form: EndgameForm) {
-  SectionTitle("Tu ventaja al empezar")
+  SectionTitle("Tu ventaja al empezar", info = "Tus puntos menos los de Gitana: negativa si vas perdiendo.")
   LeadRangeBar(form.minLead, form.maxLead, LEAD_LIMIT) { min, max -> form.minLead = min; form.maxLead = max }
-  Hint("Tus puntos menos los de Gitana: negativa si vas perdiendo.")
 }
 
 /** Lo que se va eligiendo; la comprobacion y el tiempo, como en la clasica (contra HastyBot). */
@@ -63,6 +59,6 @@ private class EndgameForm {
 
   fun toConfig(): EndgameConfig {
     val c = classic.toConfig()
-    return EndgameConfig(maxBag, minLead, maxLead, c.single, c.timed, c.timeMs, c.overtimeMs, c.showUnseen)
+    return EndgameConfig(maxBag, minLead, maxLead, c.single, c.timed, c.timeMs, c.overtimeMs)
   }
 }

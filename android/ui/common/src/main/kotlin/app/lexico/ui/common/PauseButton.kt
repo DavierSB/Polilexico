@@ -1,12 +1,10 @@
 package app.lexico.ui.common
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -15,12 +13,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.dp
 
-/** El boton de pausa: las dos barras verticales de siempre. */
+/** El boton de pausa, sin fondo como los demas de la barra: las dos barras verticales de siempre. */
 @Composable
 fun PauseButton(onClick: () -> Unit) {
   val ink = MaterialTheme.colorScheme.primary
-  Box(Modifier.size(40.dp).clickable(onClick = onClick), contentAlignment = Alignment.Center) {
-    Canvas(Modifier.size(18.dp)) { drawPauseBars(ink) }
+  IconButton(onClick, Modifier.size(40.dp)) {
+    Canvas(Modifier.size(16.dp)) { drawPauseBars(ink) }
   }
 }
 

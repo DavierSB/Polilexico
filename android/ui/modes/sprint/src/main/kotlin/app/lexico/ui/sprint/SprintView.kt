@@ -30,7 +30,8 @@ data class Hand(val board: Board, val rack: List<String>)
 /** Como se cerro una mano: tu scrabble, si lo encontraste, y todos, de mas a menos puntos. */
 data class HandResult(val outcome: Outcome, val answer: Bingo?, val bingos: List<Bingo>)
 
-enum class Outcome { SOLVED, TIMEOUT, GAVE_UP }
+/** INVALID: en single, pusiste palabras no validas. */
+enum class Outcome { SOLVED, TIMEOUT, GAVE_UP, INVALID }
 
 /** Un scrabble en notacion FISE ("H8 CA.ADOS") con sus puntos. */
 data class Bingo(val placement: String, val score: Int)
@@ -45,6 +46,8 @@ data class SprintView(
   val notice: String? = null,
   /** En pausa: la mano se tapa hasta que el jugador continua. */
   val paused: Boolean = false,
+  /** El record con estas opciones al empezar la serie (0 = aun no hay): el que hay que batir. */
+  val best: Int = 0,
   /** Al terminar la serie, el record con sus opciones; null mientras sigue. */
   val record: Record? = null,
 )

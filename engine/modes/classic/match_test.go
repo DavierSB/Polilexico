@@ -71,25 +71,6 @@ func TestMatchSaveKeepsTimeAndLoadsPaused(t *testing.T) {
 	}
 }
 
-func TestMatchSaveKeepsHiddenUnseen(t *testing.T) {
-	m, _, _ := newTestMatch(t, 0, false)
-	if !m.ShowUnseen() {
-		t.Fatal("por defecto deben verse las fichas por salir")
-	}
-	m.SetShowUnseen(false)
-	text, err := m.Save()
-	if err != nil {
-		t.Fatal(err)
-	}
-	loaded, err := LoadMatch(text, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if loaded.ShowUnseen() {
-		t.Fatal("al cargarla volvieron a verse las fichas por salir")
-	}
-}
-
 // newTestMatch: partida en marcha en la que abres tu, con reloj falso (timeMs 0 = sin tiempo,
 // descuento de 30 s).
 func newTestMatch(t *testing.T, timeMs int64, invalidLosesTurn bool) (*Match, *timing.Fake, *testListener) {

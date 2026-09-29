@@ -104,8 +104,10 @@ internal fun SprintPlay(
   val controller = remember(game) { SprintController(game, scope, nav::back, onRestart) }
   val state by game.state.collectAsState()
   val finished = state.phase is SprintPhase.Finished
+  // El record a batir es el de antes de la serie: al terminarla, submit ya lo habra cambiado.
+  val best = remember(game) { records.best(setup) }
   val record = remember(finished) { if (finished) records.submit(setup, state.solved) else null }
-  SprintScreen(sprintView(state, controller.notice, record), themes.current.board, controller) { themes.picking = true }
+  SprintScreen(sprintView(state, controller.notice, best, record), themes.current.board, controller) { themes.picking = true }
 }
 
 /**

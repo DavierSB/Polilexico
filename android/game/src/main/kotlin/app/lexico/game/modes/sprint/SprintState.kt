@@ -2,8 +2,11 @@ package app.lexico.game.modes.sprint
 
 import app.lexico.model.Board
 
-/** Como sera una serie de Scrabble Sprint: el tiempo de toda la serie y las vidas al empezar. */
-data class SprintSetup(val totalMs: Long, val lives: Int)
+/**
+ * Como sera una serie de Scrabble Sprint: el tiempo de toda la serie, las vidas al empezar y si
+ * poner palabras no validas cierra la mano y cuesta una vida (single) o solo se rechaza (void).
+ */
+data class SprintSetup(val totalMs: Long, val lives: Int, val invalidCostsLife: Boolean = true)
 
 /** Una serie de Scrabble Sprint en este momento, tal como la cuenta el motor. */
 data class SprintState(
@@ -41,7 +44,8 @@ data class Hand(val board: Board, val rack: List<String>, val bingoCount: Int)
 /** Como se cerro una mano: tu scrabble (si lo encontraste) y todos los posibles, de mas a menos puntos. */
 data class HandResult(val outcome: HandOutcome, val answer: Bingo?, val bingos: List<Bingo>)
 
-enum class HandOutcome { SOLVED, TIMEOUT, GAVE_UP }
+/** INVALID: en single, pusiste palabras no validas. */
+enum class HandOutcome { SOLVED, TIMEOUT, GAVE_UP, INVALID }
 
 /** Un scrabble: `placement` en notacion FISE ("H8 CA.ADOS"), para ponerlo en el tablero, y sus puntos. */
 data class Bingo(val placement: String, val score: Int)

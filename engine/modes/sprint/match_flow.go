@@ -47,15 +47,15 @@ func (m *Match) pose(p *puzzle) {
 	m.posed++
 }
 
-// reveal cierra la mano: un punto si la resolviste; si te rendiste, una vida menos, y sin
-// vidas se acabo. Si se agoto el reloj, se acabo sin perder vidas.
+// reveal cierra la mano: un punto si la resolviste; si te rendiste o pusiste palabras no
+// validas, una vida menos, y sin vidas se acabo. Si se agoto el reloj, se acabo sin perder vidas.
 func (m *Match) reveal(outcome string, answer *Solution) {
 	m.outcome, m.answer = outcome, answer
 	m.phase = PhaseRevealed
 	switch outcome {
 	case OutcomeSolved:
 		m.solved++
-	case OutcomeGaveUp:
+	case OutcomeGaveUp, OutcomeInvalid:
 		m.lives--
 		if m.lives <= 0 {
 			m.finish()

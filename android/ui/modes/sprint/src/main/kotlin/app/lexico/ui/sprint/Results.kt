@@ -76,6 +76,7 @@ private fun outcomeText(result: HandResult): String = when (result.outcome) {
   Outcome.SOLVED -> "¡Scrabble! ${result.answer?.let { "${plain(it.placement)} (${it.score})" }.orEmpty()}"
   Outcome.TIMEOUT -> "Se acabó el tiempo."
   Outcome.GAVE_UP -> "Te rendiste: pierdes una vida."
+  Outcome.INVALID -> "Palabra no válida: pierdes una vida."
 }
 
 /** "H8 [CH]A.ADOS" sin los corchetes de los digrafos, para mostrar. */

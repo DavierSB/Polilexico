@@ -27,8 +27,6 @@ type Match struct {
 	closed   bool
 	thinking bool
 	botError string
-	// hideUnseen: la bolsa no muestra las fichas por salir, solo cuantas quedan.
-	hideUnseen bool
 }
 
 // NewMatch empieza una partida contra botName (uno de Bots()). Con timeMs 0 no hay relojes;
@@ -81,20 +79,6 @@ func (m *Match) BotError() string {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	return m.botError
-}
-
-// SetShowUnseen elige si la bolsa muestra las fichas por salir (la bolsa y el atril del rival)
-// o solo cuantas quedan. Se guarda con la partida.
-func (m *Match) SetShowUnseen(show bool) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.hideUnseen = !show
-}
-
-func (m *Match) ShowUnseen() bool {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	return !m.hideUnseen
 }
 
 // Close detiene la partida: relojes, temporizadores y avisos. Guardala antes con Save.

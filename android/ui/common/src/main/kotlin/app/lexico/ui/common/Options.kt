@@ -2,6 +2,7 @@ package app.lexico.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -47,21 +48,17 @@ fun TimeField(value: String, onChange: (String) -> Unit, label: String) {
  */
 @Composable
 fun ChallengeModeSelector(single: Boolean, onChange: (Boolean) -> Unit, penalty: String) {
-  SectionTitle("Comprobación de jugadas")
+  SectionTitle("Comprobación de jugadas", info = "$VOID_HINT\n\nSingle: si pones palabras no válidas, la jugada no entra y $penalty.")
   TwoOptions("Void", "Single", single, onChange)
-  Hint(if (single) "Single: si pones palabras no válidas, la jugada no entra y $penalty." else VOID_HINT)
 }
 
-/** El titulo de una seccion de opciones ("Rival", "Tiempo"...). */
+/** El titulo de una seccion de opciones ("Rival", "Tiempo"...), con una ⓘ que explica `info`, si la hay. */
 @Composable
-fun SectionTitle(text: String) {
-  Text(text, style = MaterialTheme.typography.labelLarge)
-}
-
-/** Una explicacion breve bajo una opcion. */
-@Composable
-fun Hint(text: String) {
-  Text(text, style = MaterialTheme.typography.bodySmall)
+fun SectionTitle(text: String, info: String? = null) {
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    Text(text, style = MaterialTheme.typography.labelLarge)
+    if (info != null) InfoButton(text.removeSuffix(":"), info, Modifier.padding(start = 2.dp))
+  }
 }
 
 /** Un numero entero entre los limites de `range`, con − y +. */

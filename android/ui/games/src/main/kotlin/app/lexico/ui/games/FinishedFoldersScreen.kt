@@ -22,9 +22,9 @@ fun FinishedFoldersScreen(counts: Map<GameFolder, Int>, onBack: () -> Unit, onOp
 
 @Composable
 private fun FolderRow(folder: GameFolder, count: Int, onOpen: () -> Unit) {
-  GameRow(folder.title, partidas(count), onOpen) {
+  GameRow(folder.title, gameCount(count), onOpen) {
     Text("›", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
 }
 
-private fun partidas(count: Int): String = if (count == 1) "1 partida" else "$count partidas"
+private fun gameCount(count: Int): String = if (count == 1) "1 partida" else "$count partidas"

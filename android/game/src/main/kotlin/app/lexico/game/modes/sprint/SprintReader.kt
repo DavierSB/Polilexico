@@ -50,6 +50,7 @@ internal class SprintReader(private val match: Match) {
     Sprint.OutcomeSolved -> HandOutcome.SOLVED
     Sprint.OutcomeTimeout -> HandOutcome.TIMEOUT
     Sprint.OutcomeGaveUp -> HandOutcome.GAVE_UP
+    Sprint.OutcomeInvalid -> HandOutcome.INVALID
     else -> null
   }
 }

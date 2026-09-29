@@ -1,6 +1,7 @@
 package app.lexico.ui.sprint
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,15 +17,26 @@ import androidx.compose.ui.unit.sp
 
 private val HeartRed = Color(0xFFE5484D)
 
-/** Abajo de la pantalla: las vidas como corazones (llenos los que quedan) y las manos resueltas. */
+/** Abajo de la pantalla: las vidas como corazones (llenos los que quedan), las manos resueltas y el record a batir. */
 @Composable
-fun Lives(lives: Int, maxLives: Int, solved: Int) {
+fun Lives(lives: Int, maxLives: Int, solved: Int, best: Int) {
   Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
     Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
       repeat(maxLives) { Heart(full = it < lives) }
     }
-    Text("Resueltas: $solved", fontWeight = FontWeight.Bold)
+    Column(horizontalAlignment = Alignment.End) {
+      Text("Resueltas: $solved", fontWeight = FontWeight.Bold)
+      RecordToBeat(solved, best)
+    }
   }
+}
+
+/** "Récord: 7" o, si esta serie ya lo supera, "¡Nuevo récord!". Nada si aun no hay record. */
+@Composable
+private fun RecordToBeat(solved: Int, best: Int) {
+  if (best == 0) return
+  if (solved > best) Text("¡Nuevo récord!", color = MaterialTheme.colorScheme.primary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+  else Text("Récord: $best", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
 }
 
 @Composable

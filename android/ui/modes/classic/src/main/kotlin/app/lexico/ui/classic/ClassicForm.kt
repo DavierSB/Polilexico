@@ -19,7 +19,6 @@ internal class ClassicForm {
   var timed by mutableStateOf(true)
   var time by mutableStateOf("20:00")
   var overtime by mutableStateOf("1:00")
-  var showUnseen by mutableStateOf(true)
 
   /** Como en Woogles, algunos bots solo juegan en modo void. */
   val voidOnly: Boolean get() = bot(opponent).voidOnly
@@ -27,7 +26,7 @@ internal class ClassicForm {
   val valid: Boolean get() = !timed || (timeMs()?.let { it > 0 } == true && Durations.parse(overtime) != null)
 
   fun toConfig(): ClassicConfig =
-    ClassicConfig(opponent, single && !voidOnly, timed, timeMs() ?: 0, Durations.parse(overtime) ?: 0, showUnseen)
+    ClassicConfig(opponent, single && !voidOnly, timed, timeMs() ?: 0, Durations.parse(overtime) ?: 0)
 
   private fun timeMs(): Long? = Durations.parse(time)
 }

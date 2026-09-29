@@ -10,14 +10,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.board.BoardStyle
-import app.lexico.ui.common.Compact
+import app.lexico.ui.common.BarChip
 import app.lexico.ui.common.Header
+import app.lexico.ui.common.ThemeButton
 
 /**
  * "¿Cuántas recuerdas?": se ve la partida, jugada a jugada; al terminar se quita el tablero y
@@ -28,8 +28,8 @@ import app.lexico.ui.common.Header
 fun RecallScreen(session: RecallSession, style: BoardStyle, onExit: () -> Unit, onTheme: (() -> Unit)? = null) {
   Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     Header("¿Cuántas recuerdas?", onExit) {
-      Text("Ronda ${session.round} de ${session.config.rounds}", style = MaterialTheme.typography.labelMedium)
-      if (onTheme != null) TextButton(contentPadding = Compact, onClick = onTheme) { Text("Tema") }
+      BarChip("Ronda ${session.round}/${session.config.rounds}")
+      if (onTheme != null) ThemeButton(onTheme)
     }
     StageContent(session, style, onExit)
   }

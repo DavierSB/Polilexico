@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import app.lexico.ui.board.BlankLetterDialog
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.ScrabbleBoard
+import app.lexico.ui.common.BarTextButton
 import app.lexico.ui.common.Compact
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.Notice
@@ -37,7 +38,7 @@ fun AnalyzerScreen(style: BoardStyle, analyst: Analyst, onBack: () -> Unit) {
   // Cualquier cambio en la posicion invalida el analisis anterior.
   LaunchedEffect(editor.version) { analysis.clear() }
   Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    Header("Analizador", onBack) { TextButton(contentPadding = Compact, onClick = editor::clear) { Text("Vaciar") } }
+    Header("Analizador", onBack) { BarTextButton("Vaciar", editor::clear) }
     AnalysisRack(editor.rack, style, analysis.running, onRemove = editor::removeFromRack) { scope.launch { analysis.run(analyst, editor) } }
     analysis.message?.let { Notice(it) }
     AnalysisBoard(editor, analysis, style)
@@ -61,7 +62,7 @@ private fun AnalysisBoard(editor: PositionEditor, analysis: Analysis, style: Boa
 @Composable
 private fun ColumnScope.ResultsPanel(editor: PositionEditor, analysis: Analysis) {
   Row(verticalAlignment = Alignment.CenterVertically) {
-    Text("Mejores jugadas (valoración de Woogles):", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
+    Text("Mejores jugadas", Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
     // Poner la elegida en el tablero ayuda a montar posiciones jugada a jugada.
     analysis.selected?.takeIf { it.placement != null }?.let { c ->
       TextButton(contentPadding = Compact, onClick = { editor.placeCandidate(c) }) { Text("Ponerla") }
