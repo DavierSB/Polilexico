@@ -52,7 +52,10 @@ private class EndgameForm {
   var maxBag by mutableIntStateOf(defaults.maxBag)
   var minLead by mutableIntStateOf(defaults.minLead)
   var maxLead by mutableIntStateOf(defaults.maxLead)
-  val classic = ClassicForm().apply { time = Durations.format(defaults.timeMs) }
+  val classic = ClassicForm().apply {
+    time = Durations.format(defaults.timeMs)
+    overtime = Durations.format(defaults.overtimeMs)
+  }
 
   fun toConfig(): EndgameConfig {
     val c = classic.toConfig()

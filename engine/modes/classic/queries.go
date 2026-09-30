@@ -32,6 +32,8 @@ type Result struct {
 	EndReason  string
 	HumanDelta int
 	BotDelta   int
+	HumanTime  int
+	BotTime    int
 	HumanScore int
 	BotScore   int
 	RecordPath string
@@ -94,7 +96,7 @@ func (c *Game) Result() *Result {
 		return nil
 	}
 	r := &Result{Outcome: c.outcome(), LostOnTime: c.lostOnTime, HumanScore: c.score(true),
-		BotScore: c.score(false), RecordPath: c.recordPath}
+		BotScore: c.score(false), HumanTime: c.timePenalty(true), BotTime: c.timePenalty(false), RecordPath: c.recordPath}
 	if c.ending != nil {
 		r.EndReason, r.HumanDelta, r.BotDelta = c.ending.Reason, c.ending.HumanDelta, c.ending.BotDelta
 	}
@@ -118,10 +120,27 @@ func (c *Game) botIdx() int {
 }
 
 func (c *Game) score(human bool) int {
+	return c.points(human) - c.timePenalty(human)
+}
+
+func (c *Game) points(human bool) int {
 	if human {
 		return c.g.PointsFor(c.humanIdx)
 	}
 	return c.g.PointsFor(c.botIdx())
+}
+
+func (c *Game) timePenalty(human bool) int {
+	if human {
+		return c.timePenalties[0]
+	}
+	return c.timePenalties[1]
+}
+
+func (c *Game) setTimePenalties(human, bot int) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.timePenalties = [2]int{human, bot}
 }
 
 func (c *Game) outcome() string {

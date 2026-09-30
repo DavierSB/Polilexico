@@ -44,7 +44,7 @@ internal class ClassicReader(private val match: Match) {
   private fun clocks(c: Clocks): ClassicClocks =
     ClassicClocks(c.humanMs, c.humanOvertimeMs, c.botMs, c.botOvertimeMs, running(c.running))
 
-  private fun result(r: Result): ClassicResult = ClassicResult(Outcome.of(r.outcome), r.lostOnTime, ending(r), r.recordPath)
+  private fun result(r: Result): ClassicResult = ClassicResult(Outcome.of(r.outcome), r.lostOnTime, ending(r), r.humanTime.toInt(), r.botTime.toInt(), r.recordPath)
 
   private fun ending(r: Result): ClassicEnding? =
     endReason(r.endReason)?.let { ClassicEnding(it, r.humanDelta.toInt(), r.botDelta.toInt()) }

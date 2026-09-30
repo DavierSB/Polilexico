@@ -24,6 +24,7 @@ type Game struct {
 	log              *gameLog
 	lostOnTime       bool
 	ending           *Ending
+	timePenalties    [2]int
 	invalidLosesTurn bool
 	recordPath       string
 }

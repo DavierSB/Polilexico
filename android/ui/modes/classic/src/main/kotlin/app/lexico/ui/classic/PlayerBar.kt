@@ -66,7 +66,7 @@ private fun RowScope.Identity(name: String, thinking: Boolean, photo: (@Composab
 private fun PlayerClock(clock: Clock, onTurn: Boolean) {
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
     Text(
-      Durations.format(if (clock.inOvertime) clock.overtimeMs else clock.remainingMs),
+      if (clock.inOvertime) "-" + Durations.format(-clock.remainingMs) else Durations.format(clock.remainingMs),
       Modifier.background(clockFill(clock, onTurn), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 4.dp).width(58.dp),
       color = clockInk(clock, onTurn), fontFamily = FontFamily.Monospace, fontSize = 16.sp, textAlign = TextAlign.Center,
     )

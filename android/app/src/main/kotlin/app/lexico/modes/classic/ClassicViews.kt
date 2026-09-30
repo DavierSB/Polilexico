@@ -49,8 +49,10 @@ private fun moveType(kind: MoveKind): MoveType = when (kind) {
   MoveKind.INVALID -> MoveType.INVALID
 }
 
-private fun gameEnd(result: ClassicResult): GameEnd =
-  GameEnd(winner = winner(result.outcome), byTimeout = result.lostOnTime, ending = result.ending?.let(::ending))
+private fun gameEnd(result: ClassicResult): GameEnd = GameEnd(
+  winner = winner(result.outcome), byTimeout = result.lostOnTime, ending = result.ending?.let(::ending),
+  myTimePenalty = result.myTimePenalty, opponentTimePenalty = result.opponentTimePenalty,
+)
 
 private fun ending(e: ClassicEnding): Ending = Ending(endingReason(e.reason), e.myDelta, e.opponentDelta)
 

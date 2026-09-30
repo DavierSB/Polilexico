@@ -112,3 +112,26 @@ func (l *testListener) waitFor(t *testing.T, cond func() bool) {
 		}
 	}
 }
+
+func TestMatchChargesEachOvertimeMinute(t *testing.T) {
+	g := humanStartsWith(t, "TPNAEIO")
+	clock := timing.NewFake()
+	m := startMatch(g, newClockPair(clock, 60_000, 180_000, 0, 0), clock, newTestListener(), false)
+	t.Cleanup(m.Close)
+	steps := []struct {
+		advance time.Duration
+		penalty int
+	}{
+		{time.Minute, 0}, {time.Millisecond, 10}, {58 * time.Second, 10}, {time.Second, 20},
+		{2 * time.Minute, 30}, {time.Second, 30},
+	}
+	for i, s := range steps {
+		clock.Advance(s.advance)
+		if got := -m.Game().Status().HumanScore; got != s.penalty {
+			t.Fatalf("paso %d: descuento %d, esperaba %d", i, got, s.penalty)
+		}
+	}
+	if r := m.Game().Result(); r == nil || !r.LostOnTime || r.HumanTime != 30 || r.HumanScore != -30 {
+		t.Fatalf("%+v", r)
+	}
+}

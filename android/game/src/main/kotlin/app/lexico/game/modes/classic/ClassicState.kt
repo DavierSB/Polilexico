@@ -44,7 +44,10 @@ data class ClassicClocks(
   val running: Side?,
 )
 
-data class ClassicResult(val outcome: Outcome, val lostOnTime: Boolean, val ending: ClassicEnding?, val recordPath: String)
+data class ClassicResult(
+  val outcome: Outcome, val lostOnTime: Boolean, val ending: ClassicEnding?, val myTimePenalty: Int, val opponentTimePenalty: Int,
+  val recordPath: String,
+)
 
 enum class EndReason { WENT_OUT, PASSES, NEUTRAL_TURNS }
 

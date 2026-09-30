@@ -16,6 +16,7 @@ type Match struct {
 	game     *Game
 	clocks   *clockPair
 	timeout  *timing.Alarm
+	penalty  *timing.Alarm
 	notifier *notify.Notifier
 	paused   bool
 	closed   bool
@@ -41,6 +42,7 @@ func (m *Match) Play(input string) (*Move, error) {
 	if m.paused {
 		return nil, errPaused
 	}
+	m.chargeTime()
 	played, err := m.game.Play(input)
 	if err == nil {
 		m.afterChange()
@@ -86,7 +88,7 @@ func newMatch(g *Game, timeMs, overtimeMs int64, invalidLosesTurn bool, l events
 }
 
 func startMatch(g *Game, clocks *clockPair, clock timing.Clock, l events.Listener, paused bool) *Match {
-	m := &Match{game: g, clocks: clocks, timeout: timing.NewAlarm(clock), notifier: notify.New(l), paused: paused}
+	m := &Match{game: g, clocks: clocks, timeout: timing.NewAlarm(clock), penalty: timing.NewAlarm(clock), notifier: notify.New(l), paused: paused}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.afterChange()

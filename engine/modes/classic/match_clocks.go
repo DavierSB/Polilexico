@@ -11,6 +11,8 @@ const (
 	RunningBot   = "bot"
 )
 
+const PenaltyPerMinute = 10
+
 type Clocks struct {
 	HumanMs         int64
 	HumanOvertimeMs int64
@@ -82,6 +84,46 @@ func (p *clockPair) runningSide() string {
 		return RunningBot
 	}
 	return ""
+}
+
+func (p *clockPair) penalty(w *timing.Stopwatch) int {
+	return PenaltyPerMinute * min(overtimeMinutes(w.Spent()-p.time), int(ceilMinutes(p.overtime)))
+}
+
+func (p *clockPair) untilPenalty(w *timing.Stopwatch) (time.Duration, bool) {
+	over := w.Spent() - p.time
+	next := nextPenaltyAt(over)
+	return next - over, next <= p.overtime
+}
+
+func (p *clockPair) side(human bool) *timing.Stopwatch {
+	if human {
+		return p.human
+	}
+	return p.bot
+}
+
+func overtimeMinutes(over time.Duration) int {
+	if over <= 0 {
+		return 0
+	}
+	return int(ceilSeconds(over)/60) + 1
+}
+
+func nextPenaltyAt(over time.Duration) time.Duration {
+	if over <= 0 {
+		return time.Millisecond
+	}
+	minutes := time.Duration(overtimeMinutes(over))
+	return minutes*time.Minute - time.Second + time.Millisecond
+}
+
+func ceilMinutes(d time.Duration) time.Duration {
+	return (d + time.Minute - 1) / time.Minute
+}
+
+func ceilSeconds(d time.Duration) time.Duration {
+	return (d + time.Second - 1) / time.Second
 }
 
 func ms(n int64) time.Duration {

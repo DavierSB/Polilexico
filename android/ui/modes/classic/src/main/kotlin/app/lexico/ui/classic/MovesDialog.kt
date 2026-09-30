@@ -31,7 +31,7 @@ private typealias Turn = Pair<Move?, Move?>
 @Composable
 fun MovesDialog(view: ClassicView, close: () -> Unit) {
   val turns = remember(view.moves) { byTurn(view.moves) }
-  val footer = view.end?.ending?.let { e -> @Composable { EndingRows(view, e) } }
+  val footer = view.end?.takeIf { it.ending != null || it.timePenalized }?.let { e -> @Composable { EndingRows(view, e) } }
   MovesTableDialog(turns, header = { MovesHeader(view.opponent) }, close = close, footer = footer) { i, turn -> TurnRow(i + 1, turn) }
 }
 
@@ -66,12 +66,18 @@ private fun TurnRow(number: Int, turn: Turn) {
 }
 
 @Composable
-private fun EndingRows(view: ClassicView, ending: Ending) {
+private fun EndingRows(view: ClassicView, end: GameEnd) {
   Column(Modifier.padding(top = 4.dp)) {
     DottedLine()
-    EndingRow({ LabelCell("descuento") { DeltaText(ending.myDelta) } }, { LabelCell("descuento") { DeltaText(ending.opponentDelta) } })
+    if (end.timePenalized) DeltaRow("tiempo", -end.myTimePenalty, -end.opponentTimePenalty)
+    end.ending?.let { DeltaRow("descuento", it.myDelta, it.opponentDelta) }
     EndingRow({ LabelCell("final") { TotalBadge(view.myScore) } }, { LabelCell("final") { TotalBadge(view.opponentScore) } })
   }
+}
+
+@Composable
+private fun DeltaRow(label: String, mine: Int, theirs: Int) {
+  EndingRow({ LabelCell(label) { DeltaText(mine) } }, { LabelCell(label) { DeltaText(theirs) } })
 }
 
 @Composable

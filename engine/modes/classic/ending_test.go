@@ -61,9 +61,18 @@ func mustNeutral(t *testing.T, c *Game) {
 		mustPass(t, c)
 		return
 	}
-	if _, err := c.Play("cambiar " + strings.Fields(c.Rack())[0]); err != nil {
+	if _, err := c.Play("cambiar " + plainTile(c.Rack())); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func plainTile(rack string) string {
+	for _, tile := range strings.Fields(rack) {
+		if len(tile) == 1 && tile >= "A" && tile <= "Z" {
+			return tile
+		}
+	}
+	return strings.Fields(rack)[0]
 }
 
 func mustPass(t *testing.T, c *Game) {

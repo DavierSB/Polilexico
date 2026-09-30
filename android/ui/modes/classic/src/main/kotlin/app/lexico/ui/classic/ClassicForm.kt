@@ -16,8 +16,8 @@ internal class ClassicForm {
   var opponent by mutableStateOf("HastyBot")
   var single by mutableStateOf(false)
   var timed by mutableStateOf(true)
-  var time by mutableStateOf("20:00")
-  var overtime by mutableStateOf("1:00")
+  var time by mutableStateOf(Durations.format(ClassicConfig().timeMs))
+  var overtime by mutableStateOf(Durations.format(ClassicConfig().overtimeMs))
 
   val voidOnly: Boolean get() = bot(opponent).voidOnly
 

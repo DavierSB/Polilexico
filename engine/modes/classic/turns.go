@@ -112,7 +112,7 @@ func (c *Game) candidates() []core.Candidate {
 }
 
 func (c *Game) newMove(p core.Play, byHuman bool) *Move {
-	return moveOf(p, byHuman, c.score(true), c.score(false))
+	return moveOf(p, byHuman, c.points(true), c.points(false))
 }
 
 func moveOf(p core.Play, byHuman bool, humanTotal, botTotal int) *Move {

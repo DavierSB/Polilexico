@@ -26,7 +26,15 @@ data class Move(
   val opponentTotal: Int,
 )
 
-data class GameEnd(val winner: Side?, val byTimeout: Boolean = false, val ending: Ending? = null)
+data class GameEnd(
+  val winner: Side?,
+  val byTimeout: Boolean = false,
+  val ending: Ending? = null,
+  val myTimePenalty: Int = 0,
+  val opponentTimePenalty: Int = 0,
+) {
+  val timePenalized: Boolean get() = myTimePenalty != 0 || opponentTimePenalty != 0
+}
 
 enum class EndingReason { WENT_OUT, PASSES, NEUTRAL_TURNS }
 
