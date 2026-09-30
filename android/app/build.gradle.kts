@@ -6,8 +6,8 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-val appVersionCode = 1
-val appVersionName = "0.1"
+val appVersionCode = 2
+val appVersionName = "0.2"
 
 val abiCodes = mapOf("armeabi-v7a" to 1, "arm64-v8a" to 2)
 
