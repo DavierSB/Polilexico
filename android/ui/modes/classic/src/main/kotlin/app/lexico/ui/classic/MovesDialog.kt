@@ -1,6 +1,10 @@
 package app.lexico.ui.classic
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,9 +29,10 @@ import app.lexico.ui.common.MovesTableDialog
 private typealias Turn = Pair<Move?, Move?>
 
 @Composable
-fun MovesDialog(moves: List<Move>, opponent: String, close: () -> Unit) {
-  val turns = remember(moves) { byTurn(moves) }
-  MovesTableDialog(turns, header = { MovesHeader(opponent) }, close = close) { i, turn -> TurnRow(i + 1, turn) }
+fun MovesDialog(view: ClassicView, close: () -> Unit) {
+  val turns = remember(view.moves) { byTurn(view.moves) }
+  val footer = view.end?.ending?.let { e -> @Composable { EndingRows(view, e) } }
+  MovesTableDialog(turns, header = { MovesHeader(view.opponent) }, close = close, footer = footer) { i, turn -> TurnRow(i + 1, turn) }
 }
 
 private fun byTurn(moves: List<Move>): List<Turn> = moves.fold(mutableListOf()) { turns, m ->
@@ -55,6 +62,50 @@ private fun TurnRow(number: Int, turn: Turn) {
     MoveCell(turn.first)
     Separator()
     MoveCell(turn.second)
+  }
+}
+
+@Composable
+private fun EndingRows(view: ClassicView, ending: Ending) {
+  Column(Modifier.padding(top = 4.dp)) {
+    DottedLine()
+    EndingRow({ LabelCell("descuento") { DeltaText(ending.myDelta) } }, { LabelCell("descuento") { DeltaText(ending.opponentDelta) } })
+    EndingRow({ LabelCell("final") { TotalBadge(view.myScore) } }, { LabelCell("final") { TotalBadge(view.opponentScore) } })
+  }
+}
+
+@Composable
+private fun EndingRow(mine: @Composable RowScope.() -> Unit, theirs: @Composable RowScope.() -> Unit) {
+  Row(Modifier.fillMaxWidth().padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
+    Spacer(Modifier.width(moveNumberWidth()))
+    mine()
+    Separator()
+    theirs()
+  }
+}
+
+@Composable
+private fun RowScope.LabelCell(label: String, value: @Composable () -> Unit) {
+  Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+    MoveText(label, Modifier.weight(1f))
+    value()
+  }
+}
+
+@Composable
+private fun DeltaText(delta: Int) {
+  Text(signed(delta), Modifier.padding(horizontal = 3.dp), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+}
+
+@Composable
+private fun DottedLine() {
+  val color = MaterialTheme.colorScheme.outline
+  Canvas(Modifier.fillMaxWidth().height(9.dp)) {
+    val dash = 4.dp.toPx()
+    drawLine(
+      color, Offset(0f, center.y), Offset(size.width, center.y), strokeWidth = 1.dp.toPx(),
+      pathEffect = PathEffect.dashPathEffect(floatArrayOf(dash, dash)),
+    )
   }
 }
 

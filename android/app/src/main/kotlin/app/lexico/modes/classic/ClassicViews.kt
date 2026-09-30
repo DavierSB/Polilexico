@@ -1,12 +1,16 @@
 package app.lexico.modes.classic
 
+import app.lexico.game.modes.classic.ClassicEnding
 import app.lexico.game.modes.classic.ClassicResult
 import app.lexico.game.modes.classic.ClassicState
+import app.lexico.game.modes.classic.EndReason
 import app.lexico.game.modes.classic.MoveKind
 import app.lexico.game.Outcome
 import app.lexico.game.modes.classic.PlayedMove
 import app.lexico.ui.classic.Clock
 import app.lexico.ui.classic.ClassicView
+import app.lexico.ui.classic.Ending
+import app.lexico.ui.classic.EndingReason
 import app.lexico.ui.classic.alias
 import app.lexico.ui.classic.GameEnd
 import app.lexico.ui.classic.Move
@@ -45,7 +49,16 @@ private fun moveType(kind: MoveKind): MoveType = when (kind) {
   MoveKind.INVALID -> MoveType.INVALID
 }
 
-private fun gameEnd(result: ClassicResult): GameEnd = GameEnd(winner = winner(result.outcome), byTimeout = result.lostOnTime)
+private fun gameEnd(result: ClassicResult): GameEnd =
+  GameEnd(winner = winner(result.outcome), byTimeout = result.lostOnTime, ending = result.ending?.let(::ending))
+
+private fun ending(e: ClassicEnding): Ending = Ending(endingReason(e.reason), e.myDelta, e.opponentDelta)
+
+private fun endingReason(reason: EndReason): EndingReason = when (reason) {
+  EndReason.WENT_OUT -> EndingReason.WENT_OUT
+  EndReason.PASSES -> EndingReason.PASSES
+  EndReason.NEUTRAL_TURNS -> EndingReason.NEUTRAL_TURNS
+}
 
 private fun winner(outcome: Outcome): Side? = when (outcome) {
   Outcome.WIN -> Side.ME

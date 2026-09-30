@@ -26,7 +26,7 @@ import app.lexico.ui.common.rememberNotice
 fun ClassicScreen(view: ClassicView, style: BoardStyle, actions: ClassicActions, onTheme: (() -> Unit)? = null) {
   val c = rememberTilePlacer()
   LaunchedEffect(view.board, view.rack) { c.reset(view.board, view.rack) }
-  val dialogs = rememberClassicDialogs()
+  val dialogs = rememberClassicDialogs(view)
   var message by rememberNotice(view.notice)
   Pausable(view.paused, actions::resume) { ClassicLayout(view, c, style, actions, dialogs, message, onTheme) { message = it } }
   ClassicDialogsShown(view, c, actions, dialogs)

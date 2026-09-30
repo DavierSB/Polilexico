@@ -28,12 +28,15 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
 @Composable
-fun <T> MovesTableDialog(rows: List<T>, header: @Composable () -> Unit, close: () -> Unit, row: @Composable (Int, T) -> Unit) {
+fun <T> MovesTableDialog(
+  rows: List<T>, header: @Composable () -> Unit, close: () -> Unit, footer: (@Composable () -> Unit)? = null,
+  row: @Composable (Int, T) -> Unit,
+) {
   Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
     Surface(Modifier.fillMaxWidth().padding(horizontal = 8.dp), shape = AlertDialogDefaults.shape, color = AlertDialogDefaults.containerColor) {
       Column(Modifier.padding(start = 12.dp, end = 12.dp, top = 20.dp, bottom = 8.dp)) {
         Text("Movidas", Modifier.padding(start = 4.dp, bottom = 12.dp), style = MaterialTheme.typography.headlineSmall)
-        if (rows.isEmpty()) Text("Todavía no hay movidas.") else MovesTable(rows, header, row)
+        if (rows.isEmpty()) Text("Todavía no hay movidas.") else MovesTable(rows, header, footer, row)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) { TextButton(onClick = close) { Text("Cerrar") } }
       }
     }
@@ -52,12 +55,16 @@ fun MoveText(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun <T> MovesTable(rows: List<T>, header: @Composable () -> Unit, row: @Composable (Int, T) -> Unit) {
+private fun <T> MovesTable(rows: List<T>, header: @Composable () -> Unit, footer: (@Composable () -> Unit)?, row: @Composable (Int, T) -> Unit) {
   val list = rememberLazyListState()
-  LaunchedEffect(rows.size) { list.scrollToItem(rows.size - 1) }
+  val last = if (footer == null) rows.size - 1 else rows.size
+  LaunchedEffect(last) { list.scrollToItem(last) }
   Column {
     header()
     HorizontalDivider()
-    LazyColumn(Modifier.heightIn(max = 420.dp), state = list) { itemsIndexed(rows) { i, r -> row(i, r) } }
+    LazyColumn(Modifier.heightIn(max = 420.dp), state = list) {
+      itemsIndexed(rows) { i, r -> row(i, r) }
+      footer?.let { item { it() } }
+    }
   }
 }

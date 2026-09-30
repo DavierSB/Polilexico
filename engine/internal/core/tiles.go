@@ -34,3 +34,7 @@ func sortTiles(tiles []tilemapping.MachineLetter) {
 		return tiles[i] < tiles[j]
 	})
 }
+
+func RackValue(g *game.Game, player int) int {
+	return g.RackFor(player).ScoreOn(g.Bag().LetterDistribution())
+}

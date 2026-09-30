@@ -26,7 +26,13 @@ data class Move(
   val opponentTotal: Int,
 )
 
-data class GameEnd(val winner: Side?, val byTimeout: Boolean = false)
+data class GameEnd(val winner: Side?, val byTimeout: Boolean = false, val ending: Ending? = null)
+
+enum class EndingReason { WENT_OUT, PASSES, NEUTRAL_TURNS }
+
+data class Ending(val reason: EndingReason, val myDelta: Int, val opponentDelta: Int)
+
+internal fun signed(n: Int): String = if (n > 0) "+$n" else "$n"
 
 data class ClassicView(
   val opponent: String,

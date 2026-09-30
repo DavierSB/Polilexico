@@ -94,12 +94,15 @@ func (c *Game) loseTurn(attempt core.Play) (*move.Move, core.Play, error) {
 func (c *Game) apply(m *move.Move, play core.Play, candidates []core.Candidate) (*Move, error) {
 	byHuman := c.humanToMove()
 	record := c.newTurnRecord(m, play, candidates)
+	c.g.SetMaxScorelessTurns(noScorelessEnd)
 	if err := c.g.PlayMove(m, true, 0); err != nil {
 		return nil, err
 	}
+	c.dropOutBonus()
 	c.log.Turns = append(c.log.Turns, record)
 	played := c.newMove(play, byHuman)
 	c.moves = append(c.moves, played)
+	c.settleEnding()
 	c.finishIfOver()
 	return played, nil
 }

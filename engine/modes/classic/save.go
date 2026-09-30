@@ -12,6 +12,7 @@ type savedGame struct {
 	Log              *gameLog
 	Moves            []*Move
 	LostOnTime       bool
+	Ending           *Ending
 	InvalidLosesTurn bool
 	RecordPath       string
 	History          json.RawMessage
@@ -37,7 +38,7 @@ func Load(text string) (*Game, error) {
 
 func (c *Game) saved(history json.RawMessage) savedGame {
 	return savedGame{HumanIdx: c.humanIdx, BotName: c.botName, Log: c.log, Moves: c.moves,
-		LostOnTime: c.lostOnTime, InvalidLosesTurn: c.invalidLosesTurn, RecordPath: c.recordPath,
+		LostOnTime: c.lostOnTime, Ending: c.ending, InvalidLosesTurn: c.invalidLosesTurn, RecordPath: c.recordPath,
 		History: history}
 }
 
@@ -57,6 +58,8 @@ func (s savedGame) resume() (*Game, error) {
 func (c *Game) restore(s savedGame) {
 	c.moves = s.Moves
 	c.lostOnTime = s.LostOnTime
+	c.ending = s.Ending
 	c.invalidLosesTurn = s.InvalidLosesTurn
 	c.recordPath = s.RecordPath
+	c.applyEnding()
 }

@@ -1,6 +1,7 @@
 package app.lexico.ui.classic
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,7 +14,16 @@ import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.ResignDialog
 
 @Composable
-internal fun rememberClassicDialogs(): ClassicDialogs = remember { ClassicDialogs() }
+internal fun rememberClassicDialogs(view: ClassicView): ClassicDialogs {
+  val dialogs = remember { ClassicDialogs() }
+  var wasOver: Boolean? by remember { mutableStateOf(null) }
+  val end = view.end
+  LaunchedEffect(end != null) {
+    if (wasOver == false && end != null) dialogs.announce(end)
+    wasOver = end != null
+  }
+  return dialogs
+}
 
 @Stable
 internal class ClassicDialogs {
@@ -21,11 +31,25 @@ internal class ClassicDialogs {
   var bag by mutableStateOf(false)
   var pass by mutableStateOf(false)
   var resign by mutableStateOf(false)
+  var ending by mutableStateOf(false)
+  var result by mutableStateOf(false)
+
+  fun announce(end: GameEnd) {
+    if (end.ending != null) ending = true else result = true
+  }
+
+  fun closeEnding() {
+    ending = false
+    result = true
+  }
 }
 
 @Composable
 internal fun ClassicDialogsShown(view: ClassicView, c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs) {
-  if (dialogs.moves) MovesDialog(view.moves, view.opponent) { dialogs.moves = false }
+  val end = view.end
+  if (dialogs.ending && end?.ending != null) EndingDialog(view, end.ending, dialogs::closeEnding)
+  if (dialogs.result && end != null) ResultDialog(view, end) { dialogs.result = false }
+  if (dialogs.moves) MovesDialog(view) { dialogs.moves = false }
   if (dialogs.bag) UnseenDialog(view) { dialogs.bag = false }
   if (dialogs.pass) PassDialog(c, actions, dialogs)
   if (dialogs.resign) ResignDialog(onResign = actions::resign, onContinue = { dialogs.resign = false })

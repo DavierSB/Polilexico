@@ -53,5 +53,3 @@ private fun rangeColors() = SliderDefaults.colors(
 )
 
 private fun snap(x: Float): Int = (x / LEAD_STEP).roundToInt() * LEAD_STEP
-
-private fun signed(n: Int): String = if (n > 0) "+$n" else "$n"

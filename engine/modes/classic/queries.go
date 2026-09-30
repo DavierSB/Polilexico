@@ -29,6 +29,9 @@ type Status struct {
 type Result struct {
 	Outcome    string
 	LostOnTime bool
+	EndReason  string
+	HumanDelta int
+	BotDelta   int
 	HumanScore int
 	BotScore   int
 	RecordPath string
@@ -90,12 +93,16 @@ func (c *Game) Result() *Result {
 	if !c.over() {
 		return nil
 	}
-	return &Result{Outcome: c.outcome(), LostOnTime: c.lostOnTime, HumanScore: c.score(true),
+	r := &Result{Outcome: c.outcome(), LostOnTime: c.lostOnTime, HumanScore: c.score(true),
 		BotScore: c.score(false), RecordPath: c.recordPath}
+	if c.ending != nil {
+		r.EndReason, r.HumanDelta, r.BotDelta = c.ending.Reason, c.ending.HumanDelta, c.ending.BotDelta
+	}
+	return r
 }
 
 func (c *Game) over() bool {
-	return c.lostOnTime || c.g.Playing() == pb.PlayState_GAME_OVER
+	return c.lostOnTime || c.ending != nil || c.g.Playing() == pb.PlayState_GAME_OVER
 }
 
 func (c *Game) humanToMove() bool {

@@ -23,6 +23,7 @@ type Game struct {
 	moves            []*Move
 	log              *gameLog
 	lostOnTime       bool
+	ending           *Ending
 	invalidLosesTurn bool
 	recordPath       string
 }
@@ -60,6 +61,7 @@ func newGame(g *game.Game, botName string, humanIdx int, log *gameLog) (*Game, e
 	if err != nil {
 		return nil, err
 	}
+	g.SetMaxScorelessTurns(noScorelessEnd)
 	return &Game{g: g, bot: b, botName: botName, humanIdx: humanIdx, log: log}, nil
 }
 

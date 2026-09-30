@@ -44,7 +44,17 @@ internal class ClassicReader(private val match: Match) {
   private fun clocks(c: Clocks): ClassicClocks =
     ClassicClocks(c.humanMs, c.humanOvertimeMs, c.botMs, c.botOvertimeMs, running(c.running))
 
-  private fun result(r: Result): ClassicResult = ClassicResult(Outcome.of(r.outcome), r.lostOnTime, r.recordPath)
+  private fun result(r: Result): ClassicResult = ClassicResult(Outcome.of(r.outcome), r.lostOnTime, ending(r), r.recordPath)
+
+  private fun ending(r: Result): ClassicEnding? =
+    endReason(r.endReason)?.let { ClassicEnding(it, r.humanDelta.toInt(), r.botDelta.toInt()) }
+
+  private fun endReason(reason: String): EndReason? = when (reason) {
+    Classic.EndOut -> EndReason.WENT_OUT
+    Classic.EndPasses -> EndReason.PASSES
+    Classic.EndNeutral -> EndReason.NEUTRAL_TURNS
+    else -> null
+  }
 
   private fun latestSquares(moves: List<PlayedMove>): Set<Position> =
     moves.lastOrNull()?.takeIf { it.kind == MoveKind.PLACEMENT }?.let { placedSquares(it.coords, it.tiles) }.orEmpty()
