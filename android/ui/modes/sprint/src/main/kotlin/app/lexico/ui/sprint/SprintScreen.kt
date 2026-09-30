@@ -69,7 +69,8 @@ private fun SprintLayout(
     if (view.phase.hand == null) Searching() else PlacingBoard(c, style, enabled = view.phase is Phase.Solving)
     PhasePanel(view, c, style, actions, onNotice, shown, onShow)
     message?.let { Notice(it, bold = true) }
-    Spacer(Modifier.weight(1f))
+    // Con los scrabbles a la vista, su lista ocupa todo lo que sobra; si no, los corazones van abajo.
+    if (!view.phase.showsBingos) Spacer(Modifier.weight(1f))
     Lives(view.lives, view.maxLives, "Resueltas", view.solved, view.best)
   }
 }
@@ -105,8 +106,8 @@ private fun ColumnScope.PhasePanel(
     is Phase.Solving -> Solving(
       phase, c, style, onPlay = { c.placement()?.let(actions::propose) ?: onNotice(NOT_IN_A_LINE) }, onGiveUp = actions::giveUp,
     )
-    is Phase.Revealed -> Box(Modifier.weight(1f, fill = false)) { Revealed(phase.result, shown, onShow, actions::next) }
-    is Phase.Finished -> Box(Modifier.weight(1f, fill = false)) { Finished(phase.result, view.solved, view.record, shown, onShow, actions) }
+    is Phase.Revealed -> Box(Modifier.weight(1f)) { Revealed(phase.result, shown, onShow, actions::next) }
+    is Phase.Finished -> Box(Modifier.weight(1f)) { Finished(phase.result, view.solved, view.record, shown, onShow, actions) }
   }
 }
 
@@ -121,6 +122,10 @@ private fun Solving(phase: Phase.Solving, c: TilePlacer, style: BoardStyle, onPl
 /** El tablero con el scrabble elegido puesto (y resaltado). */
 private fun shownBoard(board: Board, bingo: Bingo?): Board =
   bingo?.let { runCatching { board.play(it.placement) }.getOrNull() } ?: board
+
+/** Mano cerrada o serie terminada: se ven los scrabbles de la mano. */
+private val Phase.showsBingos: Boolean
+  get() = this is Phase.Revealed || this is Phase.Finished
 
 private val Phase.hand: Hand?
   get() = when (this) {
