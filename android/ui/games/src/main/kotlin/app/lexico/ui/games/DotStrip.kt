@@ -23,11 +23,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 
-/**
- * La tira de puntos: cada partida es un punto en el eje X segun su valor (tus puntos, o la
- * eficiencia en duplicada). Con un pequeño desvio vertical fijo por partida, para que los
- * valores iguales no se tapen. Tocar un punto abre esa partida.
- */
 @Composable
 internal fun DotStrip(games: List<ChartGame>, label: String, unit: String = "") {
   var selected by remember(games) { mutableStateOf<ChartGame?>(null) }
@@ -56,14 +51,12 @@ private fun DrawScope.drawStrip(layout: StripLayout, games: List<ChartGame>, sca
   games.forEachIndexed { i, g -> drawDot(layout.point(i, g.value), colors) }
 }
 
-/** Una marca del eje X, con su valor debajo. */
 private fun DrawScope.drawTick(layout: StripLayout, value: Int, colors: ChartColors, measurer: TextMeasurer, unit: String) {
   val x = layout.x(value)
   drawLine(colors.grid, Offset(x, layout.bottom), Offset(x, layout.bottom + 4.dp.toPx()), strokeWidth = 1.dp.toPx())
   drawCenteredLabel(measurer, "$value$unit", colors.axisText, x, layout.bottom + 5.dp.toPx())
 }
 
-/** Donde cae cada punto de la tira en una grafica de `width` x `height` pixeles. */
 private class StripLayout(width: Float, height: Float, density: Density, private val scale: ChartScale) {
   val left = with(density) { LEFT_MARGIN.toPx() } * 0.3f
   val bottom = height - with(density) { BOTTOM_MARGIN.toPx() }
@@ -74,6 +67,5 @@ private class StripLayout(width: Float, height: Float, density: Density, private
 
   fun point(i: Int, value: Int): Offset = Offset(x(value), middle + jitter(i) * middle * 0.6f)
 
-  /** Un desvio fijo por partida, entre -1 y 1. */
   private fun jitter(i: Int): Float = ((i * 37) % 7 - 3) / 3f
 }

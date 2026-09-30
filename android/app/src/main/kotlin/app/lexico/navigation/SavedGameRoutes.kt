@@ -25,10 +25,6 @@ import app.lexico.ui.games.InProgressScreen
 import app.lexico.ui.games.ReviewScreen
 import app.lexico.ui.games.StatsScreen
 
-/*
- * Las partidas guardadas: continuar las que siguen en curso y revisar las terminadas.
- */
-
 @Composable
 internal fun InProgressRoute(lexico: Lexico, nav: Navigator) {
   val saves = lexico.savedGames
@@ -40,7 +36,6 @@ internal fun InProgressRoute(lexico: Lexico, nav: Navigator) {
   )
 }
 
-/** Una partida guardada, de vuelta en su pantalla (en pausa hasta pulsar "Continuar"). */
 @Composable
 internal fun ContinueRoute(screen: Screen.Continue, lexico: Lexico, nav: Navigator, themes: ThemeState) {
   WhenReady(rememberCreated(screen) { lexico.continueGame(screen.saved) }, "Abriendo la partida…") { game ->
@@ -66,7 +61,6 @@ internal fun FinishedFolderRoute(screen: Screen.FinishedFolder, lexico: Lexico, 
   }
 }
 
-/** Las estadisticas, solo con las partidas terminadas desde el ultimo reinicio. */
 @Composable
 internal fun StatsRoute(lexico: Lexico, settings: Settings, nav: Navigator) {
   val since = settings.statsSince

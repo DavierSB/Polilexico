@@ -16,7 +16,6 @@ import app.lexico.ui.common.Compact
 import app.lexico.ui.common.Durations
 import app.lexico.ui.board.TilePlacer
 
-/** Entre rondas: el boton para ver el atril, que arranca el reloj. */
 @Composable
 fun ShowRackButton(turnMs: Long, onShowRack: () -> Unit) {
   Button(onClick = onShowRack, modifier = Modifier.fillMaxWidth()) {
@@ -24,7 +23,6 @@ fun ShowRackButton(turnMs: Long, onShowRack: () -> Unit) {
   }
 }
 
-/** Mientras piensas: Jugar, Mezclar/Recoger y Pasar. En duplicada no se cambian fichas. */
 @Composable
 fun PlayingButtons(c: TilePlacer, onPlay: () -> Unit, onPass: () -> Unit) {
   Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -38,10 +36,6 @@ fun PlayingButtons(c: TilePlacer, onPlay: () -> Unit, onPass: () -> Unit) {
   }
 }
 
-/**
- * Con la jugada propuesta: cual es y el boton para cancelarla, con la cuenta atras. Se anota
- * con lo primero que venza, la ventana para cancelar o el reloj del turno.
- */
 @Composable
 fun ConfirmingButtons(phase: Phase.Confirming, onCancel: () -> Unit) {
   val left = phase.remainingMs?.let { minOf(it, phase.cancelMs) } ?: phase.cancelMs

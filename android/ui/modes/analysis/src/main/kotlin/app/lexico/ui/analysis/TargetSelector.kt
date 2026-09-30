@@ -8,7 +8,6 @@ import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.TwoOptions
 
-/** "Poner en: Tablero | Atril", con una ⓘ que explica como se usa cada uno. */
 @Composable
 fun TargetSelector(target: Target, select: (Target) -> Unit) {
   Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {

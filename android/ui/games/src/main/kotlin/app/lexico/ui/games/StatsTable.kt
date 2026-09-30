@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-/** Una tabla de dos columnas (dato, valor), con las filas alternando el fondo. */
 @Composable
 internal fun StatsTable(rows: List<Pair<String, String>>) {
   Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))) {

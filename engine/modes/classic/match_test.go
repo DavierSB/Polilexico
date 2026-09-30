@@ -71,8 +71,6 @@ func TestMatchSaveKeepsTimeAndLoadsPaused(t *testing.T) {
 	}
 }
 
-// newTestMatch: partida en marcha en la que abres tu, con reloj falso (timeMs 0 = sin tiempo,
-// descuento de 30 s).
 func newTestMatch(t *testing.T, timeMs int64, invalidLosesTurn bool) (*Match, *timing.Fake, *testListener) {
 	t.Helper()
 	g := humanStartsWith(t, "TPNAEIO")
@@ -91,7 +89,6 @@ func playYourTurn(t *testing.T, m *Match) {
 	}
 }
 
-// testListener cuenta los avisos para poder esperar a que el bot juegue.
 type testListener struct {
 	changed chan struct{}
 }
@@ -104,7 +101,6 @@ func (l *testListener) OnChange() {
 	l.changed <- struct{}{}
 }
 
-// waitFor espera avisos hasta que se cumpla cond (o falla a los 10 s).
 func (l *testListener) waitFor(t *testing.T, cond func() bool) {
 	t.Helper()
 	deadline := time.After(10 * time.Second)

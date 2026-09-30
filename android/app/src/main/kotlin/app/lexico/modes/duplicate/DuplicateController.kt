@@ -9,7 +9,6 @@ import app.lexico.ui.duplicate.DuplicateActions
 import app.lexico.ui.duplicate.DuplicateConfig
 import kotlinx.coroutines.CoroutineScope
 
-/** Une una duplicada del juego con su pantalla: las acciones de la pantalla van al juego. */
 @Stable
 class DuplicateController(
   private val game: DuplicateGame,
@@ -28,5 +27,4 @@ class DuplicateController(
   override fun analyze() = review(game.state.value.recordPath, onReview)
 }
 
-/** Las opciones de la pantalla de duplicada nueva, como las pide el juego. */
 fun DuplicateConfig.toSetup(): DuplicateSetup = DuplicateSetup(invalidLosesTurn = single, turnMs = turnMs)

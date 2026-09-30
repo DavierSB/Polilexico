@@ -9,8 +9,6 @@ import (
 	"lexico/engine/internal/timing"
 )
 
-// savedMatch es una duplicada en marcha guardada: la partida, el tiempo por turno y, a mitad de
-// ronda, lo gastado del turno (la jugada propuesta no se guarda: al continuar se vuelve a pensar).
 type savedMatch struct {
 	Game        string
 	TurnMs      int64
@@ -18,7 +16,6 @@ type savedMatch struct {
 	TurnSpentMs int64
 }
 
-// Save devuelve la partida en marcha como texto, para continuarla con LoadMatch.
 func (m *Match) Save() (string, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -29,8 +26,6 @@ func (m *Match) Save() (string, error) {
 	return core.JSON(m.saved(game))
 }
 
-// LoadMatch continua una duplicada guardada con Match.Save. Empieza en pausa; a mitad de ronda,
-// con el mismo atril y lo que quedaba del turno.
 func LoadMatch(text string, l events.Listener) (*Match, error) {
 	var s savedMatch
 	if err := json.Unmarshal([]byte(text), &s); err != nil {
@@ -52,7 +47,6 @@ func (m *Match) saved(game string) savedMatch {
 	return s
 }
 
-// resumeTurn vuelve a la ronda guardada a medias: el mismo atril y lo gastado del turno.
 func (m *Match) resumeTurn(s savedMatch) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()

@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Descarga los archivos de sources.txt que falten (o cuyo SHA-256 no coincida) en esta carpeta.
-# Lo llama android/engine-bridge/build_engine.sh; se puede correr a mano.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 

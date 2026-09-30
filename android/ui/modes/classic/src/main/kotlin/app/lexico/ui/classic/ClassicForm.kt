@@ -11,7 +11,6 @@ import app.lexico.ui.common.Durations
 @Composable
 internal fun rememberClassicForm(): ClassicForm = remember { ClassicForm() }
 
-/** Lo que se va eligiendo en la pantalla de clasica nueva, con los tiempos tal como se escriben. */
 @Stable
 internal class ClassicForm {
   var opponent by mutableStateOf("HastyBot")
@@ -20,7 +19,6 @@ internal class ClassicForm {
   var time by mutableStateOf("20:00")
   var overtime by mutableStateOf("1:00")
 
-  /** Como en Woogles, algunos bots solo juegan en modo void. */
   val voidOnly: Boolean get() = bot(opponent).voidOnly
 
   val valid: Boolean get() = !timed || (timeMs()?.let { it > 0 } == true && Durations.parse(overtime) != null)

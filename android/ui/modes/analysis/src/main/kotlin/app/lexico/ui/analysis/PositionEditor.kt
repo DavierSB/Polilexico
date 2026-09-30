@@ -18,16 +18,6 @@ import app.lexico.ui.common.RankedMove
 @Composable
 fun rememberPositionEditor(): PositionEditor = remember { PositionEditor() }
 
-/**
- * Armar una posicion cualquiera con la paleta de letras, sin teclado:
- *
- * - Destino tablero: tocar una casilla pone la flecha (otra vez: vertical; otra: sin flecha) y
- *   cada letra de la paleta va a la flecha, que avanza. Sin flecha, se elige una letra y se van
- *   tocando casillas. Tocar una ficha del tablero la quita.
- * - Destino atril: cada letra tocada se anade al atril (maximo 7); tocar una del atril la quita.
- *
- * El comodin pregunta que letra representa en el tablero ([pendingBlank]).
- */
 @Stable
 class PositionEditor {
   val state = BoardState()
@@ -35,16 +25,13 @@ class PositionEditor {
   var target by mutableStateOf(Target.BOARD)
     private set
 
-  /** Letra elegida para ir tocando casillas (sin flecha). */
   var letter: String? by mutableStateOf(null)
     private set
 
-  /** Casilla donde va un comodin cuya letra hay que preguntar. */
   var pendingBlank: Position? by mutableStateOf(null)
     private set
   private var blankFromArrow = false
 
-  /** Cada cambio de la posicion; sirve para descartar un analisis que ya no vale. */
   var version by mutableIntStateOf(0)
     private set
 
@@ -62,7 +49,6 @@ class PositionEditor {
     if (target == Target.RACK) addToRack(l) else writeOnBoard(l)
   }
 
-  /** Respuesta a [pendingBlank]: la letra elegida, o `null` si se cancelo. */
   fun placeBlank(l: String?) {
     val p = pendingBlank
     pendingBlank = null
@@ -81,7 +67,6 @@ class PositionEditor {
     version++
   }
 
-  /** Pone en el tablero una jugada (p. ej. una candidata), para seguir armando desde ahi. */
   fun placeCandidate(c: RankedMove) {
     val placement = c.placement ?: return
     runCatching { state.board.play(placement) }.onSuccess(::update)
@@ -100,13 +85,11 @@ class PositionEditor {
     version++
   }
 
-  /** Con flecha, la letra va a la flecha; sin ella, se elige (o se suelta) para tocar casillas. */
   private fun writeOnBoard(l: String) {
     val at = state.arrow?.position
     if (at != null) put(l, at, fromArrow = true) else letter = if (letter == l) null else l
   }
 
-  /** Pone la letra en `p`; el comodin antes pregunta que letra es. */
   private fun put(l: String, p: Position, fromArrow: Boolean) {
     if (l == Letters.BLANK) return askBlankLetter(p, fromArrow)
     update(state.board.withTile(p, Tile(l)))

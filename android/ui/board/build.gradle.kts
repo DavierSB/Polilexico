@@ -3,8 +3,6 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-// El tablero y el atril: dibujarlos y colocar fichas a mano. No sabe de partidas, turnos ni
-// motor; recibe un tablero y un atril y entrega la jugada que armo el jugador.
 android {
   namespace = "app.lexico.ui.board"
   compileSdk = 36

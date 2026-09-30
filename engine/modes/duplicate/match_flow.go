@@ -2,10 +2,6 @@ package duplicate
 
 import "time"
 
-// El ritmo de la ronda: cada fase decide que plazos corren, y al agotarse uno la ronda avanza
-// sola. Todo con m.mu tomado.
-
-// afterChange pone los plazos al dia tras cualquier cambio y avisa a la plataforma.
 func (m *Match) afterChange() {
 	running := !m.paused && !m.closed
 	m.turn.Sync(running && usesTurnClock(m.phase), m.onTurnEnd)
@@ -13,7 +9,6 @@ func (m *Match) afterChange() {
 	m.notifier.Notify()
 }
 
-// enterDraw: tras sacar el atril, la mano invalida (un rato), el turno o el final.
 func (m *Match) enterDraw(draw *Draw) {
 	m.draw = draw
 	switch {
@@ -27,7 +22,6 @@ func (m *Match) enterDraw(draw *Draw) {
 	}
 }
 
-// enterPlaying: a pensar la jugada; `fresh` = turno nuevo, con el reloj entero.
 func (m *Match) enterPlaying(fresh bool) {
 	m.phase = PhasePlaying
 	m.proposal, m.input = nil, ""
@@ -36,7 +30,6 @@ func (m *Match) enterPlaying(fresh bool) {
 	}
 }
 
-// propose: una colocacion espera la ventana para cancelar; lo demas se anota ya.
 func (m *Match) propose(attempt *Attempt, input string) {
 	if attempt.Immediate {
 		m.closeRound(m.game.Confirm(input))
@@ -46,7 +39,6 @@ func (m *Match) propose(attempt *Attempt, input string) {
 	m.step.Restart(CancelSeconds * time.Second)
 }
 
-// onTurnEnd: se acabo el tiempo del turno. Sin jugada, 0 puntos; con una propuesta, se anota.
 func (m *Match) onTurnEnd() {
 	m.whenDue(m.turn.Left, func() {
 		if m.phase == PhaseConfirming {
@@ -57,7 +49,6 @@ func (m *Match) onTurnEnd() {
 	})
 }
 
-// onStepEnd: termino la mano invalida (a jugar) o la ventana para cancelar (se anota).
 func (m *Match) onStepEnd() {
 	m.whenDue(m.step.Left, func() {
 		if m.phase == PhaseInvalidRack {
@@ -68,7 +59,6 @@ func (m *Match) onStepEnd() {
 	})
 }
 
-// whenDue hace `advance` si la partida sigue en marcha y el plazo de verdad se agoto.
 func (m *Match) whenDue(left func() time.Duration, advance func()) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -81,7 +71,6 @@ func (m *Match) whenDue(left func() time.Duration, advance func()) {
 	m.afterChange()
 }
 
-// closeRound: la ronda quedo anotada (o fallo); a esperar la siguiente, o fin.
 func (m *Match) closeRound(_ *Turn, err error) {
 	m.lastErr = errorText(err)
 	m.draw, m.proposal, m.input = nil, nil, ""

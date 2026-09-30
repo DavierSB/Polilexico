@@ -8,8 +8,6 @@ import (
 	"github.com/domino14/macondo/game"
 )
 
-// RenderBoard dibuja el tablero en texto con coordenadas FISE (filas A-O, columnas 1-15), como
-// el "board_before" de los registros de la PC.
 func RenderBoard(g *game.Game) string {
 	n := g.Board().Dim()
 	var sb strings.Builder
@@ -21,9 +19,6 @@ func RenderBoard(g *game.Game) string {
 	return sb.String()
 }
 
-// BoardText: las 225 casillas, fila a fila (A..O, columnas 1..15), separadas por espacios;
-// "." = vacia, minuscula = comodin y los digrafos sin corchetes ("CH"). Es el mismo formato
-// que lee engine.BestMoves, para que una plataforma pueda dibujar el tablero y devolverlo.
 func BoardText(g *game.Game) string {
 	n := g.Board().Dim()
 	squares := make([]string, 0, n*n)

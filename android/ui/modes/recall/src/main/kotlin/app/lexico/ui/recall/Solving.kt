@@ -39,13 +39,8 @@ import app.lexico.ui.common.Mulish
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/** Cuanto se ve el ✓ de una palabra armada antes de pasar a la siguiente. */
 private const val HIT_PAUSE_MS = 900L
 
-/**
- * Armar la palabra `stage.index` de la partida: la tarjeta con la palabra, el atril debajo y los
- * botones. Al enviarla, su veredicto; si era esa, pasa sola a la siguiente.
- */
 @Composable
 internal fun ColumnScope.Solving(session: RecallSession, stage: Stage.Solving, style: BoardStyle) {
   val word = session.words[stage.index]
@@ -62,7 +57,6 @@ internal fun ColumnScope.Solving(session: RecallSession, stage: Stage.Solving, s
   AttemptButtons(session, stage.verdict, attempt)
 }
 
-/** Un intento de armar una palabra: las fichas puestas, si se esta consultando y si se rechazo por no valida. */
 @Stable
 private class Attempt(val word: WordToRecall) {
   var answer by mutableStateOf(AnswerBoard.start(word))
@@ -74,11 +68,9 @@ private class Attempt(val word: WordToRecall) {
     rejected = false
   }
 
-  /** Lo que se ve en la palabra: lo armado o, ya resuelta, la palabra. */
   fun slots(verdict: Verdict?): List<String?> = if (verdict == null) answer.letters else word.tiles
 }
 
-/** La tarjeta de la palabra: cual es, la palabra que se va armando y, al enviarla, el veredicto. */
 @Composable
 private fun WordCard(stage: Stage.Solving, count: Int, attempt: Attempt, style: BoardStyle) {
   Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh) {
@@ -91,14 +83,12 @@ private fun WordCard(stage: Stage.Solving, count: Int, attempt: Attempt, style: 
   }
 }
 
-/** La palabra que se va armando: tocar una ficha del atril la devuelve abajo. */
 @Composable
 private fun AnswerSlots(attempt: Attempt, verdict: Verdict?, style: BoardStyle) {
   val slots = attempt.slots(verdict)
   TileLine(slots.size) { i, size -> AnswerSlot(attempt, i, slots[i], verdict == null, style, size) }
 }
 
-/** Una casilla de la palabra: vacia o con una ficha (las fijas del tablero no se mueven). */
 @Composable
 private fun AnswerSlot(attempt: Attempt, slot: Int, letter: String?, open: Boolean, style: BoardStyle, size: Dp) {
   val movable = open && !attempt.checking && letter != null && !attempt.answer.isFixed(slot)
@@ -107,7 +97,6 @@ private fun AnswerSlot(attempt: Attempt, slot: Int, letter: String?, open: Boole
   }
 }
 
-/** El veredicto; en void, el aviso de que lo armado no es valido. */
 @Composable
 private fun Feedback(attempt: Attempt, verdict: Verdict?) {
   when (verdict) {
@@ -119,7 +108,6 @@ private fun Feedback(attempt: Attempt, verdict: Verdict?) {
   }
 }
 
-/** Por que no era (si hace falta) y cual era. */
 @Composable
 private fun Missed(why: String?, word: WordToRecall) {
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -138,7 +126,6 @@ private fun Hint(text: String, color: Color) {
   Text(text, style = MaterialTheme.typography.bodySmall, color = color, textAlign = TextAlign.Center)
 }
 
-/** Las fichas barajadas, sobre el atril; las ya puestas, casi invisibles. */
 @Composable
 private fun Pool(attempt: Attempt, style: BoardStyle) {
   val answer = attempt.answer
@@ -152,7 +139,6 @@ private fun Pool(attempt: Attempt, style: BoardStyle) {
   }
 }
 
-/** Sin veredicto: enviar o rendirse. Fallada: pasar a la siguiente. Acertada: nada, pasa sola. */
 @Composable
 private fun AttemptButtons(session: RecallSession, verdict: Verdict?, attempt: Attempt) {
   val scope = rememberCoroutineScope()
@@ -169,7 +155,6 @@ private fun AttemptButtons(session: RecallSession, verdict: Verdict?, attempt: A
   }
 }
 
-/** Envia lo armado; si se rechaza (void), se marca para corregirlo. */
 private suspend fun send(session: RecallSession, attempt: Attempt) {
   attempt.checking = true
   val result = session.submit(attempt.answer.letters.filterNotNull())

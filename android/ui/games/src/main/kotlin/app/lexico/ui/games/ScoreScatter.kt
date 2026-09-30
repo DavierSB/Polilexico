@@ -24,10 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 
-/**
- * Tus puntos (X) contra los del rival (Y), con la diagonal X = Y: por debajo de ella ganaste,
- * por encima perdiste. Mismo rango en los dos ejes, para que la diagonal sea de 45 grados.
- */
 @Composable
 internal fun ScoreScatter(games: List<ChartGame>) {
   var selected by remember(games) { mutableStateOf<ChartGame?>(null) }
@@ -57,7 +53,6 @@ private fun DrawScope.drawScatter(layout: ScatterLayout, games: List<ChartGame>,
   games.forEach { drawDot(layout.point(it), colors) }
 }
 
-/** Las lineas de la rejilla en `value`, en los dos ejes, con sus valores. */
 private fun DrawScope.drawGridLine(layout: ScatterLayout, value: Int, colors: ChartColors, measurer: TextMeasurer) {
   val stroke = 0.6.dp.toPx()
   drawLine(colors.grid, Offset(layout.x(value), layout.bottom), Offset(layout.x(value), layout.top), strokeWidth = stroke)
@@ -66,7 +61,6 @@ private fun DrawScope.drawGridLine(layout: ScatterLayout, value: Int, colors: Ch
   drawLabel(measurer, "$value", colors.axisText, Offset(0f, layout.y(value) - 7.dp.toPx()))
 }
 
-/** La diagonal X = Y, la frontera entre ganar y perder, con "Victoria" debajo y "Derrota" encima. */
 private fun DrawScope.drawDiagonal(layout: ScatterLayout, scale: ChartScale, colors: ChartColors, measurer: TextMeasurer) {
   val from = Offset(layout.x(scale.min), layout.y(scale.min))
   val to = Offset(layout.x(scale.max), layout.y(scale.max))
@@ -75,7 +69,6 @@ private fun DrawScope.drawDiagonal(layout: ScatterLayout, scale: ChartScale, col
   drawLabel(measurer, "Derrota", colors.axisText, Offset(layout.left + 6.dp.toPx(), layout.top + 4.dp.toPx()))
 }
 
-/** Donde cae cada partida: un cuadrado con los dos ejes en la misma escala. */
 private class ScatterLayout(width: Float, height: Float, density: Density, private val scale: ChartScale) {
   val left = with(density) { LEFT_MARGIN.toPx() }
   val bottom = height - with(density) { BOTTOM_MARGIN.toPx() }

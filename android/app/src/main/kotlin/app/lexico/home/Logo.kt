@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.sp
 import app.lexico.R
 import app.lexico.ui.common.Mulish
 
-/** El nombre de la app: la concha de la polimita y "Poliléxico". `scale` 1 = concha de 40 dp. */
 @Composable
 fun Logo(modifier: Modifier = Modifier, scale: Float = 1f) {
   Row(modifier, verticalAlignment = Alignment.CenterVertically) {

@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-/** Una partida en una lista: titulo y detalle a la izquierda, `trailing` a la derecha. Tocarla la abre. */
 @Composable
 internal fun GameRow(title: String, detail: String, onClick: () -> Unit, trailing: @Composable () -> Unit = {}) {
   Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -27,7 +26,6 @@ internal fun GameRow(title: String, detail: String, onClick: () -> Unit, trailin
   HorizontalDivider()
 }
 
-/** El aviso de una lista vacia. */
 @Composable
 internal fun EmptyList(text: String) {
   Text(text, Modifier.padding(top = 12.dp), style = MaterialTheme.typography.bodyMedium)

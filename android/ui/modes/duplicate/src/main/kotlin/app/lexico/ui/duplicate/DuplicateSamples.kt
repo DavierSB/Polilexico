@@ -7,7 +7,6 @@ import app.lexico.model.Board
 import app.lexico.ui.common.LexicoTheme
 import app.lexico.ui.board.BoardStyles
 
-/** Partidas de ejemplo, para las vistas previas y para probar la pantalla sin motor. */
 object DuplicateSamples {
   val rack = listOf("E", "CH", "R", "?", "T", "I", "S")
 
@@ -17,7 +16,6 @@ object DuplicateSamples {
     Round(3, RoundPlay("K5 LOBO", 9), RoundPlay("pase", 0), hit = false),
   )
 
-  /** Tres rondas cerradas, pensando la cuarta. */
   val playing = DuplicateView(
     board = Board.of("h8 CASA", "8h .ERO", "k5 LOB."),
     phase = Phase.Playing(rack, remainingMs = 143_000),
@@ -29,7 +27,6 @@ object DuplicateSamples {
 
   val finished = playing.copy(phase = Phase.Finished)
 
-  /** Acciones que no hacen nada, para las vistas previas. */
   val noActions = object : DuplicateActions {
     override fun showRack() {}
     override fun propose(placement: Placement) {}

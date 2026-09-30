@@ -3,8 +3,6 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-// Lo que comparten todas las pantallas: el tema y piezas comunes de las partidas (barra
-// superior, bolsa, dialogos, relojes). Los modos no se ven entre si; lo comun va aqui.
 android {
   namespace = "app.lexico.ui.common"
   compileSdk = 36

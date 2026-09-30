@@ -8,13 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-/*
- * Las paletas de la aplicacion, todas oscuras. La de la polimita (ambar y naranja sobre cafe) es
- * la principal; las otras son las de algunos rivales. Cada una va con su tablero en AppThemes
- * (:ui:board).
- */
-
-/** Ambar y naranja de la concha del icono, sobre un cafe casi negro. */
 val PolimitaColors: ColorScheme = palette(
   primary = 0xFFFFB631, onPrimary = 0xFF2A140C, secondary = 0xFFF2831E, tertiary = 0xFFE8C07A,
   background = 0xFF1B1411, surfaceVariant = 0xFF3A2C24, onSurface = 0xFFFFF1D6, onSurfaceVariant = 0xFFD9C4B0,
@@ -23,7 +16,6 @@ val PolimitaColors: ColorScheme = palette(
   containers = listOf(0xFF140E0B, 0xFF231A16, 0xFF281E19, 0xFF32271F, 0xFF3D3029),
 )
 
-/** Verde de hoja con el fucsia de una flor tropical. */
 val LeafColors: ColorScheme = palette(
   primary = 0xFF8FD46A, onPrimary = 0xFF10200C, secondary = 0xFFF07AA8, tertiary = 0xFFD8E36A,
   background = 0xFF0E140D, surfaceVariant = 0xFF263323, onSurface = 0xFFEEF4EA, onSurfaceVariant = 0xFFC3CFB8,
@@ -32,7 +24,6 @@ val LeafColors: ColorScheme = palette(
   containers = listOf(0xFF090F08, 0xFF151D14, 0xFF192218, 0xFF212B1F, 0xFF2A3528),
 )
 
-/** Celeste y el oro del sol de mayo, como la camiseta del 10. */
 val SkyColors: ColorScheme = palette(
   primary = 0xFF74ACDF, onPrimary = 0xFF0B1E33, secondary = 0xFFF6B40E, tertiary = 0xFFB9D6F0,
   background = 0xFF0F1620, surfaceVariant = 0xFF24303D, onSurface = 0xFFE8F0F8, onSurfaceVariant = 0xFFBFCBD8,
@@ -41,7 +32,6 @@ val SkyColors: ColorScheme = palette(
   containers = listOf(0xFF0A1018, 0xFF151D28, 0xFF19222E, 0xFF212B38, 0xFF2A3543),
 )
 
-/** Azul de noche, como el vestido de la Gitana, con el crema de su manto. */
 val NightColors: ColorScheme = palette(
   primary = 0xFF7FA6E8, onPrimary = 0xFF0A1A33, secondary = 0xFFE8D9B5, tertiary = 0xFFA9B8D6,
   background = 0xFF10141C, surfaceVariant = 0xFF262C38, onSurface = 0xFFE4E8F0, onSurfaceVariant = 0xFFBCC3D0,
@@ -50,16 +40,13 @@ val NightColors: ColorScheme = palette(
   containers = listOf(0xFF0B0E14, 0xFF161B24, 0xFF1A2029, 0xFF222833, 0xFF2B323E),
 )
 
-/** El tema de la aplicacion: por defecto, el de la polimita. */
 @Composable
 fun LexicoTheme(colors: ColorScheme = PolimitaColors, content: @Composable () -> Unit) {
   MaterialTheme(colorScheme = colors, content = content)
 }
 
-/** Relleno de los botones pequenos de las partidas, para que quepan cuatro en una fila. */
 val Compact = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
 
-/** Una paleta oscura completa a partir de sus colores clave; `containers` van del mas bajo al mas alto. */
 private fun palette(
   primary: Long, onPrimary: Long, secondary: Long, tertiary: Long, background: Long, surfaceVariant: Long,
   onSurface: Long, onSurfaceVariant: Long, outline: Long, outlineVariant: Long, primaryContainer: Long,

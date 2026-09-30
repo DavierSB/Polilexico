@@ -1,11 +1,9 @@
 package app.lexico.model
 
-/** Coordenadas FISE: "H8" = fila H, columna 8, horizontal; "8H" = lo mismo en vertical. */
 internal object Coordinates {
   private val HORIZONTAL = Regex("^([A-Oa-o])([0-9]{1,2})$")
   private val VERTICAL = Regex("^([0-9]{1,2})([A-Oa-o])$")
 
-  /** (fila, columna, vertical), desde 0. Lanza IllegalArgumentException si no se entienden. */
   fun parse(text: String): Triple<Int, Int, Boolean> {
     HORIZONTAL.find(text)?.let { return Triple(row(it.groupValues[1]), column(it.groupValues[2], text), false) }
     VERTICAL.find(text)?.let { return Triple(row(it.groupValues[2]), column(it.groupValues[1], text), true) }

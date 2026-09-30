@@ -2,15 +2,11 @@ plugins {
   alias(libs.plugins.android.library)
 }
 
-// Lo que genera build_engine.sh: classes.jar, jni/<abi>/*.so y assets/data.
 val goOutput = layout.buildDirectory.dir("gomobile")
-// El motor en Go y lo que usa viven fuera del proyecto Android, en la raiz del repositorio.
 val engine = rootProject.file("../engine")
 val macondo = rootProject.file("../third_party/macondo")
 val lexica = rootProject.file("../third_party/woogles-lexica")
 
-// gomobile bind tarda unos minutos; Gradle solo lo repite si cambia engine/, la referencia al
-// diccionario (sources.txt), macondo o el propio script.
 val buildEngineGo = tasks.register<Exec>("buildEngineGo") {
   description = "Compila engine/ (macondo) con gomobile bind."
   inputs.file("build_engine.sh")
@@ -37,13 +33,11 @@ android {
   }
   sourceSets {
     getByName("main") {
-      // Rutas fijas: AGP 9 no admite Provider aqui. preBuild depende de buildEngineGo.
       jniLibs.srcDir(goOutput.get().dir("jni"))
       assets.srcDir(goOutput.get().dir("assets"))
     }
   }
   androidResources {
-    // El diccionario (.kwg/.klv2) se copia tal cual al almacenamiento de la app.
     noCompress += listOf("kwg", "klv2")
   }
 }
@@ -55,7 +49,6 @@ kotlin {
 tasks.named("preBuild") { dependsOn(buildEngineGo) }
 
 dependencies {
-  // api: :game usa las clases que genera gomobile (app.lexico.go.*); quien dependa de :game no.
   api(files(goOutput.map { it.file("classes.jar") }).builtBy(buildEngineGo))
   testImplementation(libs.junit)
 }

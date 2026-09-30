@@ -15,10 +15,8 @@ import androidx.compose.ui.Modifier
 import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.Header
 
-/** Una partida sin terminar: "Clásica contra HastyBot", "Guardada el 27 sep, 23:10". */
 data class InProgressItem(val id: String, val title: String, val detail: String)
 
-/** Las partidas sin terminar: tocar una la continua (en pausa); tambien se pueden borrar. */
 @Composable
 fun InProgressScreen(items: List<InProgressItem>, onBack: () -> Unit, onOpen: (String) -> Unit, onDelete: (String) -> Unit) {
   var toDelete by remember { mutableStateOf<InProgressItem?>(null) }

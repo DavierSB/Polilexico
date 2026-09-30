@@ -6,7 +6,6 @@ import (
 	"lexico/engine/internal/core"
 )
 
-// savedGame es una partida guardada: el historial de macondo mas lo que lleva este paquete.
 type savedGame struct {
 	HumanIdx         int
 	BotName          string
@@ -18,7 +17,6 @@ type savedGame struct {
 	History          json.RawMessage
 }
 
-// Save devuelve la partida como texto, para continuarla despues con Load.
 func (c *Game) Save() (string, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -29,7 +27,6 @@ func (c *Game) Save() (string, error) {
 	return core.JSON(c.saved(history))
 }
 
-// Load continua una partida guardada con Save.
 func Load(text string) (*Game, error) {
 	var s savedGame
 	if err := json.Unmarshal([]byte(text), &s); err != nil {
@@ -44,7 +41,6 @@ func (c *Game) saved(history json.RawMessage) savedGame {
 		History: history}
 }
 
-// resume rehace la partida de macondo y le devuelve lo que lleva este paquete.
 func (s savedGame) resume() (*Game, error) {
 	g, err := core.GameFromHistory(s.History, nil)
 	if err != nil {

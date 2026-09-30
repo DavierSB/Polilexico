@@ -11,7 +11,6 @@ import app.lexico.go.duplicate.Turn
 import app.lexico.model.Board
 import app.lexico.model.Position
 
-/** Lee del motor el estado de una duplicada en marcha y lo traduce a [DuplicateState]. */
 internal class DuplicateReader(private val match: Match) {
   fun read(): DuplicateState {
     val game = match.game()
@@ -24,7 +23,6 @@ internal class DuplicateReader(private val match: Match) {
     )
   }
 
-  /** La fase, con el tiempo al dia. */
   fun phase(): DuplicatePhase = when (match.phase()) {
     Duplicate.PhaseInvalidRack -> DuplicatePhase.InvalidRack(rackTiles(match.invalidRack()))
     Duplicate.PhasePlaying -> DuplicatePhase.Playing(rackTiles(match.rack()), match.turnRemainingMs())
@@ -49,7 +47,6 @@ internal class DuplicateReader(private val match: Match) {
     myText = myText(board, t), myScore = t.humanScore.toInt(), hit = t.hit,
   )
 
-  /** Tu jugada en palabras: la colocacion, "pase", "inválida" o "tiempo agotado". */
   private fun myText(board: Board, t: Turn): String = when (t.humanKind) {
     "play" -> moveText(board, "${t.humanCoords} ${t.humanTiles}")
     "invalid" -> "inválida"
@@ -57,7 +54,6 @@ internal class DuplicateReader(private val match: Match) {
     else -> "pase"
   }
 
-  /** Las fichas de la ultima jugada del master, para resaltarlas. */
   private fun latestSquares(turns: List<Turn>): Set<Position> =
     turns.lastOrNull()?.let { placedSquares(it.masterCoords, it.masterTiles) }.orEmpty()
 }

@@ -8,11 +8,8 @@ import (
 	"lexico/engine/internal/core"
 )
 
-// Jugadas del máster que se guardan por turno para la revision.
 const reviewTopPlays = 15
 
-// gameLog y turnRecord son el -log.json de cmd/duplicate, campo por campo, para poder revisar
-// en la PC las partidas del telefono.
 type gameLog struct {
 	StartedAt   time.Time    `json:"started_at"`
 	Turns       []turnRecord `json:"turns"`
@@ -36,15 +33,12 @@ type turnRecord struct {
 	Hits        int              `json:"aciertos"`
 }
 
-// Log: el registro de la partida en JSON, con las mejores jugadas de cada turno, la del
-// máster y la tuya, para la pantalla de revision.
 func (d *Game) Log() (string, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	return core.JSON(d.log)
 }
 
-// newTurnRecord anota el turno t; se llama antes de soltar las jugadas del turno.
 func (d *Game) newTurnRecord(t *Turn, human core.Play) turnRecord {
 	top := core.Candidates(d.topPlays())
 	return turnRecord{TurnNum: t.Number, Rack: t.Rack, BoardBefore: d.boardBefore, TopPlays: top,
@@ -59,7 +53,6 @@ func (d *Game) finishIfOver() {
 	}
 }
 
-// finish cierra el registro y lo escribe en disco.
 func (d *Game) finish() {
 	d.log.FinalMaster, d.log.FinalHuman, d.log.FinalHits = d.masterTotal, d.humanTotal, d.hits
 	d.recordPath = core.WriteRecord("duplicate", d.log, d.g)

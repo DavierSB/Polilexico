@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-/** Mano cerrada: como fue, sus scrabbles (tocar uno lo pone en el tablero) y a por la siguiente. */
 @Composable
 fun Revealed(result: HandResult, shown: Bingo?, onShow: (Bingo) -> Unit, onNext: () -> Unit) {
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -27,7 +26,6 @@ fun Revealed(result: HandResult, shown: Bingo?, onShow: (Bingo) -> Unit, onNext:
   }
 }
 
-/** Fin de la serie: por que, el total, el record, la ultima mano (si la hubo) y otra serie o salir. */
 @Composable
 fun Finished(result: HandResult?, solved: Int, record: Record?, shown: Bingo?, onShow: (Bingo) -> Unit, actions: SprintActions) {
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -40,14 +38,12 @@ fun Finished(result: HandResult?, solved: Int, record: Record?, shown: Bingo?, o
   }
 }
 
-/** "¡Nuevo récord!" o "Récord: 7 manos". */
 @Composable
 private fun RecordLine(record: Record) {
   if (record.isNew) Text("¡Nuevo récord!", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
   else Text("Récord: ${hands(record.best)}")
 }
 
-/** "¡Scrabble! H8 CASADOS (86)", "Se acabó el tiempo" o "Te rendiste", con cuantos habia. */
 @Composable
 private fun OutcomeLine(result: HandResult) {
   val count = result.bingos.size
@@ -55,7 +51,6 @@ private fun OutcomeLine(result: HandResult) {
   Text("${outcomeText(result)} $available", fontWeight = FontWeight.Bold)
 }
 
-/** Los scrabbles de la mano, de mas a menos puntos; el que se ve en el tablero, resaltado. */
 @Composable
 private fun BingoList(bingos: List<Bingo>, shown: Bingo?, onShow: (Bingo) -> Unit) {
   LazyColumn {

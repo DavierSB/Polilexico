@@ -27,10 +27,6 @@ import app.lexico.ui.board.ThemeDialog
 import app.lexico.ui.board.Themed
 import app.lexico.ui.classic.LocalShowUnseen
 
-/**
- * La aplicacion, con el tema en pantalla: el menu lateral y, dentro, la pantalla actual de
- * [Navigator]. El boton atras del telefono vuelve a la pantalla anterior.
- */
 @Composable
 fun App(lexico: Lexico, settings: Settings, version: String) {
   val nav = remember { Navigator() }
@@ -42,7 +38,6 @@ fun App(lexico: Lexico, settings: Settings, version: String) {
     Surface(Modifier.fillMaxSize()) {
       ModalNavigationDrawer(
         drawerState = menu.drawer,
-        // En partida el menu no se abre deslizando, para no confundirlo con jugar.
         gesturesEnabled = !nav.current.isGame || menu.drawer.isOpen,
         drawerContent = { AppMenu(nav, menu, themes) },
       ) {
@@ -60,7 +55,6 @@ private fun Dialogs(settings: Settings, themes: ThemeState, menu: MenuState, ver
   if (themes.picking) ThemeDialog(themes.current, themes::choose) { themes.picking = false }
 }
 
-/** La pantalla actual, una vez cargado el motor; con los puntos al colocar y las letras faltantes segun las opciones. */
 @Composable
 private fun Screens(engine: Result<Unit>?, lexico: Lexico, nav: Navigator, settings: Settings, themes: ThemeState, menu: MenuState) {
   val scorer = remember(lexico) { engineScorer(lexico) }
@@ -86,7 +80,6 @@ private fun AppMenu(nav: Navigator, menu: MenuState, themes: ThemeState) {
   )
 }
 
-/** Los margenes de la pantalla. En las partidas y el analizador, casi ninguno: el tablero se ve mas grande. */
 @Composable
 private fun ScreenFrame(screen: Screen, content: @Composable () -> Unit) {
   val margin = if (screen.hasBoard) 2.dp else 12.dp

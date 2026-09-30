@@ -1,5 +1,3 @@
-// Package demo juega partidas de HastyBot contra si mismo: de adorno en la pantalla de inicio
-// y como partida a recordar en "¿Cuántas recuerdas?".
 package demo
 
 import (
@@ -8,14 +6,11 @@ import (
 	"lexico/engine/internal/core"
 )
 
-// ScoredPlacement es una colocacion de la partida con los puntos que hizo.
 type ScoredPlacement struct {
-	Placement string `json:"placement"` // "H8 CA.A"
+	Placement string `json:"placement"`
 	Score     int    `json:"score"`
 }
 
-// Play juega una partida entera y devuelve sus colocaciones en orden, como JSON
-// ["H8 CA.A", ...] (notacion FISE; los pases y cambios no se incluyen).
 func Play() (string, error) {
 	scored, err := playGame()
 	if err != nil {
@@ -28,8 +23,6 @@ func Play() (string, error) {
 	return core.JSON(placements)
 }
 
-// PlayWithScores es Play con los puntos de cada colocacion, como JSON
-// [{"placement":"H8 CA.A","score":12}, ...].
 func PlayWithScores() (string, error) {
 	scored, err := playGame()
 	if err != nil {

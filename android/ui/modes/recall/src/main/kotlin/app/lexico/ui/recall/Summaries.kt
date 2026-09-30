@@ -24,7 +24,6 @@ import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.RackTile
 import app.lexico.ui.common.Mulish
 
-/** Las palabras de la partida con ✓ o ✗, y seguir o salir. */
 @Composable
 internal fun ColumnScope.RoundDone(session: RecallSession, style: BoardStyle, onExit: () -> Unit) {
   val answers = session.answers
@@ -36,7 +35,6 @@ internal fun ColumnScope.RoundDone(session: RecallSession, style: BoardStyle, on
   AnswerList(answers, style)
 }
 
-/** Sin vidas: el total de la serie, el record, las palabras de la ultima partida y si jugar otra. */
 @Composable
 internal fun ColumnScope.SeriesDone(session: RecallSession, style: BoardStyle, onExit: () -> Unit) {
   ScoreCard("EN LA SERIE", session.recalled, session.asked)
@@ -48,14 +46,12 @@ internal fun ColumnScope.SeriesDone(session: RecallSession, style: BoardStyle, o
   AnswerList(session.answers, style)
 }
 
-/** "¡Nuevo récord!" o "Récord: 7 palabras". */
 @Composable
 private fun RecordLine(record: Record) {
   if (record.isNew) Text("¡Nuevo récord!", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
   else Text("Récord: ${words(record.best)}")
 }
 
-/** Cada palabra de la partida, de mas a menos puntos. */
 @Composable
 private fun ColumnScope.AnswerList(answers: List<Answer>, style: BoardStyle) {
   Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -63,7 +59,6 @@ private fun ColumnScope.AnswerList(answers: List<Answer>, style: BoardStyle) {
   }
 }
 
-/** Una tarjeta con un titulo pequeño y "7 / 10" en grande. */
 @Composable
 private fun ScoreCard(title: String, hits: Int, total: Int) {
   Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh) {

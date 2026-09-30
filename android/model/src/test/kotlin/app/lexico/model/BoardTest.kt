@@ -44,9 +44,9 @@ class BoardTest {
 
   @Test fun placementErrors() {
     val t = Board.of("h8 CASA")
-    assertThrows(IllegalArgumentException::class.java) { t.play("8h PERO") } // pisa la C
-    assertThrows(IllegalArgumentException::class.java) { t.play("a1 .A") } // pasa por vacia
-    assertThrows(IllegalArgumentException::class.java) { t.play("h13 CASAS") } // se sale
+    assertThrows(IllegalArgumentException::class.java) { t.play("8h PERO") }
+    assertThrows(IllegalArgumentException::class.java) { t.play("a1 .A") }
+    assertThrows(IllegalArgumentException::class.java) { t.play("h13 CASAS") }
   }
 
   @Test fun moveListsSkipPassesAndExchanges() {

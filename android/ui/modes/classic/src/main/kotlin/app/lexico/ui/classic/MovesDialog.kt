@@ -20,20 +20,14 @@ import app.lexico.ui.common.MoveText
 import app.lexico.ui.common.moveNumberWidth
 import app.lexico.ui.common.MovesTableDialog
 
-/** Un turno de la planilla: tu jugada y la del rival (cualquiera puede faltar). */
 private typealias Turn = Pair<Move?, Move?>
 
-/**
- * Las movidas en una linea por turno, como una planilla: a la izquierda tu jugada y a la
- * derecha la del rival; cada una con sus puntos y el total resaltado.
- */
 @Composable
 fun MovesDialog(moves: List<Move>, opponent: String, close: () -> Unit) {
   val turns = remember(moves) { byTurn(moves) }
   MovesTableDialog(turns, header = { MovesHeader(opponent) }, close = close) { i, turn -> TurnRow(i + 1, turn) }
 }
 
-/** Pares (tuya, del rival) en orden; si empezo el rival, la primera fila no tiene la tuya. */
 private fun byTurn(moves: List<Move>): List<Turn> = moves.fold(mutableListOf()) { turns, m ->
   val last = turns.lastOrNull()
   when {
@@ -64,13 +58,11 @@ private fun TurnRow(number: Int, turn: Turn) {
   }
 }
 
-/** La raya entre tu jugada y la del rival; la cabecera la lleva tambien, para alinear columnas. */
 @Composable
 private fun Separator() {
   Text("|", Modifier.padding(horizontal = 3.dp), color = MaterialTheme.colorScheme.outline, fontSize = 12.sp)
 }
 
-/** "H4 CASA 14 [14]": jugada, puntos y total resaltado. */
 @Composable
 private fun RowScope.MoveCell(m: Move?) {
   Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
@@ -81,7 +73,6 @@ private fun RowScope.MoveCell(m: Move?) {
   }
 }
 
-/** La jugada en palabras: la colocacion, "pase", "inválida" o "cambio" con sus fichas. */
 private fun moveText(m: Move): String = when (m.type) {
   MoveType.PLACEMENT -> m.text
   MoveType.INVALID -> "inválida"

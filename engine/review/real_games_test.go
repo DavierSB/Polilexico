@@ -9,8 +9,6 @@ import (
 	"lexico/engine/modes/duplicate"
 )
 
-// Los registros de partidas enteras, jugadas por la API de cada modalidad, se leen completos.
-
 func TestRealClassicGame(t *testing.T) {
 	testenv.Init(t)
 	g, err := classic.Start("HastyBot")
@@ -38,7 +36,6 @@ func TestRealDuplicateGame(t *testing.T) {
 	checkLog(t, d.Log)
 }
 
-// playClassicTurn: el bot juega por los dos (pasar por ti basta para llegar al final).
 func playClassicTurn(t *testing.T, g *classic.Game) {
 	var err error
 	if g.Status().HumanToMove {

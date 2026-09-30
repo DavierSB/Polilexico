@@ -27,10 +27,6 @@ import app.lexico.ui.common.Durations
 private val OvertimeRed = Color(0xFFB3261E)
 private val OvertimePink = Color(0xFFF2B8B5)
 
-/**
- * La barra de puntuacion de un jugador: foto (si es un bot), nombre, sus fichas debajo, los
- * puntos y el reloj. El borde se resalta cuando es su turno.
- */
 @Composable
 fun PlayerBar(
   name: String,
@@ -48,14 +44,12 @@ fun PlayerBar(
   }
 }
 
-/** Borde grueso y del color principal cuando le toca jugar. */
 @Composable
 private fun Modifier.turnBorder(onTurn: Boolean): Modifier {
   val color = if (onTurn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
   return border(if (onTurn) 2.dp else 1.dp, color, RoundedCornerShape(10.dp))
 }
 
-/** Foto, nombre y "pensando…" arriba; sus fichas debajo. */
 @Composable
 private fun RowScope.Identity(name: String, thinking: Boolean, photo: (@Composable () -> Unit)?, tiles: @Composable () -> Unit) {
   Column(Modifier.weight(1f)) {
@@ -68,7 +62,6 @@ private fun RowScope.Identity(name: String, thinking: Boolean, photo: (@Composab
   }
 }
 
-/** El reloj: en rojo y con "descuento" debajo cuando se acabo el tiempo principal. */
 @Composable
 private fun PlayerClock(clock: Clock, onTurn: Boolean) {
   Column(horizontalAlignment = Alignment.CenterHorizontally) {

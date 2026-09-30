@@ -15,7 +15,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** Fin de partida: la eficiencia en grande y los aciertos debajo. */
 @Composable
 fun GameEndDialog(view: DuplicateView, close: () -> Unit) {
   AlertDialog(
@@ -35,7 +34,6 @@ private fun EndSummary(view: DuplicateView) {
   }
 }
 
-/** "Eficiencia", el porcentaje grande y de donde sale. */
 @Composable
 private fun Efficiency(view: DuplicateView) {
   Text("Eficiencia", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)

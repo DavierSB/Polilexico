@@ -10,10 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.home.Logo
 
-/**
- * El menu lateral: ir al inicio, las estadisticas, el tema, las opciones y "Acerca de". Cada opcion
- * cierra el menu.
- */
 @Composable
 fun SideMenu(atHome: Boolean, onHome: () -> Unit, onStats: () -> Unit, onTheme: () -> Unit, onOptions: () -> Unit, onAbout: () -> Unit) {
   ModalDrawerSheet {

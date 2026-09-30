@@ -7,7 +7,6 @@ import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.RackTile
 import app.lexico.ui.board.FaceDownTile
 
-/** Las fichas del rival: boca abajo mientras se juega; al terminar, las que le quedaron. */
 @Composable
 fun OpponentRack(hand: OpponentRack, style: BoardStyle, size: Dp = 22.dp) {
   when (hand) {

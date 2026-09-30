@@ -6,7 +6,6 @@ import (
 	"lexico/engine/internal/core"
 )
 
-// gameLog es el -log.json de clasica o de duplicada; cada una llena sus campos.
 type gameLog struct {
 	StartedAt   string    `json:"started_at"`
 	HumanName   string    `json:"human_name"`
@@ -47,7 +46,6 @@ func classicGame(log gameLog) *Game {
 	return g
 }
 
-// classicMode: ModeEndgame en los registros de Finales, ModeClassic en los demas.
 func classicMode(log gameLog) string {
 	if log.Mode == ModeEndgame {
 		return ModeEndgame
@@ -73,7 +71,6 @@ func classicTurn(t turnLog, board *grid) *Turn {
 	return turn
 }
 
-// En duplicada el turno es de todos: se marcan la jugada del master y la tuya.
 func duplicateTurn(t turnLog, board *grid) *Turn {
 	turn := newTurn(t, "", board, moves(t.TopPlays, false))
 	turn.marks = []*Mark{turn.mark("Máster", move(t.MasterPlay, false)), turn.mark("Tú", move(t.HumanPlay, false))}
@@ -106,8 +103,6 @@ func classicOutcome(log gameLog) string {
 	return core.OutcomeTie
 }
 
-// rackText: el atril como "A CH E ?". La clasica lo guarda junto ("AB[CH]?") y la duplicada
-// ya separado.
 func rackText(rack string) string {
 	if strings.Contains(rack, " ") {
 		return rack

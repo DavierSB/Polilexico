@@ -9,14 +9,14 @@ import kotlin.random.Random
 class WordsTest {
   private val game = listOf(
     ScoredPlacement("H8 CASA", 12),
-    ScoredPlacement("8H .ERO", 10), // pasa por la C: CERO
-    ScoredPlacement("K5 LOB.", 20), // termina en la O de CERO: LOBO
-    ScoredPlacement("5K .UNA", 15), // LUNA
-    ScoredPlacement("A1 SI", 30), // muy corta
-    ScoredPlacement("C1 [CH]Aa", 12), // digrafo y comodin
-    ScoredPlacement("E1 CASA", 12), // repetida
-    ScoredPlacement("G1 CERO", 9), // repetida, con menos puntos
-    ScoredPlacement("(pasa)", 0), // no es una colocacion
+    ScoredPlacement("8H .ERO", 10),
+    ScoredPlacement("K5 LOB.", 20),
+    ScoredPlacement("5K .UNA", 15),
+    ScoredPlacement("A1 SI", 30),
+    ScoredPlacement("C1 [CH]Aa", 12),
+    ScoredPlacement("E1 CASA", 12),
+    ScoredPlacement("G1 CERO", 9),
+    ScoredPlacement("(pasa)", 0),
   )
 
   @Test fun mainWordsFillLettersFromTheBoard() {

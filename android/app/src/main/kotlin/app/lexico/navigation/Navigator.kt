@@ -3,10 +3,6 @@ package app.lexico.navigation
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 
-/**
- * La pila de pantallas: [go] apila, [back] desapila. Empezar una partida reemplaza su
- * pantalla de opciones, asi "volver" desde la partida lleva al inicio y no a las opciones.
- */
 @Stable
 class Navigator {
   private val stack = mutableStateListOf<Screen>(Screen.Home)
@@ -18,7 +14,6 @@ class Navigator {
     stack += screen
   }
 
-  /** Cambia la pantalla actual por `screen` (de las opciones a la partida). */
   fun replace(screen: Screen) {
     stack[stack.lastIndex] = screen
   }

@@ -10,16 +10,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.delay
 
-/** Lo que se le dice al jugador cuando las fichas que puso no forman una jugada. */
 const val NOT_IN_A_LINE = "Las fichas tienen que formar una sola línea continua."
 
-/** Cuanto se ve un aviso antes de borrarse solo. */
 private const val NOTICE_MS = 3_000L
 
-/**
- * El aviso de una partida: empieza en [notice] (lo que dice el juego) y la pantalla puede poner
- * otro (fichas fuera de linea...). Cualquiera de los dos se borra solo a los pocos segundos.
- */
 @Composable
 fun rememberNotice(notice: String?): MutableState<String?> {
   val message = remember(notice) { mutableStateOf(notice) }
@@ -32,7 +26,6 @@ fun rememberNotice(notice: String?): MutableState<String?> {
   return message
 }
 
-/** Un aviso para el jugador (una jugada rechazada...), en el color de error. */
 @Composable
 fun Notice(text: String, bold: Boolean = false) {
   Text(

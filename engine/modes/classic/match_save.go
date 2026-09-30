@@ -8,7 +8,6 @@ import (
 	"lexico/engine/internal/timing"
 )
 
-// savedMatch es una partida en marcha guardada: la partida mas sus relojes.
 type savedMatch struct {
 	Game         string
 	TimeMs       int64
@@ -17,7 +16,6 @@ type savedMatch struct {
 	BotSpentMs   int64
 }
 
-// Save devuelve la partida en marcha como texto, para continuarla con LoadMatch.
 func (m *Match) Save() (string, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -28,7 +26,6 @@ func (m *Match) Save() (string, error) {
 	return core.JSON(m.saved(game))
 }
 
-// LoadMatch continua una partida guardada con Match.Save. Empieza en pausa.
 func LoadMatch(text string, l events.Listener) (*Match, error) {
 	var s savedMatch
 	if err := json.Unmarshal([]byte(text), &s); err != nil {

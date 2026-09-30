@@ -15,7 +15,6 @@ import app.lexico.ui.common.ResignDialog
 @Composable
 internal fun rememberClassicDialogs(): ClassicDialogs = remember { ClassicDialogs() }
 
-/** Que dialogos de la partida estan abiertos. */
 @Stable
 internal class ClassicDialogs {
   var moves by mutableStateOf(false)
@@ -24,7 +23,6 @@ internal class ClassicDialogs {
   var resign by mutableStateOf(false)
 }
 
-/** Los dialogos abiertos: movidas, bolsa y las confirmaciones de pasar y abandonar. */
 @Composable
 internal fun ClassicDialogsShown(view: ClassicView, c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs) {
   if (dialogs.moves) MovesDialog(view.moves, view.opponent) { dialogs.moves = false }
@@ -33,7 +31,6 @@ internal fun ClassicDialogsShown(view: ClassicView, c: TilePlacer, actions: Clas
   if (dialogs.resign) ResignDialog(onResign = actions::resign, onContinue = { dialogs.resign = false })
 }
 
-/** Las fichas por salir o, si las opciones no las muestran, solo cuantas son. */
 @Composable
 private fun UnseenDialog(view: ClassicView, close: () -> Unit) {
   val title = "Por salir (bolsa ${view.bag} + atril del rival)"

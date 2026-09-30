@@ -18,7 +18,6 @@ import app.lexico.ui.common.MoveText
 import app.lexico.ui.common.moveNumberWidth
 import app.lexico.ui.common.MovesTableDialog
 
-/** Las rondas a doble columna, como una planilla: el master a la izquierda y tu a la derecha. */
 @Composable
 fun MovesDialog(rounds: List<Round>, close: () -> Unit) {
   MovesTableDialog(rounds, header = { MovesHeader() }, close = close) { _, round -> RoundRow(round) }
@@ -42,7 +41,6 @@ private fun RoundRow(round: Round) {
   }
 }
 
-/** Una jugada en una sola linea: la jugada y, a su derecha, los puntos (con ✓ si fue acierto). */
 @Composable
 private fun RowScope.PlayCell(play: RoundPlay, hit: Boolean = false) {
   Row(Modifier.weight(1f).padding(end = 6.dp), verticalAlignment = Alignment.CenterVertically) {

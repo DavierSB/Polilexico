@@ -19,10 +19,8 @@ import app.lexico.ui.board.BoardStyle
 private val MAX_TILE = 52.dp
 private val TILE_GAP = 4.dp
 
-/** El verde de los aciertos. */
 internal val HIT = Color(0xFF2E7D32)
 
-/** Una fila de `count` fichas que siempre cabe en el ancho: cada una mide a lo sumo [MAX_TILE]. */
 @Composable
 internal fun TileLine(count: Int, tile: @Composable (index: Int, size: Dp) -> Unit) {
   BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -33,7 +31,6 @@ internal fun TileLine(count: Int, tile: @Composable (index: Int, size: Dp) -> Un
   }
 }
 
-/** Una casilla vacia de la palabra. */
 @Composable
 internal fun EmptySlot(style: BoardStyle, size: Dp) {
   val shape = RoundedCornerShape(size * style.rounding)

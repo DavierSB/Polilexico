@@ -2,21 +2,14 @@ package app.lexico.game.records
 
 import app.lexico.game.Outcome
 
-/**
- * Tus numeros en un conjunto de partidas terminadas (las de una modalidad, o contra un rival):
- * victorias, puntos, scrabbles y tu palabra mas valiosa; en duplicada, aciertos y eficiencia.
- */
 data class Statistics(
   val games: Int,
   val wins: Int,
   val averageScore: Double,
   val bestScore: Int?,
   val bingos: Int,
-  /** Tu jugada que mas puntos dio: la palabra completa y sus puntos; null si no hay. */
   val bestWord: Pair<String, Int>?,
-  /** Duplicada: % de turnos en que hiciste los mismos puntos que el master, sobre todos. */
   val hitRate: Double,
-  /** Tus puntos sobre los del rival (en duplicada, el master), en %: la media y la mejor. */
   val averageEfficiency: Double,
   val bestEfficiency: Double,
 ) {

@@ -9,7 +9,6 @@ import (
 	"lexico/engine/internal/core"
 )
 
-// Jugadas candidatas que se guardan por turno para la revision.
 const reviewCandidates = 15
 
 var (
@@ -17,8 +16,6 @@ var (
 	errNotBotTurn  = errors.New("no es el turno del bot")
 )
 
-// Play hace tu jugada: "h8 CASA", "8h CASA", "pasar" o "cambiar ABC". Si no es valida
-// devuelve el error y la partida no cambia (ver SetInvalidPlayLosesTurn).
 func (c *Game) Play(input string) (*Move, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -32,8 +29,6 @@ func (c *Game) Play(input string) (*Move, error) {
 	return c.apply(m, play, c.candidates())
 }
 
-// PlayBot hace el turno del bot; la jugada la elige el bot con el filtro de su nivel, como en
-// Woogles.
 func (c *Game) PlayBot() (*Move, error) {
 	choice, err := c.chooseBotMove()
 	if err != nil {
@@ -42,29 +37,24 @@ func (c *Game) PlayBot() (*Move, error) {
 	return c.applyBotMove(choice)
 }
 
-// botChoice es la jugada que eligio el bot, todavia sin jugar, con las candidatas del turno.
 type botChoice struct {
 	move       *move.Move
 	candidates []core.Candidate
 	turn       int
 }
 
-// chooseBotMove elige la jugada del bot sin jugarla (lo lento), para poder descartarla si la
-// partida se pausa mientras tanto.
 func (c *Game) chooseBotMove() (*botChoice, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if !c.botToMove() {
 		return nil, errNotBotTurn
 	}
-	// Antes que la jugada del bot: GenerateMoves reutiliza sus buffers.
 	candidates := c.candidates()
 	m := new(move.Move)
 	m.CopyFrom(c.bot.GenerateMoves(1)[0])
 	return &botChoice{move: m, candidates: candidates, turn: len(c.moves)}, nil
 }
 
-// applyBotMove juega la jugada elegida, si sigue siendo el mismo turno del bot.
 func (c *Game) applyBotMove(choice *botChoice) (*Move, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -74,8 +64,6 @@ func (c *Game) applyBotMove(choice *botChoice) (*Move, error) {
 	return c.apply(choice.move, core.PlayOf(choice.move), choice.candidates)
 }
 
-// LoseOnTime cierra la partida porque se te acabo el tiempo: pierdes, con el marcador que
-// hubiera.
 func (c *Game) LoseOnTime() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -97,14 +85,12 @@ func (c *Game) humanMove(input string) (*move.Move, core.Play, error) {
 	return m, core.PlayOf(m), nil
 }
 
-// La jugada no valida entra en macondo como un pase, pero se anota como lo que se intento.
 func (c *Game) loseTurn(attempt core.Play) (*move.Move, core.Play, error) {
 	tp := &turnplayer.BaseTurnPlayer{Game: c.g}
 	m, err := tp.NewPassMove(c.humanIdx)
 	return m, attempt, err
 }
 
-// apply juega m y lo anota como play en la partida y en el registro.
 func (c *Game) apply(m *move.Move, play core.Play, candidates []core.Candidate) (*Move, error) {
 	byHuman := c.humanToMove()
 	record := c.newTurnRecord(m, play, candidates)
@@ -118,7 +104,6 @@ func (c *Game) apply(m *move.Move, play core.Play, candidates []core.Candidate) 
 	return played, nil
 }
 
-// Las mejores jugadas de quien tiene el turno, solo para la revision.
 func (c *Game) candidates() []core.Candidate {
 	return core.Candidates(c.bot.GenerateMoves(reviewCandidates))
 }
@@ -127,7 +112,6 @@ func (c *Game) newMove(p core.Play, byHuman bool) *Move {
 	return moveOf(p, byHuman, c.score(true), c.score(false))
 }
 
-// moveOf: la jugada p, con el marcador tras ella.
 func moveOf(p core.Play, byHuman bool, humanTotal, botTotal int) *Move {
 	if !byHuman {
 		p = hideExchange(p)
@@ -136,8 +120,6 @@ func moveOf(p core.Play, byHuman bool, humanTotal, botTotal int) *Move {
 		TileCount: p.TileCount, Score: p.Score, HumanTotal: humanTotal, BotTotal: botTotal}
 }
 
-// Partida a ciegas: de un cambio del bot solo se sabe cuantas fichas cambio (el registro
-// de la revision si las guarda).
 func hideExchange(p core.Play) core.Play {
 	if p.Kind == core.KindExchange {
 		p.Tiles = ""

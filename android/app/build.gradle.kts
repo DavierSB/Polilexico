@@ -6,15 +6,11 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-// La version: versionCode sube en cada APK que se publica.
 val appVersionCode = 1
 val appVersionName = "0.1"
 
-// Las arquitecturas del motor (build_engine.sh) y lo que suma cada una al versionCode.
 val abiCodes = mapOf("armeabi-v7a" to 1, "arm64-v8a" to 2)
 
-// La aplicacion: arranque, navegacion entre pantallas, menu lateral e inicio. Es el unico
-// modulo que conoce todos los demas y los ensambla.
 android {
   namespace = "app.lexico"
   compileSdk = 36
@@ -38,13 +34,10 @@ android {
   buildTypes {
     release {
       isMinifyEnabled = false
-      // Sin keystore.properties el release sale sin firmar (app-*-release-unsigned.apk).
       signingConfig = signingConfigs.findByName("release")
     }
   }
   splits {
-    // Un APK por arquitectura (el motor nativo es lo que mas pesa) y uno universal para
-    // pasarlo de un telefono a otro sin saber cual es cual.
     abi {
       isEnable = true
       reset()
@@ -61,10 +54,7 @@ android {
   }
   packaging {
     jniLibs {
-      // El motor en Go pesa ~26 MB por arquitectura; comprimido dentro del APK ocupa bastante menos.
       useLegacyPackaging = true
-      // El motor solo existe para ARM: sin esto el universal lleva las .so x86 de AndroidX y se
-      // instalaria (y fallaria) en un x86.
       excludes += listOf("lib/x86/**", "lib/x86_64/**")
     }
   }
@@ -74,8 +64,6 @@ kotlin {
   jvmToolchain(17)
 }
 
-// Cada APK necesita su propio versionCode: appVersionCode * 10 + el de su arquitectura (el
-// universal, + 0). arm64 va por encima para que un telefono de 64 bits se quede con el suyo.
 androidComponents {
   onVariants { variant ->
     variant.outputs.forEach { output ->
@@ -105,10 +93,6 @@ dependencies {
   implementation(libs.androidx.compose.material3)
 }
 
-/**
- * La clave de firma de release, de android/keystore.properties (fuera de git): storeFile,
- * storePassword, keyAlias y keyPassword. Null si el archivo no existe.
- */
 fun releaseKey(): Properties? =
   rootProject.file("keystore.properties").takeIf { it.exists() }
     ?.let { file -> Properties().apply { file.inputStream().use(::load) } }

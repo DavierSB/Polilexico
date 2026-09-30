@@ -59,7 +59,6 @@ func mustParse(t *testing.T, text string) *Game {
 	return g
 }
 
-// squares: las casillas ocupadas del tablero, por coordenada ("H8").
 func squares(board string) map[string]string {
 	out := map[string]string{}
 	for i, s := range strings.Fields(board) {

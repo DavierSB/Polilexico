@@ -11,7 +11,6 @@ import org.junit.Test
 class TilePlacerTest {
   private fun p(s: String) = Position(s[0].uppercaseChar() - 'A', s.substring(1).toInt() - 1)
 
-  /** El atril nuevo sale barajado; aqui se pone en el orden del motor para poder comprobarlo. */
   private fun placer() = TilePlacer().apply {
     reset(Board.of("h8 CASA"), listOf("E", "R", "O", "?"))
     order.clear()
@@ -21,10 +20,10 @@ class TilePlacerTest {
   @Test fun arrowPlacesTilesSkippingOccupied() {
     val c = placer()
     c.tapBoard(p("G8"))
-    c.tapBoard(p("G8")) // segundo toque: vertical
-    c.tapRack(0) // E en G8; la flecha salta la C de H8
-    c.tapRack(1) // R en I8
-    assertEquals("8G E.R", c.placement().toString()) // G8 E, H8 C (ya estaba), I8 R
+    c.tapBoard(p("G8"))
+    c.tapRack(0)
+    c.tapRack(1)
+    assertEquals("8G E.R", c.placement().toString())
   }
 
   @Test fun selectThenTapSquare() {
@@ -32,7 +31,6 @@ class TilePlacerTest {
     c.tapRack(2)
     c.tapBoard(p("I8"))
     assertEquals("8H .O", c.placement().toString())
-    // Tocarla otra vez la devuelve al atril.
     c.tapBoard(p("I8"))
     assertFalse(c.hasPlaced)
     assertNull(c.placement())
@@ -77,8 +75,8 @@ class TilePlacerTest {
     val c = placer()
     c.dropOnBoard(2, p("I8"))
     assertEquals("8H .O", c.placement().toString())
-    c.dropOnBoard(0, p("I8")) // ocupada: no pasa nada
-    c.dropOnBoard(1, p("H8")) // ocupada en el tablero
+    c.dropOnBoard(0, p("I8"))
+    c.dropOnBoard(1, p("H8"))
     assertEquals(mapOf(p("I8") to 2), c.placed.toMap())
   }
 

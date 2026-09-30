@@ -29,11 +29,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/**
- * Barra superior de una partida: salir (la partida queda guardada), abandonar (solo si sigue en
- * juego), pausar (en las partidas con tiempo), cambiar el tema, la tabla de movidas y la bolsita
- * con las fichas que quedan.
- */
 @Composable
 fun GameBar(
   bag: Int,
@@ -55,7 +50,6 @@ fun GameBar(
   }
 }
 
-/** Cabecera de las pantallas que no son partidas: volver, el titulo y, a la derecha, `extra`. */
 @Composable
 fun Header(title: String, onBack: () -> Unit, extra: @Composable () -> Unit = {}) {
   Row(Modifier.fillMaxWidth().height(48.dp), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
@@ -65,7 +59,6 @@ fun Header(title: String, onBack: () -> Unit, extra: @Composable () -> Unit = {}
   }
 }
 
-/** El titulo de una barra, en Mulish; si no cabe, se achica antes de cortarse. */
 @Composable
 fun BarTitle(title: String, modifier: Modifier = Modifier) {
   BasicText(
@@ -75,20 +68,17 @@ fun BarTitle(title: String, modifier: Modifier = Modifier) {
   )
 }
 
-/** "Salir": la partida queda guardada. */
 @Composable
 fun ExitButton(onClick: () -> Unit) = BarTextButton("Salir", onClick)
 
 @Composable
 fun ThemeButton(onClick: () -> Unit) = BarIconButton(LexicoIcons.Palette, "Tema", onClick)
 
-/** Un boton de barra con su icono, sin fondo; `description` es lo que lee el lector de pantalla. */
 @Composable
 fun BarIconButton(icon: ImageVector, description: String, onClick: () -> Unit) {
   IconButton(onClick, Modifier.size(40.dp), colors = barIconColors()) { Icon(icon, description, Modifier.size(22.dp)) }
 }
 
-/** Una accion de barra con texto ("Abandonar", "Movidas", "Vaciar"...), sin fondo. */
 @Composable
 fun BarTextButton(text: String, onClick: () -> Unit) {
   TextButton(onClick, Modifier.height(36.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text(text, style = barLabel()) }
@@ -97,7 +87,6 @@ fun BarTextButton(text: String, onClick: () -> Unit) {
 @Composable
 internal fun barIconColors(): IconButtonColors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
 
-/** Un dato de la barra en una pastilla: "RONDA 1/3". */
 @Composable
 fun BarChip(text: String) {
   Text(

@@ -11,35 +11,30 @@ var (
 	errNoExchange = errors.New("en duplicado no se cambian fichas: el atril se redibuja solo (regla FISF)")
 )
 
-// Attempt es tu jugada ya comprobada, pendiente de Confirm.
 type Attempt struct {
-	Kind      string // "play", "pass" o "invalid"
+	Kind      string
 	Coords    string
 	Tiles     string
 	Score     int
-	Immediate bool // pass e invalid se confirman al momento, sin la ventana de CancelSeconds
+	Immediate bool
 }
 
-// Turn es un turno terminado: tu jugada frente a la del máster.
 type Turn struct {
 	Number       int
 	Rack         string
 	MasterCoords string
 	MasterTiles  string
 	MasterScore  int
-	HumanKind    string // "play", "pass", "invalid" o "timeout"
+	HumanKind    string
 	HumanCoords  string
 	HumanTiles   string
 	HumanScore   int
-	Hit          bool // hiciste los mismos puntos que el máster
-	// Acumulados tras el turno.
-	MasterTotal int
-	HumanTotal  int
-	Hits        int
+	Hit          bool
+	MasterTotal  int
+	HumanTotal   int
+	Hits         int
 }
 
-// Validate comprueba tu jugada ("h8 CASA", "8h CASA" o "pasar") contra el tablero y el
-// diccionario, sin anotarla.
 func (d *Game) Validate(input string) (*Attempt, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -50,8 +45,6 @@ func (d *Game) Validate(input string) (*Attempt, error) {
 	return attemptOf(play), nil
 }
 
-// Confirm anota tu jugada, juega la del máster (la unica que avanza el tablero) y devuelve
-// el turno.
 func (d *Game) Confirm(input string) (*Turn, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -62,7 +55,6 @@ func (d *Game) Confirm(input string) (*Turn, error) {
 	return d.closeTurn(play)
 }
 
-// TimeOut cierra el turno con 0 puntos para ti: se agoto el tiempo.
 func (d *Game) TimeOut() (*Turn, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -72,7 +64,6 @@ func (d *Game) TimeOut() (*Turn, error) {
 	return d.closeTurn(core.Play{Kind: core.KindTimeout})
 }
 
-// humanPlay lee tu jugada, que solo puede ser una colocacion o un pase y solo durante un turno.
 func (d *Game) humanPlay(input string) (core.Play, error) {
 	if !d.inTurn() {
 		return core.Play{}, errNoTurn
@@ -83,7 +74,6 @@ func (d *Game) humanPlay(input string) (core.Play, error) {
 	return d.parse(input)
 }
 
-// parse lee la jugada; en modo single, unas palabras no validas cuentan como jugada perdida.
 func (d *Game) parse(input string) (core.Play, error) {
 	m, err := core.ParseInput(d.g, masterIdx, input)
 	if invalid, ok := core.AsInvalidWords(err); ok && d.invalidLosesTurn {
@@ -109,7 +99,6 @@ func (d *Game) closeTurn(human core.Play) (*Turn, error) {
 	return turn, nil
 }
 
-// scoreTurn suma los puntos del turno al marcador y lo devuelve como Turn.
 func (d *Game) scoreTurn(human, master core.Play) *Turn {
 	hit := human.Kind == core.KindPlay && human.Score == master.Score
 	d.masterTotal += master.Score

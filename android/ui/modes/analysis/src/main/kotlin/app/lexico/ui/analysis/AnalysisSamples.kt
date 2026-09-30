@@ -7,9 +7,7 @@ import app.lexico.ui.common.LexicoTheme
 import app.lexico.ui.common.RankedMove
 import app.lexico.ui.board.BoardStyles
 
-/** Un analista de ejemplo, para las vistas previas y para probar la pantalla sin motor. */
 object AnalysisSamples {
-  /** Siempre las mismas tres jugadas, sin mirar la posicion. */
   val fixedAnalyst = Analyst { _, _ ->
     listOf(
       RankedMove("H4 TRECHO", 30, 38.5, Placement.parse("h4 TRECHO")),

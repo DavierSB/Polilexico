@@ -1,8 +1,6 @@
 package app.lexico.model
 
-/** Letras del Scrabble en espanol (distribucion `spanish` de macondo / FILE2017). */
 object Letters {
-  /** Como se escribe el comodin en un atril ("A CH ?"). */
   const val BLANK = "?"
 
   private val VALUES = mapOf(
@@ -16,21 +14,10 @@ object Letters {
 
   private val DIGRAPHS = setOf("CH", "LL", "RR")
 
-  /** Todas las letras en orden alfabetico espanol (sin el comodin). */
   val ALL: List<String> = VALUES.keys.toList()
 
-  /**
-   * Parte una palabra en fichas. `null` en la lista = casilla ya ocupada ("." o letras entre
-   * parentesis, que tambien marcan letras del tablero en notacion GCG).
-   *
-   * - "CH", "LL", "RR" se leen como un digrafo (como hace macondo); "[CH]" fuerza el digrafo y
-   *   "[C]H" lo evita.
-   * - Minuscula = comodin: "CAsA", "[ch]", "ñ".
-   * - "[N]" = Ñ y "[n]" = comodin como Ñ, para teclados sin Ñ.
-   */
   fun tiles(word: String): List<Tile?> = WordReader(word).read()
 
-  /** Puntos de una letra de atril; el comodin ("?") vale 0. */
   fun value(letter: String): Int = VALUES[letter.uppercase()] ?: 0
 
   fun isVowel(letter: String): Boolean = letter in VOWELS

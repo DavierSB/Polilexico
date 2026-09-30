@@ -14,13 +14,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import kotlin.math.roundToInt
 
-/** De 5 en 5 puntos. */
 private const val LEAD_STEP = 5
 
-/**
- * Una ventaja minima y una maxima sobre una barra de -limit a limit: un puntero para cada una y,
- * entre ellos, el tramo elegido del color de la app.
- */
 @Composable
 fun LeadRangeBar(min: Int, max: Int, limit: Int, onChange: (min: Int, max: Int) -> Unit) {
   Column {
@@ -44,7 +39,6 @@ private fun LeadLabel(name: String, value: Int) {
   Text("$name: ${signed(value)}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
 }
 
-/** -limit, 0 y limit bajo la barra. */
 @Composable
 private fun Scale(limit: Int) {
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -60,5 +54,4 @@ private fun rangeColors() = SliderDefaults.colors(
 
 private fun snap(x: Float): Int = (x / LEAD_STEP).roundToInt() * LEAD_STEP
 
-/** "+20", "0", "-40". */
 private fun signed(n: Int): String = if (n > 0) "+$n" else "$n"

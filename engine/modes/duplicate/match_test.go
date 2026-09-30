@@ -88,7 +88,6 @@ func newTestMatch(t *testing.T) (*Match, *timing.Fake) {
 	return m, clock
 }
 
-// mustShowRack saca el atril y, si era una mano invalida, espera a que se muestre la buena.
 func mustShowRack(t *testing.T, m *Match, clock *timing.Fake) {
 	t.Helper()
 	if err := m.ShowRack(); err != nil {

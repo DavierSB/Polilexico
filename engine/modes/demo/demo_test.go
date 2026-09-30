@@ -25,7 +25,6 @@ func TestPlayWithScores(t *testing.T) {
 	}
 }
 
-// decodeGame juega una partida con play y lee su JSON en placements (al menos 5 jugadas).
 func decodeGame[T any](t *testing.T, play func() (string, error), placements *[]T) {
 	t.Helper()
 	text, err := play()

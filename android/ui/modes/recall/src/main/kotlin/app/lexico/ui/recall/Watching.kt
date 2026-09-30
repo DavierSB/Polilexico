@@ -30,10 +30,8 @@ import app.lexico.ui.board.ScrabbleBoard
 import app.lexico.ui.common.Mulish
 import kotlinx.coroutines.delay
 
-/** Pausa al terminar la partida, con el tablero completo, antes de quitarlo. */
 private const val FINAL_PAUSE_MS = 2000L
 
-/** La partida jugada a jugada, con los puntos de cada una y cuanto falta; al terminar, [onDone]. */
 @Composable
 internal fun Watching(game: List<ScoredPlacement>, intervalMs: Long, style: BoardStyle, onDone: () -> Unit) {
   val replay = remember(game) { Replay() }
@@ -51,7 +49,6 @@ internal fun Watching(game: List<ScoredPlacement>, intervalMs: Long, style: Boar
   )
 }
 
-/** "MEMORIZA" y la jugada que va, sobre una barra que se llena. */
 @Composable
 private fun WatchingHeading(shown: Int, total: Int) {
   Column(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -68,7 +65,6 @@ private fun WatchingHeading(shown: Int, total: Int) {
   }
 }
 
-/** El tablero de la partida mientras se reproduce, cuantas jugadas van y los puntos de la ultima. */
 @Stable
 private class Replay {
   var board by mutableStateOf(Board.EMPTY)
@@ -78,7 +74,6 @@ private class Replay {
   var latestScore: Int? by mutableStateOf(null)
     private set
 
-  /** Pone las jugadas una a una, cada `intervalMs`. */
   suspend fun play(game: List<ScoredPlacement>, intervalMs: Long) {
     for ((placement, score) in game) {
       delay(intervalMs)

@@ -17,10 +17,6 @@ import androidx.compose.ui.unit.sp
 import app.lexico.navigation.Screen
 import app.lexico.ui.board.BoardStyle
 
-/**
- * El inicio: el menu (☰), el logo, el tablero de adorno (partidas de `demoGame`), las modalidades
- * y, debajo, las partidas guardadas: las que siguen en curso (`inProgress`) y las terminadas.
- */
 @Composable
 fun HomeScreen(
   style: BoardStyle, inProgress: Int, demoGame: suspend () -> List<String>, onMenu: () -> Unit, go: (Screen) -> Unit,
@@ -49,7 +45,6 @@ private fun SavedGamesButtons(inProgress: Int, go: (Screen) -> Unit) {
   OutlinedButton(onClick = { go(Screen.Finished) }, Modifier.fillMaxWidth()) { Text("Mis partidas") }
 }
 
-/** Las modalidades, en el orden de los botones. */
 private val MODES = listOf(
   "Clásica" to Screen.NewClassic,
   "Duplicada" to Screen.NewDuplicate,

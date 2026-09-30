@@ -3,8 +3,6 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-// La partida clasica contra un bot: su pantalla y sus componentes (marcadores, foto y mano
-// del rival, movidas...). Recibe una ClassicView y devuelve acciones; no conoce el motor.
 android {
   namespace = "app.lexico.ui.classic"
   compileSdk = 36

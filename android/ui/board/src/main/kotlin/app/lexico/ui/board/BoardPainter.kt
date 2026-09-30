@@ -19,7 +19,6 @@ import app.lexico.model.Bonus
 import app.lexico.model.Position
 import app.lexico.model.Tile
 
-/** Pinta el tablero en un Canvas con un estilo y unas medidas: casillas, fichas, coordenadas. */
 internal class BoardPainter(
   private val style: BoardStyle,
   private val measurer: TextMeasurer,
@@ -35,7 +34,6 @@ internal class BoardPainter(
     arrow?.let { drawArrow(style, it, geometry.corner(it.position), side) }
   }
 
-  /** Los puntos de la ultima jugada, subiendo desde su ficha ancla y desvaneciendose. */
   fun DrawScope.drawScore(popup: ScorePopup) {
     if (!popup.visible) return
     val text = measurer.measure("+${popup.score}", scoreTextStyle(side * SCORE_SIZE, popup.ink(style)))
@@ -43,13 +41,11 @@ internal class BoardPainter(
     drawScoreText(text, start - Offset(0f, popup.rise * side * 0.8f), popup.alpha)
   }
 
-  /** En vertical, el texto arranca apoyado sobre el borde superior de la palabra. */
   private fun scoreStart(popup: ScorePopup, textHeight: Float): Offset {
     val lift = if (popup.vertical) textHeight / 2 else side * 0.1f
     return geometry.corner(popup.square) + Offset(side / 2, -lift)
   }
 
-  /** Los puntos de la jugada que se esta colocando, en una etiqueta sobre la esquina de su ultima ficha. */
   fun DrawScope.drawLiveScore(live: LiveScore) {
     val text = measurer.measure("${live.points}", textStyle(side * LIVE_SIZE, style.arrowInk, FontWeight.Black))
     val box = Size(maxOf(text.size.width + side * 0.2f, side * 0.5f), text.size.height.toFloat())
@@ -90,7 +86,6 @@ internal class BoardPainter(
     drawRoundRect(style.tileBorder, inset(corner), insetSize(), radius, style = Stroke(width = maxOf(1f, side * 0.035f)))
   }
 
-  /** Numeros 1-15 arriba y letras A-O a la izquierda, en el margen. */
   private fun DrawScope.drawCoordinates() {
     val half = geometry.origin.x / 2
     for (i in 0 until Board.SIZE) {
@@ -100,7 +95,6 @@ internal class BoardPainter(
     }
   }
 
-  /** Texto centrado en `center`, con tamano en pixeles. */
   private fun DrawScope.drawCentered(text: String, center: Offset, px: Float, color: Color, weight: FontWeight) {
     val layout: TextLayoutResult = measurer.measure(text, textStyle(px, color, weight))
     drawText(layout, topLeft = center - Offset(layout.size.width / 2f, layout.size.height / 2f))
@@ -109,35 +103,29 @@ internal class BoardPainter(
   private fun DrawScope.textStyle(px: Float, color: Color, weight: FontWeight): TextStyle =
     TextStyle(color = color, fontSize = (px / density / fontScale).sp, fontFamily = style.fontFamily, fontWeight = weight)
 
-  /** Los puntos: altos y estrechos, con una sombra para que se lean sobre cualquier casilla. */
   private fun DrawScope.scoreTextStyle(px: Float, ink: Color): TextStyle = textStyle(px, ink, FontWeight.Black).copy(
     textGeometricTransform = TextGeometricTransform(scaleX = SCORE_NARROWING),
     shadow = Shadow(Color.Black.copy(alpha = 0.8f), blurRadius = side * 0.25f),
   )
 
-  /** La etiqueta de [drawLiveScore], centrada en la esquina de arriba a la derecha, sin salirse del tablero. */
   private fun DrawScope.liveScoreTopLeft(corner: Offset, box: Size): Offset = Offset(
     (corner.x + side - box.width / 2).coerceIn(0f, size.width - box.width),
     (corner.y - box.height / 2).coerceIn(0f, size.height - box.height),
   )
 
-  /** Con valor, la letra se corre un poco hacia arriba a la izquierda para dejarle sitio. */
   private fun letterCenter(corner: Offset, withValue: Boolean): Offset =
     corner + if (withValue) Offset(side * 0.45f, side * 0.47f) else Offset(side / 2, side / 2)
 
   private fun letterSize(tile: Tile): Float = side * if (tile.letter.length > 1) 0.42f else 0.62f
 
-  /** La casilla sin su linea de borde. */
   private fun inset(corner: Offset): Offset = corner + Offset(edge / 2, edge / 2)
 
   private fun insetSize(): Size = Size(side - edge, side - edge)
 
   private companion object {
-    /** Alto de los puntos, en casillas, y cuanto se estrechan para verse alargados. */
     const val SCORE_SIZE = 1.1f
     const val SCORE_NARROWING = 0.7f
 
-    /** Alto del texto de los puntos en vivo, en casillas. */
     const val LIVE_SIZE = 0.42f
 
     val ALL_POSITIONS = (0 until Board.SIZE).flatMap { row -> (0 until Board.SIZE).map { Position(row, it) } }

@@ -23,16 +23,10 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 
-/** Cuanto se levanta la ficha sobre el dedo, para que se vea donde va a caer. */
 private val LIFT = 40.dp
 
-/** Sobre el tablero, la ficha flotante es algo mayor que una casilla. */
 private const val BOARD_SCALE = 1.3f
 
-/**
- * La ficha arrastrada, dibujada sobre el atril (y, como el atril va despues del tablero, tambien
- * sobre el tablero); nada si no se arrastra ninguna. Seguir al dedo solo la recoloca, sin recomponer.
- */
 @Composable
 internal fun DraggedTile(c: TilePlacer, style: BoardStyle, rackSize: Dp) {
   val i = c.drag.tile ?: return
@@ -44,15 +38,12 @@ internal fun DraggedTile(c: TilePlacer, style: BoardStyle, rackSize: Dp) {
   }
 }
 
-/** El tablero se deja arrastrar sus fichas provisionales (y dice donde esta, para soltarlas). */
 internal fun Modifier.boardDrags(c: TilePlacer, style: BoardStyle, enabled: Boolean): Modifier = this
   .onGloballyPositioned { c.drag.board = it; c.drag.boardMargin = style.showCoordinates }
   .then(if (enabled) Modifier.pointerInput(c, style.showCoordinates) { dragPlacedTiles(c, style) } else Modifier)
 
-/** El atril dice donde esta, para soltar fichas en sus huecos. */
 internal fun Modifier.rackDrops(c: TilePlacer): Modifier = onGloballyPositioned { c.drag.rack = it }
 
-/** La ficha `i` del atril se deja arrastrar (y dice donde esta, para calcular los huecos). */
 internal fun Modifier.rackTileDrags(c: TilePlacer, i: Int, enabled: Boolean): Modifier = this
   .onGloballyPositioned { c.drag.rackTiles[i] = it }
   .then(if (enabled) Modifier.pointerInput(c, i) { dragRackTile(c, i) } else Modifier)
@@ -66,7 +57,6 @@ private suspend fun PointerInputScope.dragRackTile(c: TilePlacer, i: Int) = dete
   c.drag.moveBy(amount)
 }
 
-/** Como [detectDragGestures], pero solo si el dedo baja sobre una ficha provisional. */
 private suspend fun PointerInputScope.dragPlacedTiles(c: TilePlacer, style: BoardStyle) = awaitEachGesture {
   val down = awaitFirstDown(requireUnconsumed = false)
   val from = BoardGeometry(size.width.toFloat(), style.showCoordinates).positionAt(down.position)

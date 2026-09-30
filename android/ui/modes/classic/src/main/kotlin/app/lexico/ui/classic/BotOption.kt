@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-/** Un bot para elegir: su foto, su nombre y su descripcion; el elegido, con borde resaltado. */
 @Composable
 internal fun BotOption(b: Bot, selected: Boolean, select: () -> Unit) {
   Row(Modifier.fillMaxWidth().selectionBorder(selected).clickable(onClick = select).padding(8.dp), verticalAlignment = Alignment.CenterVertically) {

@@ -13,10 +13,6 @@ import androidx.compose.ui.unit.dp
 import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.common.Compact
 
-/**
- * Los botones de tu turno: Jugar, Mezclar/Recoger, Cambiar y Pasar. En modo cambio, en su lugar,
- * confirmar el cambio de las fichas marcadas o cancelarlo.
- */
 @Composable
 fun ActionButtons(
   c: TilePlacer,
@@ -38,7 +34,6 @@ private fun TurnButtons(c: TilePlacer, myTurn: Boolean, onPlay: () -> Unit, onPa
   }
 }
 
-/** Sin fichas puestas, mezcla el atril; con fichas puestas, las recoge. */
 @Composable
 private fun RowScope.ShuffleOrRecall(c: TilePlacer) {
   FilledTonalButton(modifier = Modifier.weight(1f), contentPadding = Compact, onClick = { if (c.hasPlaced) c.recall() else c.shuffle() }) {

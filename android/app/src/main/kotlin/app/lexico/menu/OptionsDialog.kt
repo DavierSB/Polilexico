@@ -16,7 +16,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.InfoButton
 
-/** El dialogo "Opciones" del menu lateral: los puntos al colocar y las letras faltantes. Se guarda al momento; el tablero va con el tema. */
 @Composable
 fun OptionsDialog(settings: Settings, close: () -> Unit) {
   AlertDialog(
@@ -35,17 +34,14 @@ private fun Options(settings: Settings) {
   }
 }
 
-/** Contar los puntos de la jugada mientras se coloca, encendido o apagado. */
 @Composable
 private fun LiveScoreSwitch(on: Boolean, change: (Boolean) -> Unit) =
   OptionSwitch(on, change, "Contar los puntos al colocar", "Mientras pones fichas, el tablero muestra los puntos que valdría la jugada.")
 
-/** En la clasica, al tocar la bolsa: las fichas por salir o solo cuantas quedan. */
 @Composable
 private fun UnseenSwitch(on: Boolean, change: (Boolean) -> Unit) =
   OptionSwitch(on, change, "Mostrar las letras faltantes", "En la clásica, al tocar la bolsa: las fichas que no has visto (bolsa y atril del rival); si no, solo cuántas quedan.")
 
-/** Una opcion encendida o apagada, con una ⓘ que la explica. */
 @Composable
 private fun OptionSwitch(on: Boolean, change: (Boolean) -> Unit, title: String, hint: String) {
   Row(

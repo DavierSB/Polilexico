@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.dp
 
-/** El boton de pausa, sin fondo como los demas de la barra: las dos barras verticales de siempre. */
 @Composable
 fun PauseButton(onClick: () -> Unit) {
   val ink = MaterialTheme.colorScheme.primary
@@ -22,7 +21,6 @@ fun PauseButton(onClick: () -> Unit) {
   }
 }
 
-/** Dos barras redondeadas, cada una de un tercio del ancho, con un tercio de hueco entre ellas. */
 private fun DrawScope.drawPauseBars(ink: Color) {
   val bar = Size(size.width / 3, size.height)
   val radius = CornerRadius(bar.width / 3)

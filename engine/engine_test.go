@@ -39,7 +39,6 @@ func TestBestMovesWithDigraph(t *testing.T) {
 
 func TestBestMovesRejectsImpossiblePosition(t *testing.T) {
 	testenv.Init(t)
-	// Solo hay una Z en la bolsa española.
 	board := boardWith(map[int]string{0: "Z", 1: "Z", 2: "Z"})
 	if _, err := BestMoves(board, "AEIOU", 3); err == nil {
 		t.Fatal("aceptó tres zetas")
@@ -66,7 +65,6 @@ func TestPlacementScore(t *testing.T) {
 func TestPlacementScoreThroughTiles(t *testing.T) {
 	testenv.Init(t)
 	board := boardWith(map[int]string{7*15 + 7: "C", 7*15 + 8: "A", 7*15 + 9: "S", 7*15 + 10: "A"})
-	// La S nueva cae en H12, letra doble.
 	if got, err := PlacementScore(board, "H8 CASAS"); err != nil || got != 8 {
 		t.Errorf("%d %v", got, err)
 	}

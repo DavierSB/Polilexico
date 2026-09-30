@@ -19,10 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.model.Letters
 
-/** Por debajo de este tamano no cabe el valor de la ficha. */
 private val MIN_SIZE_WITH_VALUE = 30.dp
 
-/** Una ficha suelta con los colores del estilo del tablero. `?` = comodin (ficha en blanco). */
 @Composable
 fun RackTile(letter: String, style: BoardStyle, size: Dp, marked: Boolean = false) {
   val shape = RoundedCornerShape(size * style.rounding)
@@ -31,7 +29,6 @@ fun RackTile(letter: String, style: BoardStyle, size: Dp, marked: Boolean = fals
   }
 }
 
-/** Una ficha boca abajo (el atril que no se ve). */
 @Composable
 fun FaceDownTile(style: BoardStyle, size: Dp) {
   val shape = RoundedCornerShape(size * style.rounding)
@@ -39,14 +36,12 @@ fun FaceDownTile(style: BoardStyle, size: Dp) {
   Box(Modifier.size(size).background(backColor, shape).border(1.dp, style.lines, shape))
 }
 
-/** Fondo y bordes: el color de ficha (o de provisional si esta marcada) y un borde resaltado. */
 @Composable
 private fun Modifier.tileFace(style: BoardStyle, shape: Shape, marked: Boolean): Modifier = this
   .background(if (marked) style.pending else style.tile, shape)
   .then(if (style.tileBorder != Color.Transparent) Modifier.border(1.dp, style.tileBorder, shape) else Modifier)
   .then(if (marked) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, shape) else Modifier)
 
-/** La letra en el centro y, si cabe, su valor abajo a la derecha. */
 @Composable
 private fun BoxScope.TileLabel(letter: String, style: BoardStyle, size: Dp) {
   val px = size.value

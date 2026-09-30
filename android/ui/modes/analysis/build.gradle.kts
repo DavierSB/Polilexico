@@ -3,8 +3,6 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-// El analizador: armar una posicion con la paleta de letras y ver las mejores jugadas. Las
-// jugadas las calcula quien lo use (una funcion analizar); no conoce el motor.
 android {
   namespace = "app.lexico.ui.analysis"
   compileSdk = 36

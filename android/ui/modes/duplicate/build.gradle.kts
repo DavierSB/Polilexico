@@ -3,8 +3,6 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-// La duplicada contra el master: su pantalla y sus componentes (reloj del turno, marcador,
-// rondas...). Recibe una DuplicateView y devuelve acciones; no conoce el motor.
 android {
   namespace = "app.lexico.ui.duplicate"
   compileSdk = 36

@@ -16,7 +16,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** Ronda, tus puntos, los del master y los aciertos, con numeros grandes. */
 @Composable
 fun Scoreboard(view: DuplicateView) {
   Row(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp)).padding(vertical = 8.dp)) {

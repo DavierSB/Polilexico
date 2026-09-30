@@ -11,16 +11,10 @@ import (
 
 var errPaused = errors.New("la partida está en pausa")
 
-// Match es una partida clasica en marcha: la partida (Game), sus relojes y el bot, que juega
-// solo cuando le toca. Todo lo decide el motor; la plataforma envia tus jugadas, vuelve a leer
-// el estado cuando recibe un aviso y pausa la partida cuando deja de verse.
-//
-// Se crea en marcha; una cargada con LoadMatch empieza en pausa. En pausa no corre ningun reloj
-// y el bot no juega: si le tocaba, juega al continuar.
 type Match struct {
 	mu       sync.Mutex
 	game     *Game
-	clocks   *clockPair // nil = partida sin tiempo
+	clocks   *clockPair
 	timeout  *timing.Alarm
 	notifier *notify.Notifier
 	paused   bool
@@ -29,9 +23,6 @@ type Match struct {
 	botError string
 }
 
-// NewMatch empieza una partida contra botName (uno de Bots()). Con timeMs 0 no hay relojes;
-// si no, cada jugador tiene timeMs y, al agotarlos, overtimeMs de descuento: quien agota tambien
-// el descuento pierde por tiempo. invalidLosesTurn: ver Game.SetInvalidPlayLosesTurn.
 func NewMatch(botName string, timeMs, overtimeMs int64, invalidLosesTurn bool, l events.Listener) (*Match, error) {
 	g, err := Start(botName)
 	if err != nil {
@@ -40,12 +31,10 @@ func NewMatch(botName string, timeMs, overtimeMs int64, invalidLosesTurn bool, l
 	return newMatch(g, timeMs, overtimeMs, invalidLosesTurn, l), nil
 }
 
-// Game: la partida, para leer su estado (Status, Board, Rack, MoveAt...).
 func (m *Match) Game() *Game {
 	return m.game
 }
 
-// Play hace tu jugada, como Game.Play; despues, si le toca, el bot juega solo.
 func (m *Match) Play(input string) (*Move, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -59,7 +48,6 @@ func (m *Match) Play(input string) (*Move, error) {
 	return played, err
 }
 
-// Pause para los relojes y el bot hasta Resume.
 func (m *Match) Pause() {
 	m.setPaused(true)
 }
@@ -74,14 +62,12 @@ func (m *Match) Paused() bool {
 	return m.paused
 }
 
-// BotError: por que fallo el ultimo turno del bot ("" si no fallo).
 func (m *Match) BotError() string {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	return m.botError
 }
 
-// Close detiene la partida: relojes, temporizadores y avisos. Guardala antes con Save.
 func (m *Match) Close() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -93,14 +79,12 @@ func (m *Match) Close() {
 	m.notifier.Close()
 }
 
-// newMatch pone en marcha la partida g con relojes reales (ver NewMatch).
 func newMatch(g *Game, timeMs, overtimeMs int64, invalidLosesTurn bool, l events.Listener) *Match {
 	g.SetInvalidPlayLosesTurn(invalidLosesTurn)
 	clock := timing.Real()
 	return startMatch(g, newClockPair(clock, timeMs, overtimeMs, 0, 0), clock, l, false)
 }
 
-// startMatch pone en marcha (o en pausa) una partida ya creada.
 func startMatch(g *Game, clocks *clockPair, clock timing.Clock, l events.Listener, paused bool) *Match {
 	m := &Match{game: g, clocks: clocks, timeout: timing.NewAlarm(clock), notifier: notify.New(l), paused: paused}
 	m.mu.Lock()

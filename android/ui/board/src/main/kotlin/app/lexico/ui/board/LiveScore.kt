@@ -10,28 +10,15 @@ import app.lexico.model.Placement
 import app.lexico.model.Position
 import app.lexico.model.Tile
 
-/**
- * Quien sabe los puntos de una colocacion (en la app, el motor). Devuelve `null` si la jugada no
- * cabe en el tablero.
- */
 fun interface PlayScorer {
   suspend fun score(board: Board, placement: Placement): Int?
 }
 
-/**
- * El [PlayScorer] de los tableros donde se colocan fichas ([PlacingBoard]). Lo pone la app segun
- * las opciones; `null` = sin puntos en vivo.
- */
 val LocalPlayScorer = compositionLocalOf<PlayScorer?> { null }
 
-/** Los puntos de la jugada a medio colocar y la casilla sobre la que se muestran (su ultima ficha). */
 @Immutable
 data class LiveScore(val points: Int, val square: Position)
 
-/**
- * Los puntos de las fichas `pending` sobre `board`, recalculados con cada cambio; `null` si no hay
- * [LocalPlayScorer] o las fichas no forman una jugada.
- */
 @Composable
 internal fun rememberLiveScore(board: Board, pending: Map<Position, Tile>): LiveScore? {
   val scorer = LocalPlayScorer.current

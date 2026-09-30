@@ -26,13 +26,10 @@ import app.lexico.ui.common.StartButton
 import app.lexico.ui.common.Stepper
 import kotlin.math.roundToInt
 
-/** Como sera una serie de "¿Cuántas recuerdas?": se juega partida tras partida hasta quedarse sin vidas. */
 data class RecallConfig(
-  /** Pausa entre jugada y jugada al ver la partida (la misma del tablero del inicio). */
   val intervalMs: Long = 1600,
   val wordsPerGame: Int = 10,
   val lives: Int = 3,
-  /** Void (false) o single (true). */
   val single: Boolean = true,
 ) {
   companion object {
@@ -42,7 +39,6 @@ data class RecallConfig(
   }
 }
 
-/** Las opciones de una serie nueva (el ritmo, las palabras por partida, las vidas y la comprobacion) y el record con ellas. */
 @Composable
 fun NewRecallScreen(onBack: () -> Unit, recordFor: (RecallConfig) -> Int, onStart: (RecallConfig) -> Unit) {
   val default = RecallConfig()
@@ -63,16 +59,13 @@ fun NewRecallScreen(onBack: () -> Unit, recordFor: (RecallConfig) -> Int, onStar
   }
 }
 
-/** "Tu récord con estas opciones: 7 palabras", o que aun no hay. */
 @Composable
 private fun RecordLine(best: Int) {
   SectionTitle(if (best > 0) "Tu récord con estas opciones: ${words(best)}" else "Aún no tienes récord con estas opciones.")
 }
 
-/** "1 palabra", "7 palabras". */
 internal fun words(n: Int): String = "$n ${if (n == 1) "palabra" else "palabras"}"
 
-/** El tiempo entre jugadas, en segundos con un decimal. */
 @Composable
 private fun IntervalSetting(seconds: Float, onChange: (Float) -> Unit) {
   val range = RecallConfig.INTERVAL_MS
@@ -80,13 +73,11 @@ private fun IntervalSetting(seconds: Float, onChange: (Float) -> Unit) {
     steps = ((range.last - range.first) / 100 - 1).toInt(), info = "Menos tiempo, más difícil recordar.", onChange = onChange)
 }
 
-/** Una cantidad entera dentro de `range`. */
 @Composable
 private fun CountSetting(title: String, value: Float, range: IntRange, onChange: (Float) -> Unit) {
   Setting(title, "${value.roundToInt()}", value, range.range(), steps = range.steps(), onChange = onChange)
 }
 
-/** Un valor con su deslizador: el titulo (con su ⓘ, si hay `info`) y, a la derecha, el valor elegido. */
 @Composable
 private fun Setting(
   title: String, shown: String, value: Float, range: ClosedFloatingPointRange<Float>, steps: Int,
@@ -103,5 +94,4 @@ private fun Setting(
 
 private fun IntRange.range(): ClosedFloatingPointRange<Float> = first.toFloat()..last.toFloat()
 
-/** Posiciones intermedias del deslizador para que se detenga en cada entero. */
 private fun IntRange.steps(): Int = last - first - 1

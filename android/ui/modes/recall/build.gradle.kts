@@ -3,8 +3,6 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-// "¿Cuántas recuerdas?": se ve una partida rapida y despues hay que armar sus palabras mas
-// valiosas a partir de sus letras. Recibe las partidas de una GameSource; no conoce el motor.
 android {
   namespace = "app.lexico.ui.recall"
   compileSdk = 36

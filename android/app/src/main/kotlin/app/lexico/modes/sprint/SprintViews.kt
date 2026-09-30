@@ -15,10 +15,6 @@ import app.lexico.ui.sprint.Phase
 import app.lexico.ui.sprint.Record
 import app.lexico.ui.sprint.SprintView
 
-/**
- * Lo que dibuja la pantalla de Scrabble Sprint a partir del estado de la serie, el record que habia
- * al empezarla y, al terminar, su record.
- */
 fun sprintView(state: SprintState, notice: String?, best: Int, record: SeriesRecord?): SprintView = SprintView(
   phase = phase(state.phase), lives = state.lives, maxLives = state.maxLives, solved = state.solved, best = best,
   notice = notice ?: state.lastError, paused = state.paused, record = record?.let { Record(it.best, it.isNew) },

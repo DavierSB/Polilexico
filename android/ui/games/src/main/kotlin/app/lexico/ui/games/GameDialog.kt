@@ -7,7 +7,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 
-/** Lo que se ve al tocar una partida en una grafica: su marcador y sus datos. */
 @Composable
 internal fun GameDialog(game: ChartGame, close: () -> Unit) {
   AlertDialog(

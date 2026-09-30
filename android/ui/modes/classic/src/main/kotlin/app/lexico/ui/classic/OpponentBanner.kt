@@ -18,20 +18,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
-/** Cuanto se ve el cartel. */
 private const val BANNER_MS = 2200L
 
-/**
- * Un cartel de un par de segundos, sobre el tablero, cuando el rival pasa o cambia fichas: sin
- * el no se notaria, porque el tablero no cambia. Solo avisa de las movidas nuevas, no de las
- * que ya estaban al abrir la pantalla.
- */
 @Composable
 fun OpponentBanner(moves: List<Move>, opponent: String) {
   rememberBannerText(moves, opponent)?.let { Banner(it) }
 }
 
-/** El texto del cartel mientras debe verse; `null` el resto del tiempo. */
 @Composable
 private fun rememberBannerText(moves: List<Move>, opponent: String): String? {
   var text by remember { mutableStateOf<String?>(null) }
@@ -46,7 +39,6 @@ private fun rememberBannerText(moves: List<Move>, opponent: String): String? {
   return text
 }
 
-/** "HastyBot pasó", "HastyBot cambió 3 fichas"; null si no es un pase o cambio del rival. */
 private fun bannerText(move: Move, opponent: String): String? = when {
   move.side != Side.OPPONENT -> null
   move.type == MoveType.PASS -> "$opponent pasó"

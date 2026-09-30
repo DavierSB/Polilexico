@@ -11,7 +11,6 @@ import (
 	"lexico/engine/internal/timing"
 )
 
-// Cuanto se espera, como mucho, a que HastyBot encuentre un problema.
 const searchTimeout = 2 * time.Minute
 
 func TestMatchPosesAPuzzleWithBingos(t *testing.T) {
@@ -127,8 +126,6 @@ func TestMatchEndsWithoutLives(t *testing.T) {
 	}
 }
 
-// invalidBingo: las fichas del mejor scrabble de la mano, en las mismas casillas pero en otro
-// orden (las del tablero, los ".", no se mueven), de modo que formen palabras no validas.
 func invalidBingo(t *testing.T, m *Match) string {
 	t.Helper()
 	best := m.puzzle.solutions[0]
@@ -145,7 +142,6 @@ func invalidBingo(t *testing.T, m *Match) string {
 	return ""
 }
 
-// rotateOwn rota `shift` puestos las fichas del atril, dejando en su sitio las del tablero (".").
 func rotateOwn(tiles []string, shift int) []string {
 	var own []int
 	for i, tile := range tiles {
@@ -160,7 +156,6 @@ func rotateOwn(tiles []string, shift int) []string {
 	return out
 }
 
-// tileTokens separa "CA[CH]O" en fichas: los digrafos entre corchetes cuentan como una.
 func tileTokens(s string) []string {
 	var out []string
 	for i := 0; i < len(s); {
@@ -178,7 +173,6 @@ func tileTokens(s string) []string {
 	return out
 }
 
-// newTestMatch: una serie con reloj falso que se para en el primer turno con scrabble posible.
 func newTestMatch(t *testing.T) (*Match, *timing.Fake) {
 	t.Helper()
 	testenv.Init(t)
@@ -196,7 +190,6 @@ func TestStartingLivesStayInRange(t *testing.T) {
 	}
 }
 
-// waitForPhase espera a que la serie llegue a `phase` (la busqueda corre en otro hilo).
 func waitForPhase(t *testing.T, m *Match, phase string) {
 	t.Helper()
 	deadline := time.Now().Add(searchTimeout)

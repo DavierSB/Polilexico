@@ -18,7 +18,6 @@ import app.lexico.ui.common.Compact
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.RackTile
 
-/** Tu atril (tocar una ficha la quita) y el boton de analizar. */
 @Composable
 fun AnalysisRack(
   rack: List<String>,

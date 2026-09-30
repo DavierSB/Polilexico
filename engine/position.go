@@ -15,8 +15,6 @@ const boardSize = 15
 
 var errEmptyRack = errors.New("el atril está vacío")
 
-// gameFromPosition: la posicion de BestMoves como partida de macondo, con rack en el atril
-// del jugador 0.
 func gameFromPosition(board, rack string) (*game.Game, error) {
 	rows, err := parseBoard(board)
 	if err != nil {
@@ -32,8 +30,6 @@ func gameFromPosition(board, rack string) (*game.Game, error) {
 	return g, nil
 }
 
-// placedRack: las fichas nuevas de una colocacion ("H8 CA.a" -> "CA?"), como atril. Los
-// comodines, en minuscula, son "?"; las letras del tablero (".") no cuentan.
 func placedRack(placement string) string {
 	fields := strings.Fields(placement)
 	if len(fields) < 2 {
@@ -46,7 +42,6 @@ func placedRack(placement string) string {
 	return rack.String()
 }
 
-// tilesOf: "[CH]A.a" -> ["[CH]", "A", ".", "a"].
 func tilesOf(word string) []string {
 	var tiles []string
 	for rest := []rune(word); len(rest) > 0; {
@@ -57,7 +52,6 @@ func tilesOf(word string) []string {
 	return tiles
 }
 
-// Un digrafo ocupa hasta su "]"; lo demas, una letra.
 func tileLength(word []rune) int {
 	if word[0] == '[' {
 		for i, r := range word {
@@ -103,7 +97,6 @@ func parseSquares(squares []string, alphabet *tilemapping.TileMapping) ([][]tile
 	return rows, nil
 }
 
-// "." = vacia; los digrafos ("CH") se escriben entre corchetes para macondo.
 func parseSquare(sq string, alphabet *tilemapping.TileMapping) (tilemapping.MachineLetter, error) {
 	if sq == "." {
 		return 0, nil

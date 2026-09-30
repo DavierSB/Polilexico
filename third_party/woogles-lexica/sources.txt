@@ -1,4 +1,2 @@
-# Archivos del diccionario, fijados a un commit para que no cambien sin avisar.
-# Formato: name  sha256  url
 FILE2017.kwg   48976d0b14915a613afcbbce7246bddadee34ce691083204989dcf11f287ea15  https://raw.githubusercontent.com/woogles-io/liwords/94c5fc6da4d8212b84da88b43927804b0e31bf59/liwords-ui/public/wasm/2024/FILE2017.kwg
 FILE2017.klv2  3101040aba9c48066391ec8a5bf46ffa5db0d062ede24c589c64ce13fbb7aa5a  https://raw.githubusercontent.com/woogles-io/liwords/94c5fc6da4d8212b84da88b43927804b0e31bf59/liwords-ui/public/wasm/2024/FILE2017.klv2

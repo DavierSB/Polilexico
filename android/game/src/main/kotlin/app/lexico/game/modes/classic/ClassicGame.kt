@@ -12,11 +12,6 @@ import app.lexico.go.classic.Match
 import app.lexico.model.Placement
 import kotlinx.coroutines.CoroutineScope
 
-/**
- * Una partida clasica en marcha contra un bot. El motor lleva los turnos, los relojes y el bot,
- * que juega solo cuando le toca (y, si la partida esta en pausa, al continuar). Finales
- * ([Mode.ENDGAME]) es tambien una clasica, que empieza en un final.
- */
 class ClassicGame private constructor(
   private val match: Match,
   id: String,
@@ -24,10 +19,8 @@ class ClassicGame private constructor(
   saves: SavedGames,
   scope: CoroutineScope,
 ) : LiveGame<ClassicState>(id, mode, saves, scope, ClassicReader(match).read()) {
-  /** El bot rival. */
   val opponent: String = match.game().opponent()
 
-  /** Tu colocacion; devuelve el motivo si el motor la rechaza, o null. */
   suspend fun play(placement: Placement): String? = act { match.play(placement.toString()) }
 
   suspend fun exchange(tiles: List<String>): String? = act { match.play("cambiar " + rackText(tiles)) }
@@ -56,7 +49,6 @@ class ClassicGame private constructor(
         Classic.newMatch(setup.bot, setup.timeMs, setup.overtimeMs, setup.invalidLosesTurn, it)
       }
 
-    /** Busca la partida de Finales (HastyBot contra si mismo) y la empieza; si se cancela, la busqueda se detiene. */
     suspend fun startEndgame(setup: EndgameSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame {
       val search = Classic.newEndgameSearch(setup.maxBag.toLong(), setup.minLead.toLong(), setup.maxLead.toLong())
       return stoppingOnCancel(search::stop) {
@@ -69,7 +61,6 @@ class ClassicGame private constructor(
     suspend fun load(text: String, id: String, mode: Mode, saves: SavedGames, scope: CoroutineScope): ClassicGame =
       open(id, mode, saves, scope) { Classic.loadMatch(text, it) }
 
-    /** Crea la partida en el motor y la conecta a sus avisos. */
     private suspend fun open(id: String, mode: Mode, saves: SavedGames, scope: CoroutineScope, create: (EngineListener) -> Match): ClassicGame {
       val listener = EngineListener()
       val game = engine { ClassicGame(create(listener), id, mode, saves, scope) }

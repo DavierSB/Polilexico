@@ -2,7 +2,6 @@ package timing
 
 import "time"
 
-// Stopwatch acumula el tiempo que pasa mientras esta en marcha.
 type Stopwatch struct {
 	clock   Clock
 	spent   time.Duration
@@ -10,7 +9,6 @@ type Stopwatch struct {
 	running bool
 }
 
-// NewStopwatch empieza parado, con `spent` ya gastado.
 func NewStopwatch(clock Clock, spent time.Duration) *Stopwatch {
 	return &Stopwatch{clock: clock, spent: spent}
 }
@@ -31,7 +29,6 @@ func (s *Stopwatch) Stop() {
 	s.running = false
 }
 
-// Spent: lo gastado, contando el tramo en marcha.
 func (s *Stopwatch) Spent() time.Duration {
 	if !s.running {
 		return s.spent
@@ -43,7 +40,6 @@ func (s *Stopwatch) Running() bool {
 	return s.running
 }
 
-// Reset lo deja parado y a cero.
 func (s *Stopwatch) Reset() {
 	s.spent = 0
 	s.running = false

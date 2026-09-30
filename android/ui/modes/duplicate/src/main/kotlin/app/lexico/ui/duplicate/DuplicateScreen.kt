@@ -24,13 +24,6 @@ import app.lexico.ui.common.Pausable
 import app.lexico.ui.common.TurnClock
 import app.lexico.ui.common.rememberNotice
 
-/**
- * La duplicada contra el master: el tablero, debajo lo que toque en cada fase de la ronda
- * (ver atril, mano invalida, reloj y atril, jugada por confirmar) y abajo el marcador.
- *
- * Solo dibuja la [view] y traduce toques en [actions]. Al cerrarse cada ronda muestra la
- * jugada del master frente a la tuya, y al terminar, la eficiencia.
- */
 @Composable
 fun DuplicateScreen(view: DuplicateView, style: BoardStyle, actions: DuplicateActions, onTheme: (() -> Unit)? = null) {
   val c = rememberTilePlacer(RackRenewal.MASTER_PLAYS)
@@ -66,7 +59,6 @@ private fun TopBar(view: DuplicateView, actions: DuplicateActions, dialogs: Dupl
   )
 }
 
-/** Bajo el tablero: el boton para ver el atril, la mano invalida, o el reloj y tu atril. */
 @Composable
 private fun PhasePanel(phase: Phase, c: TilePlacer, style: BoardStyle, actions: DuplicateActions) {
   when (phase) {
@@ -84,7 +76,6 @@ private fun ClockAndRack(remainingMs: Long?, c: TilePlacer, style: BoardStyle, e
   PlacingRack(c, style, enabled = enabled)
 }
 
-/** Los botones de la fase: jugar o pasar, cancelar la jugada propuesta, o revisar al terminar. */
 @Composable
 private fun PhaseButtons(phase: Phase, c: TilePlacer, actions: DuplicateActions, onNotice: (String) -> Unit) {
   when (phase) {
@@ -97,7 +88,6 @@ private fun PhaseButtons(phase: Phase, c: TilePlacer, actions: DuplicateActions,
   }
 }
 
-/** El atril que se ve en cada fase: el de la ronda mientras se juega o se confirma. */
 private fun rackOf(phase: Phase): List<String> = when (phase) {
   is Phase.Playing -> phase.rack
   is Phase.Confirming -> phase.rack

@@ -9,7 +9,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.EndButtons
 
-/** El resultado al terminar, con los botones para revisar la partida o volver al menu. */
 @Composable
 fun ResultPanel(view: ClassicView, end: GameEnd, onAnalyze: () -> Unit, onMenu: () -> Unit) {
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {

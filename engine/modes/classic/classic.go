@@ -1,5 +1,3 @@
-// Package classic es la partida clasica contra un bot de Woogles, a ciegas (no se ve el atril
-// del bot), con las mismas reglas que ./vsbot.sh en la PC.
 package classic
 
 import (
@@ -16,7 +14,6 @@ import (
 
 const humanName = "Tú"
 
-// Game es una partida clasica. Todos sus metodos se pueden llamar desde cualquier hilo.
 type Game struct {
 	mu               sync.Mutex
 	g                *game.Game
@@ -30,12 +27,10 @@ type Game struct {
 	recordPath       string
 }
 
-// Bots: los bots contra los que se puede jugar, separados por comas, de menor a mayor nivel.
 func Bots() string {
 	return strings.Join(core.BotNames, ",")
 }
 
-// Start empieza una partida contra botName (uno de Bots()); quien abre se sortea.
 func Start(botName string) (*Game, error) {
 	g, err := core.NewGame(humanName, botName)
 	if err != nil {
@@ -46,20 +41,16 @@ func Start(botName string) (*Game, error) {
 	return newGame(g, botName, humanIdx, newGameLog(botName))
 }
 
-// SetInvalidPlayLosesTurn: con true, una jugada con palabras no validas te hace perder el
-// turno (modo "single"); con false se rechaza y puedes corregirla (modo "void").
 func (c *Game) SetInvalidPlayLosesTurn(on bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.invalidLosesTurn = on
 }
 
-// Opponent: el nombre del bot rival.
 func (c *Game) Opponent() string {
 	return c.botName
 }
 
-// HumanStarts dice si te toco abrir la partida en el sorteo.
 func (c *Game) HumanStarts() bool {
 	return c.humanIdx == 0
 }
@@ -72,7 +63,6 @@ func newGame(g *game.Game, botName string, humanIdx int, log *gameLog) (*Game, e
 	return &Game{g: g, bot: b, botName: botName, humanIdx: humanIdx, log: log}, nil
 }
 
-// El humano es el jugador 0 salvo que el sorteo invierta el orden.
 func drawFirstPlayer(g *game.Game) int {
 	if rand.Intn(2) == 0 {
 		return 0

@@ -17,10 +17,6 @@ import androidx.compose.ui.unit.sp
 
 private val HeartRed = Color(0xFFE5484D)
 
-/**
- * Abajo de la pantalla en las series por vidas: los corazones (llenos los que quedan), lo logrado
- * ("Resueltas: 3", `label` y `solved`) y el record a batir.
- */
 @Composable
 fun Lives(lives: Int, maxLives: Int, label: String, solved: Int, best: Int) {
   Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -34,7 +30,6 @@ fun Lives(lives: Int, maxLives: Int, label: String, solved: Int, best: Int) {
   }
 }
 
-/** "Récord: 7" o, si esta serie ya lo supera, "¡Nuevo récord!". Nada si aun no hay record. */
 @Composable
 private fun RecordToBeat(solved: Int, best: Int) {
   if (best == 0) return

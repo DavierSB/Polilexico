@@ -5,7 +5,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 
-/** Pregunta de si o no: `yes` es el texto del boton que confirma. */
 @Composable
 fun ConfirmDialog(question: String, yes: String, no: String, onYes: () -> Unit, onNo: () -> Unit) {
   AlertDialog(
@@ -16,7 +15,6 @@ fun ConfirmDialog(question: String, yes: String, no: String, onYes: () -> Unit, 
   )
 }
 
-/** ¿Abandonar la partida? Se borra de las partidas en curso y no cuenta en las estadisticas. */
 @Composable
 fun ResignDialog(onResign: () -> Unit, onContinue: () -> Unit) = ConfirmDialog(
   "¿Abandonar la partida? Se borra de partidas en curso y no cuenta en tus estadísticas.",

@@ -20,7 +20,6 @@ fun rememberMenuState(): MenuState {
   return remember { MenuState(drawer, scope) }
 }
 
-/** El menu lateral (abierto o cerrado) y los dialogos que se abren desde el: "Opciones" y "Acerca de". */
 @Stable
 class MenuState(val drawer: DrawerState, private val scope: CoroutineScope) {
   var showOptions by mutableStateOf(false)

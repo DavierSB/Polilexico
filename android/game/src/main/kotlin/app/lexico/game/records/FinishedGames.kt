@@ -15,20 +15,16 @@ import app.lexico.model.Board
 import app.lexico.model.Placement
 import java.io.File
 
-/** Las partidas terminadas: los registros que escribe el motor en `dir` al acabar cada una. */
 class FinishedGames internal constructor(private val dir: File) {
-  /** Todas, la mas reciente primero. Los registros que no se puedan leer se saltan. */
   suspend fun list(): List<FinishedGame> = engine {
     logFiles().mapNotNull { f -> runCatching { summary(f.path, Review.open(f.path)).copy(finishedAt = f.lastModified()) }.getOrNull() }
   }
 
-  /** La partida del registro `path`, turno a turno. */
   suspend fun open(path: String): GameReview = engine {
     val game = Review.open(path)
     GameReview(summary(path, game), (0 until game.turnCount()).map { turn(game.turnAt(it)) }, game.startTurn.toInt())
   }
 
-  /** Los -log.json; su nombre lleva la fecha, asi que el orden inverso es el mas reciente primero. */
   private fun logFiles(): List<File> =
     dir.listFiles { f -> f.name.endsWith("-log.json") }.orEmpty().sortedByDescending { it.name }
 
@@ -60,7 +56,6 @@ class FinishedGames internal constructor(private val dir: File) {
   private fun mark(board: Board, m: Mark): ReviewMark =
     ReviewMark(m.who, reviewMove(board, m.description, m.score.toInt(), null), m.rank.toInt().takeIf { it >= 0 })
 
-  /** "H8 CA[CH]A (12 pts)" -> "H8 CACHA", con su colocacion para dibujarla. */
   private fun reviewMove(board: Board, description: String, score: Int, equity: Double?): ReviewMove =
     ReviewMove(moveText(board, description), score, equity, Placement.parseOrNull(description))
 }

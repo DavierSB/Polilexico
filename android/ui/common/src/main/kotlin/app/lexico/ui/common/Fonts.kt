@@ -4,7 +4,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 
-/** Mulish (SIL OFL): la del logo y la de las tablas de jugadas. Sus cifras miden todas lo mismo. */
 val Mulish = FontFamily(
   Font(R.font.mulish_regular, FontWeight.Normal),
   Font(R.font.mulish_semibold, FontWeight.SemiBold),

@@ -7,8 +7,6 @@ import (
 	"time"
 )
 
-// Fake es un reloj para las pruebas: la hora solo avanza con Advance, que dispara en el mismo
-// hilo, y en orden, los temporizadores que vencen.
 type Fake struct {
 	mu     sync.Mutex
 	now    time.Time
@@ -33,8 +31,6 @@ func (c *Fake) AfterFunc(d time.Duration, f func()) Timer {
 	return t
 }
 
-// Advance adelanta la hora d y dispara los temporizadores vencidos (tambien los que estos
-// programen dentro del plazo).
 func (c *Fake) Advance(d time.Duration) {
 	end := c.Now().Add(d)
 	for t := c.nextDue(end); t != nil; t = c.nextDue(end) {
@@ -45,7 +41,6 @@ func (c *Fake) Advance(d time.Duration) {
 	c.mu.Unlock()
 }
 
-// nextDue saca el temporizador vivo que antes vence hasta `end`, y pone la hora en su momento.
 func (c *Fake) nextDue(end time.Time) *fakeTimer {
 	c.mu.Lock()
 	defer c.mu.Unlock()

@@ -3,8 +3,6 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-// Las partidas guardadas: las que siguen en curso, las terminadas y la revision turno a turno
-// de una terminada. Recibe listas y vistas ya armadas; no conoce el motor.
 android {
   namespace = "app.lexico.ui.games"
   compileSdk = 36

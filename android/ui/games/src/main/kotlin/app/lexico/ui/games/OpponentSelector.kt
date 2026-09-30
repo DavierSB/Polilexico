@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-/** El rival de las estadisticas: un selector que empieza en "Todos" y despliega cada bot con su foto. */
 @Composable
 internal fun OpponentSelector(selected: String?, opponents: List<String>, photo: @Composable (String) -> Unit, select: (String?) -> Unit) {
   var open by remember { mutableStateOf(false) }
@@ -32,7 +31,6 @@ internal fun OpponentSelector(selected: String?, opponents: List<String>, photo:
   }
 }
 
-/** "Todos", o la foto y el nombre de un bot. */
 @Composable
 private fun OpponentLabel(opponent: String?, photo: @Composable (String) -> Unit, suffix: String = "") {
   Row(verticalAlignment = Alignment.CenterVertically) {

@@ -20,10 +20,8 @@ import app.lexico.ui.common.StartButton
 import app.lexico.ui.common.Stepper
 import app.lexico.ui.common.TimeField
 
-/** Tiempo de la serie por defecto: 5 minutos. */
 const val DEFAULT_TOTAL_MS = 300_000L
 
-/** Como sera una serie de Scrabble Sprint: el tiempo de toda la serie, las vidas y void (false) o single (true). */
 data class SprintConfig(val totalMs: Long = DEFAULT_TOTAL_MS, val lives: Int = DEFAULT_LIVES, val single: Boolean = true) {
   companion object {
     const val DEFAULT_LIVES = 3
@@ -31,7 +29,6 @@ data class SprintConfig(val totalMs: Long = DEFAULT_TOTAL_MS, val lives: Int = D
   }
 }
 
-/** Las opciones de una serie nueva (el tiempo, las vidas y la comprobacion) y el record con ellas. */
 @Composable
 fun NewSprintScreen(onBack: () -> Unit, recordFor: (SprintConfig) -> Int, onStart: (SprintConfig) -> Unit) {
   var total by remember { mutableStateOf(Durations.format(DEFAULT_TOTAL_MS)) }
@@ -50,11 +47,9 @@ fun NewSprintScreen(onBack: () -> Unit, recordFor: (SprintConfig) -> Int, onStar
   }
 }
 
-/** "Tu récord con estas opciones: 7 manos", o que aun no hay. */
 @Composable
 private fun RecordLine(best: Int) {
   SectionTitle(if (best > 0) "Tu récord con estas opciones: ${hands(best)}" else "Aún no tienes récord con estas opciones.")
 }
 
-/** "1 mano", "7 manos". */
 internal fun hands(n: Int): String = "$n ${if (n == 1) "mano" else "manos"}"

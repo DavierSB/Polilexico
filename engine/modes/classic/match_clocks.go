@@ -6,15 +6,11 @@ import (
 	"lexico/engine/internal/timing"
 )
 
-// Quien tiene el reloj en marcha, en Clocks.Running.
 const (
 	RunningHuman = "human"
 	RunningBot   = "bot"
 )
 
-// Clocks son los relojes en este momento, en milisegundos. HumanMs o BotMs negativo = se acabo
-// el tiempo principal y corre el descuento, del que quedan HumanOvertimeMs o BotOvertimeMs.
-// Running dice cual corre ("" = ninguno: pausa, partida terminada o esperando).
 type Clocks struct {
 	HumanMs         int64
 	HumanOvertimeMs int64
@@ -23,7 +19,6 @@ type Clocks struct {
 	Running         string
 }
 
-// Clocks: los relojes ahora mismo; nil si la partida es sin tiempo.
 func (m *Match) Clocks() *Clocks {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -33,7 +28,6 @@ func (m *Match) Clocks() *Clocks {
 	return m.clocks.snapshot()
 }
 
-// clockPair son los dos cronometros de la partida, con el tiempo y el descuento de cada uno.
 type clockPair struct {
 	human    *timing.Stopwatch
 	bot      *timing.Stopwatch
@@ -41,7 +35,6 @@ type clockPair struct {
 	overtime time.Duration
 }
 
-// newClockPair: nil si timeMs no es positivo (partida sin tiempo).
 func newClockPair(clock timing.Clock, timeMs, overtimeMs, humanSpentMs, botSpentMs int64) *clockPair {
 	if timeMs <= 0 {
 		return nil
@@ -65,7 +58,6 @@ func (p *clockPair) stop() {
 	p.bot.Stop()
 }
 
-// humanLeft: lo que te queda contando el descuento.
 func (p *clockPair) humanLeft() time.Duration {
 	return p.time + p.overtime - p.human.Spent()
 }
@@ -77,7 +69,6 @@ func (p *clockPair) snapshot() *Clocks {
 	return c
 }
 
-// remaining: el tiempo principal que queda (negativo en el descuento) y el descuento que queda.
 func (p *clockPair) remaining(w *timing.Stopwatch) (int64, int64) {
 	left := p.time - w.Spent()
 	return left.Milliseconds(), max(p.overtime+min(left, 0), 0).Milliseconds()

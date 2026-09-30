@@ -14,7 +14,6 @@ import app.lexico.ui.classic.MoveType
 import app.lexico.ui.classic.OpponentRack
 import app.lexico.ui.classic.Side
 
-/** Lo que dibuja la pantalla clasica a partir del estado de la partida. */
 fun classicView(state: ClassicState, opponent: String, notice: String?): ClassicView = ClassicView(
   opponent = alias(opponent), board = state.board, rack = state.rack, opponentRack = opponentRack(state),
   myScore = state.myScore, opponentScore = state.opponentScore, turn = turn(state),
@@ -25,7 +24,6 @@ fun classicView(state: ClassicState, opponent: String, notice: String?): Classic
   notice = notice ?: state.botError, paused = state.paused,
 )
 
-/** Boca abajo mientras se juega; al terminar, lo que le quedo al rival. */
 private fun opponentRack(state: ClassicState): OpponentRack =
   if (state.result == null) OpponentRack.Hidden(state.opponentTiles) else OpponentRack.Visible(state.opponentRack)
 

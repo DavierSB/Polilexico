@@ -22,7 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** Una ⓘ que, al tocarla, explica `text` en un dialogo titulado `title`. */
 @Composable
 fun InfoButton(title: String, text: String, modifier: Modifier = Modifier) {
   var open by remember { mutableStateOf(false) }
@@ -30,7 +29,6 @@ fun InfoButton(title: String, text: String, modifier: Modifier = Modifier) {
   if (open) InfoDialog(title, text) { open = false }
 }
 
-/** Una "i" en un circulo, del color del tema. */
 @Composable
 fun InfoIcon(modifier: Modifier = Modifier) {
   val color = MaterialTheme.colorScheme.primary
@@ -39,7 +37,6 @@ fun InfoIcon(modifier: Modifier = Modifier) {
   }
 }
 
-/** La explicacion de una ⓘ. */
 @Composable
 fun InfoDialog(title: String, text: String, close: () -> Unit) {
   AlertDialog(

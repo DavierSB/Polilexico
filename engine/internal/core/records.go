@@ -11,9 +11,6 @@ import (
 	"github.com/domino14/macondo/gcgio"
 )
 
-// WriteRecord guarda una partida terminada en la carpeta de Init: el registro log como
-// <prefix>-<fecha>-log.json y la partida como .gcg. Devuelve la ruta del -log.json, o ""
-// si no se pudo escribir (el registro es opcional: no detiene la partida).
 func WriteRecord(prefix string, log any, g *game.Game) string {
 	base := recordBase(prefix)
 	if err := writeJSON(base+"-log.json", log); err != nil {

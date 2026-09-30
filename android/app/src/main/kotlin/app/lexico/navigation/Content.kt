@@ -17,13 +17,11 @@ import app.lexico.ui.duplicate.NewDuplicateScreen
 import app.lexico.ui.recall.NewRecallScreen
 import app.lexico.ui.sprint.NewSprintScreen
 
-/** La pantalla actual. Empezar una partida reemplaza sus opciones; cada partida vive mientras su pantalla este en la pila. */
 @Composable
 internal fun Content(screen: Screen, lexico: Lexico, nav: Navigator, settings: Settings, themes: ThemeState, onMenu: () -> Unit) {
   if (screen.isGame) GameScreens(screen, lexico, nav, themes) else OtherScreens(screen, lexico, nav, settings, onMenu)
 }
 
-/** Las partidas en marcha. */
 @Composable
 private fun GameScreens(screen: Screen, lexico: Lexico, nav: Navigator, themes: ThemeState) {
   when (screen) {
@@ -37,7 +35,6 @@ private fun GameScreens(screen: Screen, lexico: Lexico, nav: Navigator, themes: 
   }
 }
 
-/** El inicio, los menus, las opciones de partida nueva, el analizador y las partidas guardadas. */
 @Composable
 private fun OtherScreens(screen: Screen, lexico: Lexico, nav: Navigator, settings: Settings, onMenu: () -> Unit) {
   val style = settings.theme.board

@@ -16,7 +16,6 @@ import app.lexico.model.Letters
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.RackTile
 
-/** El teclado del analizador: todas las letras y el comodin, como fichas. `marked` = elegida. */
 @Composable
 fun LetterPalette(style: BoardStyle, marked: String?, modifier: Modifier = Modifier, onLetter: (String) -> Unit) {
   FlowRow(
@@ -32,7 +31,6 @@ fun LetterPalette(style: BoardStyle, marked: String?, modifier: Modifier = Modif
 private fun PaletteKey(letter: String, style: BoardStyle, marked: Boolean, onClick: () -> Unit) {
   Box(Modifier.clickable(onClick = onClick), contentAlignment = Alignment.Center) {
     RackTile(letter, style, size = 36.dp, marked = marked)
-    // La ficha del comodin va en blanco; en la paleta se marca con "?".
     if (letter == Letters.BLANK) Text("?", color = style.blank, fontWeight = FontWeight.Bold)
   }
 }

@@ -20,10 +20,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/*
- * Las partidas guardadas y terminadas, como las muestran las pantallas de :ui:games.
- */
-
 private val SAVED_AT = SimpleDateFormat("d MMM, HH:mm", Locale("es"))
 private val FINISHED_AT = SimpleDateFormat("d/M/yyyy HH:mm", Locale("es"))
 
@@ -33,14 +29,12 @@ fun inProgressItem(saved: SavedGame): InProgressItem =
 fun finishedItem(g: FinishedGame): FinishedItem =
   FinishedItem(g.path, title(g), detail(g), "${g.myScore} – ${g.opponentScore}", won(g.outcome))
 
-/** La carpeta de "Mis partidas" de cada modalidad: Finales es un minijuego. */
 fun folderOf(mode: Mode): GameFolder = when (mode) {
   Mode.CLASSIC -> GameFolder.CLASSIC
   Mode.DUPLICATE -> GameFolder.DUPLICATE
   Mode.ENDGAME -> GameFolder.MINIGAMES
 }
 
-/** En duplicada gana quien mas puntos hace, asi que sus jugadas van sin equity. */
 fun reviewView(review: GameReview): ReviewView {
   val equity = review.game.mode != Mode.DUPLICATE
   val title = "${modeName(review.game.mode)} · ${review.game.myScore}–${review.game.opponentScore}"
@@ -58,13 +52,11 @@ private fun title(g: FinishedGame): String = when (g.mode) {
   else -> "${modeName(g.mode)} contra ${alias(g.opponent)}"
 }
 
-/** "27/9/2026 23:30", y en duplicada los aciertos. */
 private fun detail(g: FinishedGame): String {
   val date = finishedAt(g)
   return if (g.mode == Mode.DUPLICATE) "$date · ${g.hits} aciertos" else date
 }
 
-/** Cuando termino, en la hora del telefono (la del registro va en UTC: el motor no sabe la zona). */
 fun finishedAt(g: FinishedGame): String = FINISHED_AT.format(Date(g.finishedAt))
 
 private fun won(outcome: Outcome): Boolean? = when (outcome) {
@@ -76,7 +68,6 @@ private fun won(outcome: Outcome): Boolean? = when (outcome) {
 private fun turnView(t: ReviewTurn, equity: Boolean): ReviewTurnView =
   ReviewTurnView(t.number, t.player, t.rack, t.board, candidates(t, equity), t.marks.map { markView(it, equity) })
 
-/** Las mejores jugadas, cada una con quien la jugo (si alguien). */
 private fun candidates(t: ReviewTurn, equity: Boolean): List<RankedMove> =
   t.candidates.mapIndexed { i, m -> rankedMove(m, equity, t.marks.filter { it.rank == i }.joinToString(" ") { alias(it.who) }) }
 

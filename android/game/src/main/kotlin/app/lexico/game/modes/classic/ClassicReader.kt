@@ -14,7 +14,6 @@ import app.lexico.go.classic.Result
 import app.lexico.model.Board
 import app.lexico.model.Position
 
-/** Lee del motor el estado de una partida clasica en marcha y lo traduce a [ClassicState]. */
 internal class ClassicReader(private val match: Match) {
   fun read(): ClassicState {
     val game = match.game()
@@ -47,7 +46,6 @@ internal class ClassicReader(private val match: Match) {
 
   private fun result(r: Result): ClassicResult = ClassicResult(Outcome.of(r.outcome), r.lostOnTime, r.recordPath)
 
-  /** Las fichas de la ultima jugada, para resaltarlas. */
   private fun latestSquares(moves: List<PlayedMove>): Set<Position> =
     moves.lastOrNull()?.takeIf { it.kind == MoveKind.PLACEMENT }?.let { placedSquares(it.coords, it.tiles) }.orEmpty()
 

@@ -22,12 +22,6 @@ import app.lexico.ui.common.BarTextButton
 import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.Header
 
-/**
- * Tus estadisticas, como en Woogles Offline: una pestaña por modalidad (en clasica, con un
- * selector de rival), la tabla de datos y las graficas. `pageFor` calcula lo que se ve para cada
- * filtro; `photo` dibuja la foto de un bot. "Reiniciar" hace que solo cuenten las partidas que
- * se terminen a partir de ahora.
- */
 @Composable
 fun StatsScreen(
   opponents: List<String>,
@@ -67,7 +61,6 @@ private fun StatsContent(
   }
 }
 
-/** En clasica: tus puntos, o tus puntos contra los del rival. En duplicada: la eficiencia. */
 @Composable
 private fun ColumnScope.Charts(mode: StatsMode, games: List<ChartGame>) {
   if (mode == StatsMode.CLASSIC) ClassicCharts(games) else DuplicateChart(games)

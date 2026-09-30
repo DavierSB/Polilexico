@@ -55,14 +55,12 @@ class RackOrderTest {
     assertEquals(listOf("A", "C", "E"), screen(c))
   }
 
-  /** Un atril que se ve en pantalla tal cual `screen`. */
   private fun placerWith(renewal: RackRenewal, screen: List<String>) = TilePlacer(renewal).apply {
     reset(Board.EMPTY, screen)
     order.clear()
     order.addAll(screen.indices)
   }
 
-  /** Pone en el centro (con la flecha) la ficha `letter` del atril. */
   private fun playFirst(c: TilePlacer, letter: String) {
     c.tapBoard(Position(7, 7))
     c.tapRack(c.tiles.indexOf(letter))

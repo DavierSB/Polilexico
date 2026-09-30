@@ -11,10 +11,6 @@ import androidx.compose.runtime.setValue
 import app.lexico.ui.common.BagDialog
 import app.lexico.ui.common.ResignDialog
 
-/**
- * Los dialogos de la partida, incluidos los que se abren solos: el cierre de cada ronda que
- * termine con la pantalla abierta (no las que venian de una partida continuada) y el final.
- */
 @Composable
 internal fun rememberDuplicateDialogs(view: DuplicateView): DuplicateDialogs {
   val dialogs = remember { DuplicateDialogs() }
@@ -27,7 +23,6 @@ internal fun rememberDuplicateDialogs(view: DuplicateView): DuplicateDialogs {
   return dialogs
 }
 
-/** Que dialogos estan abiertos. [round] es la ronda recien cerrada que se esta mostrando. */
 @Stable
 internal class DuplicateDialogs {
   var moves by mutableStateOf(false)
@@ -36,7 +31,6 @@ internal class DuplicateDialogs {
   var round: Round? by mutableStateOf(null)
   var end by mutableStateOf(false)
 
-  /** Abre el final si la partida termino, o la ronda nueva si se cerro alguna desde `seen`. */
   fun announce(view: DuplicateView, seen: Int) {
     if (view.phase == Phase.Finished) end = true
     else if (view.rounds.size > seen) round = view.rounds.last()

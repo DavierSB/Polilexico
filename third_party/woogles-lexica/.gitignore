@@ -1,4 +1,3 @@
-# Se descargan con download.sh; solo se versiona la referencia (sources.txt).
 *.kwg
 *.klv2
 *.part

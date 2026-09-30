@@ -28,10 +28,6 @@ import app.lexico.ui.board.ScrabbleBoard
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.RankedMoveList
 
-/**
- * Una partida terminada, turno a turno: el tablero de ese momento, el atril, lo que se jugo y las
- * mejores jugadas del motor. Tocar una jugada la dibuja sobre el tablero.
- */
 @Composable
 fun ReviewScreen(review: ReviewView, style: BoardStyle, onBack: () -> Unit) {
   var index by remember { mutableIntStateOf(review.startTurn.coerceIn(0, maxOf(0, review.turns.lastIndex))) }
@@ -43,7 +39,6 @@ fun ReviewScreen(review: ReviewView, style: BoardStyle, onBack: () -> Unit) {
   }
 }
 
-/** ‹ Turno 4/31 · HastyBot ›, con el atril debajo. */
 @Composable
 private fun TurnNavigator(turn: ReviewTurnView, index: Int, count: Int, go: (Int) -> Unit) {
   Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -56,7 +51,6 @@ private fun TurnNavigator(turn: ReviewTurnView, index: Int, count: Int, go: (Int
   }
 }
 
-/** El tablero con la jugada elegida (por defecto, la que se jugo), lo jugado y las mejores. */
 @Composable
 private fun ColumnScope.TurnContent(turn: ReviewTurnView, style: BoardStyle) {
   var selected by remember(turn) { mutableStateOf(turn.marks.firstOrNull()?.move) }

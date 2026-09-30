@@ -19,11 +19,6 @@ import app.lexico.ui.common.Header
 import app.lexico.ui.common.Lives
 import app.lexico.ui.common.ThemeButton
 
-/**
- * "¿Cuántas recuerdas?": se ve la partida, jugada a jugada; al terminar se quita el tablero y
- * hay que armar sus palabras mas valiosas, una a una. Al cerrar cada partida, sus aciertos; sin
- * vidas, el total, el record y si jugar otra. Abajo, las vidas y las palabras recordadas.
- */
 @Composable
 fun RecallScreen(session: RecallSession, style: BoardStyle, onExit: () -> Unit, onTheme: (() -> Unit)? = null) {
   Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {

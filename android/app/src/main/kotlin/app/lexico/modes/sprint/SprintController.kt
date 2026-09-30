@@ -9,7 +9,6 @@ import app.lexico.ui.sprint.SprintActions
 import app.lexico.ui.sprint.SprintConfig
 import kotlinx.coroutines.CoroutineScope
 
-/** Une una serie de Scrabble Sprint del juego con su pantalla: las acciones de la pantalla van al juego. */
 @Stable
 class SprintController(
   private val game: SprintGame,
@@ -26,5 +25,4 @@ class SprintController(
   override fun restart() = onRestart()
 }
 
-/** Las opciones de la pantalla de serie nueva, como las pide el juego. */
 fun SprintConfig.toSetup(): SprintSetup = SprintSetup(totalMs = totalMs, lives = lives, invalidCostsLife = single)

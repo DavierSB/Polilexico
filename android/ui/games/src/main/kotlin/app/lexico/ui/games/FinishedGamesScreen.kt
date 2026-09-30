@@ -14,13 +14,8 @@ import app.lexico.ui.common.Header
 
 private val Win = Color(0xFF66BB6A)
 
-/**
- * Una partida terminada: "Clásica contra HastyBot", "27 sep 2026, 23:10", el marcador ("421 – 485")
- * y si la ganaste (null = empate).
- */
 data class FinishedItem(val key: String, val title: String, val detail: String, val score: String, val won: Boolean?)
 
-/** Las partidas terminadas de una carpeta, la mas reciente primero: tocar una la abre para revisarla. */
 @Composable
 fun FinishedGamesScreen(folder: GameFolder, items: List<FinishedItem>, onBack: () -> Unit, onOpen: (String) -> Unit) {
   Column(Modifier.fillMaxSize()) {
@@ -32,7 +27,6 @@ fun FinishedGamesScreen(folder: GameFolder, items: List<FinishedItem>, onBack: (
   }
 }
 
-/** El marcador, en verde si ganaste y en rojo si perdiste. */
 @Composable
 private fun Score(item: FinishedItem) {
   val color = when (item.won) {

@@ -25,17 +25,11 @@ import app.lexico.ui.common.Notice
 import app.lexico.ui.common.RankedMoveList
 import kotlinx.coroutines.launch
 
-/**
- * El analizador: un tablero y un atril cualesquiera, armados con la paleta de letras, y las
- * mejores jugadas que da el [analyst] para esa posicion. Mientras hay resultados, la paleta
- * deja su sitio a la lista; tocar una jugada la dibuja en el tablero.
- */
 @Composable
 fun AnalyzerScreen(style: BoardStyle, analyst: Analyst, onBack: () -> Unit) {
   val editor = rememberPositionEditor()
   val analysis = rememberAnalysis()
   val scope = rememberCoroutineScope()
-  // Cualquier cambio en la posicion invalida el analisis anterior.
   LaunchedEffect(editor.version) { analysis.clear() }
   Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
     Header("Analizador", onBack) { BarTextButton("Vaciar", editor::clear) }
@@ -47,7 +41,6 @@ fun AnalyzerScreen(style: BoardStyle, analyst: Analyst, onBack: () -> Unit) {
   if (editor.pendingBlank != null) BlankLetterDialog(editor::placeBlank)
 }
 
-/** La posicion con la jugada elegida encima; la flecha solo mientras se edita el tablero. */
 @Composable
 private fun AnalysisBoard(editor: PositionEditor, analysis: Analysis, style: BoardStyle) {
   val editing = analysis.result == null
@@ -58,12 +51,10 @@ private fun AnalysisBoard(editor: PositionEditor, analysis: Analysis, style: Boa
   ) { if (editing) editor.tapSquare(it) }
 }
 
-/** Las mejores jugadas, con los botones para ponerla en el tablero o volver a editar. */
 @Composable
 private fun ColumnScope.ResultsPanel(editor: PositionEditor, analysis: Analysis) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Text("Mejores jugadas", Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
-    // Poner la elegida en el tablero ayuda a montar posiciones jugada a jugada.
     analysis.selected?.takeIf { it.placement != null }?.let { c ->
       TextButton(contentPadding = Compact, onClick = { editor.placeCandidate(c) }) { Text("Ponerla") }
     }
@@ -72,7 +63,6 @@ private fun ColumnScope.ResultsPanel(editor: PositionEditor, analysis: Analysis)
   RankedMoveList(analysis.result.orEmpty(), analysis.selected, Modifier.weight(1f)) { analysis.selected = it }
 }
 
-/** Donde van las letras y la paleta para ponerlas. */
 @Composable
 private fun ColumnScope.EditPanel(editor: PositionEditor, style: BoardStyle) {
   TargetSelector(editor.target, editor::selectTarget)

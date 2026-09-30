@@ -9,23 +9,16 @@ import app.lexico.go.sprint.Sprint
 import app.lexico.model.Placement
 import kotlinx.coroutines.CoroutineScope
 
-/**
- * Una serie de Scrabble Sprint en marcha. El motor lleva todo: la busqueda de manos con
- * HastyBot, el reloj de la serie y las vidas. Es un minijuego: no se guarda al salir.
- */
 class SprintGame private constructor(
   private val match: Match,
   id: String,
   saves: SavedGames,
   scope: CoroutineScope,
 ) : LiveGame<SprintState>(id, null, saves, scope, SprintReader(match).read()) {
-  /** Tu scrabble; si no lo es (o no es valido), el motor dice por que y la mano sigue. */
   suspend fun propose(placement: Placement): String? = act { match.propose(placement.toString()) }
 
-  /** Rendirse en la mano en juego: cuesta una vida. */
   suspend fun giveUp(): String? = act { match.giveUp() }
 
-  /** De la mano cerrada a la siguiente. */
   suspend fun next(): String? = act { match.next() }
 
   override fun read(): SprintState = SprintReader(match).read()
@@ -45,7 +38,6 @@ class SprintGame private constructor(
   override fun closeMatch() = match.close()
 
   internal companion object {
-    /** Crea la serie en el motor y la conecta a sus avisos. */
     suspend fun start(setup: SprintSetup, id: String, saves: SavedGames, scope: CoroutineScope): SprintGame {
       val listener = EngineListener()
       val game = engine { SprintGame(Sprint.newMatch(setup.totalMs, setup.lives.toLong(), setup.invalidCostsLife, listener), id, saves, scope) }

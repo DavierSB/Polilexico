@@ -28,11 +28,9 @@ import app.lexico.ui.common.NightColors
 import app.lexico.ui.common.PolimitaColors
 import app.lexico.ui.common.SkyColors
 
-/** Un tema de la aplicacion: la paleta (botones, relojes, bordes, textos) y el tablero con sus fichas. */
 @Immutable
 data class AppTheme(val name: String, val colors: ColorScheme, val board: BoardStyle)
 
-/** Los temas. [Polimita] es el principal; los demas son los de algunos rivales. */
 object AppThemes {
   val Polimita = AppTheme("Polimita", PolimitaColors, BoardStyles.Polimita)
   val Leaf = AppTheme("Hoja", LeafColors, BoardStyles.Leaf)
@@ -41,17 +39,14 @@ object AppThemes {
 
   val ALL = listOf(Polimita, Leaf, Sky, Night)
 
-  /** El tema con ese nombre, o [Polimita] si no hay ninguno. */
   fun byName(name: String?): AppTheme = ALL.find { it.name == name } ?: Polimita
 }
 
-/** Lo de dentro, con la paleta del tema. */
 @Composable
 fun Themed(theme: AppTheme, content: @Composable () -> Unit) {
   LexicoTheme(theme.colors, content)
 }
 
-/** Elegir un tema: cada uno con su nombre y sus colores (el principal, las fichas y un premio). */
 @Composable
 fun ThemeDialog(current: AppTheme, choose: (AppTheme) -> Unit, close: () -> Unit) {
   AlertDialog(
@@ -78,7 +73,6 @@ private fun ThemeChoice(theme: AppTheme, selected: Boolean, choose: () -> Unit) 
   }
 }
 
-/** Tres puntos de color: el principal del tema, sus fichas y su premio mas fuerte. */
 @Composable
 private fun Swatches(theme: AppTheme) {
   Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {

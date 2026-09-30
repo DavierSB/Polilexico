@@ -8,7 +8,6 @@ import app.lexico.ui.duplicate.Phase
 import app.lexico.ui.duplicate.Round
 import app.lexico.ui.duplicate.RoundPlay
 
-/** Lo que dibuja la pantalla de duplicada a partir del estado de la partida. */
 fun duplicateView(state: DuplicateState, notice: String?): DuplicateView = DuplicateView(
   board = state.board, phase = phase(state.phase), rounds = state.rounds.map(::round), bag = state.bag,
   notice = notice ?: state.lastError, paused = state.paused,

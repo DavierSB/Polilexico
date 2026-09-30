@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.RackTile
 
-/** "¡Mano inválida!" y el atril que no valia, mientras se saca uno nuevo. */
 @Composable
 fun InvalidRack(rack: List<String>, style: BoardStyle) {
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

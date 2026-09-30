@@ -12,10 +12,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/**
- * El atril del [TilePlacer]: sus fichas en el orden de pantalla; las ya puestas (o arrastradas),
- * casi invisibles. Tambien dibuja la ficha que se arrastra, del atril o del tablero.
- */
 @Composable
 fun PlacingRack(c: TilePlacer, style: BoardStyle, enabled: Boolean, size: Dp = 46.dp) {
   Box(Modifier.fillMaxWidth().rackDrops(c)) {
@@ -26,7 +22,6 @@ fun PlacingRack(c: TilePlacer, style: BoardStyle, enabled: Boolean, size: Dp = 4
   }
 }
 
-/** Una fila de fichas de solo lectura (un atril ajeno, la mano de una ronda...). */
 @Composable
 fun TileRow(tiles: List<String>, style: BoardStyle, size: Dp, modifier: Modifier = Modifier) {
   Row(modifier, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -34,10 +29,6 @@ fun TileRow(tiles: List<String>, style: BoardStyle, size: Dp, modifier: Modifier
   }
 }
 
-/**
- * La ficha `i` del atril: marcada si esta elegida (o para cambiar), tenue si ya esta puesta o se
- * esta arrastrando. Fuera del modo cambio, se puede arrastrar.
- */
 @Composable
 private fun PlacingRackTile(c: TilePlacer, i: Int, style: BoardStyle, enabled: Boolean, size: Dp) {
   val isPlaced = i in c.placed.values

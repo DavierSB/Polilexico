@@ -9,8 +9,6 @@ import (
 	"lexico/engine/internal/core"
 )
 
-// gameLog y turnRecord son el -log.json de cmd/vsbot, campo por campo, para poder revisar
-// en la PC las partidas del telefono.
 type gameLog struct {
 	StartedAt   time.Time    `json:"started_at"`
 	HumanName   string       `json:"human_name"`
@@ -18,10 +16,8 @@ type gameLog struct {
 	Turns       []turnRecord `json:"turns"`
 	FinalScores [2]int       `json:"final_scores"`
 	Winner      string       `json:"winner"`
-	// Mode: "" en la clasica, ModeEndgame en Finales; StartTurn: en Finales, el primer turno que
-	// jugaste tu (desde 0), donde empieza la revision. Campos que vsbot no tiene.
-	Mode      string `json:"mode,omitempty"`
-	StartTurn int    `json:"start_turn,omitempty"`
+	Mode        string       `json:"mode,omitempty"`
+	StartTurn   int          `json:"start_turn,omitempty"`
 }
 
 type turnRecord struct {
@@ -34,15 +30,12 @@ type turnRecord struct {
 	WasBest     bool             `json:"was_best"`
 }
 
-// Log: el registro de la partida en JSON, con las mejores jugadas de cada turno y la
-// realizada, para la pantalla de revision.
 func (c *Game) Log() (string, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return core.JSON(c.log)
 }
 
-// newTurnRecord anota m antes de jugarla (el tablero y el turno son los de antes).
 func (c *Game) newTurnRecord(m *move.Move, play core.Play, candidates []core.Candidate) turnRecord {
 	r := turnRecordOf(c.g, m, play, candidates, len(c.log.Turns)+1)
 	r.PlayerName = c.playerName(c.humanToMove())
@@ -55,7 +48,6 @@ func (c *Game) finishIfOver() {
 	}
 }
 
-// finish cierra el registro y lo escribe en disco.
 func (c *Game) finish() {
 	c.log.FinalScores = [2]int{c.score(true), c.score(false)}
 	c.log.Winner = c.winnerName()
@@ -86,7 +78,6 @@ func (c *Game) winnerName() string {
 	return "empate"
 }
 
-// turnRecordOf anota m, del turno num, sin el nombre de quien la juega.
 func turnRecordOf(g *game.Game, m *move.Move, play core.Play, candidates []core.Candidate, num int) turnRecord {
 	actual := core.CandidateOf(play, float64(m.Equity()))
 	return turnRecord{TurnNum: num, Rack: m.FullRack(), BoardBefore: core.RenderBoard(g), GenList: candidates,

@@ -12,10 +12,8 @@ import kotlinx.coroutines.CancellationException
 @Composable
 internal fun rememberAnalysis(): Analysis = remember { Analysis() }
 
-/** El resultado del analisis de la posicion: las jugadas, la elegida y si se esta calculando. */
 @Stable
 internal class Analysis {
-  /** Las mejores jugadas; `null` mientras se edita la posicion. */
   var result: List<RankedMove>? by mutableStateOf(null)
     private set
   var selected: RankedMove? by mutableStateOf(null)
@@ -24,7 +22,6 @@ internal class Analysis {
   var running by mutableStateOf(false)
     private set
 
-  /** Pide al [analyst] las jugadas de la posicion del [editor]. */
   suspend fun run(analyst: Analyst, editor: PositionEditor) {
     running = true
     try {
@@ -38,7 +35,6 @@ internal class Analysis {
     }
   }
 
-  /** Vuelve a editar: descarta el analisis. */
   fun clear() {
     result = null
     selected = null

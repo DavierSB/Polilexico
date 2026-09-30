@@ -2,9 +2,6 @@ plugins {
   alias(libs.plugins.android.library)
 }
 
-// Las partidas en marcha para Android: arranca el motor, crea y continua partidas, escucha sus
-// avisos, guarda en disco y traduce los tipos del motor. No tiene reglas (son del motor) ni nada
-// visual; es lo unico que ve las clases de gomobile.
 android {
   namespace = "app.lexico.game"
   compileSdk = 36

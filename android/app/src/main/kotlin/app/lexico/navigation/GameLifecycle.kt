@@ -17,24 +17,18 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import app.lexico.game.LiveGame
 
-/**
- * Una partida corre solo mientras se ve: se pausa si la app pasa a segundo plano o se apaga la
- * pantalla, y al salir de su pantalla se cierra, pausada y guardada para continuarla.
- */
 @Composable
 fun PauseWhenHidden(game: LiveGame<*>) {
   LifecycleEventEffect(Lifecycle.Event.ON_STOP) { game.pause() }
   DisposableEffect(game) { onDispose { game.close() } }
 }
 
-/** Lo que devuelve `create` para esta `key`, una sola vez; null mientras se prepara. */
 @Composable
 fun <T> rememberCreated(key: Any, create: suspend () -> T): Result<T>? {
   val result by produceState<Result<T>?>(null, key) { value = runCatching { create() } }
   return result
 }
 
-/** Espera a que algo este listo (con `waiting` de texto) o dice por que fallo. */
 @Composable
 fun <T> WhenReady(result: Result<T>?, waiting: String, content: @Composable (T) -> Unit) {
   when {

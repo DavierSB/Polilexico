@@ -6,11 +6,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import app.lexico.model.Bonus
 
-/**
- * Todo lo visual del tablero. Para un estilo propio: `BoardStyles.Isc.copy(tile = ...)`.
- * Las medidas relativas (`rounding`, `lineWidth`) son fracciones del lado de una casilla, asi
- * que el estilo se ve igual a cualquier tamano.
- */
 @Immutable
 data class BoardStyle(
   val name: String,
@@ -23,7 +18,6 @@ data class BoardStyle(
   val tripleWord: Color,
   val center: Color = doubleWord,
   val bonusText: Color,
-  /** Textos de cada premio; vacio = sin texto. */
   val labels: Map<Bonus, String> = SHORT_LABELS,
   val tile: Color,
   val tileBorder: Color = Color.Transparent,
@@ -31,18 +25,13 @@ data class BoardStyle(
   val blank: Color = letter,
   val value: Color = letter,
   val showValues: Boolean = true,
-  /** Fondo de las fichas de la ultima jugada; `null` = no resaltar. */
   val latest: Color? = null,
-  /** Fondo de las fichas que el usuario esta colocando. */
   val pending: Color,
-  /** Casilla de la flecha de escritura y la flecha en si. */
   val arrow: Color = Color(0xFFFFB631),
   val arrowInk: Color = Color(0xFF2A140C),
-  /** Los puntos de cada jugada ("+34"), sin fondo: del color de la app y, las jugadas grandes, en rojo. */
   val scoreInk: Color = Color(0xFFFFB631),
   val highScoreInk: Color = Color(0xFFFF5252),
   val rounding: Float = 0.12f,
-  /** Letras A-O y numeros 1-15 alrededor del tablero. */
   val showCoordinates: Boolean = true,
   val coordinates: Color = bonusText,
   val backdrop: Color = lines,
@@ -71,12 +60,7 @@ data class BoardStyle(
   }
 }
 
-/** Estilos listos para usar. [ALL] sirve para un selector. */
 object BoardStyles {
-  /**
-   * El de la app: oscuro y calido, en los colores de la polimita. Las casillas de letra en ocre
-   * y oro, las de palabra en rojo oxido y terracota; las fichas en crema.
-   */
   val Polimita = BoardStyle(
     name = "Polimita",
     lines = Color(0xFF1B1411),
@@ -97,7 +81,6 @@ object BoardStyles {
     coordinates = Color(0xFF9E8A7A),
   )
 
-  /** Hoja y flor: letras en verdes de hoja, palabras en fucsia de flor tropical. */
   val Leaf = BoardStyle(
     name = "Hoja",
     lines = Color(0xFF0E140D),
@@ -121,7 +104,6 @@ object BoardStyles {
     coordinates = Color(0xFF8A9A80),
   )
 
-  /** Celeste y oro: letras en celestes, palabras en el oro del sol de mayo. */
   val Sky = BoardStyle(
     name = "Celeste",
     lines = Color(0xFF0F1620),
@@ -145,7 +127,6 @@ object BoardStyles {
     coordinates = Color(0xFF8595A6),
   )
 
-  /** Plano y sencillo, a la manera de isc.ro: casillas lisas, fichas amarillas, sin adornos. */
   val Isc = BoardStyle(
     name = "ISC",
     lines = Color(0xFF9E9E8E),
@@ -165,7 +146,6 @@ object BoardStyles {
     rounding = 0f,
   )
 
-  /** El tablero de carton de toda la vida. */
   val Classic = BoardStyle(
     name = "Clásico",
     lines = Color(0xFFF4F1E4),
@@ -185,7 +165,6 @@ object BoardStyles {
     fontFamily = FontFamily.Serif,
   )
 
-  /** Oscuro y de contraste suave, parecido a Woogles. */
   val Night = BoardStyle(
     name = "Noche",
     lines = Color(0xFF1B1E24),
@@ -208,7 +187,6 @@ object BoardStyles {
     coordinates = Color(0xFF8A93A3),
   )
 
-  /** Blanco y negro, lo minimo: bueno para capturas o para imprimir. */
   val Paper = BoardStyle(
     name = "Papel",
     lines = Color(0xFFBDBDBD),
@@ -229,9 +207,7 @@ object BoardStyles {
 
   val ALL = listOf(Polimita, Leaf, Sky, Night, Isc, Classic, Paper)
 
-  /** El estilo con ese nombre, o [Polimita] si no hay ninguno. */
   fun byName(name: String?): BoardStyle = ALL.find { it.name == name } ?: Polimita
 
-  /** El siguiente de [ALL], para un boton que los va rotando. */
   fun next(style: BoardStyle): BoardStyle = ALL[(ALL.indexOf(style) + 1) % ALL.size]
 }

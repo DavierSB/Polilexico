@@ -15,7 +15,6 @@ import app.lexico.ui.common.StartButton
 import app.lexico.ui.common.TimeField
 import app.lexico.ui.common.TwoOptions
 
-/** Las opciones de una clasica nueva: rival, comprobacion de jugadas y tiempo. */
 @Composable
 fun NewClassicScreen(onBack: () -> Unit, onStart: (ClassicConfig) -> Unit) {
   val form = rememberClassicForm()

@@ -17,63 +17,35 @@ import app.lexico.model.Board
 @Composable
 fun rememberTilePlacer(renewal: RackRenewal = RackRenewal.MY_PLAYS): TilePlacer = remember { TilePlacer(renewal) }
 
-/**
- * Colocar fichas del atril en el tablero a mano, al estilo de ISC. Lo usan la clasica y la
- * duplicada; todo es local a la pantalla hasta que se pide la [placement].
- *
- * - Tocar una casilla vacia pone la flecha (horizontal); tocarla otra vez la pone vertical; una
- *   tercera vez la quita. Con flecha, cada ficha del atril que tocas se coloca en la flecha y la
- *   flecha avanza (saltando las casillas ocupadas).
- * - Sin flecha, tocar una ficha del atril la elige; tocar otra las intercambia de sitio
- *   (anagramar); con una elegida, tocar una casilla vacia la pone alli.
- * - Tocar una ficha tuya del tablero la devuelve al atril.
- * - En modo cambio, tocar fichas del atril las marca para cambiar.
- *
- * Tambien se puede arrastrar ([drag]): del atril a una casilla vacia, de una casilla a otra, del
- * tablero al atril (o fuera del tablero) para devolverla, y dentro del atril para reordenarlo.
- *
- * Al llegar un atril nuevo, las fichas que se quedan ([renewal]) conservan su orden y las
- * robadas van detras, barajadas.
- */
 @Stable
 class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
   val state = BoardState()
 
-  /** Las fichas del atril, como las da el juego ("A", "CH", "?"). */
   var tiles: List<String> by mutableStateOf(emptyList())
     private set
 
-  /** Orden en pantalla (indices en [tiles]). */
   val order = mutableStateListOf<Int>()
 
-  /** Ficha del atril elegida (indice en [tiles]). */
   var selected: Int? by mutableStateOf(null)
     private set
 
-  /** Fichas del atril ya puestas en el tablero, por casilla. */
   val placed = mutableStateMapOf<Position, Int>()
 
   var exchanging by mutableStateOf(false)
     private set
 
-  /** Fichas del atril marcadas para cambiar (indices en [tiles]). */
   val toExchange = mutableStateListOf<Int>()
 
-  /** Las fichas del ultimo cambio pedido, que se iran con el atril nuevo. */
   private var exchanged: List<Int> = emptyList()
 
-  /** Las fichas que se quedan del ultimo atril, en el orden de pantalla (sobrevive a un atril vacio). */
   private var staying: List<String> = emptyList()
 
-  /** Casilla donde va un comodin cuya letra hay que preguntar; `null` = no hay pregunta. */
   var pendingBlank: Position? by mutableStateOf(null)
     private set
   private var blankFromArrow = false
 
-  /** La ficha que se esta arrastrando, si hay alguna. */
   val drag = TileDrag()
 
-  /** Nuevo turno: este tablero y este atril. Se recoge todo lo provisional. */
   fun reset(board: Board, rack: List<String>) {
     state.reset(board)
     if (rack != tiles) replaceRack(rack)
@@ -81,12 +53,10 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     exchanging = false
   }
 
-  /** La jugada que forman las fichas puestas, o `null` si no estan en una linea continua. */
   fun placement(): Placement? = state.placement()
 
   val hasPlaced: Boolean get() = placed.isNotEmpty()
 
-  /** Devuelve al atril todo lo puesto y quita la flecha y las marcas. */
   fun recall() {
     state.clear()
     placed.clear()
@@ -113,10 +83,8 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     exchanging = false
   }
 
-  /** Las fichas marcadas para cambiar, en el orden del atril. */
   fun tilesToExchange(): List<String> = toExchange.map { tiles[it] }
 
-  /** Pide el cambio: devuelve las fichas marcadas y sale del modo cambio. */
   fun confirmExchange(): List<String> {
     val chosen = tilesToExchange()
     exchanged = toExchange.toList()
@@ -124,7 +92,6 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     return chosen
   }
 
-  /** Un toque en la ficha `i` del atril (indice en [tiles]); ver las reglas arriba. */
   fun tapRack(i: Int) {
     when {
       i in placed.values -> Unit
@@ -134,7 +101,6 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     }
   }
 
-  /** Un toque en una casilla del tablero; ver las reglas arriba. */
   fun tapBoard(pos: Position) {
     val current = selected
     when {
@@ -145,10 +111,6 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     }
   }
 
-  /**
-   * Suelta la ficha arrastrada donde apunta: en una casilla, en un hueco del atril o, si no cae
-   * en ninguno, de vuelta a donde estaba (una del tablero, al atril).
-   */
   fun drop() {
     val i = drag.tile ?: return
     val from = drag.from
@@ -162,12 +124,10 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     }
   }
 
-  /** La ficha `i` del atril, soltada en una casilla: se pone si esta libre. */
   fun dropOnBoard(i: Int, pos: Position) {
     if (i !in placed.values && isFree(pos)) placeSelected(i, pos)
   }
 
-  /** Una ficha puesta pasa a otra casilla libre (un comodin conserva su letra). */
   fun moveOnBoard(from: Position, to: Position) {
     if (!isFree(to)) return
     val i = placed.remove(from) ?: return
@@ -175,7 +135,6 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     placed[to] = i
   }
 
-  /** La ficha `i` va al hueco `slot` del atril (fichas a su izquierda); si estaba puesta, vuelve. */
   fun dropOnRack(i: Int, slot: Int) {
     placed.entries.firstOrNull { it.value == i }?.let { takeBack(it.key) }
     order.remove(i)
@@ -183,7 +142,6 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     selected = null
   }
 
-  /** Respuesta a [pendingBlank]: la letra elegida, o `null` si se cancelo. */
   fun placeBlank(letter: String?) {
     val pos = pendingBlank
     val i = selected
@@ -196,7 +154,6 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     pendingBlank = null
   }
 
-  /** Un atril nuevo, ordenado con [arrangeRack]. */
   private fun replaceRack(rack: List<String>) {
     if (tiles.isNotEmpty()) staying = stayingTiles()
     tiles = rack
@@ -204,7 +161,6 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     order.addAll(arrangeRack(staying, rack))
   }
 
-  /** Las fichas de ahora que se quedaran en el atril, en el orden de pantalla. */
   private fun stayingTiles(): List<String> = when (renewal) {
     RackRenewal.MY_PLAYS -> order.filter { it !in placed.values && it !in exchanged }.map { tiles[it] }
     RackRenewal.MASTER_PLAYS -> order.map { tiles[it] }
@@ -222,7 +178,6 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     state.advanceArrow()
   }
 
-  /** Elige la ficha `i`; si ya estaba elegida, la suelta; si habia otra, las intercambia. */
   private fun selectOrSwap(i: Int) {
     selected = when (val current = selected) {
       null -> i
@@ -231,7 +186,6 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     }
   }
 
-  /** Anagramar el atril: dos fichas cambian de sitio. */
   private fun swap(a: Int, b: Int) {
     val ia = order.indexOf(a)
     val ib = order.indexOf(b)
@@ -248,7 +202,6 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     if (isBlank(i)) askBlankLetter(i, pos, fromArrow = false) else place(pos, Tile(tiles[i]), i)
   }
 
-  /** El comodin necesita letra: se pregunta y se pone al contestar ([placeBlank]). */
   private fun askBlankLetter(i: Int, pos: Position, fromArrow: Boolean) {
     selected = i
     blankFromArrow = fromArrow

@@ -7,9 +7,7 @@ import app.lexico.model.Board
 import app.lexico.ui.common.LexicoTheme
 import app.lexico.ui.board.BoardStyles
 
-/** Partidas de ejemplo, para las vistas previas y para probar la pantalla sin motor. */
 object ClassicSamples {
-  /** A media partida, en tu turno, con tiempo. */
   val inProgress = ClassicView(
     opponent = "HastyBot",
     board = Board.of("h8 CASA", "8h .ERO", "k5 LOB.", "5k .UNA", "11h .ÑO"),
@@ -32,14 +30,12 @@ object ClassicSamples {
     ),
   )
 
-  /** La misma partida, terminada: se ve el atril que le quedo al rival. */
   val finished = inProgress.copy(
     turn = null,
     opponentRack = OpponentRack.Visible(listOf("Q", "U")),
     end = GameEnd(winner = Side.ME),
   )
 
-  /** Acciones que no hacen nada, para las vistas previas. */
   val noActions = object : ClassicActions {
     override fun play(placement: Placement) {}
     override fun exchange(tiles: List<String>) {}

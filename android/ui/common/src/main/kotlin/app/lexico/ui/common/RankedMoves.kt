@@ -31,10 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.model.Placement
 
-/**
- * Una jugada de una lista del motor: "H8 CASA" o "(Pasar)", sus puntos, su valoracion (si la
- * hay), la colocacion para dibujarla y quien la jugo ("Tú", "Máster"...), si alguien.
- */
 data class RankedMove(
   val text: String,
   val points: Int,
@@ -43,10 +39,6 @@ data class RankedMove(
   val playedBy: String = "",
 )
 
-/**
- * Las jugadas en una tabla: puesto, jugada (con quien la jugo), puntos y, si las hay, equity; la
- * cabecera de equity explica que es. Tocar una fila la elige.
- */
 @Composable
 fun RankedMoveList(moves: List<RankedMove>, selected: RankedMove?, modifier: Modifier = Modifier, select: (RankedMove) -> Unit) {
   val withEquity = moves.any { it.equity != null }
@@ -75,7 +67,6 @@ private fun TableHeader(withEquity: Boolean, explain: () -> Unit) {
   }
 }
 
-/** "Equity" con su boton de informacion. */
 @Composable
 private fun EquityHeader(explain: () -> Unit) {
   Row(Modifier.width(EquityWidth).clickable(onClick = explain), Arrangement.End, Alignment.CenterVertically) {
@@ -102,7 +93,6 @@ private fun MoveRow(rank: Int, m: RankedMove, withEquity: Boolean, active: Boole
   }
 }
 
-/** La jugada, que se lleva el ancho sobrante, y quien la jugo. */
 @Composable
 private fun RowScope.MoveCell(m: RankedMove) {
   Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {

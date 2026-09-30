@@ -4,13 +4,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
-/**
- * El tablero del [TilePlacer], con tus fichas provisionales y la flecha. Si hace falta, pregunta
- * la letra de un comodin. Con `enabled = false` (no es tu turno) se ve pero no se toca. Sus fichas
- * provisionales se pueden arrastrar (la que se arrastra no se dibuja en su casilla).
- * `latestScore` y `showScore`: los puntos de la ultima jugada, como en [ScrabbleBoard]. Si hay
- * [LocalPlayScorer], tambien los puntos de lo que vas colocando (salvo mientras arrastras).
- */
 @Composable
 fun PlacingBoard(
   c: TilePlacer,

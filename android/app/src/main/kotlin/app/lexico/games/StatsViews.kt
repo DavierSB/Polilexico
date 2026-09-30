@@ -10,14 +10,9 @@ import app.lexico.ui.games.StatsFilter
 import app.lexico.ui.games.StatsMode
 import app.lexico.ui.games.StatsPage
 
-/*
- * Las estadisticas de las partidas terminadas, como las muestra la pantalla de :ui:games.
- */
-
 private const val EFFICIENCY_NOTE =
   "Efectividad: tus puntos como porcentaje de los del máster. Acierto: un turno con el mismo puntaje que el máster."
 
-/** Lo que se ve para un filtro. `reset`: si las estadisticas se reiniciaron (cambia el aviso sin partidas). */
 fun statsPage(filter: StatsFilter, games: List<FinishedGame>, reset: Boolean): StatsPage {
   val chosen = games.filter { it.mode == mode(filter.mode) && (filter.opponent == null || alias(it.opponent) == filter.opponent) }
   val empty = emptyText(filter.opponent, reset)
@@ -60,14 +55,12 @@ private fun bestWord(s: Statistics): String = s.bestWord?.let { (word, points) -
 
 private fun percent(x: Double): String = "%.1f %%".format(x)
 
-/** Una partida en las graficas: el valor de la tira es tus puntos (clasica) o la eficiencia (duplicada). */
 private fun chartGame(g: FinishedGame): ChartGame = ChartGame(
   myScore = g.myScore, opponentScore = g.opponentScore,
   value = if (g.mode == Mode.CLASSIC) g.myScore else g.efficiency.toInt(),
   title = "Tú ${g.myScore} – ${g.opponentScore} ${alias(g.opponent)}", lines = gameLines(g),
 )
 
-/** Lo que se ve al tocarla: resultado, eficiencia y aciertos (duplicada), palabra, scrabbles y fecha. */
 private fun gameLines(g: FinishedGame): List<String> = listOfNotNull(
   outcomeText(g.outcome),
   if (g.mode == Mode.DUPLICATE) "Eficiencia: ${percent(g.efficiency)}" else null,

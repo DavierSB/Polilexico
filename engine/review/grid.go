@@ -8,15 +8,12 @@ import (
 
 const size = 15
 
-// grid es el tablero que se va armando con las jugadas del registro, para mostrar el de antes
-// de cada turno. Cada casilla, como en engine.BestMoves: "" vacia, "CH", minuscula = comodin.
 type grid [size][size]string
 
 func newGrid() *grid {
 	return &grid{}
 }
 
-// play pone una colocacion ("H8 CA.A (12 pts)"); pases, cambios y jugadas perdidas no cambian nada.
 func (b *grid) play(description string) {
 	fields := strings.Fields(description)
 	if len(fields) < 2 {
@@ -31,7 +28,6 @@ func (b *grid) play(description string) {
 	}
 }
 
-// text: las 225 casillas separadas por espacios, "." las vacias.
 func (b *grid) text() string {
 	squares := make([]string, 0, size*size)
 	for _, row := range b {
@@ -42,7 +38,6 @@ func (b *grid) text() string {
 	return strings.Join(squares, " ")
 }
 
-// put pone la ficha i de la palabra; "." (letra que ya estaba) no cambia nada.
 func (b *grid) put(row, col int, vertical bool, i int, tile string) {
 	if vertical {
 		row += i
@@ -54,7 +49,6 @@ func (b *grid) put(row, col int, vertical bool, i int, tile string) {
 	}
 }
 
-// tokens parte una palabra de macondo en fichas: "[CH]" es una, "." tambien.
 func tokens(word string) []string {
 	var out []string
 	for rest := word; rest != ""; {
@@ -74,7 +68,6 @@ func tokenLen(word string) int {
 	return len(string([]rune(word)[0]))
 }
 
-// plain quita los corchetes de los digrafos.
 func plain(tiles []string) []string {
 	out := make([]string, len(tiles))
 	for i, t := range tiles {

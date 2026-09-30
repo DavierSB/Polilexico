@@ -10,12 +10,11 @@ import (
 	"lexico/engine/internal/timing"
 )
 
-// Las fases de la ronda, en Match.Phase.
 const (
-	PhaseWaiting     = "waiting"      // entre rondas: falta ver el atril (sin reloj)
-	PhaseInvalidRack = "invalid_rack" // se muestra la mano invalida antes del atril bueno
-	PhasePlaying     = "playing"      // pensando la jugada, con el reloj del turno
-	PhaseConfirming  = "confirming"   // jugada propuesta: se anota sola si no se cancela a tiempo
+	PhaseWaiting     = "waiting"
+	PhaseInvalidRack = "invalid_rack"
+	PhasePlaying     = "playing"
+	PhaseConfirming  = "confirming"
 	PhaseFinished    = "finished"
 )
 
@@ -25,10 +24,6 @@ var (
 	errNotPlaying = errors.New("no es momento de jugar")
 )
 
-// Match es una duplicada en marcha: la partida (Game) y el ritmo de cada ronda, con sus plazos
-// (el turno, la mano invalida, la ventana para cancelar), que el motor lleva solo. La
-// plataforma pide ver el atril, propone jugadas, vuelve a leer el estado con cada aviso y pausa
-// la partida cuando deja de verse. En pausa no corre ningun plazo; una cargada empieza en pausa.
 type Match struct {
 	mu       sync.Mutex
 	game     *Game
@@ -45,8 +40,6 @@ type Match struct {
 	closed   bool
 }
 
-// NewMatch empieza una duplicada con turnMs por turno (0 = TurnSeconds). invalidLosesTurn:
-// ver Game.SetInvalidPlayLosesTurn.
 func NewMatch(turnMs int64, invalidLosesTurn bool, l events.Listener) (*Match, error) {
 	g, err := Start()
 	if err != nil {
@@ -56,12 +49,10 @@ func NewMatch(turnMs int64, invalidLosesTurn bool, l events.Listener) (*Match, e
 	return startMatch(g, turnDuration(turnMs), timing.Real(), l, false), nil
 }
 
-// Game: la partida, para leer su estado (Status, Board, TurnAt, Unseen...).
 func (m *Match) Game() *Game {
 	return m.game
 }
 
-// ShowRack saca el atril de la ronda (en PhaseWaiting) y arranca su reloj.
 func (m *Match) ShowRack() error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -77,8 +68,6 @@ func (m *Match) ShowRack() error {
 	return nil
 }
 
-// Propose comprueba tu jugada ("h8 CASA", "8h CASA" o "pasar"). Una colocacion queda por
-// confirmar durante CancelSeconds; un pase o una jugada perdida se anotan al momento.
 func (m *Match) Propose(input string) (*Attempt, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -94,7 +83,6 @@ func (m *Match) Propose(input string) (*Attempt, error) {
 	return attempt, nil
 }
 
-// Cancel deshace la jugada propuesta (en PhaseConfirming): se vuelve a pensar.
 func (m *Match) Cancel() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -105,7 +93,6 @@ func (m *Match) Cancel() {
 	m.afterChange()
 }
 
-// Pause para todos los plazos hasta Resume.
 func (m *Match) Pause() {
 	m.setPaused(true)
 }
@@ -114,7 +101,6 @@ func (m *Match) Resume() {
 	m.setPaused(false)
 }
 
-// Close detiene la partida: plazos y avisos. Guardala antes con Save.
 func (m *Match) Close() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -126,7 +112,6 @@ func (m *Match) Close() {
 	m.notifier.Close()
 }
 
-// startMatch pone en marcha (o en pausa) una partida ya creada, entre rondas.
 func startMatch(g *Game, turnTime time.Duration, clock timing.Clock, l events.Listener, paused bool) *Match {
 	m := &Match{game: g, turn: timing.NewCountdown(clock), step: timing.NewCountdown(clock), turnTime: turnTime,
 		notifier: notify.New(l), phase: PhaseWaiting, paused: paused}
@@ -136,7 +121,6 @@ func startMatch(g *Game, turnTime time.Duration, clock timing.Clock, l events.Li
 	return m
 }
 
-// check: nil si la partida esta en marcha y en la fase `want`; si no, el error que toca.
 func (m *Match) check(want string, wrongPhase error) error {
 	switch {
 	case m.paused:

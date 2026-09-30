@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.model.Letters
 
-/** Las letras que quedan, como en ISC: cada letra repetida tantas veces como quedan, en orden. */
 @Composable
 fun BagDialog(title: String, tiles: List<String>, close: () -> Unit) {
   AlertDialog(
@@ -28,7 +27,6 @@ fun BagDialog(title: String, tiles: List<String>, close: () -> Unit) {
   )
 }
 
-/** Solo cuantas fichas quedan, para las partidas que no muestran cuales. */
 @Composable
 fun BagCountDialog(title: String, tiles: Int, close: () -> Unit) {
   AlertDialog(
@@ -39,7 +37,6 @@ fun BagCountDialog(title: String, tiles: Int, close: () -> Unit) {
   )
 }
 
-/** "86 fichas · 38 vocales · 46 consonantes · 2 comodines". */
 private fun summary(tiles: List<String>): String {
   val vowels = tiles.count(Letters::isVowel)
   val blanks = tiles.count { it == Letters.BLANK }
@@ -53,7 +50,6 @@ private fun blanksText(blanks: Int): String = when (blanks) {
   else -> " · $blanks comodines"
 }
 
-/** "AAAA  B  CC ...": cada letra repetida tantas veces como queda, en orden alfabetico. */
 private fun grouped(tiles: List<String>): String {
   val counts = tiles.groupingBy { it }.eachCount()
   return (Letters.ALL + Letters.BLANK).filter { it in counts }.joinToString("  ") { it.repeat(counts.getValue(it)) }

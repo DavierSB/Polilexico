@@ -9,9 +9,6 @@ import (
 	"lexico/engine/internal/testenv"
 )
 
-// Las partidas se juegan por la misma API que usa la app, tecleando como humano la jugada
-// del propio máster.
-
 func TestFullGame(t *testing.T) {
 	d := newTestGame(t)
 	playGame(t, d)
@@ -96,7 +93,6 @@ func newTestGame(t *testing.T) *Game {
 	return d
 }
 
-// gameWithRack: primer turno en curso con el atril rack (el máster calcula su jugada sobre el).
 func gameWithRack(t *testing.T, rack string) *Game {
 	t.Helper()
 	d := newTestGame(t)
@@ -108,15 +104,12 @@ func gameWithRack(t *testing.T, rack string) *Game {
 	return d
 }
 
-// playGame juega hasta el final (o 60 turnos), dejando pasar el tiempo uno de cada cinco.
 func playGame(t *testing.T, d *Game) {
 	t.Helper()
 	for i := 0; i < 60 && playTurn(t, d, i%5 == 4); i++ {
 	}
 }
 
-// playTurn juega un turno con la jugada del máster (o dejando pasar el tiempo); false si la
-// partida termino al sacar el atril.
 func playTurn(t *testing.T, d *Game, timeOut bool) bool {
 	t.Helper()
 	if d.Status().Over || mustDraw(t, d).GameOver {

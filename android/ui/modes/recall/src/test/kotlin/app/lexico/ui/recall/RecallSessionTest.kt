@@ -9,7 +9,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-/** Una serie con una partida de dos palabras (CASA y CERO), y un diccionario con ellas y sus anagramas SACA y CORE. */
 class RecallSessionTest {
   private val game = listOf(ScoredPlacement("h8 CASA", 12), ScoredPlacement("8h .ERO", 10))
 
@@ -67,7 +66,6 @@ class RecallSessionTest {
     assertEquals(1, book.stored)
   }
 
-  /** Una serie ya en la primera palabra, sobre un diccionario de prueba. */
   private fun session(config: RecallConfig = RecallConfig(), test: suspend (RecallSession, Book) -> Unit) = runBlocking {
     val scope = CoroutineScope(coroutineContext + Job())
     val book = Book()

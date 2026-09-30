@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import app.lexico.navigation.Screen
 import app.lexico.ui.common.Header
 
-/** Un minijuego: su nombre, de que va y a que pantalla lleva. */
 private data class Minigame(val name: String, val description: String, val screen: Screen)
 
 private val MINIGAMES = listOf(
@@ -25,7 +24,6 @@ private val MINIGAMES = listOf(
   Minigame("¿Cuántas recuerdas?", "Aprende palabras, observando una partida de unos pocos segundos, para luego anagramar sus palabras más valiosas.", Screen.NewRecall),
 )
 
-/** Los minijuegos: juegos cortos para entrenar, aparte de las partidas. */
 @Composable
 fun MinigamesScreen(onBack: () -> Unit, go: (Screen) -> Unit) {
   Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {

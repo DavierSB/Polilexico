@@ -27,11 +27,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
-/**
- * La planilla de movidas de una partida: una cabecera y una fila por turno, abierta en el ultimo.
- * Cada modalidad pone sus columnas en `header` y `row` (con el indice del turno, desde 0).
- * Ocupa casi todo el ancho de la pantalla, para que las jugadas quepan enteras.
- */
 @Composable
 fun <T> MovesTableDialog(rows: List<T>, header: @Composable () -> Unit, close: () -> Unit, row: @Composable (Int, T) -> Unit) {
   Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -45,11 +40,9 @@ fun <T> MovesTableDialog(rows: List<T>, header: @Composable () -> Unit, close: (
   }
 }
 
-/** El ancho de la columna con el numero de turno: lo justo para dos cifras, crece con la fuente. */
 @Composable
 fun moveNumberWidth(): Dp = with(LocalDensity.current) { 18.sp.toDp() }
 
-/** Una jugada ("H4 CASA") en una sola linea y entera: si no cabe, la letra se achica. */
 @Composable
 fun MoveText(text: String, modifier: Modifier = Modifier) {
   Text(

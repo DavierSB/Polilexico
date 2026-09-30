@@ -17,14 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
 
-/** Cuanto se tapa la partida en pausa (el desenfoque solo existe desde Android 12). */
 private const val COVER_ALPHA = 0.92f
 
-/**
- * Una partida que se puede pausar: en pausa, el contenido se desenfoca y queda tapado por
- * "Juego pausado" y el boton para continuar. Tapar el tablero y el atril evita que la pausa
- * sirva para pensar sin gastar tiempo.
- */
 @Composable
 fun Pausable(paused: Boolean, onResume: () -> Unit, content: @Composable () -> Unit) {
   Box {
@@ -33,7 +27,6 @@ fun Pausable(paused: Boolean, onResume: () -> Unit, content: @Composable () -> U
   }
 }
 
-/** Tapa todo el contenido y se queda con los toques, salvo el boton de continuar. */
 @Composable
 private fun BoxScope.PauseCover(onResume: () -> Unit) {
   Column(

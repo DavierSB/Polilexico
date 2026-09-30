@@ -3,8 +3,6 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-// Scrabble Sprint: encontrar el scrabble de cada mano antes de que acabe el reloj, con tres
-// vidas. Recibe una SprintView y devuelve acciones; no conoce el motor.
 android {
   namespace = "app.lexico.ui.sprint"
   compileSdk = 36

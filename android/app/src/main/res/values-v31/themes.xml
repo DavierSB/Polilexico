@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Android 12+: la pantalla de arranque, con la concha sobre el fondo de la app. -->
     <style name="Theme.Lexico" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/ic_launcher_background</item>
         <item name="android:statusBarColor">@color/ic_launcher_background</item>

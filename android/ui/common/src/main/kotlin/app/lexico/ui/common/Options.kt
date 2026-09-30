@@ -18,11 +18,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/*
- * Controles de las pantallas de "partida nueva", comunes a las modalidades.
- */
-
-/** Dos opciones excluyentes; `secondSelected` dice cual esta marcada. */
 @Composable
 fun TwoOptions(first: String, second: String, secondSelected: Boolean, onChange: (secondSelected: Boolean) -> Unit) {
   Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -31,7 +26,6 @@ fun TwoOptions(first: String, second: String, secondSelected: Boolean, onChange:
   }
 }
 
-/** Un tiempo escrito como "20" o "3:20"; se marca en rojo si no se entiende. */
 @Composable
 fun TimeField(value: String, onChange: (String) -> Unit, label: String) {
   OutlinedTextField(
@@ -42,17 +36,12 @@ fun TimeField(value: String, onChange: (String) -> Unit, label: String) {
   )
 }
 
-/**
- * Void (una palabra que no esta en FILE2017 se rechaza y se puede corregir) o single (la jugada
- * no entra y se pierde el turno). `penalty` completa la explicacion de single en cada modalidad.
- */
 @Composable
 fun ChallengeModeSelector(single: Boolean, onChange: (Boolean) -> Unit, penalty: String) {
   SectionTitle("Comprobación de jugadas", info = "$VOID_HINT\n\nSingle: si pones palabras no válidas, la jugada no entra y $penalty.")
   TwoOptions("Void", "Single", single, onChange)
 }
 
-/** El titulo de una seccion de opciones ("Rival", "Tiempo"...), con una ⓘ que explica `info`, si la hay. */
 @Composable
 fun SectionTitle(text: String, info: String? = null) {
   Row(verticalAlignment = Alignment.CenterVertically) {
@@ -61,7 +50,6 @@ fun SectionTitle(text: String, info: String? = null) {
   }
 }
 
-/** Un numero entero entre los limites de `range`, con − y +. */
 @Composable
 fun Stepper(value: Int, range: IntRange, onChange: (Int) -> Unit) {
   Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -71,7 +59,6 @@ fun Stepper(value: Int, range: IntRange, onChange: (Int) -> Unit) {
   }
 }
 
-/** El boton que empieza la partida con las opciones elegidas. */
 @Composable
 fun StartButton(enabled: Boolean, onClick: () -> Unit) {
   Button(enabled = enabled, modifier = Modifier.fillMaxWidth(), onClick = onClick) { Text("Empezar") }

@@ -34,10 +34,6 @@ import app.lexico.ui.recall.RecallScreen
 import app.lexico.ui.recall.RecallSession
 import app.lexico.ui.sprint.SprintScreen
 
-/*
- * Las pantallas de las partidas: crean la partida en el juego y la muestran mientras dura.
- */
-
 @Composable
 internal fun ClassicRoute(screen: Screen.Classic, lexico: Lexico, nav: Navigator, themes: ThemeState) {
   WhenReady(rememberCreated(screen) { lexico.newClassic(screen.config.toSetup()) }, "Preparando la partida…") {
@@ -45,7 +41,6 @@ internal fun ClassicRoute(screen: Screen.Classic, lexico: Lexico, nav: Navigator
   }
 }
 
-/** Finales: mientras HastyBot busca el final, espera; al salir antes, la busqueda se detiene. */
 @Composable
 internal fun EndgameRoute(screen: Screen.Endgame, lexico: Lexico, nav: Navigator, themes: ThemeState) {
   WhenReady(rememberCreated(screen) { lexico.newEndgame(screen.config.toSetup()) }, "Buscando un final…") {
@@ -105,16 +100,11 @@ internal fun SprintPlay(
   val controller = remember(game) { SprintController(game, scope, nav::back, onRestart) }
   val state by game.state.collectAsState()
   val finished = state.phase is SprintPhase.Finished
-  // El record a batir es el de antes de la serie: al terminarla, submit ya lo habra cambiado.
   val best = remember(game) { records.best(setup) }
   val record = remember(finished) { if (finished) records.submit(setup, state.solved) else null }
   SprintScreen(sprintView(state, controller.notice, best, record), themes.current.board, controller) { themes.picking = true }
 }
 
-/**
- * Mientras la partida esta en pantalla, su tema: empieza en `initial` (el de su rival, o el de la
- * app) y el boton "Tema" lo cambia solo para ella. Al salir, vuelve el de la app.
- */
 @Composable
 private fun GameTheme(game: Any, themes: ThemeState, initial: AppTheme) {
   DisposableEffect(game) {

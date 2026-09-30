@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.model.Letters
 
-/** Que letra representa un comodin, como en Woogles: una rejilla con todas. `null` = cancelar. */
 @Composable
 fun BlankLetterDialog(onPick: (String?) -> Unit) {
   AlertDialog(

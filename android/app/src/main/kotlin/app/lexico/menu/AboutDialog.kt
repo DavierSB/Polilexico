@@ -20,10 +20,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 
-/** Donde esta el codigo fuente: la GPL pide ofrecerlo a quien recibe la app. */
 private const val SOURCE_URL = "https://github.com/DavierSB/polilexico"
 
-/** El dialogo "Acerca de" del menu lateral, como el de WooglesMovil; el autor, en otro dialogo. */
 @Composable
 fun AboutDialog(version: String, close: () -> Unit) {
   var author by remember { mutableStateOf(false) }
@@ -36,7 +34,6 @@ fun AboutDialog(version: String, close: () -> Unit) {
   if (author) AuthorDialog { author = false }
 }
 
-/** "¡Gracias por usar Poliléxico!", con un corazon ambar al lado. */
 @Composable
 private fun Thanks() {
   Text(buildAnnotatedString {
@@ -65,7 +62,6 @@ private fun AboutText(version: String, showAuthor: () -> Unit) {
   }
 }
 
-/** La version, el copyright, la licencia y el enlace al codigo fuente. */
 @Composable
 private fun License(version: String) {
   val uriHandler = LocalUriHandler.current

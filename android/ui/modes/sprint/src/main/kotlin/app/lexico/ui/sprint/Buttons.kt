@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.common.Compact
 
-/** Mientras piensas: Jugar, Mezclar/Recoger y Rendirse (cuesta una vida). */
 @Composable
 fun SolvingButtons(c: TilePlacer, onPlay: () -> Unit, onGiveUp: () -> Unit) {
   Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -27,13 +26,11 @@ fun SolvingButtons(c: TilePlacer, onPlay: () -> Unit, onGiveUp: () -> Unit) {
   }
 }
 
-/** Con la mano cerrada: a por la siguiente. */
 @Composable
 fun NextButton(onNext: () -> Unit) {
   Button(onClick = onNext, modifier = Modifier.fillMaxWidth()) { Text("Siguiente mano") }
 }
 
-/** Sin vidas: otra serie o salir. */
 @Composable
 fun FinishedButtons(onRestart: () -> Unit, onExit: () -> Unit) {
   Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** Fin de ronda: la jugada del master arriba, la tuya debajo y, si fue acierto, "¡Acierto!". */
 @Composable
 fun RoundDialog(round: Round, close: () -> Unit) {
   AlertDialog(

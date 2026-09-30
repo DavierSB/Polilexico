@@ -10,9 +10,6 @@ import (
 	"lexico/engine/internal/testenv"
 )
 
-// Las partidas se juegan por la misma API que usa la app, tecleando como humano la jugada que
-// propone el propio motor.
-
 func TestFullGame(t *testing.T) {
 	c := newTestGame(t)
 	playTurns(t, c, 200)
@@ -106,7 +103,6 @@ func TestEveryBot(t *testing.T) {
 	}
 }
 
-// checkBot juega una partida contra el bot y comprueba que se recarga con el mismo rival.
 func checkBot(t *testing.T, name string) {
 	t.Helper()
 	c, err := Start(name)
@@ -130,7 +126,6 @@ func newTestGame(t *testing.T) *Game {
 	return c
 }
 
-// humanStartsWith: partida en la que abres tu, con el tablero vacio y el atril rack.
 func humanStartsWith(t *testing.T, rack string) *Game {
 	t.Helper()
 	c := newTestGame(t)
@@ -143,7 +138,6 @@ func humanStartsWith(t *testing.T, rack string) *Game {
 	return c
 }
 
-// playTurns juega hasta n turnos: los tuyos, con la jugada que propone el bot.
 func playTurns(t *testing.T, c *Game, n int) {
 	t.Helper()
 	for i := 0; i < n && !c.Status().Over; i++ {

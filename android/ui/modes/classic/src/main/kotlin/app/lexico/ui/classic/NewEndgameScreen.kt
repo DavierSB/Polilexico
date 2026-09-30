@@ -19,10 +19,8 @@ import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
 import app.lexico.ui.common.Stepper
 
-/** Tope de fichas en la bolsa que se puede pedir (al empezar quedan 86). */
 private const val MAX_BAG_LIMIT = 50
 
-/** Las opciones de Finales: la bolsa, tu ventaja y, como en la clasica, la comprobacion y el tiempo. */
 @Composable
 fun NewEndgameScreen(onBack: () -> Unit, onStart: (EndgameConfig) -> Unit) {
   val form = remember { EndgameForm() }
@@ -48,7 +46,6 @@ private fun LeadSection(form: EndgameForm) {
   LeadRangeBar(form.minLead, form.maxLead, LEAD_LIMIT) { min, max -> form.minLead = min; form.maxLead = max }
 }
 
-/** Lo que se va eligiendo; la comprobacion y el tiempo, como en la clasica (contra HastyBot). */
 @Stable
 private class EndgameForm {
   private val defaults = EndgameConfig()

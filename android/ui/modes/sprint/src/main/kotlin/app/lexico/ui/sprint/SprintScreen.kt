@@ -40,13 +40,6 @@ import app.lexico.ui.common.ThemeButton
 import app.lexico.ui.common.TurnClock
 import app.lexico.ui.common.rememberNotice
 
-/**
- * Scrabble Sprint: el tablero y el atril de la mano, con su reloj; al cerrarse la mano, sus
- * scrabbles (tocar uno lo pone en el tablero). Abajo, las vidas como corazones y las manos
- * resueltas.
- *
- * Solo dibuja la [view] y traduce toques en [actions].
- */
 @Composable
 fun SprintScreen(view: SprintView, style: BoardStyle, actions: SprintActions, onTheme: (() -> Unit)? = null) {
   val c = rememberTilePlacer(RackRenewal.WHOLE)
@@ -69,13 +62,11 @@ private fun SprintLayout(
     if (view.phase.hand == null) Searching() else PlacingBoard(c, style, enabled = view.phase is Phase.Solving)
     PhasePanel(view, c, style, actions, onNotice, shown, onShow)
     message?.let { Notice(it, bold = true) }
-    // Con los scrabbles a la vista, su lista ocupa todo lo que sobra; si no, los corazones van abajo.
     if (!view.phase.showsBingos) Spacer(Modifier.weight(1f))
     Lives(view.lives, view.maxLives, "Resueltas", view.solved, view.best)
   }
 }
 
-/** Salir, cambiar el tema y, mientras la serie sigue, pausar. */
 @Composable
 private fun TopBar(view: SprintView, actions: SprintActions, onTheme: (() -> Unit)?) {
   Row(Modifier.fillMaxWidth().height(44.dp), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
@@ -86,7 +77,6 @@ private fun TopBar(view: SprintView, actions: SprintActions, onTheme: (() -> Uni
   }
 }
 
-/** Mientras HastyBot busca la mano, en el sitio del tablero. */
 @Composable
 private fun Searching() {
   Column(Modifier.fillMaxWidth().aspectRatio(1f), Arrangement.spacedBy(12.dp, Alignment.CenterVertically), Alignment.CenterHorizontally) {
@@ -95,7 +85,6 @@ private fun Searching() {
   }
 }
 
-/** Bajo el tablero: el reloj, el atril y los botones de la mano; o como fue y sus scrabbles. */
 @Composable
 private fun ColumnScope.PhasePanel(
   view: SprintView, c: TilePlacer, style: BoardStyle, actions: SprintActions, onNotice: (String) -> Unit,
@@ -111,7 +100,6 @@ private fun ColumnScope.PhasePanel(
   }
 }
 
-/** La mano en juego: el reloj, el atril y sus botones. */
 @Composable
 private fun Solving(phase: Phase.Solving, c: TilePlacer, style: BoardStyle, onPlay: () -> Unit, onGiveUp: () -> Unit) {
   TurnClock(phase.remainingMs)
@@ -119,11 +107,9 @@ private fun Solving(phase: Phase.Solving, c: TilePlacer, style: BoardStyle, onPl
   SolvingButtons(c, onPlay, onGiveUp)
 }
 
-/** El tablero con el scrabble elegido puesto (y resaltado). */
 private fun shownBoard(board: Board, bingo: Bingo?): Board =
   bingo?.let { runCatching { board.play(it.placement) }.getOrNull() } ?: board
 
-/** Mano cerrada o serie terminada: se ven los scrabbles de la mano. */
 private val Phase.showsBingos: Boolean
   get() = this is Phase.Revealed || this is Phase.Finished
 

@@ -8,10 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import app.lexico.ui.common.Header
 
-/** Las carpetas de "Mis partidas", en el orden en que se muestran. Finales va en Minijuegos. */
 enum class GameFolder(val title: String) { CLASSIC("Clásica"), DUPLICATE("Duplicadas"), MINIGAMES("Minijuegos") }
 
-/** Las carpetas de las partidas terminadas, cada una con cuantas tiene: tocar una la abre. */
 @Composable
 fun FinishedFoldersScreen(counts: Map<GameFolder, Int>, onBack: () -> Unit, onOpen: (GameFolder) -> Unit) {
   Column(Modifier.fillMaxSize()) {

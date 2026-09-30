@@ -22,13 +22,6 @@ import app.lexico.ui.common.Notice
 import app.lexico.ui.common.Pausable
 import app.lexico.ui.common.rememberNotice
 
-/**
- * La partida clasica, al estilo de Woogles/ISC: arriba el rival (foto, fichas boca abajo, puntos
- * y reloj), en medio el tablero, abajo tu barra, tu atril y los botones.
- *
- * Solo dibuja la [view] y traduce toques en [actions]; las fichas que vas colocando son
- * locales hasta que pulsas Jugar.
- */
 @Composable
 fun ClassicScreen(view: ClassicView, style: BoardStyle, actions: ClassicActions, onTheme: (() -> Unit)? = null) {
   val c = rememberTilePlacer()
@@ -63,7 +56,6 @@ private fun TopBar(view: ClassicView, actions: ClassicActions, dialogs: ClassicD
   )
 }
 
-/** El rival: su foto, sus fichas (boca abajo mientras se juega), sus puntos y su reloj. */
 @Composable
 private fun OpponentBar(view: ClassicView, style: BoardStyle) {
   val onTurn = view.turn == Side.OPPONENT
@@ -87,7 +79,6 @@ private fun MyBar(view: ClassicView, c: TilePlacer, style: BoardStyle) {
   PlacingRack(c, style, enabled = view.turn == Side.ME)
 }
 
-/** Durante la partida, los botones del turno; al terminar, el resultado. */
 @Composable
 private fun Controls(view: ClassicView, c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs, onNotice: (String) -> Unit) {
   val end = view.end
