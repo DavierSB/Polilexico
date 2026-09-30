@@ -21,6 +21,7 @@ import app.lexico.modes.duplicate.DuplicateController
 import app.lexico.modes.duplicate.duplicateView
 import app.lexico.modes.duplicate.toSetup
 import app.lexico.modes.recall.engineGames
+import app.lexico.modes.recall.recallRecords
 import app.lexico.modes.sprint.SprintController
 import app.lexico.modes.sprint.sprintView
 import app.lexico.modes.sprint.toSetup
@@ -62,7 +63,7 @@ internal fun DuplicateRoute(screen: Screen.Duplicate, lexico: Lexico, nav: Navig
 @Composable
 internal fun RecallRoute(screen: Screen.Recall, lexico: Lexico, nav: Navigator, themes: ThemeState) {
   val scope = rememberCoroutineScope()
-  val session = remember(screen) { RecallSession(screen.config, engineGames(lexico), scope) }
+  val session = remember(screen) { RecallSession(screen.config, engineGames(lexico), recallRecords(lexico.recallRecords, screen.config), scope) }
   GameTheme(session, themes, themes.appTheme)
   RecallScreen(session, themes.current.board, nav::back) { themes.picking = true }
 }

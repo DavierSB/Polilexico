@@ -45,6 +45,9 @@ jugada.
   una palabra no válida también. Mientras se juega, se ve el récord a batir con esas opciones.
 - **¿Cuántas recuerdas?** Se ve una partida durante unos pocos segundos y luego hay que armar, con
   sus letras, las palabras que más puntos hicieron. Mientras menos tiempo, más difícil recordar.
+  Se juega partida tras partida hasta quedarse sin vidas: cada palabra no recordada cuesta una, y
+  en *single* también poner una palabra no válida. Se guarda el récord de palabras recordadas con
+  esas opciones.
 
 <p align="center">
   <img src="screenshots/sprint-setup.png" width="260" alt="Scrabble Sprint: opciones">

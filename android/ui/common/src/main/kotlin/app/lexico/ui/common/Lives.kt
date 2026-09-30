@@ -1,4 +1,4 @@
-package app.lexico.ui.sprint
+package app.lexico.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,15 +17,18 @@ import androidx.compose.ui.unit.sp
 
 private val HeartRed = Color(0xFFE5484D)
 
-/** Abajo de la pantalla: las vidas como corazones (llenos los que quedan), las manos resueltas y el record a batir. */
+/**
+ * Abajo de la pantalla en las series por vidas: los corazones (llenos los que quedan), lo logrado
+ * ("Resueltas: 3", `label` y `solved`) y el record a batir.
+ */
 @Composable
-fun Lives(lives: Int, maxLives: Int, solved: Int, best: Int) {
+fun Lives(lives: Int, maxLives: Int, label: String, solved: Int, best: Int) {
   Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
     Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
       repeat(maxLives) { Heart(full = it < lives) }
     }
     Column(horizontalAlignment = Alignment.End) {
-      Text("Resueltas: $solved", fontWeight = FontWeight.Bold)
+      Text("$label: $solved", fontWeight = FontWeight.Bold)
       RecordToBeat(solved, best)
     }
   }

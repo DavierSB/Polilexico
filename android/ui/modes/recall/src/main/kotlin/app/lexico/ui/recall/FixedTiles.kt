@@ -30,7 +30,7 @@ object FixedTiles {
     }
 
   private fun runsAreWords(tiles: List<String>, fixed: Set<Int>, isWord: (String) -> Boolean): Boolean =
-    runs(fixed).all { run -> run.size == 1 || isWord(text(run.map(tiles::get))) }
+    runs(fixed).all { run -> run.size == 1 || isWord(dictionaryText(run.map(tiles::get))) }
 
   /** Todos los subconjuntos de `size` casillas de entre `n` (n <= 15: a lo sumo 6435). */
   private fun subsets(n: Int, size: Int): Sequence<Set<Int>> =
@@ -43,6 +43,4 @@ object FixedTiles {
     val known = HashMap<String, Boolean>()
     return { word -> known.getOrPut(word) { isWord(word) } }
   }
-
-  private fun text(tiles: List<String>): String = tiles.joinToString("") { if (it.length > 1) "[$it]" else it }
 }

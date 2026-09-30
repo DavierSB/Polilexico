@@ -16,6 +16,9 @@ data class WordToRecall(val tiles: List<String>, val score: Int, val fixed: Set<
   val text: String get() = tiles.joinToString("")
 }
 
+/** Las fichas como las lee el diccionario: los digrafos entre corchetes ("[CH]E"). */
+internal fun dictionaryText(tiles: List<String>): String = tiles.joinToString("") { if (it.length > 1) "[$it]" else it }
+
 /** De una partida, las palabras a recordar. */
 object Words {
   /** Las palabras de menos fichas no cuentan. */

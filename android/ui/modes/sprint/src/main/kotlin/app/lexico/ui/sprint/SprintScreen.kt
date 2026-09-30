@@ -31,6 +31,7 @@ import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.board.rememberTilePlacer
 import app.lexico.ui.common.BarTitle
 import app.lexico.ui.common.ExitButton
+import app.lexico.ui.common.Lives
 import app.lexico.ui.common.NOT_IN_A_LINE
 import app.lexico.ui.common.Notice
 import app.lexico.ui.common.Pausable
@@ -69,7 +70,7 @@ private fun SprintLayout(
     PhasePanel(view, c, style, actions, onNotice, shown, onShow)
     message?.let { Notice(it, bold = true) }
     Spacer(Modifier.weight(1f))
-    Lives(view.lives, view.maxLives, view.solved, view.best)
+    Lives(view.lives, view.maxLives, "Resueltas", view.solved, view.best)
   }
 }
 

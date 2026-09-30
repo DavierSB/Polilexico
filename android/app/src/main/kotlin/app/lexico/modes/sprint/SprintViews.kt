@@ -6,7 +6,7 @@ import app.lexico.game.modes.sprint.HandOutcome
 import app.lexico.game.modes.sprint.HandResult as GameResult
 import app.lexico.game.modes.sprint.SprintPhase
 import app.lexico.game.modes.sprint.SprintState
-import app.lexico.game.records.SprintRecord
+import app.lexico.game.records.SeriesRecord
 import app.lexico.ui.sprint.Bingo
 import app.lexico.ui.sprint.Hand
 import app.lexico.ui.sprint.HandResult
@@ -19,7 +19,7 @@ import app.lexico.ui.sprint.SprintView
  * Lo que dibuja la pantalla de Scrabble Sprint a partir del estado de la serie, el record que habia
  * al empezarla y, al terminar, su record.
  */
-fun sprintView(state: SprintState, notice: String?, best: Int, record: SprintRecord?): SprintView = SprintView(
+fun sprintView(state: SprintState, notice: String?, best: Int, record: SeriesRecord?): SprintView = SprintView(
   phase = phase(state.phase), lives = state.lives, maxLives = state.maxLives, solved = state.solved, best = best,
   notice = notice ?: state.lastError, paused = state.paused, record = record?.let { Record(it.best, it.isNew) },
 )

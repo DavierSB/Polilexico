@@ -2,6 +2,7 @@ package app.lexico.ui.recall
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,41 +24,48 @@ import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.RackTile
 import app.lexico.ui.common.Mulish
 
-/** Las palabras de la ronda con ✓ o ✗, y seguir o salir. */
+/** Las palabras de la partida con ✓ o ✗, y seguir o salir. */
 @Composable
-internal fun RoundDone(session: RecallSession, style: BoardStyle, onExit: () -> Unit) {
-  Summary(session, style)
+internal fun ColumnScope.RoundDone(session: RecallSession, style: BoardStyle, onExit: () -> Unit) {
+  val answers = session.answers
+  ScoreCard("RECORDASTE", answers.count { it.hit }, answers.size)
   Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    Button(onClick = session::nextRound) { Text("Siguiente ronda") }
+    Button(onClick = session::nextRound) { Text("Siguiente partida") }
     OutlinedButton(onClick = onExit) { Text("Salir") }
   }
+  AnswerList(answers, style)
 }
 
-/** La ultima ronda, el total de la serie y la pregunta de si jugar otra. */
+/** Sin vidas: el total de la serie, el record, las palabras de la ultima partida y si jugar otra. */
 @Composable
-internal fun SeriesDone(session: RecallSession, style: BoardStyle, onExit: () -> Unit) {
-  Summary(session, style)
-  if (session.rounds.size > 1) SeriesTotals(session.rounds)
-  Text("¿Jugar otra serie?", style = MaterialTheme.typography.titleMedium)
+internal fun ColumnScope.SeriesDone(session: RecallSession, style: BoardStyle, onExit: () -> Unit) {
+  ScoreCard("EN LA SERIE", session.recalled, session.asked)
+  session.record?.let { RecordLine(it) }
   Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
     Button(onClick = session::restart) { Text("Otra serie") }
     OutlinedButton(onClick = onExit) { Text("Menú") }
   }
+  AnswerList(session.answers, style)
 }
 
-/** Aciertos de la ronda y cada palabra, de mas a menos puntos. */
+/** "¡Nuevo récord!" o "Récord: 7 palabras". */
 @Composable
-private fun Summary(session: RecallSession, style: BoardStyle) {
-  val answers = session.answers
-  ScoreCard("RECORDASTE", answers.count { it.hit }, answers.size)
-  Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+private fun RecordLine(record: Record) {
+  if (record.isNew) Text("¡Nuevo récord!", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+  else Text("Récord: ${words(record.best)}")
+}
+
+/** Cada palabra de la partida, de mas a menos puntos. */
+@Composable
+private fun ColumnScope.AnswerList(answers: List<Answer>, style: BoardStyle) {
+  Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(4.dp)) {
     answers.sortedByDescending { it.word.score }.forEach { AnswerRow(it, style) }
   }
 }
 
 /** Una tarjeta con un titulo pequeño y "7 / 10" en grande. */
 @Composable
-private fun ScoreCard(title: String, hits: Int, total: Int, detail: String? = null) {
+private fun ScoreCard(title: String, hits: Int, total: Int) {
   Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh) {
     Column(Modifier.padding(vertical = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
       Text(title, fontFamily = Mulish, fontWeight = FontWeight.ExtraBold, fontSize = 12.sp, letterSpacing = 2.sp, color = MaterialTheme.colorScheme.primary)
@@ -66,7 +74,6 @@ private fun ScoreCard(title: String, hits: Int, total: Int, detail: String? = nu
         Text(" / $total", Modifier.padding(bottom = 7.dp), fontFamily = Mulish, fontWeight = FontWeight.Bold, fontSize = 20.sp,
           color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
-      detail?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
     }
   }
 }
@@ -79,11 +86,4 @@ private fun AnswerRow(answer: Answer, style: BoardStyle) {
     Text("${answer.word.score} pts", fontFamily = Mulish, fontWeight = FontWeight.Bold, fontSize = 13.sp,
       color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
-}
-
-/** "Serie: 12 de 20" y el detalle por ronda. `rounds` = (aciertos, palabras) de cada una. */
-@Composable
-private fun SeriesTotals(rounds: List<Pair<Int, Int>>) {
-  val detail = rounds.mapIndexed { i, (hits, total) -> "Ronda ${i + 1}: $hits/$total" }.joinToString("   ")
-  ScoreCard("EN LA SERIE", rounds.sumOf { it.first }, rounds.sumOf { it.second }, detail)
 }

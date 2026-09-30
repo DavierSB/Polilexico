@@ -13,6 +13,7 @@ import app.lexico.game.modes.recall.DemoGames
 import app.lexico.game.modes.sprint.SprintGame
 import app.lexico.game.modes.sprint.SprintSetup
 import app.lexico.game.records.FinishedGames
+import app.lexico.game.records.RecallRecords
 import app.lexico.game.records.SprintRecords
 import app.lexico.game.scoring.EngineScorer
 import app.lexico.game.storage.Mode
@@ -49,6 +50,9 @@ class Lexico(private val context: Context) {
 
   /** Los records de Scrabble Sprint. */
   val sprintRecords = SprintRecords(context)
+
+  /** Los records de "¿Cuántas recuerdas?". */
+  val recallRecords = RecallRecords(context)
 
   /** Carga el motor y el diccionario; hay que esperarlo antes de lo demas. */
   suspend fun start() = engine { WooglesEngine.start(context) }

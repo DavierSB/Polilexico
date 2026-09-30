@@ -12,45 +12,65 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.lexico.ui.common.ChallengeModeSelector
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
+import app.lexico.ui.common.Stepper
 import kotlin.math.roundToInt
 
-/** Como sera una serie de "¿Cuántas recuerdas?". */
+/** Como sera una serie de "¿Cuántas recuerdas?": se juega partida tras partida hasta quedarse sin vidas. */
 data class RecallConfig(
   /** Pausa entre jugada y jugada al ver la partida (la misma del tablero del inicio). */
   val intervalMs: Long = 1600,
-  val wordsPerRound: Int = 10,
-  val rounds: Int = 3,
+  val wordsPerGame: Int = 10,
+  val lives: Int = 3,
+  /** Void (false) o single (true). */
+  val single: Boolean = true,
 ) {
   companion object {
     val INTERVAL_MS = 500L..3000L
-    val WORDS_PER_ROUND = 3..12
-    val ROUNDS = 1..10
+    val WORDS_PER_GAME = 3..12
+    val LIVES = 1..5
   }
 }
 
-/** Las opciones de una serie nueva: el ritmo de la partida, las palabras por ronda y las rondas. */
+/** Las opciones de una serie nueva (el ritmo, las palabras por partida, las vidas y la comprobacion) y el record con ellas. */
 @Composable
-fun NewRecallScreen(onBack: () -> Unit, onStart: (RecallConfig) -> Unit) {
+fun NewRecallScreen(onBack: () -> Unit, recordFor: (RecallConfig) -> Int, onStart: (RecallConfig) -> Unit) {
   val default = RecallConfig()
   var interval by remember { mutableFloatStateOf(default.intervalMs / 1000f) }
-  var words by remember { mutableFloatStateOf(default.wordsPerRound.toFloat()) }
-  var rounds by remember { mutableFloatStateOf(default.rounds.toFloat()) }
+  var words by remember { mutableFloatStateOf(default.wordsPerGame.toFloat()) }
+  var lives by remember { mutableIntStateOf(default.lives) }
+  var single by remember { mutableStateOf(default.single) }
+  val config = RecallConfig((interval * 1000).roundToInt().toLong(), words.roundToInt(), lives, single)
   Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     Header("¿Cuántas recuerdas?", onBack)
     IntervalSetting(interval) { interval = it }
-    CountSetting("Palabras por ronda", words, RecallConfig.WORDS_PER_ROUND) { words = it }
-    CountSetting("Rondas", rounds, RecallConfig.ROUNDS) { rounds = it }
-    StartButton(enabled = true) { onStart(RecallConfig((interval * 1000).roundToInt().toLong(), words.roundToInt(), rounds.roundToInt())) }
+    CountSetting("Palabras por partida", words, RecallConfig.WORDS_PER_GAME) { words = it }
+    SectionTitle("Vidas", info = "Cada palabra que no recuerdas cuesta una vida. Sin vidas, se acaba la serie.")
+    Stepper(lives, RecallConfig.LIVES) { lives = it }
+    ChallengeModeSelector(single, { single = it }, penalty = "pierdes una vida")
+    RecordLine(recordFor(config))
+    StartButton(enabled = true) { onStart(config) }
   }
 }
+
+/** "Tu récord con estas opciones: 7 palabras", o que aun no hay. */
+@Composable
+private fun RecordLine(best: Int) {
+  SectionTitle(if (best > 0) "Tu récord con estas opciones: ${words(best)}" else "Aún no tienes récord con estas opciones.")
+}
+
+/** "1 palabra", "7 palabras". */
+internal fun words(n: Int): String = "$n ${if (n == 1) "palabra" else "palabras"}"
 
 /** El tiempo entre jugadas, en segundos con un decimal. */
 @Composable

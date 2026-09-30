@@ -8,6 +8,7 @@ import app.lexico.home.MinigamesScreen
 import app.lexico.menu.Settings
 import app.lexico.menu.ThemeState
 import app.lexico.modes.analysis.engineAnalyst
+import app.lexico.modes.recall.toSetup
 import app.lexico.modes.sprint.toSetup
 import app.lexico.ui.analysis.AnalyzerScreen
 import app.lexico.ui.classic.NewClassicScreen
@@ -46,7 +47,7 @@ private fun OtherScreens(screen: Screen, lexico: Lexico, nav: Navigator, setting
     Screen.NewClassic -> NewClassicScreen(nav::back) { nav.replace(Screen.Classic(it)) }
     Screen.NewEndgame -> NewEndgameScreen(nav::back) { nav.replace(Screen.Endgame(it)) }
     Screen.NewDuplicate -> NewDuplicateScreen(nav::back) { nav.replace(Screen.Duplicate(it)) }
-    Screen.NewRecall -> NewRecallScreen(nav::back) { nav.replace(Screen.Recall(it)) }
+    Screen.NewRecall -> NewRecallScreen(nav::back, { lexico.recallRecords.best(it.toSetup()) }) { nav.replace(Screen.Recall(it)) }
     Screen.NewSprint -> NewSprintScreen(nav::back, { lexico.sprintRecords.best(it.toSetup()) }) { nav.replace(Screen.Sprint(it)) }
     Screen.Analyzer -> AnalyzerScreen(style, remember(lexico) { engineAnalyst(lexico) }, nav::back)
     Screen.InProgress -> InProgressRoute(lexico, nav)
