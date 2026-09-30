@@ -29,6 +29,14 @@ class EngineTextTest {
     assertEquals(emptySet<Position>(), placedSquares("", ""))
   }
 
+  @Test fun movesShowTheWholeWord() {
+    val board = Board.of("h8 CASA", "8h .[CH]E")
+    assertEquals("8H CCHE", moveText(board, "8H .[CH]E (20 pts)"))
+    assertEquals("H8 CASAS", moveText(board, "H8 ....S"))
+    assertEquals("(Pasar)", moveText(board, "(Pasar)"))
+    assertEquals("A[CH]E".let(::plainTiles), moveText(board, " A[CH]E"))
+  }
+
   @Test fun candidatesAndDemoGames() {
     val candidates = parseCandidates("""[{"coords":"H8","description":"H8 CASA (12 pts)","score":12,"equity":15.5},{"coords":"","description":"(Pasar)","score":0,"equity":-3}]""")
     assertEquals(EngineCandidate("H8", "H8 CASA (12 pts)", 12, 15.5), candidates[0])

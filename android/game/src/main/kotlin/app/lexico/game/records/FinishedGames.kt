@@ -3,7 +3,7 @@ package app.lexico.game.records
 import app.lexico.game.Outcome
 import app.lexico.game.engine.engine
 import app.lexico.game.engine.parseBoard
-import app.lexico.game.engine.plainTiles
+import app.lexico.game.engine.moveText
 import app.lexico.game.engine.rackTiles
 import app.lexico.game.storage.Mode
 import app.lexico.go.review.Game
@@ -11,6 +11,7 @@ import app.lexico.go.review.Mark
 import app.lexico.go.review.Move
 import app.lexico.go.review.Review
 import app.lexico.go.review.Turn
+import app.lexico.model.Board
 import app.lexico.model.Placement
 import java.io.File
 
@@ -44,18 +45,22 @@ class FinishedGames internal constructor(private val dir: File) {
     else -> Mode.DUPLICATE
   }
 
-  private fun turn(t: Turn): ReviewTurn = ReviewTurn(
-    number = t.number.toInt(), player = t.player, rack = rackTiles(t.rack), board = parseBoard(t.board),
-    candidates = (0 until t.candidateCount()).map { move(t.candidateAt(it)) },
-    marks = (0 until t.markCount()).map { mark(t.markAt(it)) },
-  )
+  private fun turn(t: Turn): ReviewTurn {
+    val board = parseBoard(t.board)
+    return ReviewTurn(
+      number = t.number.toInt(), player = t.player, rack = rackTiles(t.rack), board = board,
+      candidates = (0 until t.candidateCount()).map { move(board, t.candidateAt(it)) },
+      marks = (0 until t.markCount()).map { mark(board, t.markAt(it)) },
+    )
+  }
 
-  private fun move(m: Move): ReviewMove = reviewMove(m.description, m.score.toInt(), m.equity.takeIf { m.hasEquity })
+  private fun move(board: Board, m: Move): ReviewMove =
+    reviewMove(board, m.description, m.score.toInt(), m.equity.takeIf { m.hasEquity })
 
-  private fun mark(m: Mark): ReviewMark =
-    ReviewMark(m.who, reviewMove(m.description, m.score.toInt(), null), m.rank.toInt().takeIf { it >= 0 })
+  private fun mark(board: Board, m: Mark): ReviewMark =
+    ReviewMark(m.who, reviewMove(board, m.description, m.score.toInt(), null), m.rank.toInt().takeIf { it >= 0 })
 
   /** "H8 CA[CH]A (12 pts)" -> "H8 CACHA", con su colocacion para dibujarla. */
-  private fun reviewMove(description: String, score: Int, equity: Double?): ReviewMove =
-    ReviewMove(plainTiles(description.substringBefore(" (")), score, equity, Placement.parseOrNull(description))
+  private fun reviewMove(board: Board, description: String, score: Int, equity: Double?): ReviewMove =
+    ReviewMove(moveText(board, description), score, equity, Placement.parseOrNull(description))
 }

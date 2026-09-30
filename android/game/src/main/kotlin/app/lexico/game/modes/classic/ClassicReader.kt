@@ -1,6 +1,7 @@
 package app.lexico.game.modes.classic
 
 import app.lexico.game.Outcome
+import app.lexico.game.engine.moveText
 import app.lexico.game.engine.parseBoard
 import app.lexico.game.engine.placedSquares
 import app.lexico.game.engine.rackTiles
@@ -10,6 +11,7 @@ import app.lexico.go.classic.Game
 import app.lexico.go.classic.Match
 import app.lexico.go.classic.Move
 import app.lexico.go.classic.Result
+import app.lexico.model.Board
 import app.lexico.model.Position
 
 /** Lee del motor el estado de una partida clasica en marcha y lo traduce a [ClassicState]. */
@@ -17,7 +19,8 @@ internal class ClassicReader(private val match: Match) {
   fun read(): ClassicState {
     val game = match.game()
     val status = game.status()
-    val moves = moves(game)
+    val board = parseBoard(game.board())
+    val moves = moves(game, board)
     return ClassicState(
       board = parseBoard(game.board(), latestSquares(moves)), rack = rackTiles(game.rack()),
       opponentTiles = status.opponentTiles.toInt(), opponentRack = rackTiles(game.opponentRack()),
@@ -30,11 +33,13 @@ internal class ClassicReader(private val match: Match) {
 
   fun clocks(): ClassicClocks? = match.clocks()?.let(::clocks)
 
-  private fun moves(game: Game): List<PlayedMove> = (0 until game.moveCount()).map { playedMove(game.moveAt(it)) }
+  private fun moves(game: Game, board: Board): List<PlayedMove> =
+    (0 until game.moveCount()).map { playedMove(board, game.moveAt(it)) }
 
-  private fun playedMove(m: Move): PlayedMove = PlayedMove(
+  private fun playedMove(board: Board, m: Move): PlayedMove = PlayedMove(
     byMe = m.byHuman, kind = moveKind(m.kind), coords = m.coords, tiles = m.tiles, tileCount = m.tileCount.toInt(),
     score = m.score.toInt(), myTotal = m.humanTotal.toInt(), opponentTotal = m.botTotal.toInt(),
+    text = moveText(board, "${m.coords} ${m.tiles}"),
   )
 
   private fun clocks(c: Clocks): ClassicClocks =

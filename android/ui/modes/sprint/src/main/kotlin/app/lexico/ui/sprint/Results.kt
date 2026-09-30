@@ -67,17 +67,14 @@ private fun BingoList(bingos: List<Bingo>, shown: Bingo?, onShow: (Bingo) -> Uni
 private fun BingoRow(bingo: Bingo, selected: Boolean, onClick: () -> Unit) {
   val background = if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface
   Row(Modifier.fillMaxWidth().background(background).clickable(onClick = onClick).padding(horizontal = 8.dp, vertical = 4.dp)) {
-    Text(plain(bingo.placement), Modifier.weight(1f), fontFamily = FontFamily.Monospace)
+    Text(bingo.text, Modifier.weight(1f), fontFamily = FontFamily.Monospace)
     Text("${bingo.score}", fontFamily = FontFamily.Monospace)
   }
 }
 
 private fun outcomeText(result: HandResult): String = when (result.outcome) {
-  Outcome.SOLVED -> "¡Scrabble! ${result.answer?.let { "${plain(it.placement)} (${it.score})" }.orEmpty()}"
+  Outcome.SOLVED -> "¡Scrabble! ${result.answer?.let { "${it.text} (${it.score})" }.orEmpty()}"
   Outcome.TIMEOUT -> "Se acabó el tiempo."
   Outcome.GAVE_UP -> "Te rendiste: pierdes una vida."
   Outcome.INVALID -> "Palabra no válida: pierdes una vida."
 }
-
-/** "H8 [CH]A.ADOS" sin los corchetes de los digrafos, para mostrar. */
-private fun plain(placement: String): String = placement.replace("[", "").replace("]", "")

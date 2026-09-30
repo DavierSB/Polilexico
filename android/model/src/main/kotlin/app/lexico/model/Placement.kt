@@ -29,6 +29,15 @@ data class Placement(
   /** "H8 CAsA", "8H .ALO", "10E [CH]IC.": se puede pasar tal cual al motor. */
   override fun toString(): String = coordinates + " " + tiles.joinToString("") { written(it) }
 
+  /**
+   * "H8 CASA" para mostrar: la palabra entera, con las letras de `board` en las casillas por las
+   * que pasa (en vez de puntos) y los digrafos sin corchetes.
+   */
+  fun spelled(board: Board): String =
+    coordinates + " " + tiles.zip(positions).joinToString("") { (tile, p) -> (tile ?: letterAt(board, p))?.toString() ?: "." }
+
+  private fun letterAt(board: Board, p: Position): Tile? = if (p.onBoard) board[p] else null
+
   companion object {
     /**
      * Lee "h8 CASA", "8h .ALO", "H8 CA(S)A" o una linea como "h8 CASA (12 pts)" (lo que sigue a

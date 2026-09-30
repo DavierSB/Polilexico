@@ -1,10 +1,13 @@
 package app.lexico.game.modes.sprint
 
+import app.lexico.game.engine.moveText
 import app.lexico.game.engine.parseBoard
+import app.lexico.game.engine.plainTiles
 import app.lexico.game.engine.rackTiles
 import app.lexico.go.sprint.Match
 import app.lexico.go.sprint.Solution
 import app.lexico.go.sprint.Sprint
+import app.lexico.model.Board
 
 /** Lee del motor el estado de una serie de Scrabble Sprint y lo traduce a [SprintState]. */
 internal class SprintReader(private val match: Match) {
@@ -22,10 +25,10 @@ internal class SprintReader(private val match: Match) {
     val phase = match.phase()
     val hand = hand()
     return when {
-      phase == Sprint.PhaseFinished -> SprintPhase.Finished(hand, result())
+      phase == Sprint.PhaseFinished -> SprintPhase.Finished(hand, result(hand?.board))
       hand == null -> SprintPhase.Searching
       phase == Sprint.PhaseSolving -> SprintPhase.Solving(hand, match.remainingMs().coerceAtLeast(0))
-      phase == Sprint.PhaseRevealed -> result()?.let { SprintPhase.Revealed(hand, it) } ?: SprintPhase.Searching
+      phase == Sprint.PhaseRevealed -> result(hand.board)?.let { SprintPhase.Revealed(hand, it) } ?: SprintPhase.Searching
       else -> SprintPhase.Searching
     }
   }
@@ -37,14 +40,19 @@ internal class SprintReader(private val match: Match) {
   }
 
   /** Como se cerro la ultima mano; null si no hay mano cerrada. */
-  private fun result(): HandResult? {
+  private fun result(board: Board?): HandResult? {
     val outcome = outcomeOf(match.outcome()) ?: return null
-    return HandResult(outcome, match.answer()?.let(::bingo), bingos())
+    return HandResult(outcome, match.answer()?.let { bingo(board, it) }, bingos(board))
   }
 
-  private fun bingos(): List<Bingo> = (0 until match.solutionCount()).mapNotNull { match.solutionAt(it)?.let(::bingo) }
+  private fun bingos(board: Board?): List<Bingo> =
+    (0 until match.solutionCount()).mapNotNull { match.solutionAt(it)?.let { s -> bingo(board, s) } }
 
-  private fun bingo(s: Solution): Bingo = Bingo("${s.coords} ${s.tiles}", s.score.toInt())
+  /** Con el tablero de la mano (si lo hay) para escribir la palabra entera. */
+  private fun bingo(board: Board?, s: Solution): Bingo {
+    val placement = "${s.coords} ${s.tiles}"
+    return Bingo(placement, s.score.toInt(), board?.let { moveText(it, placement) } ?: plainTiles(placement))
+  }
 
   private fun outcomeOf(text: String): HandOutcome? = when (text) {
     Sprint.OutcomeSolved -> HandOutcome.SOLVED

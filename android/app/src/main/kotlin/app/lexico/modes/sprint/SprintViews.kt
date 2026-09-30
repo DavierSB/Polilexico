@@ -35,7 +35,7 @@ private fun hand(h: GameHand): Hand = Hand(h.board, h.rack)
 
 private fun result(r: GameResult): HandResult = HandResult(outcome(r.outcome), r.answer?.let(::bingo), r.bingos.map(::bingo))
 
-private fun bingo(b: GameBingo): Bingo = Bingo(b.placement, b.score)
+private fun bingo(b: GameBingo): Bingo = Bingo(b.placement, b.score, b.text)
 
 private fun outcome(o: HandOutcome): Outcome = when (o) {
   HandOutcome.SOLVED -> Outcome.SOLVED

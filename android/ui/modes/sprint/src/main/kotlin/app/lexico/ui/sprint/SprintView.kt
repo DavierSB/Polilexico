@@ -33,8 +33,8 @@ data class HandResult(val outcome: Outcome, val answer: Bingo?, val bingos: List
 /** INVALID: en single, pusiste palabras no validas. */
 enum class Outcome { SOLVED, TIMEOUT, GAVE_UP, INVALID }
 
-/** Un scrabble en notacion FISE ("H8 CA.ADOS") con sus puntos. */
-data class Bingo(val placement: String, val score: Int)
+/** Un scrabble en notacion FISE ("H8 CA.ADOS") con sus puntos; `text`, como se muestra ("H8 CASADOS"). */
+data class Bingo(val placement: String, val score: Int, val text: String)
 
 data class SprintView(
   val phase: Phase,

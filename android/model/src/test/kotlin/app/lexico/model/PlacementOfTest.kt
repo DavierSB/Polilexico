@@ -22,6 +22,12 @@ class PlacementOfTest {
     assertEquals("8H .E", boardWithCasa.placementOf(mapOf(p("I8") to Tile("E"))).toString())
   }
 
+  @Test fun spelledFillsBoardLetters() {
+    val board = Board.of("h8 [CH]AsA")
+    assertEquals("8H CHERO", Placement.parse("8h .ERO").spelled(board))
+    assertEquals("H8 CHAsAS", Placement.parse("h8 ....S").spelled(board))
+  }
+
   @Test fun digraphsAndBlanks() {
     val j = Board.EMPTY.placementOf(mapOf(p("H8") to Tile("CH"), p("H9") to Tile("E", blank = true)))
     assertEquals("H8 [CH]e", j.toString())

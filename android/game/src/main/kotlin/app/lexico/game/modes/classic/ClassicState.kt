@@ -1,7 +1,6 @@
 package app.lexico.game.modes.classic
 
 import app.lexico.game.Outcome
-import app.lexico.game.engine.plainTiles
 import app.lexico.model.Board
 
 /** Una partida clasica en este momento, tal como la cuenta el motor. */
@@ -40,10 +39,9 @@ data class PlayedMove(
   val score: Int,
   val myTotal: Int,
   val opponentTotal: Int,
-) {
-  /** "H8 CA.A" (colocaciones) o las fichas, sin corchetes de digrafos, para mostrar. */
-  val text: String get() = listOf(coords, plainTiles(tiles)).filter { it.isNotEmpty() }.joinToString(" ")
-}
+  /** "H8 CASA" (colocaciones, con la palabra entera) o las fichas, sin corchetes de digrafos, para mostrar. */
+  val text: String,
+)
 
 enum class Side { ME, OPPONENT }
 

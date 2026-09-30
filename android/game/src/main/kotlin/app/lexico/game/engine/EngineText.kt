@@ -23,6 +23,14 @@ internal fun rackTiles(text: String): List<String> = text.trim().split(Regex("\\
 /** ["A", "CH", "?"] -> "A[CH]?", el atril como lo lee el motor. */
 internal fun rackText(rack: List<String>): String = rack.joinToString("") { if (it.length > 1) "[$it]" else it }
 
+/**
+ * Una jugada del motor ("H8 CA.A (12 pts)", "(Pasar)", fichas cambiadas...) para mostrar: las
+ * colocaciones con la palabra entera, tomando de `board` las letras por las que pasan. Como las
+ * fichas no se quitan del tablero, vale el tablero actual tambien para jugadas pasadas.
+ */
+internal fun moveText(board: Board, move: String): String =
+  Placement.parseOrNull(move)?.spelled(board) ?: plainTiles(move.substringBefore(" (").trim())
+
 /** "CA.A" o "[CH]E" sin los corchetes de los digrafos, para mostrar. */
 internal fun plainTiles(tiles: String): String = tiles.replace("[", "").replace("]", "")
 
