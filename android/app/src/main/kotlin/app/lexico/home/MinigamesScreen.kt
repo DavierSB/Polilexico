@@ -19,8 +19,8 @@ import app.lexico.ui.common.Header
 private data class Minigame(val name: String, val description: String, val screen: Screen)
 
 private val MINIGAMES = listOf(
+  Minigame("Scrabble Sprint", "¡Encuentra Scrabbles contrarreloj!", Screen.NewSprint),
   Minigame("Finales", "Practica tus finales, tomando el control de una partida en sus postrimerías.", Screen.NewEndgame),
-  Minigame("Scrabble Sprint", "¡Encuentra los scrabbles mientras te queden vidas!", Screen.NewSprint),
   Minigame("¿Cuántas recuerdas?", "Aprende palabras, observando una partida de unos pocos segundos, para luego anagramar sus palabras más valiosas.", Screen.NewRecall),
 )
 
