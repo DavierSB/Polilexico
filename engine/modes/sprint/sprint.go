@@ -55,11 +55,14 @@ type Match struct {
 	paused, closed       bool
 }
 
-func NewMatch(totalMs int64, lives int, invalidCostsLife bool, l events.Listener) (*Match, error) {
+func NewMatch(totalMs int64, lives int, invalidCostsLife bool, difficulty string, l events.Listener) (*Match, error) {
 	if err := core.Ready(); err != nil {
 		return nil, err
 	}
-	m := startMatch(totalDuration(totalMs), startingLives(lives), timing.Real(), randomTarget, l)
+	if !validDifficulty(difficulty) {
+		return nil, errDifficulty
+	}
+	m := startMatch(totalDuration(totalMs), startingLives(lives), timing.Real(), randomTarget, difficulty, l)
 	m.invalidCostsLife = invalidCostsLife
 	return m, nil
 }
@@ -125,8 +128,8 @@ func (m *Match) Close() {
 	m.notifier.Close()
 }
 
-func startMatch(total time.Duration, lives int, clock timing.Clock, pick func() int, l events.Listener) *Match {
-	m := &Match{hunter: startHunter(pick), clock: timing.NewCountdown(clock), totalTime: total,
+func startMatch(total time.Duration, lives int, clock timing.Clock, pick func() int, difficulty string, l events.Listener) *Match {
+	m := &Match{hunter: startHunter(pick, difficulty), clock: timing.NewCountdown(clock), totalTime: total,
 		maxLives: lives, notifier: notify.New(l), lives: lives}
 	m.mu.Lock()
 	defer m.mu.Unlock()

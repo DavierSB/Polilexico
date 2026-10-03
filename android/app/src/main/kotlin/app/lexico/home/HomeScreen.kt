@@ -23,7 +23,7 @@ fun HomeScreen(
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
     HomeTopBar(onMenu)
-    DemoBoard(demoGame, style)
+    DemoBoard(demoGame, style, Modifier.weight(1f, fill = false))
     MODES.forEach { (name, screen) -> Button(onClick = { go(screen) }, Modifier.fillMaxWidth()) { Text(name) } }
     SavedGamesButtons(inProgress, go)
   }

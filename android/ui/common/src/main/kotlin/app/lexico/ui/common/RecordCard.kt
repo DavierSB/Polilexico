@@ -1,0 +1,41 @@
+package app.lexico.ui.common
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+@Composable
+fun RecordCard(value: String?) {
+  if (value == null) return
+  Column(
+    Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f), RoundedCornerShape(16.dp))
+      .padding(vertical = 12.dp, horizontal = 16.dp),
+    Arrangement.spacedBy(2.dp), Alignment.CenterHorizontally,
+  ) {
+    RecordLabel()
+    RecordValue(value)
+  }
+}
+
+@Composable
+private fun RecordLabel() {
+  Text("TU RÉCORD", style = TextStyle(fontFamily = Mulish, fontWeight = FontWeight.ExtraBold, fontSize = 12.sp,
+    letterSpacing = 1.2.sp, color = MaterialTheme.colorScheme.onSurfaceVariant))
+}
+
+@Composable
+private fun RecordValue(value: String) {
+  Text(value, style = TextStyle(fontFamily = Mulish, fontWeight = FontWeight.Black, fontSize = 32.sp, color = MaterialTheme.colorScheme.primary))
+}

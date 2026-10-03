@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,26 @@ fun InvalidRack(rack: List<String>, style: BoardStyle) {
     InvalidRackLabel()
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)) {
       rack.forEach { RackTile(it, style, size = 42.dp) }
+    }
+  }
+}
+
+@Composable
+fun ManyInvalidDialog(rack: List<String>, style: BoardStyle) {
+  AlertDialog(
+    onDismissRequest = {},
+    title = { Text("Manos inválidas") },
+    text = { ManyInvalidText(rack, style) },
+    confirmButton = {},
+  )
+}
+
+@Composable
+private fun ManyInvalidText(rack: List<String>, style: BoardStyle) {
+  Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Text("Tras varias manos inválidas se obtiene el atril válido siguiente:")
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)) {
+      rack.forEach { RackTile(it, style, size = 34.dp) }
     }
   }
 }

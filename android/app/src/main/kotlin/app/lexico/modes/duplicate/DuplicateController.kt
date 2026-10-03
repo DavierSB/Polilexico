@@ -27,4 +27,4 @@ class DuplicateController(
   override fun analyze() = review(game.state.value.recordPath, onReview)
 }
 
-fun DuplicateConfig.toSetup(): DuplicateSetup = DuplicateSetup(invalidLosesTurn = single, turnMs = turnMs)
+fun DuplicateConfig.toSetup(): DuplicateSetup = DuplicateSetup(invalidLosesTurn = single, turnMs = turnMs, maxRounds = rounds)

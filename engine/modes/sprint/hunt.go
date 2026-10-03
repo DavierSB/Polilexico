@@ -14,6 +14,7 @@ var errStopped = errors.New("búsqueda detenida")
 
 type hunter struct {
 	pick          func() int
+	difficulty    string
 	found         chan found
 	done          chan struct{}
 	stopOnce      sync.Once
@@ -27,8 +28,8 @@ type found struct {
 	err    error
 }
 
-func startHunter(pick func() int) *hunter {
-	h := &hunter{pick: pick, found: make(chan found), done: make(chan struct{}), target: pick()}
+func startHunter(pick func() int, difficulty string) *hunter {
+	h := &hunter{pick: pick, difficulty: difficulty, found: make(chan found), done: make(chan struct{}), target: pick()}
 	go h.run()
 	return h
 }
@@ -73,8 +74,10 @@ func (h *hunter) checkTurn() *puzzle {
 	if len(bingos) == 0 {
 		return nil
 	}
-	h.count++
 	if h.count < h.target {
+		h.count++
+	}
+	if h.count < h.target || !fits(h.difficulty, h.play.Game.Board(), bingos) {
 		return nil
 	}
 	h.count, h.target = 0, h.pick()

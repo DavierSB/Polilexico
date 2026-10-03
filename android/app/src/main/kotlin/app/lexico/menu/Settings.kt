@@ -17,6 +17,9 @@ class Settings(ctx: Context) {
   var theme: AppTheme by mutableStateOf(AppThemes.ALL.random())
     private set
 
+  var lightBoard: Boolean by mutableStateOf(prefs.getBoolean(LIGHT_BOARD_KEY, false))
+    private set
+
   var liveScore: Boolean by mutableStateOf(prefs.getBoolean(LIVE_SCORE_KEY, true))
     private set
 
@@ -28,6 +31,11 @@ class Settings(ctx: Context) {
 
   fun chooseTheme(chosen: AppTheme) {
     theme = chosen
+  }
+
+  fun useLightBoard(on: Boolean) {
+    lightBoard = on
+    prefs.edit { putBoolean(LIGHT_BOARD_KEY, on) }
   }
 
   fun showLiveScore(on: Boolean) {
@@ -46,6 +54,7 @@ class Settings(ctx: Context) {
   }
 
   private companion object {
+    const val LIGHT_BOARD_KEY = "lightBoard"
     const val LIVE_SCORE_KEY = "liveScore"
     const val SHOW_UNSEEN_KEY = "showUnseen"
     const val STATS_SINCE_KEY = "statsSince"

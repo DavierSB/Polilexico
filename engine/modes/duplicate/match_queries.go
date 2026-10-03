@@ -15,7 +15,7 @@ func (m *Match) Paused() bool {
 func (m *Match) Rack() string {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if m.draw == nil || !usesTurnClock(m.phase) {
+	if m.draw == nil || !showsRack(m.phase) {
 		return ""
 	}
 	return m.draw.Rack
@@ -27,7 +27,7 @@ func (m *Match) InvalidRack() string {
 	if m.phase != PhaseInvalidRack {
 		return ""
 	}
-	return m.draw.InitialRack
+	return m.draw.invalidRacks[m.shown]
 }
 
 func (m *Match) Proposal() *Attempt {

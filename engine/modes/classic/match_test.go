@@ -135,3 +135,17 @@ func TestMatchChargesEachOvertimeMinute(t *testing.T) {
 		t.Fatalf("%+v", r)
 	}
 }
+
+func TestProgressOfASavedMatch(t *testing.T) {
+	m, _, _ := newTestMatch(t, 0, false)
+	playYourTurn(t, m)
+	text, err := m.Save()
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, err := ReadProgress(text)
+	status := m.game.Status()
+	if err != nil || p.BotName != m.game.botName || p.HumanTotal != status.HumanScore || p.HumanTotal == 0 {
+		t.Fatalf("%+v %v %+v", p, err, *status)
+	}
+}

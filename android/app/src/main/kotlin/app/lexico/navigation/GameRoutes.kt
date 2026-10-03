@@ -9,6 +9,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import app.lexico.game.Lexico
 import app.lexico.game.modes.classic.ClassicGame
 import app.lexico.game.modes.duplicate.DuplicateGame
+import app.lexico.game.modes.duplicate.DuplicatePhase
+import app.lexico.game.records.DuplicateRecords
 import app.lexico.game.modes.sprint.SprintGame
 import app.lexico.game.modes.sprint.SprintPhase
 import app.lexico.game.modes.sprint.SprintSetup
@@ -19,6 +21,7 @@ import app.lexico.modes.classic.classicView
 import app.lexico.modes.classic.toSetup
 import app.lexico.modes.duplicate.DuplicateController
 import app.lexico.modes.duplicate.duplicateView
+import app.lexico.modes.duplicate.efficiencyTenths
 import app.lexico.modes.duplicate.toSetup
 import app.lexico.modes.recall.engineGames
 import app.lexico.modes.recall.recallRecords
@@ -51,7 +54,7 @@ internal fun EndgameRoute(screen: Screen.Endgame, lexico: Lexico, nav: Navigator
 @Composable
 internal fun DuplicateRoute(screen: Screen.Duplicate, lexico: Lexico, nav: Navigator, themes: ThemeState) {
   WhenReady(rememberCreated(screen) { lexico.newDuplicate(screen.config.toSetup()) }, "Preparando la partida…") {
-    DuplicatePlay(it, nav, themes)
+    DuplicatePlay(it, nav, themes, lexico.duplicateRecords)
   }
 }
 
@@ -60,7 +63,7 @@ internal fun RecallRoute(screen: Screen.Recall, lexico: Lexico, nav: Navigator, 
   val scope = rememberCoroutineScope()
   val session = remember(screen) { RecallSession(screen.config, engineGames(lexico), recallRecords(lexico.recallRecords, screen.config), scope) }
   GameTheme(session, themes, themes.appTheme)
-  RecallScreen(session, themes.current.board, nav::back) { themes.picking = true }
+  RecallScreen(session, themes.board, nav::back) { themes.picking = true }
 }
 
 @Composable
@@ -77,17 +80,19 @@ internal fun ClassicPlay(game: ClassicGame, nav: Navigator, themes: ThemeState) 
   val scope = rememberCoroutineScope()
   val controller = remember(game) { ClassicController(game, scope, nav::back) { nav.replace(Screen.Review(it)) } }
   val state by game.state.collectAsState()
-  ClassicScreen(classicView(state, game.opponent, controller.notice), themes.current.board, controller) { themes.picking = true }
+  ClassicScreen(classicView(state, game.opponent, controller.notice), themes.board, controller) { themes.picking = true }
 }
 
 @Composable
-internal fun DuplicatePlay(game: DuplicateGame, nav: Navigator, themes: ThemeState) {
+internal fun DuplicatePlay(game: DuplicateGame, nav: Navigator, themes: ThemeState, records: DuplicateRecords) {
   PauseWhenHidden(game)
   GameTheme(game, themes, themes.appTheme)
   val scope = rememberCoroutineScope()
   val controller = remember(game) { DuplicateController(game, scope, nav::back) { nav.replace(Screen.Review(it)) } }
   val state by game.state.collectAsState()
-  DuplicateScreen(duplicateView(state, controller.notice), themes.current.board, controller) { themes.picking = true }
+  val finished = state.phase is DuplicatePhase.Finished
+  remember(finished) { if (finished) records.submit(game.setup, efficiencyTenths(state)) }
+  DuplicateScreen(duplicateView(state, controller.notice), themes.board, controller) { themes.picking = true }
 }
 
 @Composable
@@ -102,7 +107,7 @@ internal fun SprintPlay(
   val finished = state.phase is SprintPhase.Finished
   val best = remember(game) { records.best(setup) }
   val record = remember(finished) { if (finished) records.submit(setup, state.solved) else null }
-  SprintScreen(sprintView(state, controller.notice, best, record), themes.current.board, controller) { themes.picking = true }
+  SprintScreen(sprintView(state, controller.notice, best, record), themes.board, controller) { themes.picking = true }
 }
 
 @Composable

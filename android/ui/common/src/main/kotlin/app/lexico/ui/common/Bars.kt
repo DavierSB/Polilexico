@@ -22,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,13 +40,15 @@ fun GameBar(
   onPause: (() -> Unit)? = null,
   onTheme: (() -> Unit)? = null,
 ) {
-  Row(Modifier.fillMaxWidth().height(44.dp), Arrangement.spacedBy(2.dp), Alignment.CenterVertically) {
-    ExitButton(onExit)
-    if (onResign != null) BarTextButton("Abandonar", onResign)
-    Spacer(Modifier.weight(1f))
-    if (onPause != null) PauseButton(onPause)
-    if (onTheme != null) ThemeButton(onTheme)
-    BarTextButton("Movidas", onMoves)
+  Row(Modifier.fillMaxWidth().height(44.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.weight(1f).clipToBounds(), Arrangement.spacedBy(2.dp), Alignment.CenterVertically) {
+      ExitButton(onExit)
+      if (onResign != null) BarTextButton("Abandonar", onResign)
+      Spacer(Modifier.weight(1f))
+      if (onPause != null) PauseButton(onPause)
+      if (onTheme != null) ThemeButton(onTheme)
+      BarTextButton("Movidas", onMoves)
+    }
     BagIcon(bag, onBag)
   }
 }

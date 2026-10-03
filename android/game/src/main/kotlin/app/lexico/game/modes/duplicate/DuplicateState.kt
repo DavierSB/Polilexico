@@ -15,6 +15,7 @@ data class DuplicateState(
 sealed interface DuplicatePhase {
   data class Waiting(val turnMs: Long) : DuplicatePhase
   data class InvalidRack(val rack: List<String>) : DuplicatePhase
+  data class ManyInvalid(val rack: List<String>) : DuplicatePhase
   data class Playing(val rack: List<String>, val remainingMs: Long) : DuplicatePhase
   data class Confirming(val rack: List<String>, val proposal: String, val remainingMs: Long, val cancelMs: Long) : DuplicatePhase
   data object Finished : DuplicatePhase

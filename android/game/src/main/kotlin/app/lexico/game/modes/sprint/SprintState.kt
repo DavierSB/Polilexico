@@ -2,7 +2,7 @@ package app.lexico.game.modes.sprint
 
 import app.lexico.model.Board
 
-data class SprintSetup(val totalMs: Long, val lives: Int, val invalidCostsLife: Boolean = true)
+data class SprintSetup(val totalMs: Long, val lives: Int, val invalidCostsLife: Boolean = true, val difficulty: String = "normal")
 
 data class SprintState(
   val phase: SprintPhase,

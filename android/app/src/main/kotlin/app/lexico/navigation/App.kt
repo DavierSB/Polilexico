@@ -52,7 +52,7 @@ fun App(lexico: Lexico, settings: Settings, version: String) {
 private fun Dialogs(settings: Settings, themes: ThemeState, menu: MenuState, version: String) {
   if (menu.showOptions) OptionsDialog(settings) { menu.showOptions = false }
   if (menu.showAbout) AboutDialog(version) { menu.showAbout = false }
-  if (themes.picking) ThemeDialog(themes.current, themes::choose) { themes.picking = false }
+  if (themes.picking) ThemeDialog(themes.current, themes.lightBoard, themes::choose, themes::chooseLight) { themes.picking = false }
 }
 
 @Composable

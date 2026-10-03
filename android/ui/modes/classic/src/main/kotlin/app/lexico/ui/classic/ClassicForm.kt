@@ -14,7 +14,7 @@ internal fun rememberClassicForm(): ClassicForm = remember { ClassicForm() }
 @Stable
 internal class ClassicForm {
   var opponent by mutableStateOf("HastyBot")
-  var single by mutableStateOf(false)
+  var single by mutableStateOf(true)
   var timed by mutableStateOf(true)
   var time by mutableStateOf(Durations.format(ClassicConfig().timeMs))
   var overtime by mutableStateOf(Durations.format(ClassicConfig().overtimeMs))

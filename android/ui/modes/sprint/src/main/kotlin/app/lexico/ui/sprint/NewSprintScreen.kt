@@ -13,8 +13,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.ChallengeModeSelector
+import app.lexico.ui.common.ChoiceOptions
 import app.lexico.ui.common.Durations
 import app.lexico.ui.common.Header
+import app.lexico.ui.common.RecordCard
+import app.lexico.ui.common.RulesButton
 import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
 import app.lexico.ui.common.Stepper
@@ -22,7 +25,16 @@ import app.lexico.ui.common.TimeField
 
 const val DEFAULT_TOTAL_MS = 300_000L
 
-data class SprintConfig(val totalMs: Long = DEFAULT_TOTAL_MS, val lives: Int = DEFAULT_LIVES, val single: Boolean = true) {
+enum class Difficulty(val engineName: String, val label: String) {
+  EASY("easy", "Fácil"), NORMAL("normal", "Normal"), HARD("hard", "Difícil"),
+}
+
+data class SprintConfig(
+  val totalMs: Long = DEFAULT_TOTAL_MS,
+  val lives: Int = DEFAULT_LIVES,
+  val single: Boolean = true,
+  val difficulty: Difficulty = Difficulty.NORMAL,
+) {
   companion object {
     const val DEFAULT_LIVES = 3
     val LIVES = 1..5
@@ -34,22 +46,41 @@ fun NewSprintScreen(onBack: () -> Unit, recordFor: (SprintConfig) -> Int, onStar
   var total by remember { mutableStateOf(Durations.format(DEFAULT_TOTAL_MS)) }
   var lives by remember { mutableIntStateOf(SprintConfig.DEFAULT_LIVES) }
   var single by remember { mutableStateOf(true) }
-  val config = Durations.parse(total)?.takeIf { it > 0 }?.let { SprintConfig(it, lives, single) }
+  var difficulty by remember { mutableStateOf(Difficulty.NORMAL) }
+  val config = Durations.parse(total)?.takeIf { it > 0 }?.let { SprintConfig(it, lives, single, difficulty) }
+  var rules by remember { mutableStateOf(false) }
   Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     Header("Scrabble Sprint", onBack)
-    SectionTitle("Tiempo", info = "El reloj solo corre mientras buscas el scrabble de una mano. Cuando se agota, se acaba la serie.")
+    RulesButton { rules = true }
+    DifficultySection(difficulty) { difficulty = it }
+    SectionTitle("Tiempo")
     TimeField(total, { total = it }, "Tiempo de la serie")
-    SectionTitle("Vidas", info = "Rendirte en una mano cuesta una vida.")
+    SectionTitle("Vidas")
     Stepper(lives, SprintConfig.LIVES) { lives = it }
-    ChallengeModeSelector(single, { single = it }, penalty = "pierdes una vida")
+    ChallengeModeSelector(single, { single = it }, singleHint = SINGLE_HINT)
     config?.let { RecordLine(recordFor(it)) }
     StartButton(enabled = config != null) { config?.let(onStart) }
   }
+  if (rules) SprintRulesDialog { rules = false }
+}
+
+@Composable
+private fun DifficultySection(difficulty: Difficulty, onChange: (Difficulty) -> Unit) {
+  SectionTitle("Dificultad", info = DIFFICULTY_INFO)
+  ChoiceOptions(Difficulty.entries.map { it.label }, difficulty.ordinal) { onChange(Difficulty.entries[it]) }
 }
 
 @Composable
 private fun RecordLine(best: Int) {
-  SectionTitle(if (best > 0) "Tu récord con estas opciones: ${hands(best)}" else "Aún no tienes récord con estas opciones.")
+  RecordCard(scrabbles(best).takeIf { best > 0 })
 }
 
-internal fun hands(n: Int): String = "$n ${if (n == 1) "mano" else "manos"}"
+internal fun scrabbles(n: Int): String = "$n ${if (n == 1) "scrabble" else "scrabbles"}"
+
+private const val SINGLE_HINT =
+  "si colocas una jugada inválida, vuelven las fichas a tu atril y pierdes una vida."
+
+private const val DIFFICULTY_INFO =
+  "Fácil: todos los tableros que salgan tendrán múltiples scrabbles para colocar.\n\n" +
+    "Normal: puede salirte cualquier tablero con al menos un scrabble.\n\n" +
+    "Difícil: todos los tableros que salgan tendrán una sola oportunidad de scrabble."

@@ -25,7 +25,11 @@ func newSimulation() (*simulation, error) {
 }
 
 func (sim *simulation) reached(maxBag int) bool {
-	return sim.play.Game.Bag().TilesRemaining() <= maxBag
+	return sim.bag() <= maxBag
+}
+
+func (sim *simulation) bag() int {
+	return sim.play.Game.Bag().TilesRemaining()
 }
 
 func (sim *simulation) over() bool {

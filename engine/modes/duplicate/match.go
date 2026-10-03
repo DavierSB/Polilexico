@@ -13,6 +13,7 @@ import (
 const (
 	PhaseWaiting     = "waiting"
 	PhaseInvalidRack = "invalid_rack"
+	PhaseManyInvalid = "many_invalid"
 	PhasePlaying     = "playing"
 	PhaseConfirming  = "confirming"
 	PhaseFinished    = "finished"
@@ -33,6 +34,7 @@ type Match struct {
 	notifier *notify.Notifier
 	phase    string
 	draw     *Draw
+	shown    int
 	proposal *Attempt
 	input    string
 	lastErr  string
@@ -40,12 +42,13 @@ type Match struct {
 	closed   bool
 }
 
-func NewMatch(turnMs int64, invalidLosesTurn bool, l events.Listener) (*Match, error) {
+func NewMatch(turnMs int64, invalidLosesTurn bool, maxRounds int, l events.Listener) (*Match, error) {
 	g, err := Start()
 	if err != nil {
 		return nil, err
 	}
 	g.SetInvalidPlayLosesTurn(invalidLosesTurn)
+	g.SetMaxRounds(maxRounds)
 	return startMatch(g, turnDuration(turnMs), timing.Real(), l, false), nil
 }
 

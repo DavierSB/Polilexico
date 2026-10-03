@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.ChallengeModeSelector
 import app.lexico.ui.common.Header
+import app.lexico.ui.common.RecordCard
+import app.lexico.ui.common.RulesButton
 import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
 import app.lexico.ui.common.Stepper
@@ -34,7 +36,6 @@ data class RecallConfig(
 ) {
   companion object {
     val INTERVAL_MS = 500L..3000L
-    val WORDS_PER_GAME = 3..12
     val LIVES = 1..5
   }
 }
@@ -43,25 +44,26 @@ data class RecallConfig(
 fun NewRecallScreen(onBack: () -> Unit, recordFor: (RecallConfig) -> Int, onStart: (RecallConfig) -> Unit) {
   val default = RecallConfig()
   var interval by remember { mutableFloatStateOf(default.intervalMs / 1000f) }
-  var words by remember { mutableFloatStateOf(default.wordsPerGame.toFloat()) }
   var lives by remember { mutableIntStateOf(default.lives) }
   var single by remember { mutableStateOf(default.single) }
-  val config = RecallConfig((interval * 1000).roundToInt().toLong(), words.roundToInt(), lives, single)
+  val config = RecallConfig((interval * 1000).roundToInt().toLong(), default.wordsPerGame, lives, single)
+  var rules by remember { mutableStateOf(false) }
   Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     Header("¿Cuántas recuerdas?", onBack)
+    RulesButton { rules = true }
     IntervalSetting(interval) { interval = it }
-    CountSetting("Palabras por partida", words, RecallConfig.WORDS_PER_GAME) { words = it }
     SectionTitle("Vidas", info = "Cada palabra que no recuerdas cuesta una vida. Sin vidas, se acaba la serie.")
     Stepper(lives, RecallConfig.LIVES) { lives = it }
-    ChallengeModeSelector(single, { single = it }, penalty = "pierdes una vida")
+    ChallengeModeSelector(single, { single = it }, singleHint = SINGLE_HINT)
     RecordLine(recordFor(config))
     StartButton(enabled = true) { onStart(config) }
   }
+  if (rules) RecallRulesDialog { rules = false }
 }
 
 @Composable
 private fun RecordLine(best: Int) {
-  SectionTitle(if (best > 0) "Tu récord con estas opciones: ${words(best)}" else "Aún no tienes récord con estas opciones.")
+  RecordCard(words(best).takeIf { best > 0 })
 }
 
 internal fun words(n: Int): String = "$n ${if (n == 1) "palabra" else "palabras"}"
@@ -71,11 +73,6 @@ private fun IntervalSetting(seconds: Float, onChange: (Float) -> Unit) {
   val range = RecallConfig.INTERVAL_MS
   Setting("Tiempo entre jugadas", "%.1f s".format(seconds), seconds, range.first / 1000f..range.last / 1000f,
     steps = ((range.last - range.first) / 100 - 1).toInt(), info = "Menos tiempo, más difícil recordar.", onChange = onChange)
-}
-
-@Composable
-private fun CountSetting(title: String, value: Float, range: IntRange, onChange: (Float) -> Unit) {
-  Setting(title, "${value.roundToInt()}", value, range.range(), steps = range.steps(), onChange = onChange)
 }
 
 @Composable
@@ -92,6 +89,5 @@ private fun Setting(
   }
 }
 
-private fun IntRange.range(): ClosedFloatingPointRange<Float> = first.toFloat()..last.toFloat()
-
-private fun IntRange.steps(): Int = last - first - 1
+private const val SINGLE_HINT =
+  "si colocas una jugada inválida, vuelven las fichas a tu atril y pierdes una vida."

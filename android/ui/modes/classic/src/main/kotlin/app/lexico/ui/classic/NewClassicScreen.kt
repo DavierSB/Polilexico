@@ -35,16 +35,23 @@ private fun OpponentSection(form: ClassicForm) {
 
 @Composable
 internal fun ChallengeSection(form: ClassicForm) {
-  if (!form.voidOnly) return ChallengeModeSelector(form.single, { form.single = it }, penalty = "pierdes el turno")
+  if (!form.voidOnly) return ChallengeModeSelector(form.single, { form.single = it }, singleHint = SINGLE_HINT)
   SectionTitle("Comprobación de jugadas", info = "${alias(form.opponent)} solo juega en modo void: una jugada con palabras no válidas se rechaza y puedes volver a intentarlo.")
   Text("Void")
 }
 
 @Composable
 internal fun TimeSection(form: ClassicForm) {
-  SectionTitle("Tiempo", info = "Cuando se te acaba el tiempo empieza el descuento; si lo agotas también, pierdes por tiempo. No se descuentan puntos.")
+  SectionTitle("Tiempo", info = TIME_INFO)
   TwoOptions("Con tiempo", "Sin tiempo", !form.timed) { form.timed = !it }
   if (!form.timed) return
   TimeField(form.time, { form.time = it }, "Tiempo por jugador")
   TimeField(form.overtime, { form.overtime = it }, "Tiempo de descuento")
 }
+
+private const val TIME_INFO =
+  "Cuando se te acaba el tiempo empieza el descuento. Por cada minuto de descuento que empieces se te restan 10 puntos; " +
+    "si agotas también el descuento, pierdes por tiempo."
+
+private const val SINGLE_HINT =
+  "si colocas una jugada inválida, obtienes 0 puntos, vuelven las fichas a tu atril y pierdes el turno."

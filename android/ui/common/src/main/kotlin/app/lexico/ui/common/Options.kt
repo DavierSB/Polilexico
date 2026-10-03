@@ -27,6 +27,13 @@ fun TwoOptions(first: String, second: String, secondSelected: Boolean, onChange:
 }
 
 @Composable
+fun ChoiceOptions(options: List<String>, selected: Int, onSelect: (Int) -> Unit) {
+  Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    options.forEachIndexed { i, text -> Option(text, selected = i == selected) { onSelect(i) } }
+  }
+}
+
+@Composable
 fun TimeField(value: String, onChange: (String) -> Unit, label: String) {
   OutlinedTextField(
     value = value, onValueChange = onChange, singleLine = true,
@@ -37,8 +44,8 @@ fun TimeField(value: String, onChange: (String) -> Unit, label: String) {
 }
 
 @Composable
-fun ChallengeModeSelector(single: Boolean, onChange: (Boolean) -> Unit, penalty: String) {
-  SectionTitle("Comprobación de jugadas", info = "$VOID_HINT\n\nSingle: si pones palabras no válidas, la jugada no entra y $penalty.")
+fun ChallengeModeSelector(single: Boolean, onChange: (Boolean) -> Unit, singleHint: String) {
+  SectionTitle("Comprobación de jugadas", info = "$CHALLENGE_INTRO\n\n$VOID_HINT\n\nSingle: $singleHint")
   TwoOptions("Void", "Single", single, onChange)
 }
 
@@ -69,4 +76,6 @@ private fun Option(text: String, selected: Boolean, select: () -> Unit) {
   if (selected) Button(onClick = {}) { Text(text) } else OutlinedButton(onClick = select) { Text(text) }
 }
 
-private const val VOID_HINT = "Void: una jugada con palabras no válidas se rechaza y puedes volver a intentarlo."
+private const val CHALLENGE_INTRO = "Existen varios modos de comprobación de jugadas:"
+
+private const val VOID_HINT = "Void: si intentas colocar una jugada inválida, no se te permite y continúas tu turno."

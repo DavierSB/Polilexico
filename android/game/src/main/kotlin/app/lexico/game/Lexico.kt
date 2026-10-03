@@ -12,6 +12,7 @@ import app.lexico.game.modes.duplicate.DuplicateSetup
 import app.lexico.game.modes.recall.DemoGames
 import app.lexico.game.modes.sprint.SprintGame
 import app.lexico.game.modes.sprint.SprintSetup
+import app.lexico.game.records.DuplicateRecords
 import app.lexico.game.records.FinishedGames
 import app.lexico.game.records.RecallRecords
 import app.lexico.game.records.SprintRecords
@@ -42,6 +43,8 @@ class Lexico(private val context: Context) {
   val sprintRecords = SprintRecords(context)
 
   val recallRecords = RecallRecords(context)
+
+  val duplicateRecords = DuplicateRecords(context)
 
   suspend fun start() = engine { WooglesEngine.start(context) }
 

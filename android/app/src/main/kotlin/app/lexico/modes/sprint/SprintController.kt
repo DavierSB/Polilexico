@@ -25,4 +25,5 @@ class SprintController(
   override fun restart() = onRestart()
 }
 
-fun SprintConfig.toSetup(): SprintSetup = SprintSetup(totalMs = totalMs, lives = lives, invalidCostsLife = single)
+fun SprintConfig.toSetup(): SprintSetup =
+  SprintSetup(totalMs = totalMs, lives = lives, invalidCostsLife = single, difficulty = difficulty.engineName)

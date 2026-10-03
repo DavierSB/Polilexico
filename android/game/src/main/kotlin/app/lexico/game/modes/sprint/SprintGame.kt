@@ -40,7 +40,7 @@ class SprintGame private constructor(
   internal companion object {
     suspend fun start(setup: SprintSetup, id: String, saves: SavedGames, scope: CoroutineScope): SprintGame {
       val listener = EngineListener()
-      val game = engine { SprintGame(Sprint.newMatch(setup.totalMs, setup.lives.toLong(), setup.invalidCostsLife, listener), id, saves, scope) }
+      val game = engine { SprintGame(Sprint.newMatch(setup.totalMs, setup.lives.toLong(), setup.invalidCostsLife, setup.difficulty, listener), id, saves, scope) }
       listener.target = game.listen()
       listener.onChange()
       return game

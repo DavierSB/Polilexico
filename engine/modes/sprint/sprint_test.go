@@ -177,7 +177,7 @@ func newTestMatch(t *testing.T) (*Match, *timing.Fake) {
 	t.Helper()
 	testenv.Init(t)
 	clock := timing.NewFake()
-	m := startMatch(MatchSeconds*time.Second, Lives, clock, func() int { return 1 }, nil)
+	m := startMatch(MatchSeconds*time.Second, Lives, clock, func() int { return 1 }, DifficultyNormal, nil)
 	t.Cleanup(m.Close)
 	return m, clock
 }

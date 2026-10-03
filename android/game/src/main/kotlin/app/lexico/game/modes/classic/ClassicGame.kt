@@ -50,7 +50,9 @@ class ClassicGame private constructor(
       }
 
     suspend fun startEndgame(setup: EndgameSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame {
-      val search = Classic.newEndgameSearch(setup.maxBag.toLong(), setup.minLead.toLong(), setup.maxLead.toLong())
+      val search = Classic.newEndgameSearch(
+        setup.minBag.toLong(), setup.maxBag.toLong(), setup.minLead.toLong(), setup.maxLead.toLong(), setup.q,
+      )
       return stoppingOnCancel(search::stop) {
         open(id, Mode.ENDGAME, saves, scope) {
           search.match(setup.timeMs, setup.overtimeMs, setup.invalidLosesTurn, it)

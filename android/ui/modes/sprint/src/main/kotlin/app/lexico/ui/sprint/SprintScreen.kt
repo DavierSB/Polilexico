@@ -36,6 +36,7 @@ import app.lexico.ui.common.NOT_IN_A_LINE
 import app.lexico.ui.common.Notice
 import app.lexico.ui.common.Pausable
 import app.lexico.ui.common.PauseButton
+import app.lexico.ui.common.RulesBarButton
 import app.lexico.ui.common.ThemeButton
 import app.lexico.ui.common.TurnClock
 import app.lexico.ui.common.rememberNotice
@@ -69,12 +70,15 @@ private fun SprintLayout(
 
 @Composable
 private fun TopBar(view: SprintView, actions: SprintActions, onTheme: (() -> Unit)?) {
+  var rules by remember { mutableStateOf(false) }
   Row(Modifier.fillMaxWidth().height(44.dp), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
     ExitButton(actions::exit)
     BarTitle("Scrabble Sprint", Modifier.weight(1f).padding(start = 6.dp))
     if (view.phase !is Phase.Finished) PauseButton(actions::pause)
+    RulesBarButton { rules = true }
     if (onTheme != null) ThemeButton(onTheme)
   }
+  if (rules) SprintRulesDialog { rules = false }
 }
 
 @Composable

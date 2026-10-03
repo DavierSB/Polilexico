@@ -72,7 +72,11 @@ func (d *Game) Result() *Result {
 }
 
 func (d *Game) over() bool {
-	return d.ended || d.g.Playing() == pb.PlayState_GAME_OVER
+	return d.ended || d.g.Playing() == pb.PlayState_GAME_OVER || d.roundsDone()
+}
+
+func (d *Game) roundsDone() bool {
+	return d.maxRounds > 0 && len(d.turns) >= d.maxRounds
 }
 
 func (d *Game) inTurn() bool {

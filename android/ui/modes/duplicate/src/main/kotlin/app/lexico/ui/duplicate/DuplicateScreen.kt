@@ -64,6 +64,7 @@ private fun PhasePanel(phase: Phase, c: TilePlacer, style: BoardStyle, actions: 
   when (phase) {
     is Phase.Waiting -> ShowRackButton(phase.turnMs, actions::showRack)
     is Phase.InvalidRack -> InvalidRack(phase.rack, style)
+    is Phase.ManyInvalid -> ManyInvalidDialog(phase.rack, style)
     is Phase.Playing -> ClockAndRack(phase.remainingMs, c, style, enabled = true)
     is Phase.Confirming -> ClockAndRack(phase.remainingMs, c, style, enabled = false)
     Phase.Finished -> Unit

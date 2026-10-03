@@ -8,6 +8,7 @@ import app.lexico.home.MinigamesScreen
 import app.lexico.menu.Settings
 import app.lexico.menu.ThemeState
 import app.lexico.modes.analysis.engineAnalyst
+import app.lexico.modes.duplicate.toSetup
 import app.lexico.modes.recall.toSetup
 import app.lexico.modes.sprint.toSetup
 import app.lexico.ui.analysis.AnalyzerScreen
@@ -37,13 +38,13 @@ private fun GameScreens(screen: Screen, lexico: Lexico, nav: Navigator, themes: 
 
 @Composable
 private fun OtherScreens(screen: Screen, lexico: Lexico, nav: Navigator, settings: Settings, onMenu: () -> Unit) {
-  val style = settings.theme.board
+  val style = settings.theme.board(settings.lightBoard)
   when (screen) {
     Screen.Home -> HomeScreen(style, remember { lexico.savedGames.list().size }, lexico.demoGames::nextPlacements, onMenu, nav::go)
     Screen.Minigames -> MinigamesScreen(nav::back, nav::go)
     Screen.NewClassic -> NewClassicScreen(nav::back) { nav.replace(Screen.Classic(it)) }
     Screen.NewEndgame -> NewEndgameScreen(nav::back) { nav.replace(Screen.Endgame(it)) }
-    Screen.NewDuplicate -> NewDuplicateScreen(nav::back) { nav.replace(Screen.Duplicate(it)) }
+    Screen.NewDuplicate -> NewDuplicateScreen(nav::back, { lexico.duplicateRecords.best(it.toSetup()) }) { nav.replace(Screen.Duplicate(it)) }
     Screen.NewRecall -> NewRecallScreen(nav::back, { lexico.recallRecords.best(it.toSetup()) }) { nav.replace(Screen.Recall(it)) }
     Screen.NewSprint -> NewSprintScreen(nav::back, { lexico.sprintRecords.best(it.toSetup()) }) { nav.replace(Screen.Sprint(it)) }
     Screen.Analyzer -> AnalyzerScreen(style, remember(lexico) { engineAnalyst(lexico) }, nav::back)

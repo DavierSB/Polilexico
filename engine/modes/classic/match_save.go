@@ -39,6 +39,32 @@ func LoadMatch(text string, l events.Listener) (*Match, error) {
 	return startMatch(g, s.clockPair(clock), clock, l, true), nil
 }
 
+type Progress struct {
+	BotName    string
+	HumanTotal int
+	BotTotal   int
+}
+
+func ReadProgress(text string) (*Progress, error) {
+	var m savedMatch
+	if err := json.Unmarshal([]byte(text), &m); err != nil {
+		return nil, err
+	}
+	var g savedGame
+	if err := json.Unmarshal([]byte(m.Game), &g); err != nil {
+		return nil, err
+	}
+	return g.progress(), nil
+}
+
+func (s savedGame) progress() *Progress {
+	p := &Progress{BotName: s.BotName}
+	if n := len(s.Moves); n > 0 {
+		p.HumanTotal, p.BotTotal = s.Moves[n-1].HumanTotal, s.Moves[n-1].BotTotal
+	}
+	return p
+}
+
 func (m *Match) saved(game string) savedMatch {
 	s := savedMatch{Game: game}
 	if p := m.clocks; p != nil {

@@ -6,6 +6,7 @@ import app.lexico.game.records.GameReview
 import app.lexico.game.records.ReviewMark
 import app.lexico.game.records.ReviewMove
 import app.lexico.game.records.ReviewTurn
+import app.lexico.game.storage.GameProgress
 import app.lexico.game.storage.Mode
 import app.lexico.game.storage.SavedGame
 import app.lexico.ui.classic.alias
@@ -23,11 +24,13 @@ import java.util.Locale
 private val SAVED_AT = SimpleDateFormat("d MMM, HH:mm", Locale("es"))
 private val FINISHED_AT = SimpleDateFormat("d/M/yyyy HH:mm", Locale("es"))
 
-fun inProgressItem(saved: SavedGame): InProgressItem =
-  InProgressItem(saved.id, modeName(saved.mode), "Guardada el " + SAVED_AT.format(Date(saved.updatedAt)))
+fun inProgressItem(saved: SavedGame, progress: GameProgress?): InProgressItem = InProgressItem(
+  saved.id, gameTitle(saved.mode, progress?.opponent), savedAt(saved),
+  progress?.let { scoreText(saved.mode, it.myScore, it.opponentScore) }, progress?.round?.let { "Ronda $it" },
+)
 
 fun finishedItem(g: FinishedGame): FinishedItem =
-  FinishedItem(g.path, title(g), detail(g), "${g.myScore} – ${g.opponentScore}", won(g.outcome))
+  FinishedItem(g.path, title(g), detail(g), score(g), won(g.outcome))
 
 fun folderOf(mode: Mode): GameFolder = when (mode) {
   Mode.CLASSIC -> GameFolder.CLASSIC
@@ -41,16 +44,23 @@ fun reviewView(review: GameReview): ReviewView {
   return ReviewView(title, review.turns.map { turnView(it, equity) }, review.startTurn)
 }
 
+private fun savedAt(saved: SavedGame): String = "Guardada el " + SAVED_AT.format(Date(saved.updatedAt))
+
+private fun score(g: FinishedGame): String = scoreText(g.mode, g.myScore, g.opponentScore)
+
+private fun scoreText(mode: Mode, mine: Int, theirs: Int): String =
+  if (mode == Mode.DUPLICATE) "$mine/$theirs" else "$mine – $theirs"
+
 private fun modeName(mode: Mode): String = when (mode) {
   Mode.CLASSIC -> "Clásica"
   Mode.ENDGAME -> "Finales"
   Mode.DUPLICATE -> "Duplicada"
 }
 
-private fun title(g: FinishedGame): String = when (g.mode) {
-  Mode.DUPLICATE -> "Duplicada"
-  else -> "${modeName(g.mode)} contra ${alias(g.opponent)}"
-}
+private fun title(g: FinishedGame): String = gameTitle(g.mode, g.opponent)
+
+private fun gameTitle(mode: Mode, opponent: String?): String =
+  if (mode == Mode.DUPLICATE || opponent == null) modeName(mode) else "${modeName(mode)} contra ${alias(opponent)}"
 
 private fun detail(g: FinishedGame): String {
   val date = finishedAt(g)

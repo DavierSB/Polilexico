@@ -28,7 +28,7 @@ class ClassicController(
 }
 
 fun EndgameConfig.toSetup(): EndgameSetup = EndgameSetup(
-  maxBag = maxBag, minLead = minLead, maxLead = maxLead, invalidLosesTurn = single,
+  minBag = minBag, maxBag = maxBag, minLead = minLead, maxLead = maxLead, q = q.engineName, invalidLosesTurn = single,
   timeMs = if (timed) timeMs else 0, overtimeMs = overtimeMs,
 )
 

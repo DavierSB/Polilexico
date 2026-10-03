@@ -2,7 +2,6 @@ package duplicate
 
 import (
 	"errors"
-	"sort"
 
 	"github.com/domino14/macondo/move"
 	"github.com/domino14/word-golib/tilemapping"
@@ -15,16 +14,24 @@ const (
 	EndNoPlayableRack = "no_playable_rack"
 )
 
-const maxDrawAttempts = 40
+const (
+	maxDrawAttempts      = 10000
+	maxUnplayableRacks   = 40
+	maxShownInvalidRacks = 5
+	reducedFromTurn      = 16
+	maxPerKind           = 5
+)
 
 var errGameOver = errors.New("la partida ya terminó")
 
 type Draw struct {
-	Rack        string
-	Redrawn     bool
-	InitialRack string
-	GameOver    bool
-	EndReason   string
+	Rack         string
+	Redrawn      bool
+	InvalidCount int
+	GameOver     bool
+	EndReason    string
+	invalidRacks []string
+	unplayable   int
 }
 
 func (d *Game) DrawRack() (*Draw, error) {
@@ -40,12 +47,18 @@ func (d *Game) DrawRack() (*Draw, error) {
 	return d.draw(), nil
 }
 
+func (draw *Draw) ManyInvalid() bool {
+	return draw.InvalidCount > maxShownInvalidRacks
+}
+
 func (d *Game) draw() *Draw {
 	draw := &Draw{}
-	for i := 0; i < maxDrawAttempts; i++ {
-		if done := d.tryRack(draw); done != nil {
+	reduced := d.reducedMinimum()
+	for i := 0; i < maxDrawAttempts && draw.unplayable < maxUnplayableRacks; i++ {
+		if done := d.tryRack(draw, reduced); done != nil {
 			return done
 		}
+		d.noteInvalid(draw)
 		if !d.redraw() {
 			break
 		}
@@ -53,16 +66,17 @@ func (d *Game) draw() *Draw {
 	return d.endGame(draw, EndNoPlayableRack)
 }
 
-func (d *Game) tryRack(draw *Draw) *Draw {
+func (d *Game) tryRack(draw *Draw, reduced bool) *Draw {
 	switch {
-	case !d.rackIsValid() && !d.poolIsValid():
+	case !d.poolIsValid():
 		return d.endGame(draw, EndNoValidRack)
-	case !d.rackIsValid():
-		d.noteRedraw(draw)
+	case !d.rackIsValid(reduced):
+		return nil
 	case d.startTurn():
 		draw.Rack = d.rack
 		return draw
 	}
+	draw.unplayable++
 	return nil
 }
 
@@ -77,20 +91,18 @@ func (d *Game) startTurn() bool {
 	return true
 }
 
-func (d *Game) masterPlays() []*move.Move {
-	plays := d.master.GenAll(d.g.RackFor(masterIdx), false)
-	sort.Slice(plays, func(i, j int) bool { return plays[i].TiebreaksBetter(plays[j]) })
-	return copyMoves(plays)
-}
-
-func (d *Game) noteRedraw(draw *Draw) {
-	if !draw.Redrawn {
-		draw.Redrawn = true
-		draw.InitialRack = core.RackText(d.g, masterIdx)
+func (d *Game) noteInvalid(draw *Draw) {
+	draw.Redrawn = true
+	draw.InvalidCount++
+	if len(draw.invalidRacks) < maxShownInvalidRacks {
+		draw.invalidRacks = append(draw.invalidRacks, core.RackText(d.g, masterIdx))
 	}
 }
 
 func (d *Game) redraw() bool {
+	if d.g.Bag().TilesRemaining() == 0 {
+		return false
+	}
 	_, err := d.g.SetRandomRack(masterIdx, nil)
 	return err == nil
 }
@@ -102,47 +114,38 @@ func (d *Game) endGame(draw *Draw, reason string) *Draw {
 	return draw
 }
 
-func (d *Game) rackIsValid() bool {
-	return d.validTiles(d.g.RackFor(masterIdx).TilesOn())
+func (d *Game) reducedMinimum() bool {
+	vowels, consonants := d.countPure(d.pool())
+	return d.turn >= reducedFromTurn || vowels <= 1 || consonants <= 1
+}
+
+func (d *Game) rackIsValid(reduced bool) bool {
+	vowels, consonants := d.countPure(d.g.RackFor(masterIdx).TilesOn())
+	if reduced {
+		return vowels >= 1 && consonants >= 1
+	}
+	return vowels <= maxPerKind && consonants <= maxPerKind
 }
 
 func (d *Game) poolIsValid() bool {
-	pool := append(append([]tilemapping.MachineLetter{}, d.g.Bag().Peek()...), d.g.RackFor(masterIdx).TilesOn()...)
-	return d.validTiles(pool)
+	vowels, consonants := d.countPure(d.pool())
+	return vowels >= 1 && consonants >= 1
 }
 
-func (d *Game) validTiles(tiles []tilemapping.MachineLetter) bool {
-	minVowels, minConsonants := minimums(d.turn)
-	vowels, consonants, blanks := countTiles(tiles, d.g.Bag().LetterDistribution())
-	return vowels+blanks >= minVowels && consonants+blanks >= minConsonants
+func (d *Game) pool() []tilemapping.MachineLetter {
+	return append(append([]tilemapping.MachineLetter{}, d.g.Bag().Peek()...), d.g.RackFor(masterIdx).TilesOn()...)
 }
 
-func minimums(turn int) (vowels, consonants int) {
-	if turn > 15 {
-		return 1, 1
-	}
-	return 2, 2
-}
-
-func countTiles(tiles []tilemapping.MachineLetter, ld *tilemapping.LetterDistribution) (vowels, consonants, blanks int) {
+func (d *Game) countPure(tiles []tilemapping.MachineLetter) (vowels, consonants int) {
+	ld := d.g.Bag().LetterDistribution()
 	for _, t := range tiles {
 		switch {
 		case t == 0:
-			blanks++
 		case t.IsVowel(ld):
 			vowels++
 		default:
 			consonants++
 		}
 	}
-	return vowels, consonants, blanks
-}
-
-func copyMoves(moves []*move.Move) []*move.Move {
-	out := make([]*move.Move, len(moves))
-	for i, m := range moves {
-		out[i] = new(move.Move)
-		out[i].CopyFrom(m)
-	}
-	return out
+	return vowels, consonants
 }

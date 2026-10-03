@@ -135,7 +135,7 @@ func mustDraw(t *testing.T, d *Game) *Draw {
 		t.Fatal(err)
 	}
 	if draw.Redrawn {
-		t.Logf("mano inválida: %s -> %s", draw.InitialRack, draw.Rack)
+		t.Logf("manos inválidas: %v (%d) -> %s", draw.invalidRacks, draw.InvalidCount, draw.Rack)
 	}
 	return draw
 }

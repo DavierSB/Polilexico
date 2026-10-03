@@ -30,9 +30,9 @@ internal fun InProgressRoute(lexico: Lexico, nav: Navigator) {
   val saves = lexico.savedGames
   var games by remember { mutableStateOf(saves.list()) }
   InProgressScreen(
-    games.map(::inProgressItem), onBack = nav::back,
+    games.map { inProgressItem(it, saves.progress(it)) }, onBack = nav::back,
     onOpen = { id -> games.find { it.id == id }?.let { nav.replace(Screen.Continue(it)) } },
-    onDelete = { id -> games.find { it.id == id }?.let { saves.delete(it.id, it.mode) }; games = saves.list() },
+    onDelete = { ids -> games.filter { it.id in ids }.forEach { saves.delete(it.id, it.mode) }; games = saves.list() },
   )
 }
 
@@ -41,7 +41,7 @@ internal fun ContinueRoute(screen: Screen.Continue, lexico: Lexico, nav: Navigat
   WhenReady(rememberCreated(screen) { lexico.continueGame(screen.saved) }, "Abriendo la partida…") { game ->
     when (game) {
       is ClassicGame -> ClassicPlay(game, nav, themes)
-      is DuplicateGame -> DuplicatePlay(game, nav, themes)
+      is DuplicateGame -> DuplicatePlay(game, nav, themes, lexico.duplicateRecords)
     }
   }
 }

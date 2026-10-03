@@ -13,9 +13,15 @@ fun duplicateView(state: DuplicateState, notice: String?): DuplicateView = Dupli
   notice = notice ?: state.lastError, paused = state.paused,
 )
 
+fun efficiencyTenths(state: DuplicateState): Int {
+  val master = state.rounds.sumOf { it.masterScore }
+  return if (master > 0) state.rounds.sumOf { it.myScore } * 1000 / master else 0
+}
+
 private fun phase(phase: DuplicatePhase): Phase = when (phase) {
   is DuplicatePhase.Waiting -> Phase.Waiting(phase.turnMs)
   is DuplicatePhase.InvalidRack -> Phase.InvalidRack(phase.rack)
+  is DuplicatePhase.ManyInvalid -> Phase.ManyInvalid(phase.rack)
   is DuplicatePhase.Playing -> Phase.Playing(phase.rack, phase.remainingMs)
   is DuplicatePhase.Confirming -> Phase.Confirming(phase.rack, phase.proposal, phase.remainingMs, phase.cancelMs)
   DuplicatePhase.Finished -> Phase.Finished

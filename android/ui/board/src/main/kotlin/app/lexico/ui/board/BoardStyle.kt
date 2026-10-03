@@ -35,6 +35,7 @@ data class BoardStyle(
   val showCoordinates: Boolean = true,
   val coordinates: Color = bonusText,
   val backdrop: Color = lines,
+  val tray: Color? = null,
   val fontFamily: FontFamily = FontFamily.SansSerif,
   val fontWeight: FontWeight = FontWeight.Bold,
 ) {
@@ -127,6 +128,75 @@ object BoardStyles {
     coordinates = Color(0xFF8595A6),
   )
 
+  val PolimitaLight = BoardStyle(
+    name = "Polimita clara",
+    lines = Color(0xFFE6D3B3),
+    square = Color(0xFFF8EDD6),
+    doubleLetter = Color(0xFFF2CF8A),
+    tripleLetter = Color(0xFFE3A43A),
+    doubleWord = Color(0xFFF0AC8C),
+    tripleWord = Color(0xFFD9522A),
+    bonusText = Color(0xFF4A2A18),
+    labels = BoardStyle.NUMBER_LABELS,
+    tile = Color(0xFF3B2418),
+    letter = Color(0xFFFFF1D6),
+    blank = Color(0xFFFFB631),
+    latest = Color(0xFF8A3B12),
+    pending = Color(0xFFB8741E),
+    highScoreInk = Color(0xFFE0402A),
+    rounding = 0.18f,
+    coordinates = Color(0xFF8A6E58),
+    tray = Color(0xFFE6D3B3),
+  )
+
+  val LeafLight = BoardStyle(
+    name = "Hoja clara",
+    lines = Color(0xFFDCD6BE),
+    square = Color(0xFFF5F2E3),
+    doubleLetter = Color(0xFFC4E2AC),
+    tripleLetter = Color(0xFF5FAE5A),
+    doubleWord = Color(0xFFF4BCD2),
+    tripleWord = Color(0xFFD9457F),
+    bonusText = Color(0xFF1E2A18),
+    labels = BoardStyle.NUMBER_LABELS,
+    tile = Color(0xFF1F3A1A),
+    letter = Color(0xFFF6F3E6),
+    blank = Color(0xFFF07AA8),
+    latest = Color(0xFF4A7A1E),
+    pending = Color(0xFFA8336A),
+    arrow = Color(0xFF8FD46A),
+    arrowInk = Color(0xFF10200C),
+    scoreInk = Color(0xFF8FD46A),
+    highScoreInk = Color(0xFFFF6B9A),
+    rounding = 0.18f,
+    coordinates = Color(0xFF7A8A70),
+    tray = Color(0xFFDCD6BE),
+  )
+
+  val SkyLight = BoardStyle(
+    name = "Celeste clara",
+    lines = Color(0xFFDCD8CC),
+    square = Color(0xFFF6F2E7),
+    doubleLetter = Color(0xFFC4DDF2),
+    tripleLetter = Color(0xFF5A94C8),
+    doubleWord = Color(0xFFF6DE9A),
+    tripleWord = Color(0xFFD9A20E),
+    bonusText = Color(0xFF1A2838),
+    labels = BoardStyle.NUMBER_LABELS,
+    tile = Color(0xFF163252),
+    letter = Color(0xFFF4F7FA),
+    blank = Color(0xFFF6B40E),
+    latest = Color(0xFF2F5F94),
+    pending = Color(0xFF8A6A10),
+    arrow = Color(0xFF74ACDF),
+    arrowInk = Color(0xFF0B1E33),
+    scoreInk = Color(0xFF74ACDF),
+    highScoreInk = Color(0xFFFF6B5A),
+    rounding = 0.18f,
+    coordinates = Color(0xFF75808C),
+    tray = Color(0xFFDCD8CC),
+  )
+
   val Isc = BoardStyle(
     name = "ISC",
     lines = Color(0xFF9E9E8E),
@@ -187,6 +257,29 @@ object BoardStyles {
     coordinates = Color(0xFF8A93A3),
   )
 
+  val NightLight = BoardStyle(
+    name = "Noche clara",
+    lines = Color(0xFFD8D1BF),
+    square = Color(0xFFF3EEE1),
+    doubleLetter = Color(0xFFC3D3EE),
+    tripleLetter = Color(0xFF5F86C8),
+    doubleWord = Color(0xFFE9C3C8),
+    tripleWord = Color(0xFFB8434F),
+    bonusText = Color(0xFF1B1E24),
+    labels = BoardStyle.NUMBER_LABELS,
+    tile = Color(0xFF1E2A44),
+    letter = Color(0xFFF2ECDA),
+    blank = Color(0xFFE8D9B5),
+    latest = Color(0xFF4A6FB0),
+    pending = Color(0xFF2F6E4E),
+    arrow = Color(0xFF7FA6E8),
+    arrowInk = Color(0xFF0A1A33),
+    scoreInk = Color(0xFF7FA6E8),
+    rounding = 0.18f,
+    coordinates = Color(0xFF7A8090),
+    tray = Color(0xFFD8D1BF),
+  )
+
   val Paper = BoardStyle(
     name = "Papel",
     lines = Color(0xFFBDBDBD),
@@ -205,7 +298,7 @@ object BoardStyles {
     rounding = 0.08f,
   )
 
-  val ALL = listOf(Polimita, Leaf, Sky, Night, Isc, Classic, Paper)
+  val ALL = listOf(Polimita, PolimitaLight, Leaf, LeafLight, Sky, SkyLight, Night, NightLight, Isc, Classic, Paper)
 
   fun byName(name: String?): BoardStyle = ALL.find { it.name == name } ?: Polimita
 

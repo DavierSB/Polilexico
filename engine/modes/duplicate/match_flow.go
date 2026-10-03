@@ -14,8 +14,11 @@ func (m *Match) enterDraw(draw *Draw) {
 	switch {
 	case draw.GameOver:
 		m.phase = PhaseFinished
+	case draw.ManyInvalid():
+		m.phase = PhaseManyInvalid
+		m.step.Restart(InvalidRackSeconds * time.Second)
 	case draw.Redrawn:
-		m.phase = PhaseInvalidRack
+		m.phase, m.shown = PhaseInvalidRack, 0
 		m.step.Restart(InvalidRackSeconds * time.Second)
 	default:
 		m.enterPlaying(true)
@@ -51,12 +54,24 @@ func (m *Match) onTurnEnd() {
 
 func (m *Match) onStepEnd() {
 	m.whenDue(m.step.Left, func() {
-		if m.phase == PhaseInvalidRack {
+		switch m.phase {
+		case PhaseInvalidRack:
+			m.nextInvalidRack()
+		case PhaseManyInvalid:
 			m.enterPlaying(true)
-		} else if m.phase == PhaseConfirming {
+		case PhaseConfirming:
 			m.closeRound(m.game.Confirm(m.input))
 		}
 	})
+}
+
+func (m *Match) nextInvalidRack() {
+	m.shown++
+	if m.shown < len(m.draw.invalidRacks) {
+		m.step.Restart(InvalidRackSeconds * time.Second)
+		return
+	}
+	m.enterPlaying(true)
 }
 
 func (m *Match) whenDue(left func() time.Duration, advance func()) {
@@ -84,8 +99,12 @@ func usesTurnClock(phase string) bool {
 	return phase == PhasePlaying || phase == PhaseConfirming
 }
 
+func showsRack(phase string) bool {
+	return usesTurnClock(phase) || phase == PhaseManyInvalid
+}
+
 func usesStepClock(phase string) bool {
-	return phase == PhaseInvalidRack || phase == PhaseConfirming
+	return phase == PhaseInvalidRack || phase == PhaseManyInvalid || phase == PhaseConfirming
 }
 
 func errorText(err error) string {

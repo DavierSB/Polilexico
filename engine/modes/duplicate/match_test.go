@@ -48,7 +48,7 @@ func TestMatchPauseStopsTheTurnClock(t *testing.T) {
 	clock.Advance(50 * time.Second)
 	m.Pause()
 	clock.Advance(time.Hour)
-	if m.Phase() != PhasePlaying || m.TurnRemainingMs() != 150_000 {
+	if m.Phase() != PhasePlaying || m.TurnRemainingMs() != 130_000 {
 		t.Fatalf("fase %s, quedan %d", m.Phase(), m.TurnRemainingMs())
 	}
 	if _, err := m.Propose("pasar"); err != errPaused {
@@ -61,7 +61,7 @@ func TestMatchSaveMidTurnKeepsRackAndTime(t *testing.T) {
 	mustShowRack(t, m, clock)
 	clock.Advance(30 * time.Second)
 	loaded := mustReloadMatch(t, m)
-	if !loaded.Paused() || loaded.Phase() != PhasePlaying || loaded.Rack() != m.Rack() || loaded.TurnRemainingMs() != 170_000 {
+	if !loaded.Paused() || loaded.Phase() != PhasePlaying || loaded.Rack() != m.Rack() || loaded.TurnRemainingMs() != 150_000 {
 		t.Fatalf("pausa %v, fase %s, atril %q/%q, quedan %d", loaded.Paused(), loaded.Phase(), loaded.Rack(), m.Rack(), loaded.TurnRemainingMs())
 	}
 }
@@ -93,7 +93,7 @@ func mustShowRack(t *testing.T, m *Match, clock *timing.Fake) {
 	if err := m.ShowRack(); err != nil {
 		t.Fatal(err)
 	}
-	if m.Phase() == PhaseInvalidRack {
+	for m.Phase() == PhaseInvalidRack || m.Phase() == PhaseManyInvalid {
 		clock.Advance(InvalidRackSeconds * time.Second)
 	}
 	if m.Phase() != PhasePlaying {

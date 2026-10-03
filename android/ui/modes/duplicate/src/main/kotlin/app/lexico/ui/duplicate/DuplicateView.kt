@@ -8,6 +8,8 @@ sealed interface Phase {
 
   data class InvalidRack(val rack: List<String>) : Phase
 
+  data class ManyInvalid(val rack: List<String>) : Phase
+
   data class Playing(val rack: List<String>, val remainingMs: Long?) : Phase
 
   data class Confirming(val rack: List<String>, val placement: String, val remainingMs: Long?, val cancelMs: Long) : Phase

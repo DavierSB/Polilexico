@@ -1,5 +1,7 @@
 package app.lexico.home
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -7,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import app.lexico.model.Board
 import app.lexico.ui.board.BoardStyle
@@ -27,7 +30,9 @@ fun DemoBoard(nextGame: suspend () -> List<String>, style: BoardStyle, modifier:
       replay(game) { board = it }
     }
   }
-  ScrabbleBoard(board, modifier.fillMaxWidth(), style)
+  Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+    ScrabbleBoard(board, Modifier.aspectRatio(1f, matchHeightConstraintsFirst = true), style)
+  }
 }
 
 private const val PAUSE_MS = 1600L

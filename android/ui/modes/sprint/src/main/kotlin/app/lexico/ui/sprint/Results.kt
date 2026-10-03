@@ -30,7 +30,7 @@ fun Revealed(result: HandResult, shown: Bingo?, onShow: (Bingo) -> Unit, onNext:
 fun Finished(result: HandResult?, solved: Int, record: Record?, shown: Bingo?, onShow: (Bingo) -> Unit, actions: SprintActions) {
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
     val why = if (result?.outcome == Outcome.TIMEOUT) "¡Tiempo!" else "Sin vidas."
-    Text("$why Resolviste ${hands(solved)}.", style = MaterialTheme.typography.titleMedium)
+    Text("$why Resolviste ${scrabbles(solved)}.", style = MaterialTheme.typography.titleMedium)
     record?.let { RecordLine(it) }
     result?.takeIf { it.outcome != Outcome.TIMEOUT }?.let { OutcomeLine(it) }
     FinishedButtons(actions::restart, actions::exit)
@@ -41,7 +41,7 @@ fun Finished(result: HandResult?, solved: Int, record: Record?, shown: Bingo?, o
 @Composable
 private fun RecordLine(record: Record) {
   if (record.isNew) Text("¡Nuevo récord!", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-  else Text("Récord: ${hands(record.best)}")
+  else Text("Récord: ${scrabbles(record.best)}")
 }
 
 @Composable

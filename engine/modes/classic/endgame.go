@@ -11,6 +11,7 @@ import (
 const ModeEndgame = "endgame"
 
 const (
+	EndgameMinBag  = 2
 	EndgameMaxBag  = 8
 	EndgameMinLead = -40
 	EndgameMaxLead = 0
@@ -20,16 +21,17 @@ const (
 var (
 	errSearchStopped = errors.New("búsqueda detenida")
 	errLeadRange     = errors.New("la ventaja mínima no puede superar a la máxima")
-	errBagRange      = errors.New("el número de fichas en la bolsa no puede ser negativo")
+	errBagRange      = errors.New("las fichas en la bolsa deben ir de un mínimo a un máximo, sin negativos")
 )
 
 type EndgameSearch struct {
-	maxBag, minLead, maxLead int
-	stopped                  atomic.Bool
+	minBag, maxBag, minLead, maxLead int
+	q                                string
+	stopped                          atomic.Bool
 }
 
-func NewEndgameSearch(maxBag, minLead, maxLead int) *EndgameSearch {
-	return &EndgameSearch{maxBag: maxBag, minLead: minLead, maxLead: maxLead}
+func NewEndgameSearch(minBag, maxBag, minLead, maxLead int, q string) *EndgameSearch {
+	return &EndgameSearch{minBag: minBag, maxBag: maxBag, minLead: minLead, maxLead: maxLead, q: q}
 }
 
 func (s *EndgameSearch) Stop() {
@@ -64,8 +66,10 @@ func (s *EndgameSearch) check() error {
 	switch {
 	case s.minLead > s.maxLead:
 		return errLeadRange
-	case s.maxBag < 0:
+	case s.minBag < 0 || s.minBag > s.maxBag:
 		return errBagRange
+	case !validQ(s.q):
+		return errQPlace
 	}
 	return core.Ready()
 }
@@ -88,7 +92,7 @@ func (s *EndgameSearch) simulate() (*simulation, error) {
 
 func (s *EndgameSearch) accept(sim *simulation) *simulation {
 	lead := sim.lead()
-	if sim.over() || lead < s.minLead || lead > s.maxLead {
+	if sim.over() || sim.bag() < s.minBag || lead < s.minLead || lead > s.maxLead || !sim.qMatches(s.q) {
 		return nil
 	}
 	return sim

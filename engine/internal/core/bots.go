@@ -30,13 +30,20 @@ func NewBot(g *game.Game, name string) (*bot.BotTurnPlayer, error) {
 }
 
 func NewMaster(g *game.Game) (*movegen.GordonGenerator, error) {
+	b, err := NewMasterBot(g)
+	if err != nil {
+		return nil, err
+	}
+	return generatorOf(b), nil
+}
+
+func NewMasterBot(g *game.Game) (*bot.BotTurnPlayer, error) {
 	b, err := newBotPlayer(g, botLevels[DefaultBot])
 	if err != nil {
 		return nil, err
 	}
-	gen := generatorOf(b)
-	gen.SetSortingParameter(movegen.SortByScore)
-	return gen, nil
+	generatorOf(b).SetSortingParameter(movegen.SortByScore)
+	return b, nil
 }
 
 func newBotPlayer(g *game.Game, level pb.BotRequest_BotCode) (*bot.BotTurnPlayer, error) {

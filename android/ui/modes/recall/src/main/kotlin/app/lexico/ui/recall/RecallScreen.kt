@@ -11,23 +11,31 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.Lives
+import app.lexico.ui.common.RulesBarButton
 import app.lexico.ui.common.ThemeButton
 
 @Composable
 fun RecallScreen(session: RecallSession, style: BoardStyle, onExit: () -> Unit, onTheme: (() -> Unit)? = null) {
+  var rules by remember { mutableStateOf(false) }
   Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     Header("¿Cuántas recuerdas?", onExit) {
+      RulesBarButton { rules = true }
       if (onTheme != null) ThemeButton(onTheme)
     }
     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) { StageContent(session, style, onExit) }
     Lives(session.lives, session.config.lives, "Recordadas", session.recalled, session.best)
   }
+  if (rules) RecallRulesDialog { rules = false }
 }
 
 @Composable

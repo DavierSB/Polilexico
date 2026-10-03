@@ -39,6 +39,24 @@ func LoadMatch(text string, l events.Listener) (*Match, error) {
 	return m, m.resumeTurn(s)
 }
 
+type Progress struct {
+	Round       int
+	HumanTotal  int
+	MasterTotal int
+}
+
+func ReadProgress(text string) (*Progress, error) {
+	var m savedMatch
+	if err := json.Unmarshal([]byte(text), &m); err != nil {
+		return nil, err
+	}
+	var g savedGame
+	if err := json.Unmarshal([]byte(m.Game), &g); err != nil {
+		return nil, err
+	}
+	return &Progress{Round: len(g.Turns) + 1, HumanTotal: g.HumanTotal, MasterTotal: g.MasterTotal}, nil
+}
+
 func (m *Match) saved(game string) savedMatch {
 	s := savedMatch{Game: game, TurnMs: m.turnTime.Milliseconds(), InTurn: m.phase != PhaseWaiting && m.phase != PhaseFinished}
 	if usesTurnClock(m.phase) {

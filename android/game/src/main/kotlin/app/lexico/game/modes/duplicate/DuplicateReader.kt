@@ -25,6 +25,7 @@ internal class DuplicateReader(private val match: Match) {
 
   fun phase(): DuplicatePhase = when (match.phase()) {
     Duplicate.PhaseInvalidRack -> DuplicatePhase.InvalidRack(rackTiles(match.invalidRack()))
+    Duplicate.PhaseManyInvalid -> DuplicatePhase.ManyInvalid(rackTiles(match.rack()))
     Duplicate.PhasePlaying -> DuplicatePhase.Playing(rackTiles(match.rack()), match.turnRemainingMs())
     Duplicate.PhaseConfirming -> confirming()
     Duplicate.PhaseFinished -> DuplicatePhase.Finished

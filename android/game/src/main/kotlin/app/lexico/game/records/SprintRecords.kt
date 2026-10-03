@@ -10,5 +10,8 @@ class SprintRecords(context: Context) {
 
   fun submit(setup: SprintSetup, solved: Int): SeriesRecord = store.submit(key(setup), solved)
 
-  private fun key(setup: SprintSetup): String = "${setup.totalMs}_${setup.lives}" + if (setup.invalidCostsLife) "_single" else ""
+  private fun key(setup: SprintSetup): String =
+    "${setup.totalMs}_${setup.lives}" + (if (setup.invalidCostsLife) "_single" else "") + difficultySuffix(setup.difficulty)
+
+  private fun difficultySuffix(difficulty: String): String = if (difficulty == "normal") "" else "_$difficulty"
 }
