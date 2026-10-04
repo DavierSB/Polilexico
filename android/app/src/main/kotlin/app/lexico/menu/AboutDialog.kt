@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 
 private const val SOURCE_URL = "https://github.com/DavierSB/polilexico"
 
+private const val SITE_URL = "https://polilexico.github.io"
+
 @Composable
 fun AboutDialog(version: String, close: () -> Unit) {
   var author by remember { mutableStateOf(false) }
@@ -44,6 +46,7 @@ private fun Thanks() {
 
 @Composable
 private fun AboutText(version: String, showAuthor: () -> Unit) {
+  val uriHandler = LocalUriHandler.current
   Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
     Text(
       "El propósito de Poliléxico es ser la primera aplicación offline para móvil que combine las diferentes " +
@@ -57,6 +60,7 @@ private fun AboutText(version: String, showAuthor: () -> Unit) {
       "Los avatares de los bots son un tributo a la cultura hispanoamericana, y en especial a la cubana."
     )
     Text("Hecha con amor desde Cuba.")
+    Link("Visítanos") { uriHandler.openUri(SITE_URL) }
     Link("Acerca del autor", showAuthor)
     License(version)
   }

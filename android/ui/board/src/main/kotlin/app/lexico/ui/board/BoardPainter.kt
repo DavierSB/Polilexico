@@ -75,7 +75,7 @@ internal class BoardPainter(
     drawTileBody(corner, backdrop)
     val withValue = style.showValues && !tile.blank
     val ink = if (tile.blank) style.blank else style.letter
-    drawCentered(tile.toString(), letterCenter(corner, withValue), letterSize(tile), ink, style.fontWeight)
+    drawCentered(face(tile), letterCenter(corner, withValue), letterSize(tile), ink, style.fontWeight)
     if (withValue) drawCentered("${tile.value}", corner + Offset(side * 0.8f, side * 0.78f), side * 0.26f, style.value, FontWeight.Normal)
   }
 
@@ -115,6 +115,8 @@ internal class BoardPainter(
 
   private fun letterCenter(corner: Offset, withValue: Boolean): Offset =
     corner + if (withValue) Offset(side * 0.45f, side * 0.47f) else Offset(side / 2, side / 2)
+
+  private fun face(tile: Tile): String = if (tile.letter == "L") tile.letter else tile.toString()
 
   private fun letterSize(tile: Tile): Float = side * if (tile.letter.length > 1) 0.42f else 0.62f
 
