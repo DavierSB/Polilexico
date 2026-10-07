@@ -102,3 +102,15 @@ func (m *Match) LastError() string {
 	defer m.mu.Unlock()
 	return m.lastErr
 }
+
+func (m *Match) CueCount() int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.cues.Count()
+}
+
+func (m *Match) Cue() string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.cues.Last()
+}

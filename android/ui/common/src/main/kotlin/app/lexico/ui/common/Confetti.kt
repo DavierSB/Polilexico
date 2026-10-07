@@ -7,6 +7,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -22,18 +23,24 @@ private val ConfettiColors = listOf(
 )
 
 private const val PIECES = 110
-private const val FALL_MS = 3600
+const val CONFETTI_MS = 3600
 
 private class Piece(
   val x: Float, val delay: Float, val speed: Float, val sway: Float, val phase: Float, val spin: Float,
   val width: Float, val color: Color,
 )
 
+val LocalConfettiStart = staticCompositionLocalOf<() -> Unit> { {} }
+
 @Composable
 fun Confetti(modifier: Modifier = Modifier) {
   val pieces = remember { List(PIECES) { randomPiece(Random) } }
   val time = remember { Animatable(0f) }
-  LaunchedEffect(Unit) { time.animateTo(1f, tween(FALL_MS, easing = LinearEasing)) }
+  val onStart = LocalConfettiStart.current
+  LaunchedEffect(Unit) {
+    onStart()
+    time.animateTo(1f, tween(CONFETTI_MS, easing = LinearEasing))
+  }
   Canvas(modifier) { pieces.forEach { drawPiece(it, time.value) } }
 }
 

@@ -44,12 +44,12 @@ private fun RoundRow(round: Round) {
 @Composable
 private fun RowScope.PlayCell(play: RoundPlay, hit: Boolean = false) {
   Row(Modifier.weight(1f).padding(end = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-    MoveText(play.text, Modifier.weight(1f))
+    MoveText(play.text, Modifier.weight(1f), bingo = play.bingo)
     Text("${play.points}" + if (hit) " ✓" else "", Modifier.padding(start = 4.dp), fontSize = 12.sp,
-      color = pointsColor(hit), fontWeight = if (hit) FontWeight.Bold else FontWeight.Normal)
+      color = pointsColor(hit || play.bingo), fontWeight = if (hit || play.bingo) FontWeight.Bold else FontWeight.Normal)
   }
 }
 
 @Composable
-private fun pointsColor(hit: Boolean): Color =
-  if (hit) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+private fun pointsColor(marked: Boolean): Color =
+  if (marked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant

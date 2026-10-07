@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"lexico/engine/events"
+	"lexico/engine/internal/cues"
 	"lexico/engine/internal/notify"
 	"lexico/engine/internal/timing"
 )
@@ -30,6 +31,8 @@ type Match struct {
 	game     *Game
 	turn     *timing.Countdown
 	step     *timing.Countdown
+	marks    *timing.Marks
+	cues     cues.Log
 	turnTime time.Duration
 	notifier *notify.Notifier
 	phase    string
@@ -116,8 +119,8 @@ func (m *Match) Close() {
 }
 
 func startMatch(g *Game, turnTime time.Duration, clock timing.Clock, l events.Listener, paused bool) *Match {
-	m := &Match{game: g, turn: timing.NewCountdown(clock), step: timing.NewCountdown(clock), turnTime: turnTime,
-		notifier: notify.New(l), phase: PhaseWaiting, paused: paused}
+	m := &Match{game: g, turn: timing.NewCountdown(clock), step: timing.NewCountdown(clock),
+		marks: timing.NewMarks(clock, cues.Countdown), turnTime: turnTime, notifier: notify.New(l), phase: PhaseWaiting, paused: paused}
 	if g.Status().Over {
 		m.phase = PhaseFinished
 	}

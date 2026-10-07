@@ -6,8 +6,8 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-val appVersionCode = 6
-val appVersionName = "0.4.3"
+val appVersionCode = 7
+val appVersionName = "0.5"
 
 val abiCodes = mapOf("armeabi-v7a" to 1, "arm64-v8a" to 2)
 
@@ -84,6 +84,7 @@ dependencies {
   implementation(project(":ui:games"))
   implementation(project(":ui:modes:recall"))
   implementation(project(":ui:modes:sprint"))
+  implementation(project(":sounds"))
 
   implementation(platform(libs.androidx.compose.bom))
   implementation(libs.androidx.activity.compose)

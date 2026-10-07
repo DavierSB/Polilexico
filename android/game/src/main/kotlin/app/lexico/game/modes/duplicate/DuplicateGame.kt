@@ -1,5 +1,6 @@
 package app.lexico.game.modes.duplicate
 
+import app.lexico.game.CueReading
 import app.lexico.game.LiveGame
 import app.lexico.game.engine.EngineListener
 import app.lexico.game.engine.engine
@@ -34,6 +35,8 @@ class DuplicateGame private constructor(
     !state.paused && (state.phase is DuplicatePhase.Playing || state.phase is DuplicatePhase.Confirming)
 
   override fun isOver(state: DuplicateState): Boolean = state.phase == DuplicatePhase.Finished
+
+  override fun lastCue(): CueReading = CueReading(match.cueCount(), match.cue())
 
   override fun pauseMatch() = match.pause()
 

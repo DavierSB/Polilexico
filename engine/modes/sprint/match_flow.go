@@ -1,7 +1,14 @@
 package sprint
 
+import (
+	"lexico/engine/events"
+	"lexico/engine/internal/timing"
+)
+
 func (m *Match) afterChange() {
-	m.clock.Sync(!m.paused && !m.closed && m.phase == PhaseSolving, m.onTimeUp)
+	running := !m.paused && !m.closed && m.phase == PhaseSolving
+	m.clock.Sync(running, m.onTimeUp)
+	m.marks.Sync(running, m.clock.Left(), m.onMark)
 	m.notifier.Notify()
 }
 
@@ -41,6 +48,7 @@ func (m *Match) pose(p *puzzle) {
 func (m *Match) reveal(outcome string, answer *Solution) {
 	m.outcome, m.answer = outcome, answer
 	m.phase = PhaseRevealed
+	m.cueOutcome(outcome)
 	switch outcome {
 	case OutcomeSolved:
 		m.solved++
@@ -51,6 +59,17 @@ func (m *Match) reveal(outcome string, answer *Solution) {
 		}
 	case OutcomeTimeout:
 		m.finish()
+	}
+}
+
+func (m *Match) cueOutcome(outcome string) {
+	switch outcome {
+	case OutcomeSolved:
+		m.cues.Emit(events.CueCorrect)
+	case OutcomeInvalid, OutcomeGaveUp:
+		m.cues.Emit(events.CueWrong)
+	case OutcomeTimeout:
+		m.cues.Emit(events.CueTimeUp)
 	}
 }
 
@@ -68,5 +87,15 @@ func (m *Match) onTimeUp() {
 	if m.phase == PhaseSolving && m.clock.Left() <= 0 {
 		m.reveal(OutcomeTimeout, nil)
 	}
+	m.afterChange()
+}
+
+func (m *Match) onMark(mark timing.Mark) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.paused || m.closed || m.phase != PhaseSolving || m.clock.Left() > mark.Left {
+		return
+	}
+	m.cues.Emit(mark.Cue)
 	m.afterChange()
 }

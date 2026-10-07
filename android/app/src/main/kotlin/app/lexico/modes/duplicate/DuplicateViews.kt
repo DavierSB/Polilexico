@@ -28,4 +28,4 @@ private fun phase(phase: DuplicatePhase): Phase = when (phase) {
 }
 
 private fun round(r: RoundResult): Round =
-  Round(r.number, master = RoundPlay(r.masterText, r.masterScore), mine = RoundPlay(r.myText, r.myScore), hit = r.hit)
+  Round(r.number, master = RoundPlay(r.masterText, r.masterScore, r.masterBingo), mine = RoundPlay(r.myText, r.myScore, r.myBingo), hit = r.hit)

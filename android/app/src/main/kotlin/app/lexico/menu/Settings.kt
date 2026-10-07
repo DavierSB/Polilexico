@@ -26,6 +26,12 @@ class Settings(ctx: Context) {
   var showUnseen: Boolean by mutableStateOf(prefs.getBoolean(SHOW_UNSEEN_KEY, true))
     private set
 
+  var sounds: Boolean by mutableStateOf(prefs.getBoolean(SOUNDS_KEY, true))
+    private set
+
+  var vibration: Boolean by mutableStateOf(prefs.getBoolean(VIBRATION_KEY, true))
+    private set
+
   var statsSince: Long by mutableLongStateOf(prefs.getLong(STATS_SINCE_KEY, 0L))
     private set
 
@@ -48,6 +54,16 @@ class Settings(ctx: Context) {
     prefs.edit { putBoolean(SHOW_UNSEEN_KEY, on) }
   }
 
+  fun useSounds(on: Boolean) {
+    sounds = on
+    prefs.edit { putBoolean(SOUNDS_KEY, on) }
+  }
+
+  fun useVibration(on: Boolean) {
+    vibration = on
+    prefs.edit { putBoolean(VIBRATION_KEY, on) }
+  }
+
   fun resetStats() {
     statsSince = System.currentTimeMillis()
     prefs.edit { putLong(STATS_SINCE_KEY, statsSince) }
@@ -57,6 +73,8 @@ class Settings(ctx: Context) {
     const val LIGHT_BOARD_KEY = "lightBoard"
     const val LIVE_SCORE_KEY = "liveScore"
     const val SHOW_UNSEEN_KEY = "showUnseen"
+    const val SOUNDS_KEY = "sounds"
+    const val VIBRATION_KEY = "vibration"
     const val STATS_SINCE_KEY = "statsSince"
   }
 }

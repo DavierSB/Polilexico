@@ -118,7 +118,7 @@ internal class BoardPainter(
 
   private fun face(tile: Tile): String = if (tile.letter == "L") tile.letter else tile.toString()
 
-  private fun letterSize(tile: Tile): Float = side * if (tile.letter.length > 1) 0.42f else 0.62f
+  private fun letterSize(tile: Tile): Float = side * if (tile.letter.length > 1 && !tile.blank) 0.42f else 0.62f
 
   private fun inset(corner: Offset): Offset = corner + Offset(edge / 2, edge / 2)
 

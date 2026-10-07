@@ -31,6 +31,8 @@ private fun Options(settings: Settings) {
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     LiveScoreSwitch(settings.liveScore, settings::showLiveScore)
     UnseenSwitch(settings.showUnseen, settings::showUnseenTiles)
+    OptionSwitch(settings.sounds, settings::useSounds, "Sonidos")
+    OptionSwitch(settings.vibration, settings::useVibration, "Vibración")
   }
 }
 
@@ -43,14 +45,14 @@ private fun UnseenSwitch(on: Boolean, change: (Boolean) -> Unit) =
   OptionSwitch(on, change, "Mostrar las letras faltantes", "En la clásica, al tocar la bolsa: las fichas que no has visto (bolsa y atril del rival); si no, solo cuántas quedan.")
 
 @Composable
-private fun OptionSwitch(on: Boolean, change: (Boolean) -> Unit, title: String, hint: String) {
+private fun OptionSwitch(on: Boolean, change: (Boolean) -> Unit, title: String, hint: String? = null) {
   Row(
     Modifier.fillMaxWidth().toggleable(on, role = Role.Switch, onValueChange = change),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
       Text(title, Modifier.weight(1f, fill = false))
-      InfoButton(title, hint)
+      hint?.let { InfoButton(title, it) }
     }
     Switch(checked = on, onCheckedChange = null)
   }

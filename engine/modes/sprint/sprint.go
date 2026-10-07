@@ -8,6 +8,7 @@ import (
 
 	"lexico/engine/events"
 	"lexico/engine/internal/core"
+	"lexico/engine/internal/cues"
 	"lexico/engine/internal/notify"
 	"lexico/engine/internal/timing"
 )
@@ -42,6 +43,8 @@ type Match struct {
 	mu                   sync.Mutex
 	hunter               *hunter
 	clock                *timing.Countdown
+	marks                *timing.Marks
+	cues                 cues.Log
 	totalTime            time.Duration
 	maxLives             int
 	invalidCostsLife     bool
@@ -74,10 +77,8 @@ func (m *Match) Propose(input string) (*Solution, error) {
 		return nil, err
 	}
 	s, err := m.puzzle.check(input)
-	if _, invalid := core.AsInvalidWords(err); invalid && m.invalidCostsLife {
-		m.reveal(OutcomeInvalid, nil)
-		m.afterChange()
-		return nil, err
+	if _, invalid := core.AsInvalidWords(err); invalid {
+		return nil, m.rejectInvalid(err)
 	}
 	if err != nil {
 		return nil, err
@@ -129,8 +130,8 @@ func (m *Match) Close() {
 }
 
 func startMatch(total time.Duration, lives int, clock timing.Clock, pick func() int, difficulty string, l events.Listener) *Match {
-	m := &Match{hunter: startHunter(pick, difficulty), clock: timing.NewCountdown(clock), totalTime: total,
-		maxLives: lives, notifier: notify.New(l), lives: lives}
+	m := &Match{hunter: startHunter(pick, difficulty), clock: timing.NewCountdown(clock), marks: timing.NewMarks(clock, cues.Countdown),
+		totalTime: total, maxLives: lives, notifier: notify.New(l), lives: lives}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.clock.Restart(total)
@@ -147,6 +148,16 @@ func (m *Match) checkSolving() error {
 		return errNotSolving
 	}
 	return nil
+}
+
+func (m *Match) rejectInvalid(err error) error {
+	if m.invalidCostsLife {
+		m.reveal(OutcomeInvalid, nil)
+	} else {
+		m.cues.Emit(events.CueWrong)
+	}
+	m.afterChange()
+	return err
 }
 
 func (m *Match) setPaused(paused bool) {

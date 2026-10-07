@@ -95,6 +95,9 @@ class RecallSession(
   var round: Int by mutableStateOf(1)
     private set
 
+  var rejections: Int by mutableStateOf(0)
+    private set
+
   private var next: Deferred<Result<RoundGame>> = fetch()
 
   init {
@@ -113,7 +116,7 @@ class RecallSession(
       letters == word.tiles -> Verdict.HIT
       isWord(letters) -> Verdict.NOT_PLAYED
       config.single -> Verdict.INVALID
-      else -> return Submission.Rejected
+      else -> return reject()
     }
     if (solving() != s) return null
     resolve(s, verdict)
@@ -152,6 +155,11 @@ class RecallSession(
     best = records.best()
     record = null
     startRound()
+  }
+
+  private fun reject(): Submission {
+    rejections++
+    return Submission.Rejected
   }
 
   private fun solving(): Stage.Solving? = (stage as? Stage.Solving)?.takeIf { it.verdict == null }

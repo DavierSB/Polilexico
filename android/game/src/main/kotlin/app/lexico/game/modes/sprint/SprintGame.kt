@@ -1,5 +1,6 @@
 package app.lexico.game.modes.sprint
 
+import app.lexico.game.CueReading
 import app.lexico.game.LiveGame
 import app.lexico.game.engine.EngineListener
 import app.lexico.game.engine.engine
@@ -28,6 +29,8 @@ class SprintGame private constructor(
   override fun isTicking(state: SprintState): Boolean = !state.paused && state.phase is SprintPhase.Solving
 
   override fun isOver(state: SprintState): Boolean = state.phase is SprintPhase.Finished
+
+  override fun lastCue(): CueReading = CueReading(match.cueCount(), match.cue())
 
   override fun pauseMatch() = match.pause()
 

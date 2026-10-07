@@ -9,8 +9,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -26,6 +29,9 @@ abstract class LiveGame<S> internal constructor(
 ) {
   private val _state = MutableStateFlow(initial)
   val state: StateFlow<S> = _state.asStateFlow()
+  private val _cues = MutableSharedFlow<Cue>(extraBufferCapacity = 8)
+  val cues: SharedFlow<Cue> = _cues.asSharedFlow()
+  private var cueCount = 0L
 
   @OptIn(ExperimentalCoroutinesApi::class)
   private val serial = Dispatchers.IO.limitedParallelism(1)
@@ -55,6 +61,8 @@ abstract class LiveGame<S> internal constructor(
 
   protected abstract fun read(): S
 
+  internal abstract fun lastCue(): CueReading
+
   protected abstract fun tick(state: S): S
 
   protected abstract fun isTicking(state: S): Boolean
@@ -82,8 +90,16 @@ abstract class LiveGame<S> internal constructor(
     if (closed) return
     val fresh = read()
     _state.value = fresh
+    announce()
     if (isOver(fresh)) forget() else save()
     updateTicker(fresh)
+  }
+
+  private fun announce() {
+    val cue = lastCue()
+    if (cue.count <= cueCount) return
+    cueCount = cue.count
+    Cue.of(cue.text)?.let(_cues::tryEmit)
   }
 
   private fun save() {

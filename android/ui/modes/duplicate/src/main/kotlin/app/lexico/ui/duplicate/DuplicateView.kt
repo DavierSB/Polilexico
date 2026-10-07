@@ -17,7 +17,7 @@ sealed interface Phase {
   data object Finished : Phase
 }
 
-data class RoundPlay(val text: String, val points: Int)
+data class RoundPlay(val text: String, val points: Int, val bingo: Boolean = false)
 
 data class Round(val number: Int, val master: RoundPlay, val mine: RoundPlay, val hit: Boolean)
 

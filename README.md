@@ -37,6 +37,8 @@
 El recorrido completo, con más capturas: [docs/FEATURES.md](docs/FEATURES.md).
 
 El motor de juego es [Macondo](https://github.com/domino14/macondo), de Woogles.io.
+Los sonidos son los [de Material Design](https://m2.material.io/design/sound/sound-resources.html), de Google
+(CC BY 4.0).
 
 ## Descarga
 

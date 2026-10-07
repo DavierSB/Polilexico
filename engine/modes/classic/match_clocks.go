@@ -3,6 +3,7 @@ package classic
 import (
 	"time"
 
+	"lexico/engine/events"
 	"lexico/engine/internal/timing"
 )
 
@@ -12,6 +13,8 @@ const (
 )
 
 const PenaltyPerMinute = 10
+
+const warningLeft = time.Minute
 
 type Clocks struct {
 	HumanMs         int64
@@ -62,6 +65,17 @@ func (p *clockPair) stop() {
 
 func (p *clockPair) humanLeft() time.Duration {
 	return p.time + p.overtime - p.human.Spent()
+}
+
+func (p *clockPair) marks() []timing.Mark {
+	if p == nil {
+		return nil
+	}
+	warning := timing.Mark{Left: p.overtime + warningLeft, Cue: events.CueWarning}
+	if p.overtime <= 0 {
+		return []timing.Mark{warning}
+	}
+	return []timing.Mark{warning, {Left: p.overtime, Cue: events.CueTimeUp}}
 }
 
 func (p *clockPair) snapshot() *Clocks {

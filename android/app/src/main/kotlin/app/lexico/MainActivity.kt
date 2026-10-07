@@ -1,5 +1,6 @@
 package app.lexico
 
+import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,6 +14,7 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     enableEdgeToEdge()
     super.onCreate(savedInstanceState)
+    volumeControlStream = AudioManager.STREAM_MUSIC
     val lexico = Lexico(applicationContext)
     val settings = Settings(applicationContext)
     val version = packageManager.getPackageInfo(packageName, 0).versionName.orEmpty()

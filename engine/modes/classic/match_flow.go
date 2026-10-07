@@ -1,5 +1,10 @@
 package classic
 
+import (
+	"lexico/engine/events"
+	"lexico/engine/internal/timing"
+)
+
 func (m *Match) afterChange() {
 	status := m.game.Status()
 	running := !m.paused && !m.closed && !status.Over
@@ -7,6 +12,8 @@ func (m *Match) afterChange() {
 	m.chargeTime()
 	m.schedulePenalty(running, status.HumanToMove)
 	m.scheduleTimeout(running && status.HumanToMove)
+	m.scheduleMarks(running && status.HumanToMove)
+	m.noteEnding(status.Over)
 	if running && !status.HumanToMove && !m.thinking {
 		m.startBot()
 	}
@@ -64,8 +71,32 @@ func (m *Match) onTimeout() {
 	if m.clocks.humanLeft() <= 0 {
 		m.chargeTime()
 		m.game.LoseOnTime()
+		m.cues.Emit(events.CueTimeUp)
 	}
 	m.afterChange()
+}
+
+func (m *Match) scheduleMarks(humanRunning bool) {
+	if m.clocks != nil {
+		m.marks.Sync(humanRunning, m.clocks.humanLeft(), m.onMark)
+	}
+}
+
+func (m *Match) onMark(mark timing.Mark) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.paused || m.closed || !m.game.Status().HumanToMove || m.clocks.humanLeft() > mark.Left {
+		return
+	}
+	m.cues.Emit(mark.Cue)
+	m.afterChange()
+}
+
+func (m *Match) noteEnding(over bool) {
+	if over && !m.over && m.game.humanWonMatch() {
+		m.cues.Emit(events.CueVictory)
+	}
+	m.over = over
 }
 
 func (m *Match) startBot() {
@@ -84,6 +115,9 @@ func (m *Match) botTurn() {
 	if err == nil {
 		m.chargeTime()
 		_, err = m.game.applyBotMove(choice)
+	}
+	if err == nil {
+		m.cues.Emit(events.CueOpponent)
 	}
 	m.botError = errorText(err)
 	m.afterChange()

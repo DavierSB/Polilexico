@@ -124,8 +124,12 @@ private fun Separator() {
 private fun RowScope.MoveCell(m: Move?) {
   Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
     if (m == null) return@Row
-    MoveText(moveText(m), Modifier.weight(1f))
-    Text("${m.points}", Modifier.padding(horizontal = 3.dp), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    MoveText(moveText(m), Modifier.weight(1f), bingo = m.isBingo)
+    Text(
+      "${m.points}", Modifier.padding(horizontal = 3.dp), fontSize = 12.sp,
+      color = if (m.isBingo) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+      fontWeight = if (m.isBingo) FontWeight.Bold else FontWeight.Normal,
+    )
     TotalBadge(if (m.side == Side.ME) m.myTotal else m.opponentTotal)
   }
 }

@@ -28,6 +28,10 @@ import app.lexico.modes.recall.recallRecords
 import app.lexico.modes.sprint.SprintController
 import app.lexico.modes.sprint.sprintView
 import app.lexico.modes.sprint.toSetup
+import app.lexico.game.Cue
+import app.lexico.sound.CelebrateRecord
+import app.lexico.sound.PlayCues
+import app.lexico.sound.recordBroken
 import app.lexico.ui.board.AppTheme
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.classic.bot
@@ -63,6 +67,7 @@ internal fun RecallRoute(screen: Screen.Recall, lexico: Lexico, nav: Navigator, 
   val scope = rememberCoroutineScope()
   val session = remember(screen) { RecallSession(screen.config, engineGames(lexico), recallRecords(lexico.recallRecords, screen.config), scope) }
   GameTheme(session, themes, themes.appTheme)
+  PlayCues(session)
   RecallScreen(session, themes.board, nav::back) { themes.picking = true }
 }
 
@@ -76,6 +81,7 @@ internal fun SprintRoute(screen: Screen.Sprint, lexico: Lexico, nav: Navigator, 
 @Composable
 internal fun ClassicPlay(game: ClassicGame, nav: Navigator, themes: ThemeState) {
   PauseWhenHidden(game)
+  PlayCues(game) { it.takeIf { cue -> cue != Cue.CELEBRATION } }
   GameTheme(game, themes, bot(game.opponent).theme)
   val scope = rememberCoroutineScope()
   val controller = remember(game) { ClassicController(game, scope, nav::back) { nav.replace(Screen.Review(it)) } }
@@ -86,6 +92,8 @@ internal fun ClassicPlay(game: ClassicGame, nav: Navigator, themes: ThemeState) 
 @Composable
 internal fun DuplicatePlay(game: DuplicateGame, nav: Navigator, themes: ThemeState, records: DuplicateRecords) {
   PauseWhenHidden(game)
+  val best = remember(game) { records.best(game.setup) }
+  PlayCues(game) { if (it == Cue.GAME_OVER && efficiencyTenths(game.state.value) > best) Cue.CELEBRATION else it }
   GameTheme(game, themes, themes.appTheme)
   val scope = rememberCoroutineScope()
   val controller = remember(game) { DuplicateController(game, scope, nav::back) { nav.replace(Screen.Review(it)) } }
@@ -100,6 +108,7 @@ internal fun SprintPlay(
   game: SprintGame, nav: Navigator, themes: ThemeState, records: SprintRecords, setup: SprintSetup, onRestart: () -> Unit,
 ) {
   PauseWhenHidden(game)
+  PlayCues(game)
   GameTheme(game, themes, themes.appTheme)
   val scope = rememberCoroutineScope()
   val controller = remember(game) { SprintController(game, scope, nav::back, onRestart) }
@@ -107,6 +116,7 @@ internal fun SprintPlay(
   val finished = state.phase is SprintPhase.Finished
   val best = remember(game) { records.best(setup) }
   val record = remember(finished) { if (finished) records.submit(setup, state.solved) else null }
+  CelebrateRecord(recordBroken(state.solved, best, record?.isNew == true))
   SprintScreen(sprintView(state, controller.notice, best, record), themes.board, controller) { themes.picking = true }
 }
 

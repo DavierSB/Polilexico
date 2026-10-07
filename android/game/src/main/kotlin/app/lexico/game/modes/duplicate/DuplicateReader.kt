@@ -11,6 +11,8 @@ import app.lexico.go.duplicate.Turn
 import app.lexico.model.Board
 import app.lexico.model.Position
 
+private const val BINGO_TILES = 7
+
 internal class DuplicateReader(private val match: Match) {
   fun read(): DuplicateState {
     val game = match.game()
@@ -46,7 +48,10 @@ internal class DuplicateReader(private val match: Match) {
   private fun round(board: Board, t: Turn): RoundResult = RoundResult(
     number = t.number.toInt(), masterText = moveText(board, "${t.masterCoords} ${t.masterTiles}"), masterScore = t.masterScore.toInt(),
     myText = myText(board, t), myScore = t.humanScore.toInt(), hit = t.hit,
+    masterBingo = isBingo(t.masterCoords, t.masterTiles), myBingo = t.humanKind == "play" && isBingo(t.humanCoords, t.humanTiles),
   )
+
+  private fun isBingo(coords: String, tiles: String): Boolean = placedSquares(coords, tiles).size == BINGO_TILES
 
   private fun myText(board: Board, t: Turn): String = when (t.humanKind) {
     "play" -> moveText(board, "${t.humanCoords} ${t.humanTiles}")

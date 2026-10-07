@@ -19,8 +19,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,9 +49,10 @@ fun <T> MovesTableDialog(
 fun moveNumberWidth(): Dp = with(LocalDensity.current) { 18.sp.toDp() }
 
 @Composable
-fun MoveText(text: String, modifier: Modifier = Modifier) {
+fun MoveText(text: String, modifier: Modifier = Modifier, bingo: Boolean = false) {
   Text(
-    text, modifier, fontFamily = FontFamily.Monospace, maxLines = 1, softWrap = false,
+    text, modifier, color = if (bingo) MaterialTheme.colorScheme.primary else Color.Unspecified,
+    fontFamily = FontFamily.Monospace, fontWeight = if (bingo) FontWeight.Bold else null, maxLines = 1, softWrap = false,
     autoSize = TextAutoSize.StepBased(minFontSize = 7.sp, maxFontSize = 12.sp, stepSize = 0.5.sp),
   )
 }

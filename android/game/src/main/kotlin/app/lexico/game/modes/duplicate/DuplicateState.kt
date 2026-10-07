@@ -28,4 +28,6 @@ data class RoundResult(
   val myText: String,
   val myScore: Int,
   val hit: Boolean,
+  val masterBingo: Boolean = false,
+  val myBingo: Boolean = false,
 )

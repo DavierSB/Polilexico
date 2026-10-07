@@ -24,7 +24,11 @@ data class Move(
   val points: Int = 0,
   val myTotal: Int,
   val opponentTotal: Int,
-)
+) {
+  val isBingo: Boolean get() = type == MoveType.PLACEMENT && tiles == BINGO_TILES
+}
+
+private const val BINGO_TILES = 7
 
 data class GameEnd(
   val winner: Side?,

@@ -103,6 +103,12 @@ func (c *Game) Result() *Result {
 	return r
 }
 
+func (c *Game) humanWonMatch() bool {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.over() && c.outcome() == core.OutcomeWin
+}
+
 func (c *Game) over() bool {
 	return c.lostOnTime || c.ending != nil || c.g.Playing() == pb.PlayState_GAME_OVER
 }

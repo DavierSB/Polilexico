@@ -1,5 +1,6 @@
 package app.lexico.game.modes.classic
 
+import app.lexico.game.CueReading
 import app.lexico.game.LiveGame
 import app.lexico.game.engine.EngineListener
 import app.lexico.game.engine.engine
@@ -34,6 +35,8 @@ class ClassicGame private constructor(
   override fun isTicking(state: ClassicState): Boolean = state.clocks?.running != null
 
   override fun isOver(state: ClassicState): Boolean = state.result != null
+
+  override fun lastCue(): CueReading = CueReading(match.cueCount(), match.cue())
 
   override fun pauseMatch() = match.pause()
 

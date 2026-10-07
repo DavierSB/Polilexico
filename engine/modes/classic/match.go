@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"lexico/engine/events"
+	"lexico/engine/internal/cues"
 	"lexico/engine/internal/notify"
 	"lexico/engine/internal/timing"
 )
@@ -17,9 +18,12 @@ type Match struct {
 	clocks   *clockPair
 	timeout  *timing.Alarm
 	penalty  *timing.Alarm
+	marks    *timing.Marks
+	cues     cues.Log
 	notifier *notify.Notifier
 	paused   bool
 	closed   bool
+	over     bool
 	thinking bool
 	botError string
 }
@@ -64,6 +68,18 @@ func (m *Match) Paused() bool {
 	return m.paused
 }
 
+func (m *Match) CueCount() int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.cues.Count()
+}
+
+func (m *Match) Cue() string {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.cues.Last()
+}
+
 func (m *Match) BotError() string {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -88,7 +104,8 @@ func newMatch(g *Game, timeMs, overtimeMs int64, invalidLosesTurn bool, l events
 }
 
 func startMatch(g *Game, clocks *clockPair, clock timing.Clock, l events.Listener, paused bool) *Match {
-	m := &Match{game: g, clocks: clocks, timeout: timing.NewAlarm(clock), penalty: timing.NewAlarm(clock), notifier: notify.New(l), paused: paused}
+	m := &Match{game: g, clocks: clocks, timeout: timing.NewAlarm(clock), penalty: timing.NewAlarm(clock),
+		marks: timing.NewMarks(clock, clocks.marks()), notifier: notify.New(l), paused: paused, over: g.Status().Over}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.afterChange()

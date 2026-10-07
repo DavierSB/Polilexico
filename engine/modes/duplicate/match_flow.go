@@ -1,10 +1,16 @@
 package duplicate
 
-import "time"
+import (
+	"time"
+
+	"lexico/engine/events"
+	"lexico/engine/internal/timing"
+)
 
 func (m *Match) afterChange() {
 	running := !m.paused && !m.closed
 	m.turn.Sync(running && usesTurnClock(m.phase), m.onTurnEnd)
+	m.marks.Sync(running && usesTurnClock(m.phase), m.turn.Left(), m.onMark)
 	m.step.Sync(running && usesStepClock(m.phase), m.onStepEnd)
 	m.notifier.Notify()
 }
@@ -13,7 +19,7 @@ func (m *Match) enterDraw(draw *Draw) {
 	m.draw = draw
 	switch {
 	case draw.GameOver:
-		m.phase = PhaseFinished
+		m.finish()
 	case draw.ManyInvalid():
 		m.phase = PhaseManyInvalid
 		m.step.Restart(InvalidRackSeconds * time.Second)
@@ -44,10 +50,21 @@ func (m *Match) propose(attempt *Attempt, input string) {
 
 func (m *Match) onTurnEnd() {
 	m.whenDue(m.turn.Left, func() {
+		if !usesTurnClock(m.phase) {
+			return
+		}
 		if m.phase == PhaseConfirming {
 			m.closeRound(m.game.Confirm(m.input))
-		} else if m.phase == PhasePlaying {
+		} else {
 			m.closeRound(m.game.TimeOut())
+		}
+	})
+}
+
+func (m *Match) onMark(mark timing.Mark) {
+	m.whenDue(func() time.Duration { return m.turn.Left() - mark.Left }, func() {
+		if usesTurnClock(m.phase) {
+			m.cues.Emit(mark.Cue)
 		}
 	})
 }
@@ -86,13 +103,29 @@ func (m *Match) whenDue(left func() time.Duration, advance func()) {
 	m.afterChange()
 }
 
-func (m *Match) closeRound(_ *Turn, err error) {
+func (m *Match) closeRound(turn *Turn, err error) {
 	m.lastErr = errorText(err)
+	m.cueRound(turn)
 	m.draw, m.proposal, m.input = nil, nil, ""
 	m.phase = PhaseWaiting
 	if m.game.Status().Over {
-		m.phase = PhaseFinished
+		m.finish()
 	}
+}
+
+func (m *Match) cueRound(turn *Turn) {
+	switch {
+	case turn == nil:
+	case turn.Hit:
+		m.cues.Emit(events.CueCorrect)
+	default:
+		m.cues.Emit(events.CueMiss)
+	}
+}
+
+func (m *Match) finish() {
+	m.phase = PhaseFinished
+	m.cues.Emit(events.CueGameOver)
 }
 
 func usesTurnClock(phase string) bool {
