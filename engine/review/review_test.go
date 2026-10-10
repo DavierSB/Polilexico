@@ -50,6 +50,16 @@ func TestDuplicateLog(t *testing.T) {
 	}
 }
 
+func TestScoresBeforeEachTurn(t *testing.T) {
+	c, d := mustParse(t, classicLog), mustParse(t, duplicateLog)
+	if !c.HumanStarts || c.TurnAt(0).MyScore != 0 || c.TurnAt(1).MyScore != 24 || c.TurnAt(1).OpponentScore != 0 {
+		t.Fatalf("clasica: %+v %+v", *c.TurnAt(0), *c.TurnAt(1))
+	}
+	if !d.HumanStarts || d.TurnAt(1).MyScore != 5 || d.TurnAt(1).OpponentScore != 12 {
+		t.Fatalf("duplicada: %+v", *d.TurnAt(1))
+	}
+}
+
 func mustParse(t *testing.T, text string) *Game {
 	t.Helper()
 	g, err := Parse(text)

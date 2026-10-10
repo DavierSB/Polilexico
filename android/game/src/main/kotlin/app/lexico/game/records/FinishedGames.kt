@@ -1,6 +1,7 @@
 package app.lexico.game.records
 
 import app.lexico.game.Outcome
+import app.lexico.game.engine.attempted
 import app.lexico.game.engine.engine
 import app.lexico.game.engine.parseBoard
 import app.lexico.game.engine.moveText
@@ -22,7 +23,7 @@ class FinishedGames internal constructor(private val dir: File) {
 
   suspend fun open(path: String): GameReview = engine {
     val game = Review.open(path)
-    GameReview(summary(path, game), (0 until game.turnCount()).map { turn(game.turnAt(it)) }, game.startTurn.toInt())
+    GameReview(summary(path, game), (0 until game.turnCount()).map { turn(game.turnAt(it)) }, game.startTurn.toInt(), game.humanStarts)
   }
 
   private fun logFiles(): List<File> =
@@ -47,6 +48,7 @@ class FinishedGames internal constructor(private val dir: File) {
       number = t.number.toInt(), player = t.player, rack = rackTiles(t.rack), board = board,
       candidates = (0 until t.candidateCount()).map { move(board, t.candidateAt(it)) },
       marks = (0 until t.markCount()).map { mark(board, t.markAt(it)) },
+      myScore = t.myScore.toInt(), opponentScore = t.opponentScore.toInt(),
     )
   }
 
@@ -57,5 +59,5 @@ class FinishedGames internal constructor(private val dir: File) {
     ReviewMark(m.who, reviewMove(board, m.description, m.score.toInt(), null), m.rank.toInt().takeIf { it >= 0 })
 
   private fun reviewMove(board: Board, description: String, score: Int, equity: Double?): ReviewMove =
-    ReviewMove(moveText(board, description), score, equity, Placement.parseOrNull(description))
+    ReviewMove(moveText(board, description), score, equity, Placement.parseOrNull(attempted(description)))
 }

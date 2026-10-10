@@ -1,12 +1,14 @@
 package review
 
 type Turn struct {
-	Number     int
-	Player     string
-	Rack       string
-	Board      string
-	candidates []*Move
-	marks      []*Mark
+	Number        int
+	Player        string
+	Rack          string
+	Board         string
+	MyScore       int
+	OpponentScore int
+	candidates    []*Move
+	marks         []*Mark
 }
 
 type Move struct {

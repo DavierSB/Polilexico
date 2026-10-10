@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import app.lexico.game.Lexico
 import app.lexico.game.modes.classic.ClassicGame
 import app.lexico.game.modes.duplicate.DuplicateGame
+import app.lexico.game.storage.Mode
 import app.lexico.games.finishedItem
 import app.lexico.games.folderOf
 import app.lexico.games.inProgressItem
@@ -16,8 +17,8 @@ import app.lexico.games.reviewView
 import app.lexico.games.statsPage
 import app.lexico.menu.Settings
 import app.lexico.menu.ThemeState
-import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.classic.BOTS
+import app.lexico.ui.classic.bot
 import app.lexico.ui.classic.OpponentPhoto
 import app.lexico.ui.games.FinishedFoldersScreen
 import app.lexico.ui.games.FinishedGamesScreen
@@ -74,8 +75,9 @@ internal fun StatsRoute(lexico: Lexico, settings: Settings, nav: Navigator) {
 }
 
 @Composable
-internal fun ReviewRoute(screen: Screen.Review, lexico: Lexico, nav: Navigator, style: BoardStyle) {
+internal fun ReviewRoute(screen: Screen.Review, lexico: Lexico, nav: Navigator, themes: ThemeState) {
   WhenReady(rememberCreated(screen) { lexico.finishedGames.open(screen.path) }, "Abriendo la partida…") { review ->
-    ReviewScreen(reviewView(review), style, nav::back)
+    GameTheme(review, themes, if (review.game.mode == Mode.DUPLICATE) themes.appTheme else bot(review.game.opponent).theme)
+    ReviewScreen(reviewView(review), themes.board, nav::back) { themes.picking = true }
   }
 }

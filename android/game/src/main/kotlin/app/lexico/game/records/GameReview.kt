@@ -24,7 +24,7 @@ data class FinishedGame(
   val efficiency: Double get() = if (opponentScore > 0) myScore * 100.0 / opponentScore else 0.0
 }
 
-data class GameReview(val game: FinishedGame, val turns: List<ReviewTurn>, val startTurn: Int = 0)
+data class GameReview(val game: FinishedGame, val turns: List<ReviewTurn>, val startTurn: Int = 0, val humanStarts: Boolean = true)
 
 data class ReviewTurn(
   val number: Int,
@@ -33,6 +33,8 @@ data class ReviewTurn(
   val board: Board,
   val candidates: List<ReviewMove>,
   val marks: List<ReviewMark>,
+  val myScore: Int = 0,
+  val opponentScore: Int = 0,
 )
 
 data class ReviewMove(val text: String, val score: Int, val equity: Double?, val placement: Placement?)

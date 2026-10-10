@@ -20,7 +20,7 @@ import app.lexico.ui.sprint.NewSprintScreen
 
 @Composable
 internal fun Content(screen: Screen, lexico: Lexico, nav: Navigator, settings: Settings, themes: ThemeState, onMenu: () -> Unit) {
-  if (screen.isGame) GameScreens(screen, lexico, nav, themes) else OtherScreens(screen, lexico, nav, settings, onMenu)
+  if (screen.isGame) GameScreens(screen, lexico, nav, themes) else OtherScreens(screen, lexico, nav, settings, themes, onMenu)
 }
 
 @Composable
@@ -37,7 +37,7 @@ private fun GameScreens(screen: Screen, lexico: Lexico, nav: Navigator, themes: 
 }
 
 @Composable
-private fun OtherScreens(screen: Screen, lexico: Lexico, nav: Navigator, settings: Settings, onMenu: () -> Unit) {
+private fun OtherScreens(screen: Screen, lexico: Lexico, nav: Navigator, settings: Settings, themes: ThemeState, onMenu: () -> Unit) {
   val style = settings.theme.board(settings.lightBoard)
   when (screen) {
     Screen.Home -> HomeScreen(style, remember { lexico.savedGames.list().size }, lexico.demoGames::nextPlacements, onMenu, nav::go)
@@ -51,7 +51,7 @@ private fun OtherScreens(screen: Screen, lexico: Lexico, nav: Navigator, setting
     Screen.InProgress -> InProgressRoute(lexico, nav)
     Screen.Finished -> FinishedRoute(lexico, nav)
     is Screen.FinishedFolder -> FinishedFolderRoute(screen, lexico, nav)
-    is Screen.Review -> ReviewRoute(screen, lexico, nav, style)
+    is Screen.Review -> ReviewRoute(screen, lexico, nav, themes)
     Screen.Stats -> StatsRoute(lexico, settings, nav)
     else -> Unit
   }

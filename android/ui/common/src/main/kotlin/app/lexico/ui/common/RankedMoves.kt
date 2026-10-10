@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,7 +51,7 @@ fun RankedMoveList(moves: List<RankedMove>, selected: RankedMove?, modifier: Mod
       itemsIndexed(moves) { n, m -> MoveRow(n + 1, m, withEquity, active = m == selected) { select(m) } }
     }
   }
-  if (explaining) InfoDialog("Equity", EQUITY) { explaining = false }
+  if (explaining) InfoDialog("Equity", EQUITY_INFO) { explaining = false }
 }
 
 private val RankWidth = 28.dp
@@ -96,7 +97,10 @@ private fun MoveRow(rank: Int, m: RankedMove, withEquity: Boolean, active: Boole
 @Composable
 private fun RowScope.MoveCell(m: RankedMove) {
   Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-    Text(m.text, style = cellStyle(FontWeight.Bold).copy(letterSpacing = 0.6.sp))
+    Text(
+      m.text, Modifier.weight(1f, fill = false), style = cellStyle(FontWeight.Bold).copy(letterSpacing = 0.6.sp), maxLines = 1, softWrap = false,
+      autoSize = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 15.sp, stepSize = 0.5.sp),
+    )
     if (m.playedBy.isNotEmpty()) PlayedBy(m.playedBy)
   }
 }
@@ -114,7 +118,7 @@ private fun PlayedBy(who: String) {
   )
 }
 
-private const val EQUITY = "El valor de la jugada, considerando su puntuación y lo que queda en la mano."
+const val EQUITY_INFO = "El valor de la jugada, considerando su puntuación y lo que queda en la mano."
 
 @Composable
 private fun headerStyle(): TextStyle = TextStyle(

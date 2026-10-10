@@ -34,10 +34,11 @@ fun PlayerBar(
   clock: Clock?,
   onTurn: Boolean,
   thinking: Boolean = false,
+  framed: Boolean = false,
   photo: (@Composable () -> Unit)? = null,
   tiles: @Composable () -> Unit = {},
 ) {
-  Row(Modifier.fillMaxWidth().turnBorder(onTurn).padding(horizontal = 10.dp, vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
+  Row(Modifier.fillMaxWidth().turnBorder(onTurn, framed).padding(horizontal = 10.dp, vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
     Identity(name, thinking, photo, tiles)
     Text("$points", Modifier.padding(horizontal = 10.dp), fontSize = 22.sp, fontWeight = FontWeight.Bold)
     if (clock != null) PlayerClock(clock, onTurn)
@@ -45,8 +46,8 @@ fun PlayerBar(
 }
 
 @Composable
-private fun Modifier.turnBorder(onTurn: Boolean): Modifier {
-  val color = if (onTurn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
+private fun Modifier.turnBorder(onTurn: Boolean, framed: Boolean): Modifier {
+  val color = if (onTurn || framed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
   return border(if (onTurn) 2.dp else 1.dp, color, RoundedCornerShape(10.dp))
 }
 

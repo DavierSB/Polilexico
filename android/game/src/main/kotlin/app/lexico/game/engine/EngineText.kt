@@ -15,8 +15,12 @@ internal fun rackTiles(text: String): List<String> = text.trim().split(Regex("\\
 
 internal fun rackText(rack: List<String>): String = rack.joinToString("") { if (it.length > 1) "[$it]" else it }
 
+private val INVALID = Regex("""^\(Inválida (\S+ \S+):.*\)$""")
+
 internal fun moveText(board: Board, move: String): String =
-  Placement.parseOrNull(move)?.spelled(board) ?: plainTiles(move.substringBefore(" (").trim())
+  Placement.parseOrNull(attempted(move))?.spelled(board) ?: plainTiles(move.substringBefore(" (").trim())
+
+internal fun attempted(move: String): String = INVALID.find(move.trim())?.groupValues?.get(1) ?: move
 
 internal fun plainTiles(tiles: String): String = tiles.replace("[", "").replace("]", "")
 

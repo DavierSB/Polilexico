@@ -34,6 +34,7 @@ class EngineTextTest {
     assertEquals("8H CCHE", moveText(board, "8H .[CH]E (20 pts)"))
     assertEquals("H8 CASAS", moveText(board, "H8 ....S"))
     assertEquals("(Pasar)", moveText(board, "(Pasar)"))
+    assertEquals("H8 CASAS", moveText(board, "(Inválida H8 ....S: pierde el turno)"))
     assertEquals("A[CH]E".let(::plainTiles), moveText(board, " A[CH]E"))
   }
 

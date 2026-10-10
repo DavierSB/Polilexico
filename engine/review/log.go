@@ -34,16 +34,22 @@ type turnLog struct {
 func classicGame(log gameLog) *Game {
 	g := &Game{Mode: classicMode(log), StartedAt: log.StartedAt, Opponent: log.BotName,
 		MyScore: log.FinalScores[0], OpponentScore: log.FinalScores[1], Outcome: classicOutcome(log),
-		StartTurn: log.StartTurn}
-	board := newGrid()
+		StartTurn: log.StartTurn, HumanStarts: humanStarts(log)}
+	board, scores := newGrid(), &tally{}
 	for i, t := range log.Turns {
-		g.turns = append(g.turns, classicTurn(t, board))
-		if t.PlayerName == log.HumanName && i >= log.StartTurn {
+		g.turns = append(g.turns, classicTurn(t, board, scores))
+		mine := t.PlayerName == log.HumanName
+		if mine && i >= log.StartTurn {
 			g.notePlay(board, t.ActualPlay)
 		}
+		scores.add(mine, t.ActualPlay.Score)
 		board.play(t.ActualPlay.Description)
 	}
 	return g
+}
+
+func humanStarts(log gameLog) bool {
+	return len(log.Turns) == 0 || log.Turns[0].PlayerName == log.HumanName
 }
 
 func classicMode(log gameLog) string {
@@ -55,30 +61,45 @@ func classicMode(log gameLog) string {
 
 func duplicateGame(log gameLog) *Game {
 	g := &Game{Mode: ModeDuplicate, StartedAt: log.StartedAt, Opponent: "Máster", MyScore: log.FinalHuman,
-		OpponentScore: log.FinalMaster, Outcome: core.Outcome(log.FinalHuman, log.FinalMaster), Hits: log.FinalHits}
-	board := newGrid()
+		OpponentScore: log.FinalMaster, Outcome: core.Outcome(log.FinalHuman, log.FinalMaster), Hits: log.FinalHits, HumanStarts: true}
+	board, scores := newGrid(), &tally{}
 	for _, t := range log.Turns {
-		g.turns = append(g.turns, duplicateTurn(t, board))
+		g.turns = append(g.turns, duplicateTurn(t, board, scores))
 		g.notePlay(board, t.HumanPlay)
+		scores.mine += t.HumanPlay.Score
+		scores.theirs += t.MasterPlay.Score
 		board.play(t.MasterPlay.Description)
 	}
 	return g
 }
 
-func classicTurn(t turnLog, board *grid) *Turn {
-	turn := newTurn(t, t.PlayerName, board, moves(t.GenList, true))
+func classicTurn(t turnLog, board *grid, scores *tally) *Turn {
+	turn := newTurn(t, t.PlayerName, board, scores, moves(t.GenList, true))
 	turn.marks = []*Mark{turn.mark(t.PlayerName, move(t.ActualPlay, true))}
 	return turn
 }
 
-func duplicateTurn(t turnLog, board *grid) *Turn {
-	turn := newTurn(t, "", board, moves(t.TopPlays, false))
+func duplicateTurn(t turnLog, board *grid, scores *tally) *Turn {
+	turn := newTurn(t, "", board, scores, moves(t.TopPlays, false))
 	turn.marks = []*Mark{turn.mark("Máster", move(t.MasterPlay, false)), turn.mark("Tú", move(t.HumanPlay, false))}
 	return turn
 }
 
-func newTurn(t turnLog, player string, board *grid, candidates []*Move) *Turn {
-	return &Turn{Number: t.TurnNum, Player: player, Rack: rackText(t.Rack), Board: board.text(), candidates: candidates}
+func newTurn(t turnLog, player string, board *grid, scores *tally, candidates []*Move) *Turn {
+	return &Turn{Number: t.TurnNum, Player: player, Rack: rackText(t.Rack), Board: board.text(),
+		MyScore: scores.mine, OpponentScore: scores.theirs, candidates: candidates}
+}
+
+type tally struct {
+	mine, theirs int
+}
+
+func (s *tally) add(mine bool, points int) {
+	if mine {
+		s.mine += points
+	} else {
+		s.theirs += points
+	}
 }
 
 func moves(candidates []core.Candidate, hasEquity bool) []*Move {

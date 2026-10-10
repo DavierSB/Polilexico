@@ -121,7 +121,7 @@ internal fun SprintPlay(
 }
 
 @Composable
-private fun GameTheme(game: Any, themes: ThemeState, initial: AppTheme) {
+internal fun GameTheme(game: Any, themes: ThemeState, initial: AppTheme) {
   DisposableEffect(game) {
     themes.game = initial
     onDispose { themes.game = null }

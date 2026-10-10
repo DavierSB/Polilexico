@@ -30,15 +30,20 @@ private typealias Turn = Pair<Move?, Move?>
 
 @Composable
 fun MovesDialog(view: ClassicView, close: () -> Unit) {
-  val turns = remember(view.moves) { byTurn(view.moves) }
-  val footer = view.end?.takeIf { it.ending != null || it.timePenalized }?.let { e -> @Composable { EndingRows(view, e) } }
-  MovesTableDialog(turns, header = { MovesHeader(view.opponent) }, close = close, footer = footer) { i, turn -> TurnRow(i + 1, turn) }
+  val starter = view.moves.firstOrNull()?.side ?: Side.ME
+  val turns = remember(view.moves) { byTurn(view.moves, starter) }
+  val footer = view.end?.takeIf { it.ending != null || it.timePenalized }?.let { e -> @Composable { EndingRows(view, e, starter) } }
+  MovesTableDialog(turns, header = { MovesHeader(inOrder(starter, "Tú", view.opponent)) }, close = close, footer = footer) { i, turn ->
+    TurnRow(i + 1, turn)
+  }
 }
 
-private fun byTurn(moves: List<Move>): List<Turn> = moves.fold(mutableListOf()) { turns, m ->
+private fun <T> inOrder(starter: Side, mine: T, theirs: T): Pair<T, T> = if (starter == Side.ME) mine to theirs else theirs to mine
+
+private fun byTurn(moves: List<Move>, starter: Side): List<Turn> = moves.fold(mutableListOf()) { turns, m ->
   val last = turns.lastOrNull()
   when {
-    m.side == Side.ME -> turns += m to null
+    m.side == starter -> turns += m to null
     last == null || last.second != null -> turns += null to m
     else -> turns[turns.lastIndex] = last.first to m
   }
@@ -46,12 +51,12 @@ private fun byTurn(moves: List<Move>): List<Turn> = moves.fold(mutableListOf()) 
 }
 
 @Composable
-private fun MovesHeader(opponent: String) {
+private fun MovesHeader(names: Pair<String, String>) {
   Row(Modifier.fillMaxWidth().padding(bottom = 4.dp)) {
     Text("#", Modifier.width(moveNumberWidth()), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-    Text("Tú", Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+    Text(names.first, Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1)
     Separator()
-    Text(opponent, Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1)
+    Text(names.second, Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1)
   }
 }
 
@@ -66,27 +71,28 @@ private fun TurnRow(number: Int, turn: Turn) {
 }
 
 @Composable
-private fun EndingRows(view: ClassicView, end: GameEnd) {
+private fun EndingRows(view: ClassicView, end: GameEnd, starter: Side) {
   Column(Modifier.padding(top = 4.dp)) {
     DottedLine()
-    if (end.timePenalized) DeltaRow("tiempo", -end.myTimePenalty, -end.opponentTimePenalty)
-    end.ending?.let { DeltaRow("descuento", it.myDelta, it.opponentDelta) }
-    EndingRow({ LabelCell("final") { TotalBadge(view.myScore) } }, { LabelCell("final") { TotalBadge(view.opponentScore) } })
+    if (end.timePenalized) DeltaRow("tiempo", inOrder(starter, -end.myTimePenalty, -end.opponentTimePenalty))
+    end.ending?.let { DeltaRow("descuento", inOrder(starter, it.myDelta, it.opponentDelta)) }
+    val totals = inOrder(starter, view.myScore, view.opponentScore)
+    EndingRow({ LabelCell("final") { TotalBadge(totals.first) } }, { LabelCell("final") { TotalBadge(totals.second) } })
   }
 }
 
 @Composable
-private fun DeltaRow(label: String, mine: Int, theirs: Int) {
-  EndingRow({ LabelCell(label) { DeltaText(mine) } }, { LabelCell(label) { DeltaText(theirs) } })
+private fun DeltaRow(label: String, deltas: Pair<Int, Int>) {
+  EndingRow({ LabelCell(label) { DeltaText(deltas.first) } }, { LabelCell(label) { DeltaText(deltas.second) } })
 }
 
 @Composable
-private fun EndingRow(mine: @Composable RowScope.() -> Unit, theirs: @Composable RowScope.() -> Unit) {
+private fun EndingRow(left: @Composable RowScope.() -> Unit, right: @Composable RowScope.() -> Unit) {
   Row(Modifier.fillMaxWidth().padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
     Spacer(Modifier.width(moveNumberWidth()))
-    mine()
+    left()
     Separator()
-    theirs()
+    right()
   }
 }
 
