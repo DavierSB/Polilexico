@@ -10,6 +10,7 @@ data class DuplicateState(
   val paused: Boolean,
   val lastError: String?,
   val recordPath: String?,
+  val revealAtEnd: Boolean = false,
 )
 
 sealed interface DuplicatePhase {
@@ -30,4 +31,7 @@ data class RoundResult(
   val hit: Boolean,
   val masterBingo: Boolean = false,
   val myBingo: Boolean = false,
+  val assumed: AssumedPlay = AssumedPlay(myText, myScore, hit, myBingo),
 )
+
+data class AssumedPlay(val text: String, val score: Int, val hit: Boolean, val bingo: Boolean, val invalid: Boolean = false)

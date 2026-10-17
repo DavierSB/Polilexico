@@ -37,8 +37,8 @@ func classicGame(log gameLog) *Game {
 		StartTurn: log.StartTurn, HumanStarts: humanStarts(log)}
 	board, scores := newGrid(), &tally{}
 	for i, t := range log.Turns {
-		g.turns = append(g.turns, classicTurn(t, board, scores))
 		mine := t.PlayerName == log.HumanName
+		g.turns = append(g.turns, classicTurn(t, board, scores, mine))
 		if mine && i >= log.StartTurn {
 			g.notePlay(board, t.ActualPlay)
 		}
@@ -73,9 +73,11 @@ func duplicateGame(log gameLog) *Game {
 	return g
 }
 
-func classicTurn(t turnLog, board *grid, scores *tally) *Turn {
+func classicTurn(t turnLog, board *grid, scores *tally, mine bool) *Turn {
 	turn := newTurn(t, t.PlayerName, board, scores, moves(t.GenList, true))
 	turn.marks = []*Mark{turn.mark(t.PlayerName, move(t.ActualPlay, true))}
+	turn.position = positionOf(t.Rack, scores, mine)
+	turn.Endgame = turn.bagEmpty()
 	return turn
 }
 

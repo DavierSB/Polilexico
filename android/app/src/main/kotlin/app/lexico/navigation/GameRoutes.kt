@@ -84,7 +84,7 @@ internal fun ClassicPlay(game: ClassicGame, nav: Navigator, themes: ThemeState) 
   PlayCues(game) { it.takeIf { cue -> cue != Cue.CELEBRATION } }
   GameTheme(game, themes, bot(game.opponent).theme)
   val scope = rememberCoroutineScope()
-  val controller = remember(game) { ClassicController(game, scope, nav::back) { nav.replace(Screen.Review(it)) } }
+  val controller = remember(game) { ClassicController(game, scope, nav::back) { path, atEndgame -> nav.replace(Screen.Review(path, atEndgame)) } }
   val state by game.state.collectAsState()
   ClassicScreen(classicView(state, game.opponent, controller.notice), themes.board, controller) { themes.picking = true }
 }

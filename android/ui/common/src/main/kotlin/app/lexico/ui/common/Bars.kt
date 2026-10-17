@@ -54,18 +54,18 @@ fun GameBar(
 }
 
 @Composable
-fun Header(title: String, onBack: () -> Unit, extra: @Composable () -> Unit = {}) {
+fun Header(title: String, onBack: () -> Unit, titleLines: Int = 1, extra: @Composable () -> Unit = {}) {
   Row(Modifier.fillMaxWidth().height(48.dp), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
     BarIconButton(LexicoIcons.Back, "Volver", onBack)
-    BarTitle(title, Modifier.weight(1f).padding(start = 6.dp))
+    BarTitle(title, Modifier.weight(1f).padding(start = 6.dp), titleLines)
     extra()
   }
 }
 
 @Composable
-fun BarTitle(title: String, modifier: Modifier = Modifier) {
+fun BarTitle(title: String, modifier: Modifier = Modifier, lines: Int = 1) {
   BasicText(
-    title, modifier, maxLines = 1, overflow = TextOverflow.Ellipsis,
+    title, modifier, maxLines = lines, overflow = TextOverflow.Ellipsis,
     autoSize = TextAutoSize.StepBased(minFontSize = 15.sp, maxFontSize = 21.sp),
     style = TextStyle(fontFamily = Mulish, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.onSurface),
   )

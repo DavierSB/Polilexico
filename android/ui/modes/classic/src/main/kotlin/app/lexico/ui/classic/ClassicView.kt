@@ -73,6 +73,7 @@ interface ClassicActions {
   fun resign()
   fun exit()
   fun analyze()
+  fun analyzeEndgame()
   fun pause()
   fun resume()
 }

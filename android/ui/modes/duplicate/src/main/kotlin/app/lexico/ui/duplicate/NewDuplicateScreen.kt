@@ -27,26 +27,28 @@ import java.util.Locale
 const val DEFAULT_TURN_MS = 180_000L
 const val PRESET_ROUNDS = 12
 
+enum class PlayCheck { VOID, SINGLE, AT_END }
+
 data class DuplicateConfig(
-  val single: Boolean = true,
+  val check: PlayCheck = PlayCheck.SINGLE,
   val turnMs: Long = DEFAULT_TURN_MS,
   val rounds: Int = 0,
 )
 
 @Composable
 fun NewDuplicateScreen(onBack: () -> Unit, recordFor: (DuplicateConfig) -> Int, onStart: (DuplicateConfig) -> Unit) {
-  var single by remember { mutableStateOf(true) }
+  var check by remember { mutableStateOf(PlayCheck.SINGLE) }
   var turn by remember { mutableStateOf(Durations.format(DEFAULT_TURN_MS)) }
   var fixed by remember { mutableStateOf(false) }
   var rounds by remember { mutableIntStateOf(PRESET_ROUNDS) }
   var rules by remember { mutableStateOf(false) }
   val turnMs = Durations.parse(turn)?.takeIf { it > 0 }
-  val config = turnMs?.let { DuplicateConfig(single, it, if (fixed) rounds else 0) }
+  val config = turnMs?.let { DuplicateConfig(check, it, if (fixed) rounds else 0) }
   Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     Header("Duplicada", onBack)
     RulesButton { rules = true }
     RoundsSection(fixed, rounds, { fixed = it }, { rounds = it })
-    ChallengeModeSelector(single, { single = it }, singleHint = SINGLE_HINT)
+    ChallengeModeSelector(listOf("Single" to SINGLE_HINT, "Al Final" to AT_END_HINT), check.ordinal) { check = PlayCheck.entries[it] }
     SectionTitle("Tiempo", info = "Si no juegas a tiempo, 0 puntos ese turno.")
     TimeField(turn, { turn = it }, "Tiempo por turno")
     config?.let { RecordLine(recordFor(it)) }
@@ -76,3 +78,7 @@ private const val ROUNDS_TEXT =
 
 private const val SINGLE_HINT =
   "si colocas una jugada inválida, obtienes 0 puntos en esa ronda."
+
+private const val AT_END_HINT =
+  "como en Single, una jugada inválida vale 0 puntos, pero no se sabe hasta el final: durante la partida cuenta con " +
+    "sus puntos. Al terminar se muestran las jugadas inválidas y después el resultado real."

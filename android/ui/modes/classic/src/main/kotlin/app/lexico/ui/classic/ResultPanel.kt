@@ -18,13 +18,13 @@ import app.lexico.ui.common.Spread
 import app.lexico.ui.common.SpreadDialog
 
 @Composable
-fun ResultPanel(view: ClassicView, end: GameEnd, onAnalyze: () -> Unit, onMenu: () -> Unit) {
+fun ResultPanel(view: ClassicView, end: GameEnd, onAnalyze: () -> Unit, onAnalyzeEndgame: () -> Unit, onMenu: () -> Unit) {
   var charting by remember { mutableStateOf(false) }
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
     Text("${resultTitle(view, end)}   ${view.myScore} – ${view.opponentScore}",
       style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-      EndButtons(onAnalyze, onMenu)
+      EndButtons(onAnalyze, onMenu, onAnalyzeEndgame.takeIf { view.bag == 0 })
       TextButton(onClick = { charting = true }) { Text("Ventaja") }
     }
   }

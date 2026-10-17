@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import app.lexico.game.Lexico
 import app.lexico.menu.Settings
 import app.lexico.navigation.App
+import app.lexico.update.Updates
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +19,8 @@ class MainActivity : ComponentActivity() {
     val lexico = Lexico(applicationContext)
     val settings = Settings(applicationContext)
     val version = packageManager.getPackageInfo(packageName, 0).versionName.orEmpty()
-    setContent { App(lexico, settings, version) }
+    val updates = Updates(applicationContext, version)
+    setContent { App(lexico, settings, updates, version) }
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) window.decorView.isForceDarkAllowed = false
   }
 }

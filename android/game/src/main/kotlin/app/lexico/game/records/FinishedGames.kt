@@ -16,6 +16,8 @@ import app.lexico.model.Board
 import app.lexico.model.Placement
 import java.io.File
 
+private const val ENDGAME_BUDGET_MS = 4000L
+
 class FinishedGames internal constructor(private val dir: File) {
   suspend fun list(): List<FinishedGame> = engine {
     logFiles().mapNotNull { f -> runCatching { summary(f.path, Review.open(f.path)).copy(finishedAt = f.lastModified()) }.getOrNull() }
@@ -24,6 +26,11 @@ class FinishedGames internal constructor(private val dir: File) {
   suspend fun open(path: String): GameReview = engine {
     val game = Review.open(path)
     GameReview(summary(path, game), (0 until game.turnCount()).map { turn(game.turnAt(it)) }, game.startTurn.toInt(), game.humanStarts)
+  }
+
+  suspend fun endgame(path: String, turn: Int): EndgameReview = engine {
+    val t = Review.open(path).turnAt(turn.toLong())
+    endgameReview(parseBoard(t.board), t.analyzeEndgame(ENDGAME_BUDGET_MS))
   }
 
   private fun logFiles(): List<File> =
@@ -48,7 +55,7 @@ class FinishedGames internal constructor(private val dir: File) {
       number = t.number.toInt(), player = t.player, rack = rackTiles(t.rack), board = board,
       candidates = (0 until t.candidateCount()).map { move(board, t.candidateAt(it)) },
       marks = (0 until t.markCount()).map { mark(board, t.markAt(it)) },
-      myScore = t.myScore.toInt(), opponentScore = t.opponentScore.toInt(),
+      myScore = t.myScore.toInt(), opponentScore = t.opponentScore.toInt(), endgame = t.endgame,
     )
   }
 

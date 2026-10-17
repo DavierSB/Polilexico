@@ -58,12 +58,20 @@ func TestInvalidPlayLosesTurn(t *testing.T) {
 	}
 	d.SetInvalidPlayLosesTurn(true)
 	attempt, err := d.Validate("h8 TPN")
-	if err != nil || attempt.Kind != core.KindInvalid || !attempt.Immediate {
+	if err != nil || attempt.Kind != core.KindInvalid || attempt.Immediate || attempt.Score == 0 {
 		t.Fatalf("%+v %v", attempt, err)
 	}
 	turn, err := d.Confirm("h8 TPN")
-	if err != nil || turn.HumanKind != core.KindInvalid || turn.HumanTotal != 0 {
+	if err != nil || turn.HumanKind != core.KindInvalid || turn.HumanTotal != 0 || turn.AssumedScore != attempt.Score {
 		t.Fatalf("%+v %v", turn, err)
+	}
+}
+
+func TestRevealAtEndSurvivesSave(t *testing.T) {
+	d := newTestGame(t)
+	d.SetRevealAtEnd(true)
+	if !mustReload(t, d).RevealAtEnd() {
+		t.Fatal("se perdió RevealAtEnd al guardar")
 	}
 }
 

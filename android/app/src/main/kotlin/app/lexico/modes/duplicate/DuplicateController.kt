@@ -7,6 +7,7 @@ import app.lexico.model.Placement
 import app.lexico.modes.GameController
 import app.lexico.ui.duplicate.DuplicateActions
 import app.lexico.ui.duplicate.DuplicateConfig
+import app.lexico.ui.duplicate.PlayCheck
 import kotlinx.coroutines.CoroutineScope
 
 @Stable
@@ -27,4 +28,6 @@ class DuplicateController(
   override fun analyze() = review(game.state.value.recordPath, onReview)
 }
 
-fun DuplicateConfig.toSetup(): DuplicateSetup = DuplicateSetup(invalidLosesTurn = single, turnMs = turnMs, maxRounds = rounds)
+fun DuplicateConfig.toSetup(): DuplicateSetup = DuplicateSetup(
+  invalidLosesTurn = check != PlayCheck.VOID, turnMs = turnMs, maxRounds = rounds, revealAtEnd = check == PlayCheck.AT_END,
+)

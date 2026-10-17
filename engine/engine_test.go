@@ -7,7 +7,7 @@ import (
 	"lexico/engine/internal/testenv"
 )
 
-var emptyBoard = strings.TrimSpace(strings.Repeat(". ", boardSize*boardSize))
+var emptyBoard = strings.TrimSpace(strings.Repeat(". ", 15*15))
 
 func TestIsValidWord(t *testing.T) {
 	testenv.Init(t)

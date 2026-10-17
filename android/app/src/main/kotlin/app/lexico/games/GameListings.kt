@@ -104,7 +104,7 @@ private fun turnView(t: ReviewTurn, equity: Boolean, opponent: String): ReviewTu
   val unseen = unseen(t)
   return ReviewTurnView(
     t.number, alias(t.player), t.rack, t.board, candidates(t, equity), t.marks.map { markView(it, t, equity) },
-    t.myScore, t.opponentScore, mine(t.player, opponent), unseen, bag(unseen, equity),
+    t.myScore, t.opponentScore, mine(t.player, opponent), unseen, bag(unseen, equity), endgame = equity && t.endgame,
   )
 }
 

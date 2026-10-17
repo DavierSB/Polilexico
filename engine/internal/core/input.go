@@ -25,6 +25,7 @@ var (
 type InvalidWordsError struct {
 	Play  Play
 	Words []string
+	Score int
 }
 
 func (e *InvalidWordsError) Error() string {
@@ -107,7 +108,7 @@ func checkWords(g *game.Game, m *move.Move) error {
 		return fmt.Errorf("jugada inválida: %w", err)
 	}
 	if bad := invalidWords(g, words); len(bad) > 0 {
-		return &InvalidWordsError{Play: invalidPlay(m), Words: bad}
+		return &InvalidWordsError{Play: invalidPlay(m), Words: bad, Score: m.Score()}
 	}
 	return nil
 }

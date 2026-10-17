@@ -45,8 +45,14 @@ fun TimeField(value: String, onChange: (String) -> Unit, label: String) {
 
 @Composable
 fun ChallengeModeSelector(single: Boolean, onChange: (Boolean) -> Unit, singleHint: String) {
-  SectionTitle("Comprobación de jugadas", info = "$CHALLENGE_INTRO\n\n$VOID_HINT\n\nSingle: $singleHint")
-  TwoOptions("Void", "Single", single, onChange)
+  ChallengeModeSelector(listOf("Single" to singleHint), if (single) 1 else 0) { onChange(it == 1) }
+}
+
+@Composable
+fun ChallengeModeSelector(extraModes: List<Pair<String, String>>, selected: Int, onSelect: (Int) -> Unit) {
+  val modes = listOf("Void" to VOID_HINT) + extraModes
+  SectionTitle("Comprobación de jugadas", info = challengeInfo(modes))
+  ChoiceOptions(modes.map { it.first }, selected, onSelect)
 }
 
 @Composable
@@ -78,4 +84,7 @@ private fun Option(text: String, selected: Boolean, select: () -> Unit) {
 
 private const val CHALLENGE_INTRO = "Existen varios modos de comprobación de jugadas:"
 
-private const val VOID_HINT = "Void: si intentas colocar una jugada inválida, no se te permite y continúas tu turno."
+private fun challengeInfo(modes: List<Pair<String, String>>): String =
+  (listOf(CHALLENGE_INTRO) + modes.map { (name, hint) -> "$name: $hint" }).joinToString("\n\n")
+
+private const val VOID_HINT = "si intentas colocar una jugada inválida, no se te permite y continúas tu turno."

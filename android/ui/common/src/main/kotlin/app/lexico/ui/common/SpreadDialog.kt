@@ -15,8 +15,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SpreadDialog(spread: Spread, close: () -> Unit, selected: Int? = null, pick: ((Int) -> Unit)? = null) {
-  ChartDialog("Ventaja", close) { SpreadChart(spread, selected = selected, pick = pick, tapped = close) }
+fun SpreadDialog(
+  spread: Spread, close: () -> Unit, selected: Int? = null, pick: ((Int) -> Unit)? = null, actions: (@Composable () -> Unit)? = null,
+) {
+  ChartDialog("Ventaja", close) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+      SpreadChart(spread, selected = selected, pick = pick, tapped = close)
+      actions?.invoke()
+    }
+  }
 }
 
 @Composable

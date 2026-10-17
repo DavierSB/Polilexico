@@ -82,7 +82,7 @@ private fun MyBar(view: ClassicView, c: TilePlacer, style: BoardStyle) {
 @Composable
 private fun Controls(view: ClassicView, c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs, onNotice: (String) -> Unit) {
   val end = view.end
-  if (end != null) return ResultPanel(view, end, onAnalyze = actions::analyze, onMenu = actions::exit)
+  if (end != null) return ResultPanel(view, end, onAnalyze = actions::analyze, onAnalyzeEndgame = actions::analyzeEndgame, onMenu = actions::exit)
   ActionButtons(
     c, myTurn = view.turn == Side.ME,
     onPlay = { c.placement()?.let(actions::play) ?: onNotice(NOT_IN_A_LINE) },

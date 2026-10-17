@@ -9,9 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EndButtons(onAnalyze: () -> Unit, onMenu: () -> Unit) {
+fun EndButtons(onAnalyze: () -> Unit, onMenu: () -> Unit, onAnalyzeEndgame: (() -> Unit)? = null) {
   Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
     Button(onClick = onAnalyze) { Text("Analizar") }
+    onAnalyzeEndgame?.let { Button(onClick = it) { Text("Analizar final") } }
     OutlinedButton(onClick = onMenu) { Text("Menú") }
   }
 }

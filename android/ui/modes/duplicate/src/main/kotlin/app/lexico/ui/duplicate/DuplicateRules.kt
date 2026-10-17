@@ -28,8 +28,10 @@ private val DUPLICATE_RULES = listOf(
     "Cambio de fichas",
   ),
   RulesSection(
-    "Sumas los puntos de tu jugada. Si no juegas a tiempo, o en modo Single realizas una jugada no válida, 0 puntos. " +
-      "Hay acierto cuando tu jugada hace los mismos puntos que la jugada maestra.",
+    "Sumas los puntos de tu jugada. Si no juegas a tiempo, o en modo Single o Al Final realizas una jugada no válida, " +
+      "0 puntos. Hay acierto cuando tu jugada hace los mismos puntos que la jugada maestra.\n\nEn modo Al Final no se " +
+      "sabe durante la partida si una jugada es válida: el marcador la cuenta con sus puntos. Al terminar se muestran " +
+      "las jugadas inválidas y después el resultado real.",
     "Puntuación",
   ),
   RulesSection(

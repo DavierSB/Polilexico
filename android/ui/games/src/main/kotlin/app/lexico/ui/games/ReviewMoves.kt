@@ -31,15 +31,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.lexico.ui.common.EQUITY_INFO
+import app.lexico.ui.common.FINAL_COLUMN
 import app.lexico.ui.common.InfoDialog
 import app.lexico.ui.common.InfoIcon
 import app.lexico.ui.common.Mulish
 import app.lexico.ui.common.RankedMove
+import app.lexico.ui.common.ValueColumn
+import app.lexico.ui.common.valueColumn
+import app.lexico.ui.common.valueText
 
 private val RankWidth = 36.sp
 private val PointsWidth = 62.sp
-private val EquityWidth = 82.sp
+private val ValueWidth = 82.sp
 private val ColumnGap = 8.dp
 private val CellSize = TextAutoSize.StepBased(minFontSize = 9.sp, maxFontSize = 16.sp, stepSize = 0.5.sp)
 private val HeaderSize = TextAutoSize.StepBased(minFontSize = 7.sp, maxFontSize = 11.sp, stepSize = 0.5.sp)
@@ -48,21 +51,24 @@ private const val NUMBERS_SHARE = 0.55f
 
 private class Line(val caption: String, val rank: String, val move: RankedMove)
 
-private class Widths(val rank: Dp, val points: Dp, val equity: Dp)
+private class Widths(val rank: Dp, val points: Dp, val value: Dp)
+
+private const val CALCULATING = "…"
 
 @Composable
-internal fun TurnMoves(turn: ReviewTurnView, classic: Boolean, selected: RankedMove?, select: (RankedMove) -> Unit) {
-  val equity = turn.candidates.any { it.equity != null }
+internal fun TurnMoves(turn: ReviewTurnView, classic: Boolean, calculating: Boolean, selected: RankedMove?, select: (RankedMove) -> Unit) {
+  val column = if (calculating) FINAL_COLUMN else valueColumn(turn.candidates)
+  val value = { m: RankedMove -> if (calculating) CALCULATING else valueText(m).ifEmpty { "—" } }
   var explaining by remember { mutableStateOf(false) }
   BoxWithConstraints(Modifier.fillMaxWidth()) {
-    val widths = widths(maxWidth, equity)
+    val widths = widths(maxWidth, column != null)
     Column {
-      TableHeader(widths, equity) { explaining = true }
+      TableHeader(widths, column) { explaining = true }
       HorizontalDivider()
-      lines(turn, classic).forEach { line -> LineRow(line, widths, equity, line.move == selected) { select(line.move) } }
+      lines(turn, classic).forEach { line -> LineRow(line, widths, column?.let { value(line.move) }, line.move == selected) { select(line.move) } }
     }
   }
-  if (explaining) InfoDialog("Equity", EQUITY_INFO) { explaining = false }
+  if (explaining && column != null) InfoDialog(column.title, column.info) { explaining = false }
 }
 
 private fun lines(turn: ReviewTurnView, classic: Boolean): List<Line> =
@@ -76,27 +82,27 @@ private fun markLabel(who: String): String = when (who) {
 }
 
 @Composable
-private fun widths(total: Dp, equity: Boolean): Widths {
-  val (rank, points, value) = with(LocalDensity.current) { listOf(RankWidth.toDp(), PointsWidth.toDp(), EquityWidth.toDp()) }
-  val wanted = rank + points + if (equity) value else 0.dp
+private fun widths(total: Dp, withValue: Boolean): Widths {
+  val (rank, points, value) = with(LocalDensity.current) { listOf(RankWidth.toDp(), PointsWidth.toDp(), ValueWidth.toDp()) }
+  val wanted = rank + points + if (withValue) value else 0.dp
   val scale = minOf(1f, total * NUMBERS_SHARE / wanted)
   return Widths(rank * scale, points * scale, value * scale)
 }
 
 @Composable
-private fun TableHeader(widths: Widths, equity: Boolean, explain: () -> Unit) {
+private fun TableHeader(widths: Widths, column: ValueColumn?, explain: () -> Unit) {
   Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
     HeaderCell("Jugada", Modifier.weight(1f))
     HeaderCell("#", Modifier.column(widths.rank), TextAlign.End)
     HeaderCell("Puntos", Modifier.column(widths.points), TextAlign.End)
-    if (equity) EquityHeader(widths.equity, explain)
+    if (column != null) ValueHeader(column, widths.value, explain)
   }
 }
 
 @Composable
-private fun EquityHeader(width: Dp, explain: () -> Unit) {
+private fun ValueHeader(column: ValueColumn, width: Dp, explain: () -> Unit) {
   Row(Modifier.column(width).clickable(onClick = explain), Arrangement.End, Alignment.CenterVertically) {
-    HeaderCell("Equity", Modifier.weight(1f, fill = false), TextAlign.End)
+    HeaderCell(column.title, Modifier.weight(1f, fill = false), TextAlign.End)
     InfoIcon(Modifier.padding(start = 3.dp))
   }
 }
@@ -107,7 +113,7 @@ private fun HeaderCell(text: String, modifier: Modifier = Modifier, align: TextA
 }
 
 @Composable
-private fun LineRow(line: Line, widths: Widths, equity: Boolean, active: Boolean, select: () -> Unit) {
+private fun LineRow(line: Line, widths: Widths, value: String?, active: Boolean, select: () -> Unit) {
   Row(
     Modifier.fillMaxWidth().padding(vertical = 1.dp).background(rowFill(active), RoundedCornerShape(10.dp)).clickable(onClick = select)
       .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -116,7 +122,7 @@ private fun LineRow(line: Line, widths: Widths, equity: Boolean, active: Boolean
     MoveCell(line)
     Cell(line.rank, widths.rank, cellStyle(muted = true))
     Cell("${line.move.points}", widths.points, cellStyle())
-    if (equity) Cell(line.move.equity?.let { "%.1f".format(it) } ?: "—", widths.equity, cellStyle(muted = true))
+    if (value != null) Cell(value, widths.value, cellStyle(muted = true))
   }
 }
 

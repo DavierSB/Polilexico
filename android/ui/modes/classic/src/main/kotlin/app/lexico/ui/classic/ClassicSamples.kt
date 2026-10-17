@@ -43,6 +43,7 @@ object ClassicSamples {
     override fun resign() {}
     override fun exit() {}
     override fun analyze() {}
+    override fun analyzeEndgame() {}
     override fun pause() {}
     override fun resume() {}
   }

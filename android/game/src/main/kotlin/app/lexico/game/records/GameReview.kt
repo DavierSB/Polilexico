@@ -35,8 +35,19 @@ data class ReviewTurn(
   val marks: List<ReviewMark>,
   val myScore: Int = 0,
   val opponentScore: Int = 0,
+  val endgame: Boolean = false,
 )
 
 data class ReviewMove(val text: String, val score: Int, val equity: Double?, val placement: Placement?)
 
 data class ReviewMark(val who: String, val move: ReviewMove, val rank: Int?)
+
+data class EndgameReview(val lines: List<EndgameLine>)
+
+data class EndgameLine(val spread: Int, val steps: List<LineStep>, val ending: LineEnding) {
+  val move: ReviewMove get() = steps.first().move
+}
+
+data class LineStep(val move: ReviewMove, val board: Board)
+
+data class LineEnding(val moverLeft: List<String>, val otherLeft: List<String>, val moverDelta: Int, val otherDelta: Int)

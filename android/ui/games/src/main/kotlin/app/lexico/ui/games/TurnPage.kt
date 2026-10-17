@@ -38,18 +38,24 @@ private val RACK_FRAME = 8.dp
 private val NAV_TEXT = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 14.sp, stepSize = 0.5.sp)
 
 @Composable
-internal fun TurnPage(review: ReviewView, index: Int, style: BoardStyle, height: Dp, go: (Int) -> Unit) {
-  val turn = review.turns[index]
+internal fun TurnPage(review: ReviewView, index: Int, analyses: EndgameAnalyses, style: BoardStyle, height: Dp, go: (Int) -> Unit) {
+  val shown = analyses.shown(index, review.turns[index])
+  val turn = shown.view?.turn ?: review.turns[index]
   var selected by remember(turn) { mutableStateOf<RankedMove?>(null) }
+  var line by remember(turn) { mutableStateOf<LineView?>(null) }
   var listing by remember { mutableStateOf(false) }
-  val select = { m: RankedMove -> selected = if (m == selected) null else m }
+  val select: (RankedMove) -> Unit = { m ->
+    val found = shown.view?.lineOf(m)
+    if (found != null) line = found else selected = if (m == selected) null else m
+  }
   BoardFit(
     height,
     top = { Stacked { TurnTitle(turn, review.turns.size); OpponentBar(review, turn) } },
     board = { ScrabbleBoard(turn.board, Modifier, style, pending = selected?.placement?.placed.orEmpty()) },
-    bottom = { Stacked { MyArea(turn, style); TurnNavigator(index, review.turns.size, go) { listing = true }; TurnMoves(turn, review.classic, selected, select) } },
+    bottom = { Stacked { MyArea(turn, style); TurnNavigator(index, review.turns.size, go) { listing = true }; TurnMoves(turn, review.classic, shown.calculating, selected, select) } },
   )
   if (listing) CandidatesDialog(turn.candidates, selected, close = { listing = false }) { select(it); listing = false }
+  line?.let { EndgameLineDialog(it, style) { line = null } }
 }
 
 @Composable

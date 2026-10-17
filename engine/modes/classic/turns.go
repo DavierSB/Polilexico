@@ -3,6 +3,7 @@ package classic
 import (
 	"errors"
 
+	"github.com/domino14/macondo/game"
 	"github.com/domino14/macondo/move"
 	"github.com/domino14/macondo/turnplayer"
 
@@ -44,15 +45,23 @@ type botChoice struct {
 }
 
 func (c *Game) chooseBotMove() (*botChoice, error) {
+	choice, snapshot, err := c.prepareBotMove()
+	if err == nil && snapshot != nil {
+		choice.searchEndgame(snapshot)
+	}
+	return choice, err
+}
+
+func (c *Game) prepareBotMove() (*botChoice, *game.Game, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if !c.botToMove() {
-		return nil, errNotBotTurn
+		return nil, nil, errNotBotTurn
 	}
 	candidates := c.candidates()
 	m := new(move.Move)
 	m.CopyFrom(c.bot.GenerateMoves(1)[0])
-	return &botChoice{move: m, candidates: candidates, turn: len(c.moves)}, nil
+	return &botChoice{move: m, candidates: candidates, turn: len(c.moves)}, c.endgameSnapshot(), nil
 }
 
 func (c *Game) applyBotMove(choice *botChoice) (*Move, error) {

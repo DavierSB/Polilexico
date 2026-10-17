@@ -116,7 +116,7 @@ func (m *Match) closeRound(turn *Turn, err error) {
 func (m *Match) cueRound(turn *Turn) {
 	switch {
 	case turn == nil:
-	case turn.Hit:
+	case turn.Hit, turn.AssumedHit && m.game.RevealAtEnd():
 		m.cues.Emit(events.CueCorrect)
 	default:
 		m.cues.Emit(events.CueMiss)

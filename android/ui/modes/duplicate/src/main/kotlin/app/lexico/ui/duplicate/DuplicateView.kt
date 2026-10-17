@@ -21,6 +21,8 @@ data class RoundPlay(val text: String, val points: Int, val bingo: Boolean = fal
 
 data class Round(val number: Int, val master: RoundPlay, val mine: RoundPlay, val hit: Boolean)
 
+data class InvalidPlay(val round: Int, val play: RoundPlay)
+
 data class DuplicateView(
   val board: Board,
   val phase: Phase,
@@ -28,6 +30,8 @@ data class DuplicateView(
   val bag: List<String>,
   val notice: String? = null,
   val paused: Boolean = false,
+  val revealAtEnd: Boolean = false,
+  val invalidPlays: List<InvalidPlay> = emptyList(),
 ) {
   val myScore: Int get() = rounds.sumOf { it.mine.points }
   val masterScore: Int get() = rounds.sumOf { it.master.points }

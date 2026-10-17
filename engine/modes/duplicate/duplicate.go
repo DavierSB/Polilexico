@@ -32,6 +32,7 @@ type Game struct {
 	log                           *gameLog
 	ended                         bool
 	invalidLosesTurn              bool
+	revealAtEnd                   bool
 	maxRounds                     int
 	recordPath                    string
 }
@@ -51,6 +52,12 @@ func (d *Game) SetInvalidPlayLosesTurn(on bool) {
 	d.invalidLosesTurn = on
 }
 
+func (d *Game) SetRevealAtEnd(on bool) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	d.revealAtEnd = on
+}
+
 func (d *Game) SetMaxRounds(rounds int) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -61,6 +68,12 @@ func (d *Game) InvalidPlayLosesTurn() bool {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	return d.invalidLosesTurn
+}
+
+func (d *Game) RevealAtEnd() bool {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	return d.revealAtEnd
 }
 
 func (d *Game) MaxRounds() int {

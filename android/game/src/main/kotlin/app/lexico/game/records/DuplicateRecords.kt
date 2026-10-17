@@ -11,5 +11,11 @@ class DuplicateRecords(context: Context) {
   fun submit(setup: DuplicateSetup, efficiencyTenths: Int): SeriesRecord = store.submit(key(setup), efficiencyTenths)
 
   private fun key(setup: DuplicateSetup): String =
-    "${setup.maxRounds}_${setup.turnMs}" + if (setup.invalidLosesTurn) "_single" else "_void"
+    "${setup.maxRounds}_${setup.turnMs}_" + checkName(setup)
+
+  private fun checkName(setup: DuplicateSetup): String = when {
+    setup.revealAtEnd -> "end"
+    setup.invalidLosesTurn -> "single"
+    else -> "void"
+  }
 }

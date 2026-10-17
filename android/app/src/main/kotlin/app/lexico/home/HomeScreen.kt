@@ -1,11 +1,14 @@
 package app.lexico.home
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -19,10 +22,11 @@ import app.lexico.ui.board.BoardStyle
 
 @Composable
 fun HomeScreen(
-  style: BoardStyle, inProgress: Int, demoGame: suspend () -> List<String>, onMenu: () -> Unit, go: (Screen) -> Unit,
+  style: BoardStyle, inProgress: Int, demoGame: suspend () -> List<String>, hasUpdate: Boolean, onMenu: () -> Unit,
+  go: (Screen) -> Unit,
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-    HomeTopBar(onMenu)
+    HomeTopBar(hasUpdate, onMenu)
     DemoBoard(demoGame, style, Modifier.weight(1f, fill = false))
     MODES.forEach { (name, screen) -> Button(onClick = { go(screen) }, Modifier.fillMaxWidth()) { Text(name) } }
     SavedGamesButtons(inProgress, go)
@@ -30,10 +34,18 @@ fun HomeScreen(
 }
 
 @Composable
-private fun HomeTopBar(onMenu: () -> Unit) {
+private fun HomeTopBar(hasUpdate: Boolean, onMenu: () -> Unit) {
   Row(verticalAlignment = Alignment.CenterVertically) {
-    TextButton(onClick = onMenu) { Text("☰", fontSize = 22.sp) }
+    MenuButton(hasUpdate, onMenu)
     Logo(Modifier.padding(start = 4.dp), scale = 0.8f)
+  }
+}
+
+@Composable
+private fun MenuButton(hasUpdate: Boolean, onMenu: () -> Unit) {
+  Box {
+    TextButton(onClick = onMenu) { Text("☰", fontSize = 22.sp) }
+    if (hasUpdate) Badge(Modifier.align(Alignment.TopEnd).padding(top = 8.dp, end = 8.dp), containerColor = MaterialTheme.colorScheme.primary)
   }
 }
 

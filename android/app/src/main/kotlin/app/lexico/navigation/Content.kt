@@ -19,8 +19,10 @@ import app.lexico.ui.recall.NewRecallScreen
 import app.lexico.ui.sprint.NewSprintScreen
 
 @Composable
-internal fun Content(screen: Screen, lexico: Lexico, nav: Navigator, settings: Settings, themes: ThemeState, onMenu: () -> Unit) {
-  if (screen.isGame) GameScreens(screen, lexico, nav, themes) else OtherScreens(screen, lexico, nav, settings, themes, onMenu)
+internal fun Content(
+  screen: Screen, lexico: Lexico, nav: Navigator, settings: Settings, themes: ThemeState, hasUpdate: Boolean, onMenu: () -> Unit,
+) {
+  if (screen.isGame) GameScreens(screen, lexico, nav, themes) else OtherScreens(screen, lexico, nav, settings, themes, hasUpdate, onMenu)
 }
 
 @Composable
@@ -37,10 +39,12 @@ private fun GameScreens(screen: Screen, lexico: Lexico, nav: Navigator, themes: 
 }
 
 @Composable
-private fun OtherScreens(screen: Screen, lexico: Lexico, nav: Navigator, settings: Settings, themes: ThemeState, onMenu: () -> Unit) {
+private fun OtherScreens(
+  screen: Screen, lexico: Lexico, nav: Navigator, settings: Settings, themes: ThemeState, hasUpdate: Boolean, onMenu: () -> Unit,
+) {
   val style = settings.theme.board(settings.lightBoard)
   when (screen) {
-    Screen.Home -> HomeScreen(style, remember { lexico.savedGames.list().size }, lexico.demoGames::nextPlacements, onMenu, nav::go)
+    Screen.Home -> HomeScreen(style, remember { lexico.savedGames.list().size }, lexico.demoGames::nextPlacements, hasUpdate, onMenu, nav::go)
     Screen.Minigames -> MinigamesScreen(nav::back, nav::go)
     Screen.NewClassic -> NewClassicScreen(nav::back) { nav.replace(Screen.Classic(it)) }
     Screen.NewEndgame -> NewEndgameScreen(nav::back) { nav.replace(Screen.Endgame(it)) }

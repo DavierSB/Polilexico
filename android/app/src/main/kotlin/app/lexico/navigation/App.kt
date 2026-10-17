@@ -10,9 +10,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import app.lexico.game.Lexico
 import app.lexico.menu.AboutDialog
@@ -31,23 +33,25 @@ import app.lexico.ui.board.ThemeDialog
 import app.lexico.ui.board.Themed
 import app.lexico.ui.classic.LocalShowUnseen
 import app.lexico.ui.common.LocalConfettiStart
+import app.lexico.update.Updates
 
 @Composable
-fun App(lexico: Lexico, settings: Settings, version: String) {
+fun App(lexico: Lexico, settings: Settings, updates: Updates, version: String) {
   val cues = rememberCuePlayer(settings)
   val nav = remember(cues) { Navigator(cues::click) }
   val engine = rememberCreated(lexico) { lexico.start() }
   val menu = rememberMenuState()
   val themes = remember { ThemeState(settings) }
   BackHandler(enabled = nav.canGoBack, onBack = nav::back)
+  LaunchedEffect(updates) { updates.check() }
   Themed(themes.current) {
     Surface(Modifier.fillMaxSize()) {
       ModalNavigationDrawer(
         drawerState = menu.drawer,
         gesturesEnabled = !nav.current.isGame || menu.drawer.isOpen,
-        drawerContent = { AppMenu(nav, menu, themes, cues::click) },
+        drawerContent = { AppMenu(nav, menu, themes, updates, cues::click) },
       ) {
-        ScreenFrame(nav.current) { Screens(engine, lexico, nav, settings, themes, menu, cues) }
+        ScreenFrame(nav.current) { Screens(engine, lexico, nav, settings, themes, menu, cues, updates.available != null) }
       }
       Dialogs(settings, themes, menu, version)
     }
@@ -64,6 +68,7 @@ private fun Dialogs(settings: Settings, themes: ThemeState, menu: MenuState, ver
 @Composable
 private fun Screens(
   engine: Result<Unit>?, lexico: Lexico, nav: Navigator, settings: Settings, themes: ThemeState, menu: MenuState, cues: CuePlayer,
+  hasUpdate: Boolean,
 ) {
   val scorer = remember(lexico) { engineScorer(lexico) }
   WhenReady(engine, "Cargando el motor…") {
@@ -73,7 +78,7 @@ private fun Screens(
       LocalCues provides cues::play,
       LocalConfettiStart provides { cues.play(Cue.CELEBRATION) },
     ) {
-      Content(nav.current, lexico, nav, settings, themes, onMenu = menu::open)
+      Content(nav.current, lexico, nav, settings, themes, hasUpdate, onMenu = menu::open)
     }
   }
 }
@@ -85,14 +90,17 @@ private fun rememberCuePlayer(settings: Settings): CuePlayer {
 }
 
 @Composable
-private fun AppMenu(nav: Navigator, menu: MenuState, themes: ThemeState, click: () -> Unit) {
+private fun AppMenu(nav: Navigator, menu: MenuState, themes: ThemeState, updates: Updates, click: () -> Unit) {
+  val uriHandler = LocalUriHandler.current
   SideMenu(
     atHome = nav.current == Screen.Home,
+    update = updates.available,
     onHome = { nav.home(); menu.close() },
     onStats = { nav.go(Screen.Stats); menu.close() },
     onTheme = { click(); themes.picking = true; menu.close() },
     onOptions = { click(); menu.showOptions = true; menu.close() },
     onAbout = { click(); menu.showAbout = true; menu.close() },
+    onUpdate = { click(); uriHandler.openUri(it.url); menu.close() },
   )
 }
 

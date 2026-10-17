@@ -38,40 +38,41 @@ data class RankedMove(
   val equity: Double? = null,
   val placement: Placement? = null,
   val playedBy: String = "",
+  val final: Int? = null,
 )
 
 @Composable
 fun RankedMoveList(moves: List<RankedMove>, selected: RankedMove?, modifier: Modifier = Modifier, select: (RankedMove) -> Unit) {
-  val withEquity = moves.any { it.equity != null }
+  val column = valueColumn(moves)
   var explaining by remember { mutableStateOf(false) }
   Column(modifier) {
-    TableHeader(withEquity) { explaining = true }
+    TableHeader(column) { explaining = true }
     HorizontalDivider()
     LazyColumn(Modifier.weight(1f)) {
-      itemsIndexed(moves) { n, m -> MoveRow(n + 1, m, withEquity, active = m == selected) { select(m) } }
+      itemsIndexed(moves) { n, m -> MoveRow(n + 1, m, column != null, active = m == selected) { select(m) } }
     }
   }
-  if (explaining) InfoDialog("Equity", EQUITY_INFO) { explaining = false }
+  if (explaining && column != null) InfoDialog(column.title, column.info) { explaining = false }
 }
 
 private val RankWidth = 28.dp
 private val PointsWidth = 56.dp
-private val EquityWidth = 76.dp
+private val ValueWidth = 76.dp
 
 @Composable
-private fun TableHeader(withEquity: Boolean, explain: () -> Unit) {
+private fun TableHeader(column: ValueColumn?, explain: () -> Unit) {
   Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
     HeaderCell("#", Modifier.width(RankWidth))
     HeaderCell("Jugada", Modifier.weight(1f))
     HeaderCell("Puntos", Modifier.width(PointsWidth), TextAlign.End)
-    if (withEquity) EquityHeader(explain)
+    if (column != null) ValueHeader(column, explain)
   }
 }
 
 @Composable
-private fun EquityHeader(explain: () -> Unit) {
-  Row(Modifier.width(EquityWidth).clickable(onClick = explain), Arrangement.End, Alignment.CenterVertically) {
-    HeaderCell("Equity")
+private fun ValueHeader(column: ValueColumn, explain: () -> Unit) {
+  Row(Modifier.width(ValueWidth).clickable(onClick = explain), Arrangement.End, Alignment.CenterVertically) {
+    HeaderCell(column.title)
     InfoIcon(Modifier.padding(start = 4.dp))
   }
 }
@@ -82,7 +83,7 @@ private fun HeaderCell(text: String, modifier: Modifier = Modifier, align: TextA
 }
 
 @Composable
-private fun MoveRow(rank: Int, m: RankedMove, withEquity: Boolean, active: Boolean, select: () -> Unit) {
+private fun MoveRow(rank: Int, m: RankedMove, withValue: Boolean, active: Boolean, select: () -> Unit) {
   Row(
     Modifier.fillMaxWidth().padding(vertical = 1.dp).highlight(active).clickable(onClick = select).padding(horizontal = 8.dp, vertical = 7.dp),
     verticalAlignment = Alignment.CenterVertically,
@@ -90,7 +91,7 @@ private fun MoveRow(rank: Int, m: RankedMove, withEquity: Boolean, active: Boole
     Cell("$rank", RankWidth, cellStyle(FontWeight.SemiBold, muted = true))
     MoveCell(m)
     Cell("${m.points}", PointsWidth, cellStyle(FontWeight.ExtraBold), TextAlign.End)
-    if (withEquity) Cell(m.equity?.let { "%.1f".format(it) }.orEmpty(), EquityWidth, cellStyle(FontWeight.SemiBold, muted = true), TextAlign.End)
+    if (withValue) Cell(valueText(m), ValueWidth, cellStyle(FontWeight.SemiBold, muted = true), TextAlign.End)
   }
 }
 

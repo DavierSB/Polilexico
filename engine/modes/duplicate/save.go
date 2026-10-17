@@ -18,6 +18,7 @@ type savedGame struct {
 	Log              *gameLog
 	Ended            bool
 	InvalidLosesTurn bool
+	RevealAtEnd      bool
 	MaxRounds        int
 	RecordPath       string
 	Rack             string
@@ -48,7 +49,7 @@ func Load(text string) (*Game, error) {
 func (d *Game) saved(history json.RawMessage) savedGame {
 	return savedGame{Turn: d.savedTurn(), MasterTotal: d.masterTotal, HumanTotal: d.humanTotal,
 		Hits: d.hits, Turns: d.turns, Log: d.log, Ended: d.ended, InvalidLosesTurn: d.invalidLosesTurn,
-		MaxRounds: d.maxRounds, RecordPath: d.recordPath, Rack: d.g.RackLettersFor(masterIdx), History: history}
+		RevealAtEnd: d.revealAtEnd, MaxRounds: d.maxRounds, RecordPath: d.recordPath, Rack: d.g.RackLettersFor(masterIdx), History: history}
 }
 
 func (d *Game) savedTurn() int {
@@ -77,6 +78,18 @@ func (d *Game) restore(s savedGame) {
 	d.turns = s.Turns
 	d.ended = s.Ended
 	d.invalidLosesTurn = s.InvalidLosesTurn
+	d.revealAtEnd = s.RevealAtEnd
 	d.maxRounds = s.MaxRounds
 	d.recordPath = s.RecordPath
+}
+
+func (s savedGame) shownHumanTotal() int {
+	if !s.RevealAtEnd {
+		return s.HumanTotal
+	}
+	total := 0
+	for _, t := range s.Turns {
+		total += t.AssumedScore
+	}
+	return total
 }

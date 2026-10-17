@@ -45,12 +45,13 @@ type Match struct {
 	closed   bool
 }
 
-func NewMatch(turnMs int64, invalidLosesTurn bool, maxRounds int, l events.Listener) (*Match, error) {
+func NewMatch(turnMs int64, invalidLosesTurn, revealAtEnd bool, maxRounds int, l events.Listener) (*Match, error) {
 	g, err := Start()
 	if err != nil {
 		return nil, err
 	}
 	g.SetInvalidPlayLosesTurn(invalidLosesTurn)
+	g.SetRevealAtEnd(revealAtEnd)
 	g.SetMaxRounds(maxRounds)
 	return startMatch(g, turnDuration(turnMs), timing.Real(), l, false), nil
 }

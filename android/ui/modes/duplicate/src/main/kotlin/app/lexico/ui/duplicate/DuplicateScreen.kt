@@ -31,7 +31,7 @@ fun DuplicateScreen(view: DuplicateView, style: BoardStyle, actions: DuplicateAc
   val dialogs = rememberDuplicateDialogs(view)
   var message by rememberNotice(view.notice)
   Pausable(view.paused, actions::resume) { DuplicateLayout(view, c, style, actions, dialogs, message, onTheme) { message = it } }
-  DuplicateDialogsShown(view, actions, dialogs)
+  DuplicateDialogsShown(view, c, actions, dialogs)
 }
 
 @Composable
@@ -44,7 +44,7 @@ private fun DuplicateLayout(
     PlacingBoard(c, style, enabled = view.phase is Phase.Playing)
     PhasePanel(view.phase, c, style, actions)
     message?.let { Notice(it, bold = true) }
-    PhaseButtons(view.phase, c, actions, onNotice)
+    PhaseButtons(view.phase, c, actions, dialogs, onNotice)
     Spacer(Modifier.weight(1f))
     Scoreboard(view)
   }
@@ -78,10 +78,10 @@ private fun ClockAndRack(remainingMs: Long?, c: TilePlacer, style: BoardStyle, e
 }
 
 @Composable
-private fun PhaseButtons(phase: Phase, c: TilePlacer, actions: DuplicateActions, onNotice: (String) -> Unit) {
+private fun PhaseButtons(phase: Phase, c: TilePlacer, actions: DuplicateActions, dialogs: DuplicateDialogs, onNotice: (String) -> Unit) {
   when (phase) {
     is Phase.Playing -> PlayingButtons(
-      c, onPlay = { c.placement()?.let(actions::propose) ?: onNotice(NOT_IN_A_LINE) }, onPass = { c.recall(); actions.pass() },
+      c, onPlay = { c.placement()?.let(actions::propose) ?: onNotice(NOT_IN_A_LINE) }, onPass = { dialogs.pass = true },
     )
     is Phase.Confirming -> ConfirmingButtons(phase, actions::cancel)
     Phase.Finished -> EndButtons(onAnalyze = actions::analyze, onMenu = actions::exit)

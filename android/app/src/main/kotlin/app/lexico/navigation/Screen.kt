@@ -26,7 +26,7 @@ sealed interface Screen {
   data class Continue(val saved: SavedGame) : Screen
   data object Finished : Screen
   data class FinishedFolder(val folder: GameFolder) : Screen
-  data class Review(val path: String) : Screen
+  data class Review(val path: String, val atEndgame: Boolean = false) : Screen
   data object Stats : Screen
 
   val isGame: Boolean get() = this is Classic || this is Endgame || this is Duplicate || this is Recall || this is Sprint || this is Continue

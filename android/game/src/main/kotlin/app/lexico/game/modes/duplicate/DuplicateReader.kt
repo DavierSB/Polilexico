@@ -21,7 +21,7 @@ internal class DuplicateReader(private val match: Match) {
     return DuplicateState(
       board = board, phase = phase(), rounds = turns.map { round(board, it) },
       bag = rackTiles(game.unseen()), paused = match.paused(), lastError = match.lastError().ifEmpty { null },
-      recordPath = game.result()?.recordPath,
+      recordPath = game.result()?.recordPath, revealAtEnd = game.revealAtEnd(),
     )
   }
 
@@ -49,12 +49,19 @@ internal class DuplicateReader(private val match: Match) {
     number = t.number.toInt(), masterText = moveText(board, "${t.masterCoords} ${t.masterTiles}"), masterScore = t.masterScore.toInt(),
     myText = myText(board, t), myScore = t.humanScore.toInt(), hit = t.hit,
     masterBingo = isBingo(t.masterCoords, t.masterTiles), myBingo = t.humanKind == "play" && isBingo(t.humanCoords, t.humanTiles),
+    assumed = assumed(board, t),
   )
+
+  private fun assumed(board: Board, t: Turn): AssumedPlay =
+    if (t.humanKind != "invalid") AssumedPlay(myText(board, t), t.humanScore.toInt(), t.hit, t.humanKind == "play" && isBingo(t.humanCoords, t.humanTiles))
+    else AssumedPlay(placedText(board, t), t.assumedScore.toInt(), t.assumedHit, isBingo(t.humanCoords, t.humanTiles), invalid = true)
+
+  private fun placedText(board: Board, t: Turn): String = moveText(board, "${t.humanCoords} ${t.humanTiles}")
 
   private fun isBingo(coords: String, tiles: String): Boolean = placedSquares(coords, tiles).size == BINGO_TILES
 
   private fun myText(board: Board, t: Turn): String = when (t.humanKind) {
-    "play" -> moveText(board, "${t.humanCoords} ${t.humanTiles}")
+    "play" -> placedText(board, t)
     "invalid" -> "inválida"
     "timeout" -> "tiempo agotado"
     else -> "pase"

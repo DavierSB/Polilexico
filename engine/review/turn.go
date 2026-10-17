@@ -7,8 +7,10 @@ type Turn struct {
 	Board         string
 	MyScore       int
 	OpponentScore int
+	Endgame       bool
 	candidates    []*Move
 	marks         []*Mark
+	position      position
 }
 
 type Move struct {

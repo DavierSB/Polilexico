@@ -27,7 +27,8 @@ cada uno y las mejores jugadas posibles.
 ## Duplicada
 
 Duplicada con las reglas oficiales. Al terminar la partida, también se puede analizar jugada a
-jugada.
+jugada. En el modo *Al Final*, la validez de las jugadas no se ve durante la partida: el marcador
+cuenta cada jugada con sus puntos y, al terminar, se muestran las inválidas y luego el resultado real.
 
 <p align="center">
   <img src="screenshots/duplicate-game.png" width="260" alt="Partida duplicada">

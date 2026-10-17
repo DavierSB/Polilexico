@@ -54,7 +54,7 @@ func ReadProgress(text string) (*Progress, error) {
 	if err := json.Unmarshal([]byte(m.Game), &g); err != nil {
 		return nil, err
 	}
-	return &Progress{Round: len(g.Turns) + 1, HumanTotal: g.HumanTotal, MasterTotal: g.MasterTotal}, nil
+	return &Progress{Round: len(g.Turns) + 1, HumanTotal: g.shownHumanTotal(), MasterTotal: g.MasterTotal}, nil
 }
 
 func (m *Match) saved(game string) savedMatch {

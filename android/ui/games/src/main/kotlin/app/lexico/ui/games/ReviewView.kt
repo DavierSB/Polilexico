@@ -28,6 +28,7 @@ data class ReviewTurnView(
   val mine: Boolean? = null,
   val unseen: List<String> = emptyList(),
   val bag: Int = 0,
+  val endgame: Boolean = false,
 )
 
 data class MarkView(val who: String, val move: RankedMove, val rank: Int?)
