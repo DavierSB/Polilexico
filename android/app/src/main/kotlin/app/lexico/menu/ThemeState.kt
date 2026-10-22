@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import app.lexico.ui.board.AppTheme
+import app.lexico.ui.board.BoardLook
 import app.lexico.ui.board.BoardStyle
 
 @Stable
@@ -17,15 +18,16 @@ class ThemeState(private val settings: Settings) {
 
   val appTheme: AppTheme get() = settings.theme
 
-  val board: BoardStyle get() = current.board(settings.lightBoard)
+  val board: BoardStyle get() = current.board(settings.boardLook)
 
-  val lightBoard: Boolean get() = settings.lightBoard
+  val look: BoardLook get() = settings.boardLook
 
   fun choose(chosen: AppTheme) {
     if (game != null) game = chosen else settings.chooseTheme(chosen)
   }
 
-  fun chooseLight(light: Boolean) {
-    settings.useLightBoard(light)
+  fun chooseLook(look: BoardLook) {
+    settings.useLightBoard(look.light)
+    settings.swapBonuses(look.swapped)
   }
 }

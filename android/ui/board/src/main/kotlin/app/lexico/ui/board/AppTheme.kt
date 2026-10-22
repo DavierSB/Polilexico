@@ -31,8 +31,13 @@ import app.lexico.ui.common.PolimitaColors
 import app.lexico.ui.common.SkyColors
 
 @Immutable
+data class BoardLook(val light: Boolean = false, val swapped: Boolean = false)
+
+@Immutable
 data class AppTheme(val name: String, val colors: ColorScheme, val dark: BoardStyle, val light: BoardStyle) {
-  fun board(lightBoard: Boolean): BoardStyle = if (lightBoard) light else dark
+  fun board(look: BoardLook): BoardStyle = shade(look.light).let { if (look.swapped) it.swapped() else it }
+
+  private fun shade(lightBoard: Boolean): BoardStyle = if (lightBoard) light else dark
 }
 
 object AppThemes {
@@ -53,7 +58,7 @@ fun Themed(theme: AppTheme, content: @Composable () -> Unit) {
 
 @Composable
 fun ThemeDialog(
-  current: AppTheme, lightBoard: Boolean, choose: (AppTheme) -> Unit, chooseLight: (Boolean) -> Unit, close: () -> Unit,
+  current: AppTheme, look: BoardLook, choose: (AppTheme) -> Unit, chooseLook: (BoardLook) -> Unit, close: () -> Unit,
 ) {
   AlertDialog(
     onDismissRequest = close,
@@ -61,33 +66,34 @@ fun ThemeDialog(
     title = { Text("Tema") },
     text = {
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        AppThemes.ALL.forEach { ThemeChoice(it, lightBoard, selected = it == current) { choose(it); close() } }
-        LightBoardSwitch(lightBoard, chooseLight)
+        AppThemes.ALL.forEach { ThemeChoice(it, look, selected = it == current) { choose(it); close() } }
+        LookSwitch("Tablero claro", look.light) { chooseLook(look.copy(light = it)) }
+        LookSwitch("Intercambiar dobles y triples", look.swapped) { chooseLook(look.copy(swapped = it)) }
       }
     },
   )
 }
 
 @Composable
-private fun LightBoardSwitch(lightBoard: Boolean, chooseLight: (Boolean) -> Unit) {
+private fun LookSwitch(label: String, on: Boolean, toggle: (Boolean) -> Unit) {
   Row(
-    Modifier.fillMaxWidth().padding(top = 8.dp).toggleable(lightBoard, role = Role.Switch, onValueChange = chooseLight),
+    Modifier.fillMaxWidth().padding(top = 8.dp).toggleable(on, role = Role.Switch, onValueChange = toggle),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Text("Tablero claro", Modifier.weight(1f))
-    Switch(checked = lightBoard, onCheckedChange = null)
+    Text(label, Modifier.weight(1f))
+    Switch(checked = on, onCheckedChange = null)
   }
 }
 
 @Composable
-private fun ThemeChoice(theme: AppTheme, lightBoard: Boolean, selected: Boolean, choose: () -> Unit) {
+private fun ThemeChoice(theme: AppTheme, look: BoardLook, selected: Boolean, choose: () -> Unit) {
   Row(
     Modifier.fillMaxWidth().selectable(selected, role = Role.RadioButton, onClick = choose),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     RadioButton(selected = selected, onClick = null)
     Text(theme.name, Modifier.padding(start = 8.dp).weight(1f))
-    Swatches(theme, theme.board(lightBoard))
+    Swatches(theme, theme.board(look))
   }
 }
 

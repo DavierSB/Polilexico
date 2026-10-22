@@ -2,6 +2,7 @@ package endgame
 
 import (
 	"errors"
+	"sync/atomic"
 	"time"
 
 	"github.com/domino14/macondo/move"
@@ -31,12 +32,16 @@ type searcher struct {
 	rootNarrowed bool
 	cut          bool
 	lines        [][]*move.Move
+	halt         *atomic.Bool
 }
 
 func (s *searcher) value(n node, alpha, beta int) (int, error) {
 	if s.pos.Over() {
 		s.endLine(n.ply)
 		return s.pos.Spread(n.player), nil
+	}
+	if s.pos.Forced() {
+		return s.forcedPass(n, alpha, beta)
 	}
 	if err := s.checkTime(); err != nil {
 		return 0, err
@@ -93,5 +98,9 @@ func (s *searcher) checkTime() error {
 }
 
 func (s *searcher) expired() bool {
-	return !s.deadline.IsZero() && time.Now().After(s.deadline)
+	return s.halted() || !s.deadline.IsZero() && time.Now().After(s.deadline)
+}
+
+func (s *searcher) halted() bool {
+	return s.halt != nil && s.halt.Load()
 }

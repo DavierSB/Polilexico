@@ -8,6 +8,7 @@ import (
 	"github.com/domino14/macondo/turnplayer"
 
 	"lexico/engine/internal/core"
+	"lexico/engine/internal/preendgame"
 )
 
 const reviewCandidates = 15
@@ -42,26 +43,29 @@ type botChoice struct {
 	move       *move.Move
 	candidates []core.Candidate
 	turn       int
+	endgame    *game.Game
+	preEndgame *preendgame.Turn
 }
 
 func (c *Game) chooseBotMove() (*botChoice, error) {
-	choice, snapshot, err := c.prepareBotMove()
-	if err == nil && snapshot != nil {
-		choice.searchEndgame(snapshot)
+	choice, err := c.prepareBotMove()
+	if err == nil {
+		choice.think()
 	}
 	return choice, err
 }
 
-func (c *Game) prepareBotMove() (*botChoice, *game.Game, error) {
+func (c *Game) prepareBotMove() (*botChoice, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if !c.botToMove() {
-		return nil, nil, errNotBotTurn
+		return nil, errNotBotTurn
 	}
 	candidates := c.candidates()
 	m := new(move.Move)
 	m.CopyFrom(c.bot.GenerateMoves(1)[0])
-	return &botChoice{move: m, candidates: candidates, turn: len(c.moves)}, c.endgameSnapshot(), nil
+	return &botChoice{move: m, candidates: candidates, turn: len(c.moves),
+		endgame: c.endgameSnapshot(), preEndgame: c.preEndgameTurn()}, nil
 }
 
 func (c *Game) applyBotMove(choice *botChoice) (*Move, error) {

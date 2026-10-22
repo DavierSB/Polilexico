@@ -14,6 +14,7 @@ internal fun rememberClassicForm(): ClassicForm = remember { ClassicForm() }
 @Stable
 internal class ClassicForm {
   var opponent by mutableStateOf("HastyBot")
+  var starter by mutableStateOf(0)
   var single by mutableStateOf(true)
   var timed by mutableStateOf(true)
   var time by mutableStateOf(Durations.format(ClassicConfig().timeMs))
@@ -24,7 +25,7 @@ internal class ClassicForm {
   val valid: Boolean get() = !timed || (timeMs()?.let { it > 0 } == true && Durations.parse(overtime) != null)
 
   fun toConfig(): ClassicConfig =
-    ClassicConfig(opponent, single && !voidOnly, timed, timeMs() ?: 0, Durations.parse(overtime) ?: 0)
+    ClassicConfig(opponent, starter, single && !voidOnly, timed, timeMs() ?: 0, Durations.parse(overtime) ?: 0)
 
   private fun timeMs(): Long? = Durations.parse(time)
 }

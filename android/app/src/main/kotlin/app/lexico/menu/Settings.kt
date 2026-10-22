@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.edit
 import app.lexico.ui.board.AppTheme
 import app.lexico.ui.board.AppThemes
+import app.lexico.ui.board.BoardLook
 
 @Stable
 class Settings(ctx: Context) {
@@ -18,6 +19,9 @@ class Settings(ctx: Context) {
     private set
 
   var lightBoard: Boolean by mutableStateOf(prefs.getBoolean(LIGHT_BOARD_KEY, false))
+    private set
+
+  var swappedBonuses: Boolean by mutableStateOf(prefs.getBoolean(SWAPPED_BONUSES_KEY, false))
     private set
 
   var liveScore: Boolean by mutableStateOf(prefs.getBoolean(LIVE_SCORE_KEY, true))
@@ -35,6 +39,8 @@ class Settings(ctx: Context) {
   var statsSince: Long by mutableLongStateOf(prefs.getLong(STATS_SINCE_KEY, 0L))
     private set
 
+  val boardLook: BoardLook get() = BoardLook(lightBoard, swappedBonuses)
+
   fun chooseTheme(chosen: AppTheme) {
     theme = chosen
   }
@@ -42,6 +48,11 @@ class Settings(ctx: Context) {
   fun useLightBoard(on: Boolean) {
     lightBoard = on
     prefs.edit { putBoolean(LIGHT_BOARD_KEY, on) }
+  }
+
+  fun swapBonuses(on: Boolean) {
+    swappedBonuses = on
+    prefs.edit { putBoolean(SWAPPED_BONUSES_KEY, on) }
   }
 
   fun showLiveScore(on: Boolean) {
@@ -71,6 +82,7 @@ class Settings(ctx: Context) {
 
   private companion object {
     const val LIGHT_BOARD_KEY = "lightBoard"
+    const val SWAPPED_BONUSES_KEY = "swappedBonuses"
     const val LIVE_SCORE_KEY = "liveScore"
     const val SHOW_UNSEEN_KEY = "showUnseen"
     const val SOUNDS_KEY = "sounds"

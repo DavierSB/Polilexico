@@ -28,8 +28,8 @@ type Match struct {
 	botError string
 }
 
-func NewMatch(botName string, timeMs, overtimeMs int64, invalidLosesTurn bool, l events.Listener) (*Match, error) {
-	g, err := Start(botName)
+func NewMatch(botName string, starter int, timeMs, overtimeMs int64, invalidLosesTurn bool, l events.Listener) (*Match, error) {
+	g, err := Start(botName, starter)
 	if err != nil {
 		return nil, err
 	}

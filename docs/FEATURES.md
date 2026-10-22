@@ -12,10 +12,16 @@ de Woogles.io.
 ## Clásica
 
 Una partida contra un bot. Hay cinco rivales, de menos a más fuertes: Polimita, Sancho, Pelusa,
-María M. y Gitana.
+María M. y Gitana. Antes de empezar se elige quién sale: el jugador, el rival o cualquiera de los
+dos, a sorteo.
 
 Al terminar la partida, se puede analizar jugada a jugada: el tablero de cada turno, lo que jugó
 cada uno y las mejores jugadas posibles.
+
+En los turnos con la bolsa vacía, el análisis es un explorador del final: se puede probar
+cualquier jugada, de cualquiera de los dos jugadores, y el motor recalcula en vivo cuál es la
+mejor y con qué diferencia termina la partida. El plan de cada jugada se reproduce paso a paso
+sobre el tablero, con el marcador y las fichas de cada jugador, hasta el descuento final.
 
 <p align="center">
   <img src="screenshots/classic-setup.png" width="260" alt="Elegir rival">
@@ -74,9 +80,10 @@ puntuación y lo que queda en la mano. Al tocar una, se dibuja en el tablero.
 ## Mis partidas
 
 - **Partidas en curso**: se guardan tras cada jugada; se pueden dejar y seguir después.
-- **Mis partidas**: las terminadas, en una carpeta por modo. Cada una se puede revisar turno a turno:
-  el tablero de ese momento, lo que jugó cada uno y las mejores jugadas posibles (en duplicada,
-  sin equity: allí solo cuentan los puntos).
+- **Mis partidas**: las terminadas, en una carpeta por modo. El marcador pone primero los puntos
+  de quien salió, y el color dice si la partida se ganó o se perdió. Cada una se puede revisar
+  turno a turno: el tablero de ese momento, lo que jugó cada uno y las mejores jugadas posibles
+  (en duplicada, sin equity: allí solo cuentan los puntos).
 
 <p align="center">
   <img src="screenshots/review.png" width="260" alt="Revisión de una partida">
@@ -96,7 +103,8 @@ jugador con los del rival en cada partida; al tocar un punto, se abre esa partid
 
 Cuatro esquemas de color, cada uno con su tablero: Polimita, Hoja, Celeste y Noche. El tema de la
 app se elige en el menú lateral; en una partida contra un rival se usa el de ese rival, y también
-se puede cambiar desde la partida.
+se puede cambiar desde la partida. El tablero puede ser oscuro o claro, y los colores de las
+casillas dobles y triples se pueden intercambiar.
 
 <p align="center">
   <img src="screenshots/home.png" width="200" alt="Tema Polimita">

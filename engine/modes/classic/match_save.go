@@ -40,9 +40,10 @@ func LoadMatch(text string, l events.Listener) (*Match, error) {
 }
 
 type Progress struct {
-	BotName    string
-	HumanTotal int
-	BotTotal   int
+	BotName     string
+	HumanTotal  int
+	BotTotal    int
+	HumanStarts bool
 }
 
 func ReadProgress(text string) (*Progress, error) {
@@ -58,7 +59,7 @@ func ReadProgress(text string) (*Progress, error) {
 }
 
 func (s savedGame) progress() *Progress {
-	p := &Progress{BotName: s.BotName}
+	p := &Progress{BotName: s.BotName, HumanStarts: s.HumanIdx == 0}
 	if n := len(s.Moves); n > 0 {
 		p.HumanTotal, p.BotTotal = s.Moves[n-1].HumanTotal, s.Moves[n-1].BotTotal
 	}

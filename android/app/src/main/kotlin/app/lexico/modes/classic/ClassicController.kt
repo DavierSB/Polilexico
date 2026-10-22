@@ -36,5 +36,5 @@ fun EndgameConfig.toSetup(): EndgameSetup = EndgameSetup(
 
 fun ClassicConfig.toSetup(): ClassicSetup =
   ClassicSetup(
-    bot = bot, invalidLosesTurn = single, timeMs = if (timed) timeMs else 0, overtimeMs = overtimeMs,
+    bot = bot, starter = starter, invalidLosesTurn = single, timeMs = if (timed) timeMs else 0, overtimeMs = overtimeMs,
   )

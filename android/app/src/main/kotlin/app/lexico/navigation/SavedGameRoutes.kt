@@ -10,7 +10,7 @@ import app.lexico.game.Lexico
 import app.lexico.game.modes.classic.ClassicGame
 import app.lexico.game.modes.duplicate.DuplicateGame
 import app.lexico.game.storage.Mode
-import app.lexico.games.endgameView
+import app.lexico.games.endgameSession
 import app.lexico.games.finishedItem
 import app.lexico.games.folderOf
 import app.lexico.games.inProgressItem
@@ -21,7 +21,7 @@ import app.lexico.menu.ThemeState
 import app.lexico.ui.classic.BOTS
 import app.lexico.ui.classic.bot
 import app.lexico.ui.classic.OpponentPhoto
-import app.lexico.ui.games.EndgameAnalyst
+import app.lexico.ui.games.EndgameSessions
 import app.lexico.ui.games.FinishedFoldersScreen
 import app.lexico.ui.games.FinishedGamesScreen
 import app.lexico.ui.games.InProgressScreen
@@ -81,7 +81,7 @@ internal fun ReviewRoute(screen: Screen.Review, lexico: Lexico, nav: Navigator, 
   WhenReady(rememberCreated(screen) { lexico.finishedGames.open(screen.path) }, "Abriendo la partida…") { review ->
     GameTheme(review, themes, if (review.game.mode == Mode.DUPLICATE) themes.appTheme else bot(review.game.opponent).theme)
     val view = remember(review) { reviewView(review) }
-    val analyst: EndgameAnalyst = remember(view) { { i -> endgameView(lexico.finishedGames.endgame(screen.path, i), view.turns[i], view.opponent) } }
-    ReviewScreen(view, themes.board, analyst, screen.atEndgame, nav::back) { themes.picking = true }
+    val sessions: EndgameSessions = remember(view) { { i -> endgameSession(lexico.finishedGames.explore(screen.path, i), view.turns[i], view.opponent) } }
+    ReviewScreen(view, themes.board, sessions, screen.atEndgame, nav::back) { themes.picking = true }
   }
 }

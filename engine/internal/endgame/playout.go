@@ -34,8 +34,11 @@ func (p *Position) playout(player int, line *[]*move.Move) int {
 }
 
 func (p *Position) greedy() *move.Move {
+	if p.Forced() {
+		return p.pass()
+	}
 	p.gen.GenAll(p.rack(p.OnTurn()), false)
-	return p.highest(p.gen.Plays())
+	return p.highest(p.allowed(p.gen.Plays()))
 }
 
 func (p *Position) highest(moves []*move.Move) *move.Move {

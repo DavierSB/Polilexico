@@ -33,7 +33,7 @@ private const val TIE = 1e-6
 
 fun inProgressItem(saved: SavedGame, progress: GameProgress?): InProgressItem = InProgressItem(
   saved.id, gameTitle(saved.mode, progress?.opponent), savedAt(saved),
-  progress?.let { scoreText(saved.mode, it.myScore, it.opponentScore) }, progress?.round?.let { "Ronda $it" },
+  progress?.let { scoreText(saved.mode, it.myScore, it.opponentScore, it.humanStarts) }, progress?.round?.let { "Ronda $it" },
 )
 
 fun finishedItem(g: FinishedGame): FinishedItem =
@@ -69,10 +69,13 @@ private fun spread(review: GameReview, opponent: String): Spread {
 
 private fun savedAt(saved: SavedGame): String = "Guardada el " + SAVED_AT.format(Date(saved.updatedAt))
 
-private fun score(g: FinishedGame): String = scoreText(g.mode, g.myScore, g.opponentScore)
+private fun score(g: FinishedGame): String = scoreText(g.mode, g.myScore, g.opponentScore, g.humanStarts)
 
-private fun scoreText(mode: Mode, mine: Int, theirs: Int): String =
-  if (mode == Mode.DUPLICATE) "$mine/$theirs" else "$mine – $theirs"
+private fun scoreText(mode: Mode, mine: Int, theirs: Int, humanStarts: Boolean): String = when {
+  mode == Mode.DUPLICATE -> "$mine/$theirs"
+  humanStarts -> "$mine – $theirs"
+  else -> "$theirs – $mine"
+}
 
 private fun modeName(mode: Mode): String = when (mode) {
   Mode.CLASSIC -> "Clásica"

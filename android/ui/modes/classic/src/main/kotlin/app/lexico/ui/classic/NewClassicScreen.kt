@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.ChallengeModeSelector
+import app.lexico.ui.common.ChoiceOptions
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
@@ -21,6 +22,7 @@ fun NewClassicScreen(onBack: () -> Unit, onStart: (ClassicConfig) -> Unit) {
   Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     Header("Clásica", onBack)
     OpponentSection(form)
+    StarterSection(form)
     ChallengeSection(form)
     TimeSection(form)
     StartButton(enabled = form.valid) { onStart(form.toConfig()) }
@@ -31,6 +33,12 @@ fun NewClassicScreen(onBack: () -> Unit, onStart: (ClassicConfig) -> Unit) {
 private fun OpponentSection(form: ClassicForm) {
   SectionTitle("Rival")
   BOTS.forEach { b -> BotOption(b, selected = b.name == form.opponent) { form.opponent = b.name } }
+}
+
+@Composable
+private fun StarterSection(form: ClassicForm) {
+  SectionTitle("Salidor")
+  ChoiceOptions(listOf("Cualquiera", "Tú", alias(form.opponent)), form.starter) { form.starter = it }
 }
 
 @Composable

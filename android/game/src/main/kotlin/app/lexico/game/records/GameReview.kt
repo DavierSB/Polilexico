@@ -20,11 +20,14 @@ data class FinishedGame(
   val longestWord: String = "",
   val turns: Int = 0,
   val finishedAt: Long = 0,
+  val humanStarts: Boolean = true,
 ) {
   val efficiency: Double get() = if (opponentScore > 0) myScore * 100.0 / opponentScore else 0.0
 }
 
-data class GameReview(val game: FinishedGame, val turns: List<ReviewTurn>, val startTurn: Int = 0, val humanStarts: Boolean = true)
+data class GameReview(val game: FinishedGame, val turns: List<ReviewTurn>, val startTurn: Int = 0) {
+  val humanStarts: Boolean get() = game.humanStarts
+}
 
 data class ReviewTurn(
   val number: Int,
@@ -42,12 +45,22 @@ data class ReviewMove(val text: String, val score: Int, val equity: Double?, val
 
 data class ReviewMark(val who: String, val move: ReviewMove, val rank: Int?)
 
-data class EndgameReview(val lines: List<EndgameLine>)
+data class EndgameReview(val lines: List<EndgameLine>, val depth: Int = 0, val exact: Boolean = false)
 
-data class EndgameLine(val spread: Int, val steps: List<LineStep>, val ending: LineEnding) {
+data class EndgameLine(val spread: Int, val steps: List<LineStep>, val ending: LineEnding, val pending: Boolean = false) {
   val move: ReviewMove get() = steps.first().move
 }
 
 data class LineStep(val move: ReviewMove, val board: Board)
 
 data class LineEnding(val moverLeft: List<String>, val otherLeft: List<String>, val moverDelta: Int, val otherDelta: Int)
+
+data class ExplorerPosition(
+  val board: Board,
+  val racks: List<List<String>>,
+  val scores: List<Int>,
+  val onTurn: Int,
+  val over: Boolean,
+  val path: List<LineStep>,
+  val ending: LineEnding,
+)

@@ -98,14 +98,14 @@ func TestEveryBot(t *testing.T) {
 	for _, name := range strings.Split(Bots(), ",") {
 		checkBot(t, name)
 	}
-	if _, err := Start("BestBot"); err == nil {
+	if _, err := Start("BestBot", StarterAny); err == nil {
 		t.Fatal("BestBot no debería estar")
 	}
 }
 
 func checkBot(t *testing.T, name string) {
 	t.Helper()
-	c, err := Start(name)
+	c, err := Start(name, StarterAny)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -119,7 +119,7 @@ func checkBot(t *testing.T, name string) {
 func newTestGame(t *testing.T) *Game {
 	t.Helper()
 	testenv.Init(t)
-	c, err := Start(core.DefaultBot)
+	c, err := Start(core.DefaultBot, StarterAny)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -190,5 +190,18 @@ func TestBoardHasTheTilesPlayed(t *testing.T) {
 	}
 	if len(squares) != 225 || placed != c.MoveAt(0).TileCount {
 		t.Fatalf("%d casillas, %d fichas, jugada %+v", len(squares), placed, *c.MoveAt(0))
+	}
+}
+
+func TestChosenStarter(t *testing.T) {
+	testenv.Init(t)
+	for starter, humanStarts := range map[int]bool{StarterHuman: true, StarterBot: false} {
+		c, err := Start(core.DefaultBot, starter)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if c.HumanStarts() != humanStarts {
+			t.Fatalf("starter %d: HumanStarts %v", starter, c.HumanStarts())
+		}
 	}
 }

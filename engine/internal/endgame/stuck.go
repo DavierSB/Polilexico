@@ -6,7 +6,7 @@ import (
 )
 
 func (p *Position) stuckLetters(player int) uint64 {
-	playable := playableLetters(p.game.Board())
+	playable := playableLetters(p.board)
 	var stuck uint64
 	for ml, count := range p.rack(player).LetArr {
 		if ml != 0 && count > 0 && playable&(1<<uint(ml)) == 0 {
@@ -18,7 +18,7 @@ func (p *Position) stuckLetters(player int) uint64 {
 
 func (p *Position) spots(player int) map[tilemapping.MachineLetter]squares {
 	rack, out := p.rack(player), map[tilemapping.MachineLetter]squares{}
-	forEachAnchor(p.game.Board(), func(r, c int, fits uint64) {
+	forEachAnchor(p.board, func(r, c int, fits uint64) {
 		for ml, count := range rack.LetArr {
 			if ml != 0 && count > 0 && fits&(1<<uint(ml)) != 0 {
 				set := out[tilemapping.MachineLetter(ml)]

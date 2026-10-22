@@ -8,7 +8,9 @@ enum class Mode { CLASSIC, DUPLICATE, ENDGAME }
 
 data class SavedGame(val id: String, val mode: Mode, val updatedAt: Long)
 
-data class GameProgress(val myScore: Int, val opponentScore: Int, val opponent: String? = null, val round: Int? = null)
+data class GameProgress(
+  val myScore: Int, val opponentScore: Int, val opponent: String? = null, val round: Int? = null, val humanStarts: Boolean = true,
+)
 
 class SavedGames(private val dir: File) {
   fun list(): List<SavedGame> =
@@ -20,7 +22,7 @@ class SavedGames(private val dir: File) {
     val text = read(game)
     when (game.mode) {
       Mode.DUPLICATE -> Duplicate.readProgress(text).let { GameProgress(it.humanTotal.toInt(), it.masterTotal.toInt(), round = it.round.toInt()) }
-      Mode.CLASSIC, Mode.ENDGAME -> Classic.readProgress(text).let { GameProgress(it.humanTotal.toInt(), it.botTotal.toInt(), it.botName) }
+      Mode.CLASSIC, Mode.ENDGAME -> Classic.readProgress(text).let { GameProgress(it.humanTotal.toInt(), it.botTotal.toInt(), it.botName, humanStarts = it.humanStarts) }
     }
   }.getOrNull()
 

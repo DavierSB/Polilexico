@@ -17,7 +17,7 @@ func TestEndgameTurnsAreTheOnesWithAnEmptyBag(t *testing.T) {
 	if !g.TurnAt(g.StartTurn).Endgame {
 		t.Fatalf("el turno %d empieza con la bolsa vacía", g.StartTurn+1)
 	}
-	if _, err := g.TurnAt(0).AnalyzeEndgame(analysisBudgetMs); err == nil {
+	if _, err := g.TurnAt(0).Explore(); err == nil {
 		t.Fatal("un turno con fichas en la bolsa no se analiza como final")
 	}
 }
@@ -44,10 +44,7 @@ func TestEndgameAnalysisIncludesThePlayedMove(t *testing.T) {
 }
 
 func analyzed(t *testing.T, g *Game) *Endgame {
-	e, err := g.TurnAt(g.StartTurn).AnalyzeEndgame(analysisBudgetMs)
-	if err != nil {
-		t.Fatal(err)
-	}
+	e := run(t, analysis(t, explorer(t, g)), &counter{})
 	if e.LineCount() == 0 || e.Depth < 1 {
 		t.Fatalf("análisis vacío: %+v", e)
 	}

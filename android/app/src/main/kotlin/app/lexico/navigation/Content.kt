@@ -42,7 +42,7 @@ private fun GameScreens(screen: Screen, lexico: Lexico, nav: Navigator, themes: 
 private fun OtherScreens(
   screen: Screen, lexico: Lexico, nav: Navigator, settings: Settings, themes: ThemeState, hasUpdate: Boolean, onMenu: () -> Unit,
 ) {
-  val style = settings.theme.board(settings.lightBoard)
+  val style = settings.theme.board(settings.boardLook)
   when (screen) {
     Screen.Home -> HomeScreen(style, remember { lexico.savedGames.list().size }, lexico.demoGames::nextPlacements, hasUpdate, onMenu, nav::go)
     Screen.Minigames -> MinigamesScreen(nav::back, nav::go)

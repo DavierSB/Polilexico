@@ -49,7 +49,7 @@ class ClassicGame private constructor(
   internal companion object {
     suspend fun start(setup: ClassicSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame =
       open(id, Mode.CLASSIC, saves, scope) {
-        Classic.newMatch(setup.bot, setup.timeMs, setup.overtimeMs, setup.invalidLosesTurn, it)
+        Classic.newMatch(setup.bot, setup.starter.toLong(), setup.timeMs, setup.overtimeMs, setup.invalidLosesTurn, it)
       }
 
     suspend fun startEndgame(setup: EndgameSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame {

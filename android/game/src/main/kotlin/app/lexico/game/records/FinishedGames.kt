@@ -16,8 +16,6 @@ import app.lexico.model.Board
 import app.lexico.model.Placement
 import java.io.File
 
-private const val ENDGAME_BUDGET_MS = 4000L
-
 class FinishedGames internal constructor(private val dir: File) {
   suspend fun list(): List<FinishedGame> = engine {
     logFiles().mapNotNull { f -> runCatching { summary(f.path, Review.open(f.path)).copy(finishedAt = f.lastModified()) }.getOrNull() }
@@ -25,12 +23,12 @@ class FinishedGames internal constructor(private val dir: File) {
 
   suspend fun open(path: String): GameReview = engine {
     val game = Review.open(path)
-    GameReview(summary(path, game), (0 until game.turnCount()).map { turn(game.turnAt(it)) }, game.startTurn.toInt(), game.humanStarts)
+    GameReview(summary(path, game), (0 until game.turnCount()).map { turn(game.turnAt(it)) }, game.startTurn.toInt())
   }
 
-  suspend fun endgame(path: String, turn: Int): EndgameReview = engine {
+  suspend fun explore(path: String, turn: Int): EndgameExplorer = engine {
     val t = Review.open(path).turnAt(turn.toLong())
-    endgameReview(parseBoard(t.board), t.analyzeEndgame(ENDGAME_BUDGET_MS))
+    EndgameExplorer(t.explore(), parseBoard(t.board))
   }
 
   private fun logFiles(): List<File> =
@@ -41,6 +39,7 @@ class FinishedGames internal constructor(private val dir: File) {
     opponent = g.opponent, myScore = g.myScore.toInt(), opponentScore = g.opponentScore.toInt(),
     outcome = Outcome.of(g.outcome), hits = g.hits.toInt(), bingos = g.bingos.toInt(), bestWord = g.bestWord,
     bestWordScore = g.bestWordScore.toInt(), longestWord = g.longestWord, turns = g.turnCount().toInt(),
+    humanStarts = g.humanStarts,
   )
 
   private fun mode(mode: String): Mode = when (mode) {

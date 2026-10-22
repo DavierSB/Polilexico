@@ -41,3 +41,11 @@ func TestPelusaAlsoSearchesTheEndgame(t *testing.T) {
 		t.Fatal("Pelusa también debería buscar el final")
 	}
 }
+
+func TestPelusaAlsoPlansThePreEndgame(t *testing.T) {
+	c := findEndgame(t, 1, 7, -LeadLimit, LeadLimit)
+	c.botName = "BetterBot"
+	if c.preEndgameTurn() == nil {
+		t.Fatal("Pelusa también debería jugar el pre-final")
+	}
+}

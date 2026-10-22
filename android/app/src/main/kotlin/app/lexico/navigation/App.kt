@@ -62,7 +62,7 @@ fun App(lexico: Lexico, settings: Settings, updates: Updates, version: String) {
 private fun Dialogs(settings: Settings, themes: ThemeState, menu: MenuState, version: String) {
   if (menu.showOptions) OptionsDialog(settings) { menu.showOptions = false }
   if (menu.showAbout) AboutDialog(version) { menu.showAbout = false }
-  if (themes.picking) ThemeDialog(themes.current, themes.lightBoard, themes::choose, themes::chooseLight) { themes.picking = false }
+  if (themes.picking) ThemeDialog(themes.current, themes.look, themes::choose, themes::chooseLook) { themes.picking = false }
 }
 
 @Composable

@@ -48,6 +48,12 @@ data class BoardStyle(
     Bonus.CENTER -> center
   }
 
+  fun swapped(): BoardStyle = copy(
+    doubleLetter = tripleLetter, tripleLetter = doubleLetter,
+    doubleWord = tripleWord, tripleWord = doubleWord,
+    center = if (center == doubleWord) tripleWord else center,
+  )
+
   companion object {
     val SHORT_LABELS = mapOf(
       Bonus.DOUBLE_LETTER to "DL", Bonus.TRIPLE_LETTER to "TL",

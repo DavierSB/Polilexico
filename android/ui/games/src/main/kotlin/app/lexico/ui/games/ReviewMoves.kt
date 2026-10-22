@@ -31,7 +31,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.lexico.ui.common.FINAL_COLUMN
 import app.lexico.ui.common.InfoDialog
 import app.lexico.ui.common.InfoIcon
 import app.lexico.ui.common.Mulish
@@ -53,12 +52,10 @@ private class Line(val caption: String, val rank: String, val move: RankedMove)
 
 private class Widths(val rank: Dp, val points: Dp, val value: Dp)
 
-private const val CALCULATING = "…"
-
 @Composable
-internal fun TurnMoves(turn: ReviewTurnView, classic: Boolean, calculating: Boolean, selected: RankedMove?, select: (RankedMove) -> Unit) {
-  val column = if (calculating) FINAL_COLUMN else valueColumn(turn.candidates)
-  val value = { m: RankedMove -> if (calculating) CALCULATING else valueText(m).ifEmpty { "—" } }
+internal fun TurnMoves(turn: ReviewTurnView, classic: Boolean, selected: RankedMove?, select: (RankedMove) -> Unit) {
+  val column = valueColumn(turn.candidates)
+  val value = { m: RankedMove -> valueText(m).ifEmpty { "—" } }
   var explaining by remember { mutableStateOf(false) }
   BoxWithConstraints(Modifier.fillMaxWidth()) {
     val widths = widths(maxWidth, column != null)
@@ -145,21 +142,21 @@ private fun Cell(text: String, width: Dp, style: TextStyle) {
 private fun Modifier.column(width: Dp): Modifier = padding(start = ColumnGap).width(width)
 
 @Composable
-private fun headerStyle(): TextStyle = TextStyle(
+internal fun headerStyle(): TextStyle = TextStyle(
   fontFamily = Mulish, fontWeight = FontWeight.ExtraBold, fontSize = 11.sp, letterSpacing = 1.sp, color = MaterialTheme.colorScheme.primary,
 )
 
 @Composable
-private fun captionStyle(): TextStyle = TextStyle(
+internal fun captionStyle(): TextStyle = TextStyle(
   fontFamily = Mulish, fontWeight = FontWeight.Bold, fontSize = 9.sp, lineHeight = 11.sp, letterSpacing = 0.8.sp,
   color = MaterialTheme.colorScheme.onSurfaceVariant,
 )
 
 @Composable
-private fun cellStyle(muted: Boolean = false): TextStyle = TextStyle(
+internal fun cellStyle(muted: Boolean = false): TextStyle = TextStyle(
   fontFamily = Mulish, fontWeight = FontWeight.ExtraBold, fontSize = 16.sp,
   color = if (muted) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
 )
 
 @Composable
-private fun rowFill(active: Boolean): Color = if (active) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
+internal fun rowFill(active: Boolean): Color = if (active) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent

@@ -36,10 +36,11 @@ fun PlayerBar(
   thinking: Boolean = false,
   framed: Boolean = false,
   photo: (@Composable () -> Unit)? = null,
+  tilesBeside: Boolean = false,
   tiles: @Composable () -> Unit = {},
 ) {
   Row(Modifier.fillMaxWidth().turnBorder(onTurn, framed).padding(horizontal = 10.dp, vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
-    Identity(name, thinking, photo, tiles)
+    Identity(name, thinking, photo, tilesBeside, tiles)
     Text("$points", Modifier.padding(horizontal = 10.dp), fontSize = 22.sp, fontWeight = FontWeight.Bold)
     if (clock != null) PlayerClock(clock, onTurn)
   }
@@ -52,14 +53,17 @@ private fun Modifier.turnBorder(onTurn: Boolean, framed: Boolean): Modifier {
 }
 
 @Composable
-private fun RowScope.Identity(name: String, thinking: Boolean, photo: (@Composable () -> Unit)?, tiles: @Composable () -> Unit) {
+private fun RowScope.Identity(
+  name: String, thinking: Boolean, photo: (@Composable () -> Unit)?, tilesBeside: Boolean, tiles: @Composable () -> Unit,
+) {
   Column(Modifier.weight(1f)) {
     Row(verticalAlignment = Alignment.CenterVertically) {
       photo?.let { it(); Spacer(Modifier.width(6.dp)) }
       Text(name, fontWeight = FontWeight.Bold)
       if (thinking) Text("  pensando…", style = MaterialTheme.typography.labelSmall)
+      if (tilesBeside) Row(Modifier.padding(start = 10.dp), Arrangement.spacedBy(2.dp)) { tiles() }
     }
-    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) { tiles() }
+    if (!tilesBeside) Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) { tiles() }
   }
 }
 

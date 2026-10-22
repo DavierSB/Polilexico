@@ -1,36 +1,55 @@
 package app.lexico.games
 
+import app.lexico.game.records.EndgameExplorer
 import app.lexico.game.records.EndgameLine
 import app.lexico.game.records.EndgameReview
+import app.lexico.game.records.ExplorerPosition
+import app.lexico.game.records.LineEnding
+import app.lexico.game.records.LineStep
 import app.lexico.game.records.ReviewMove
 import app.lexico.ui.common.RankedMove
-import app.lexico.ui.games.EndgameView
+import app.lexico.ui.games.EndgameSession
 import app.lexico.ui.games.EndingRow
+import app.lexico.ui.games.ExploredPosition
 import app.lexico.ui.games.LineView
-import app.lexico.ui.games.MarkView
+import app.lexico.ui.games.LiveLines
 import app.lexico.ui.games.ReviewTurnView
 import app.lexico.ui.games.StepView
 
 private const val ME = "Tú"
 
-fun endgameView(analysis: EndgameReview, turn: ReviewTurnView, opponent: String): EndgameView {
-  val players = if (turn.mine == false) listOf(opponent, ME) else listOf(ME, opponent)
-  val lines = analysis.lines.map { lineView(it, players) }
-  return EndgameView(turn.copy(candidates = candidates(lines, turn), marks = turn.marks.map { markOf(it, lines) }), lines)
+fun endgameSession(explorer: EndgameExplorer, turn: ReviewTurnView, opponent: String): EndgameSession =
+  ExplorerSession(explorer, if (turn.mine == false) listOf(opponent, ME) else listOf(ME, opponent))
+
+private class ExplorerSession(private val explorer: EndgameExplorer, private val players: List<String>) : EndgameSession {
+  override suspend fun position(): ExploredPosition = positionView(explorer.position(), players)
+
+  override suspend fun play(move: String?): String? = explorer.play(move)
+
+  override suspend fun back(steps: Int) = explorer.back(steps)
+
+  override suspend fun analyze(update: (LiveLines) -> Unit) {
+    val mover = explorer.position().onTurn
+    explorer.analyze { update(liveLines(it, players, mover)) }
+  }
 }
 
-private fun lineView(l: EndgameLine, players: List<String>): LineView =
+private fun positionView(p: ExplorerPosition, players: List<String>): ExploredPosition =
+  ExploredPosition(p.board, players, p.racks, p.scores, p.onTurn, p.over, steps(p.path, players, 0), endingRows(p.ending, players))
+
+private fun liveLines(r: EndgameReview, players: List<String>, mover: Int): LiveLines =
+  LiveLines(r.lines.map { lineView(it, players, mover) }, r.depth, r.exact)
+
+private fun lineView(l: EndgameLine, players: List<String>, mover: Int): LineView =
   LineView(
-    ranked(l.move, l.spread), l.spread, players[0], l.steps.mapIndexed { i, s -> StepView(players[i % 2], ranked(s.move, null), s.board) },
-    listOf(EndingRow(players[0], l.ending.moverLeft, l.ending.moverDelta), EndingRow(players[1], l.ending.otherLeft, l.ending.otherDelta)),
+    ranked(l.move, l.spread.takeUnless { l.pending }), l.spread, l.pending, players[mover], steps(l.steps, players, mover),
+    endingRows(l.ending, players),
   )
 
+private fun steps(steps: List<LineStep>, players: List<String>, first: Int): List<StepView> =
+  steps.mapIndexed { i, s -> StepView(players[(first + i) % 2], ranked(s.move, null), s.board) }
+
+private fun endingRows(e: LineEnding, players: List<String>): List<EndingRow> =
+  listOf(EndingRow(players[0], e.moverLeft, e.moverDelta), EndingRow(players[1], e.otherLeft, e.otherDelta))
+
 private fun ranked(m: ReviewMove, final: Int?): RankedMove = RankedMove(m.text, m.score, null, m.placement, final = final)
-
-private fun candidates(lines: List<LineView>, turn: ReviewTurnView): List<RankedMove> =
-  lines.map { l -> l.move.copy(playedBy = turn.marks.filter { it.move.text == l.move.text }.joinToString(" ") { it.who }) }
-
-private fun markOf(mark: MarkView, lines: List<LineView>): MarkView {
-  val line = lines.find { it.move.text == mark.move.text }
-  return MarkView(mark.who, mark.move.copy(equity = null, final = line?.spread), line?.let { l -> lines.count { it.spread > l.spread } })
-}

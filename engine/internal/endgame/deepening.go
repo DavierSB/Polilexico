@@ -19,11 +19,16 @@ type Result struct {
 }
 
 func Search(g *game.Game, c Config) (Result, error) {
-	start := time.Now()
-	s, err := newSearcher(g, c)
+	pos, err := NewPosition(g)
 	if err != nil {
 		return Result{}, err
 	}
+	return SearchFrom(pos, c)
+}
+
+func SearchFrom(p *Position, c Config) (Result, error) {
+	start := time.Now()
+	s := &searcher{pos: p, config: c}
 	s.setDeadline(start)
 	r, err := s.deepen()
 	r.Playouts, r.Elapsed = s.playouts, time.Since(start)

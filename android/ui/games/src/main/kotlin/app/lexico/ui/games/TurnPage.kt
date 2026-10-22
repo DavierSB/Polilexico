@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -31,6 +32,7 @@ import app.lexico.ui.classic.OpponentPhoto
 import app.lexico.ui.classic.PlayerBar
 import app.lexico.ui.common.RankedMove
 
+internal const val LIST_LABEL = "Ver lista de jugadas"
 private const val FULL_RACK = 7
 private val RACK_TILE = 42.dp
 private val RACK_GAP = 4.dp
@@ -38,28 +40,28 @@ private val RACK_FRAME = 8.dp
 private val NAV_TEXT = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 14.sp, stepSize = 0.5.sp)
 
 @Composable
-internal fun TurnPage(review: ReviewView, index: Int, analyses: EndgameAnalyses, style: BoardStyle, height: Dp, go: (Int) -> Unit) {
-  val shown = analyses.shown(index, review.turns[index])
-  val turn = shown.view?.turn ?: review.turns[index]
+internal fun TurnPage(review: ReviewView, index: Int, sessions: EndgameSessions?, style: BoardStyle, height: Dp, go: (Int) -> Unit) {
+  if (sessions != null && review.turns[index].endgame) key(index) { EndgamePage(review, index, sessions, style, height, go) }
+  else PlainPage(review, index, style, height, go)
+}
+
+@Composable
+private fun PlainPage(review: ReviewView, index: Int, style: BoardStyle, height: Dp, go: (Int) -> Unit) {
+  val turn = review.turns[index]
   var selected by remember(turn) { mutableStateOf<RankedMove?>(null) }
-  var line by remember(turn) { mutableStateOf<LineView?>(null) }
   var listing by remember { mutableStateOf(false) }
-  val select: (RankedMove) -> Unit = { m ->
-    val found = shown.view?.lineOf(m)
-    if (found != null) line = found else selected = if (m == selected) null else m
-  }
+  val select: (RankedMove) -> Unit = { m -> selected = if (m == selected) null else m }
   BoardFit(
     height,
     top = { Stacked { TurnTitle(turn, review.turns.size); OpponentBar(review, turn) } },
     board = { ScrabbleBoard(turn.board, Modifier, style, pending = selected?.placement?.placed.orEmpty()) },
-    bottom = { Stacked { MyArea(turn, style); TurnNavigator(index, review.turns.size, go) { listing = true }; TurnMoves(turn, review.classic, shown.calculating, selected, select) } },
+    bottom = { Stacked { MyArea(turn, style); TurnNavigator(index, review.turns.size, go) { listing = true }; TurnMoves(turn, review.classic, selected, select) } },
   )
   if (listing) CandidatesDialog(turn.candidates, selected, close = { listing = false }) { select(it); listing = false }
-  line?.let { EndgameLineDialog(it, style) { line = null } }
 }
 
 @Composable
-private fun Stacked(content: @Composable () -> Unit) {
+internal fun Stacked(content: @Composable () -> Unit) {
   Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp)) { content() }
 }
 
@@ -70,7 +72,7 @@ private fun MyArea(turn: ReviewTurnView, style: BoardStyle) {
 }
 
 @Composable
-private fun TurnTitle(turn: ReviewTurnView, count: Int) {
+internal fun TurnTitle(turn: ReviewTurnView, count: Int) {
   Text("Turno ${turn.number}/$count" + if (turn.player.isNotEmpty()) " · ${turn.player}" else "", fontWeight = FontWeight.Bold, maxLines = 1,
     overflow = TextOverflow.Ellipsis)
 }
@@ -82,10 +84,10 @@ private fun OpponentBar(review: ReviewView, turn: ReviewTurnView) {
 }
 
 @Composable
-private fun TurnNavigator(index: Int, count: Int, go: (Int) -> Unit, list: () -> Unit) {
+internal fun TurnNavigator(index: Int, count: Int, go: (Int) -> Unit, label: String = LIST_LABEL, list: () -> Unit) {
   Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(4.dp), Alignment.CenterVertically) {
     OutlinedButton(onClick = { go(index - 1) }, enabled = index > 0) { Text("‹") }
-    TextButton(onClick = list, Modifier.weight(1f)) { Text("Ver lista de jugadas", maxLines = 1, autoSize = NAV_TEXT) }
+    TextButton(onClick = list, Modifier.weight(1f)) { Text(label, maxLines = 1, autoSize = NAV_TEXT) }
     OutlinedButton(onClick = { go(index + 1) }, enabled = index < count - 1) { Text("›") }
   }
 }

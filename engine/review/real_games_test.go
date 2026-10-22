@@ -11,7 +11,7 @@ import (
 
 func TestRealClassicGame(t *testing.T) {
 	testenv.Init(t)
-	g, err := classic.Start("HastyBot")
+	g, err := classic.Start("HastyBot", classic.StarterAny)
 	if err != nil {
 		t.Fatal(err)
 	}

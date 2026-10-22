@@ -14,6 +14,12 @@ import (
 
 const humanName = "Tú"
 
+const (
+	StarterAny   = 0
+	StarterHuman = 1
+	StarterBot   = 2
+)
+
 type Game struct {
 	mu               sync.Mutex
 	g                *game.Game
@@ -33,12 +39,12 @@ func Bots() string {
 	return strings.Join(core.BotNames, ",")
 }
 
-func Start(botName string) (*Game, error) {
+func Start(botName string, starter int) (*Game, error) {
 	g, err := core.NewGame(humanName, botName)
 	if err != nil {
 		return nil, err
 	}
-	humanIdx := drawFirstPlayer(g)
+	humanIdx := pickFirstPlayer(g, starter)
 	g.StartGame()
 	return newGame(g, botName, humanIdx, newGameLog(botName))
 }
@@ -66,8 +72,8 @@ func newGame(g *game.Game, botName string, humanIdx int, log *gameLog) (*Game, e
 	return &Game{g: g, bot: b, botName: botName, humanIdx: humanIdx, log: log}, nil
 }
 
-func drawFirstPlayer(g *game.Game) int {
-	if rand.Intn(2) == 0 {
+func pickFirstPlayer(g *game.Game, starter int) int {
+	if starter == StarterHuman || starter != StarterBot && rand.Intn(2) == 0 {
 		return 0
 	}
 	g.FlipPlayers()

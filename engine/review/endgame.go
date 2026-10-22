@@ -3,7 +3,6 @@ package review
 import (
 	"errors"
 	"strings"
-	"time"
 
 	"github.com/domino14/macondo/game"
 	macondo "github.com/domino14/macondo/move"
@@ -38,24 +37,8 @@ type EndgameLine struct {
 	OtherLeft   string
 	MoverDelta  int
 	OtherDelta  int
+	Depth       int
 	steps       []*Move
-}
-
-func (t *Turn) AnalyzeEndgame(budgetMs int) (*Endgame, error) {
-	if !t.Endgame {
-		return nil, errNoEndgame
-	}
-	g, err := t.endgameGame()
-	if err != nil {
-		return nil, err
-	}
-	c := endgame.Default
-	c.Budget = time.Duration(budgetMs) * time.Millisecond
-	a, err := endgame.Analyze(g, c, endgameLines, t.isPlayed)
-	if err != nil {
-		return nil, err
-	}
-	return endgameOf(g, a), nil
 }
 
 func (e *Endgame) LineCount() int {
@@ -113,7 +96,7 @@ func endgameOf(g *game.Game, a endgame.Analysis) *Endgame {
 }
 
 func lineOf(g *game.Game, l endgame.Line) *EndgameLine {
-	out := &EndgameLine{Description: describe(l.Move), Score: l.Move.Score(), Spread: l.Spread}
+	out := &EndgameLine{Description: describe(l.Move), Score: l.Move.Score(), Spread: l.Spread, Depth: l.Depth}
 	for _, m := range l.Reply {
 		out.steps = append(out.steps, &Move{Description: describe(m), Score: m.Score()})
 	}
