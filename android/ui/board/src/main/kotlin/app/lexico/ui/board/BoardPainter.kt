@@ -2,11 +2,14 @@ package app.lexico.ui.board
 
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
@@ -27,10 +30,10 @@ internal class BoardPainter(
   private val side = geometry.side
   private val edge = side * style.lineWidth
 
-  fun DrawScope.drawBoard(board: Board, pending: Map<Position, Tile>, arrow: Arrow?) {
+  fun DrawScope.drawBoard(board: Board, pending: Map<Position, Tile>, arrow: Arrow?, landing: TileLanding? = null) {
     drawRect(style.backdrop)
     if (style.showCoordinates) drawCoordinates()
-    ALL_POSITIONS.forEach { drawCell(it, board, pending) }
+    ALL_POSITIONS.forEach { drawCell(it, board, pending, landing) }
     arrow?.let { drawArrow(style, it, geometry.corner(it.position), side) }
   }
 
@@ -54,14 +57,29 @@ internal class BoardPainter(
     drawText(text, topLeft = topLeft + Offset((box.width - text.size.width) / 2, 0f))
   }
 
-  private fun DrawScope.drawCell(p: Position, board: Board, pending: Map<Position, Tile>) {
+  private fun DrawScope.drawCell(p: Position, board: Board, pending: Map<Position, Tile>, landing: TileLanding?) {
     val placed = board[p]
     val tentative = pending[p]
     when {
-      placed != null -> drawTile(placed, geometry.corner(p), if (p in board.latest) style.latest ?: style.tile else style.tile)
+      placed != null -> drawPlaced(p, placed, board, landing?.progress(p))
       tentative != null -> drawTile(tentative, geometry.corner(p), style.pending)
       else -> drawSquare(Board.bonus(p), geometry.corner(p))
     }
+  }
+
+  private fun DrawScope.drawPlaced(p: Position, tile: Tile, board: Board, landed: Float?) {
+    val backdrop = if (p in board.latest) style.latest ?: style.tile else style.tile
+    if (landed == null) return drawTile(tile, geometry.corner(p), backdrop)
+    drawSquare(Board.bonus(p), geometry.corner(p))
+    if (landed > 0f) dropping(p, landed) { drawTile(tile, geometry.corner(p), backdrop) }
+  }
+
+  private fun DrawScope.dropping(p: Position, landed: Float, draw: DrawScope.() -> Unit) {
+    val center = geometry.corner(p) + Offset(side / 2, side / 2)
+    val grow = 1f + LANDING_GROWTH * (1f - landed)
+    drawContext.canvas.saveLayer(Rect(center, side * grow), Paint().apply { alpha = landed })
+    scale(grow, center, draw)
+    drawContext.canvas.restore()
   }
 
   private fun DrawScope.drawSquare(bonus: Bonus, corner: Offset) {
@@ -129,6 +147,8 @@ internal class BoardPainter(
     const val SCORE_NARROWING = 0.7f
 
     const val LIVE_SIZE = 0.42f
+
+    const val LANDING_GROWTH = 0.6f
 
     val ALL_POSITIONS = (0 until Board.SIZE).flatMap { row -> (0 until Board.SIZE).map { Position(row, it) } }
   }

@@ -19,13 +19,14 @@ internal class ClassicForm {
   var timed by mutableStateOf(false)
   var time by mutableStateOf(Durations.format(ClassicConfig().timeMs))
   var overtime by mutableStateOf(Durations.format(ClassicConfig().overtimeMs))
+  var study by mutableStateOf(false)
 
   val voidOnly: Boolean get() = bot(opponent).voidOnly
 
   val valid: Boolean get() = !timed || (timeMs()?.let { it > 0 } == true && Durations.parse(overtime) != null)
 
   fun toConfig(): ClassicConfig =
-    ClassicConfig(opponent, starter, single && !voidOnly, timed, timeMs() ?: 0, Durations.parse(overtime) ?: 0)
+    ClassicConfig(opponent, starter, single && !voidOnly, timed, timeMs() ?: 0, Durations.parse(overtime) ?: 0, study)
 
   private fun timeMs(): Long? = Durations.parse(time)
 }

@@ -22,6 +22,8 @@ class ClassicGame private constructor(
 ) : LiveGame<ClassicState>(id, mode, saves, scope, ClassicReader(match).read()) {
   val opponent: String = match.game().opponent()
 
+  val study: Boolean = match.study()
+
   suspend fun play(placement: Placement): String? = act { match.play(placement.toString()) }
 
   suspend fun exchange(tiles: List<String>): String? = act { match.play("cambiar " + rackText(tiles)) }
@@ -50,6 +52,7 @@ class ClassicGame private constructor(
     suspend fun start(setup: ClassicSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame =
       open(id, Mode.CLASSIC, saves, scope) {
         Classic.newMatch(setup.bot, setup.starter.toLong(), setup.timeMs, setup.overtimeMs, setup.invalidLosesTurn, it)
+          .also { m -> m.setStudy(setup.study) }
       }
 
     suspend fun startEndgame(setup: EndgameSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame {

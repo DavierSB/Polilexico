@@ -16,17 +16,21 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.drawText
 import app.lexico.model.Board
 import app.lexico.model.Position
+import kotlinx.coroutines.delay
 
 private const val SCORE_MS = 1600
 
 private const val HIGH_SCORE = 40
 
 @Composable
-internal fun rememberScorePopup(board: Board, score: Int?): ScorePopup? {
+internal fun rememberScorePopup(board: Board, score: Int?, delayMs: Int = 0): ScorePopup? {
   val shown = score != null && board.latest.isNotEmpty()
   val progress = remember { Animatable(1f) }
   LaunchedEffect(board.latest, shown) {
-    progress.snapTo(if (shown) 0f else 1f)
+    progress.snapTo(1f)
+    if (!shown) return@LaunchedEffect
+    delay(delayMs.toLong())
+    progress.snapTo(0f)
     progress.animateTo(1f, tween(SCORE_MS, easing = LinearEasing))
   }
   return if (shown) scorePopup(board, score!!, progress) else null

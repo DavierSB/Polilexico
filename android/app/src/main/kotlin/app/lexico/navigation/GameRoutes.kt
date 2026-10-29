@@ -121,7 +121,7 @@ internal fun ClassicPlay(game: ClassicGame, nav: Navigator, themes: ThemeState, 
     ClassicController(game, scope, nav::back, { exporting = it }) { path, atEndgame -> nav.replace(Screen.Review(path, atEndgame)) }
   }
   val state by game.state.collectAsState()
-  LookupOnlyWhenOver(state.result != null) {
+  LookupOnlyWhenOver(state.result != null || game.study) {
     ClassicScreen(classicView(state, game.opponent, controller.notice), themes.board, controller) { themes.picking = true }
   }
   exporting?.let { GameExport(it, finished, themes.board) { exporting = null } }
@@ -139,7 +139,7 @@ internal fun DuplicatePlay(game: DuplicateGame, nav: Navigator, themes: ThemeSta
   val state by game.state.collectAsState()
   val finished = state.phase is DuplicatePhase.Finished
   remember(finished) { if (finished) records.submit(game.setup, efficiencyTenths(state)) }
-  LookupOnlyWhenOver(finished) { DuplicateScreen(duplicateView(state, controller.notice), themes.board, controller) { themes.picking = true } }
+  LookupOnlyWhenOver(finished || game.setup.study) { DuplicateScreen(duplicateView(state, controller.notice), themes.board, controller) { themes.picking = true } }
   exporting?.let { GameExport(it, games, themes.board) { exporting = null } }
 }
 

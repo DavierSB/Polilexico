@@ -37,7 +37,7 @@ private fun DuplicateLayout(
 ) {
   BoardColumn(
     top = { TopBar(view, actions, dialogs, onTheme) },
-    board = { PlacingBoard(c, style, enabled = view.phase is Phase.Playing) },
+    board = { PlacingBoard(c, style, enabled = view.phase is Phase.Playing, lookUpWhenIdle = true) },
     bottom = {
       PhasePanel(view.phase, c, style, actions)
       message?.let { Notice(it, bold = true) }

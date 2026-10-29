@@ -32,5 +32,5 @@ class DuplicateController(
 }
 
 fun DuplicateConfig.toSetup(): DuplicateSetup = DuplicateSetup(
-  invalidLosesTurn = check != PlayCheck.VOID, turnMs = turnMs, maxRounds = rounds, revealAtEnd = check == PlayCheck.AT_END,
+  invalidLosesTurn = check != PlayCheck.VOID, turnMs = turnMs, maxRounds = rounds, revealAtEnd = check == PlayCheck.AT_END, study = study,
 )

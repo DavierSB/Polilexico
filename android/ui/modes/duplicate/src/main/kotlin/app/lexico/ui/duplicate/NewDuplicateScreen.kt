@@ -20,6 +20,7 @@ import app.lexico.ui.common.RulesButton
 import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
 import app.lexico.ui.common.Stepper
+import app.lexico.ui.common.StudyModeSelector
 import app.lexico.ui.common.TimeField
 import app.lexico.ui.common.TwoOptions
 import java.util.Locale
@@ -33,6 +34,7 @@ data class DuplicateConfig(
   val check: PlayCheck = PlayCheck.SINGLE,
   val turnMs: Long = DEFAULT_TURN_MS,
   val rounds: Int = 0,
+  val study: Boolean = false,
 )
 
 @Composable
@@ -41,9 +43,10 @@ fun NewDuplicateScreen(onBack: () -> Unit, recordFor: (DuplicateConfig) -> Int, 
   var turn by remember { mutableStateOf(Durations.format(DEFAULT_TURN_MS)) }
   var fixed by remember { mutableStateOf(false) }
   var rounds by remember { mutableIntStateOf(PRESET_ROUNDS) }
+  var study by remember { mutableStateOf(false) }
   var rules by remember { mutableStateOf(false) }
   val turnMs = Durations.parse(turn)?.takeIf { it > 0 }
-  val config = turnMs?.let { DuplicateConfig(check, it, if (fixed) rounds else 0) }
+  val config = turnMs?.let { DuplicateConfig(check, it, if (fixed) rounds else 0, study) }
   Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     Header("Duplicada", onBack)
     RulesButton { rules = true }
@@ -51,6 +54,7 @@ fun NewDuplicateScreen(onBack: () -> Unit, recordFor: (DuplicateConfig) -> Int, 
     ChallengeModeSelector(listOf("Single" to SINGLE_HINT, "Al Final" to AT_END_HINT), check.ordinal) { check = PlayCheck.entries[it] }
     SectionTitle("Tiempo", info = "Si no juegas a tiempo, 0 puntos ese turno.")
     TimeField(turn, { turn = it }, "Tiempo por turno")
+    StudyModeSelector(study) { study = it }
     config?.let { RecordLine(recordFor(it)) }
     StartButton(enabled = config != null) { config?.let(onStart) }
   }

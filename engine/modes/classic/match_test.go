@@ -71,6 +71,23 @@ func TestMatchSaveKeepsTimeAndLoadsPaused(t *testing.T) {
 	}
 }
 
+func TestMatchSaveKeepsStudy(t *testing.T) {
+	m, _, _ := newTestMatch(t, 0, true)
+	m.SetStudy(true)
+	text, err := m.Save()
+	if err != nil {
+		t.Fatal(err)
+	}
+	loaded, err := LoadMatch(text, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(loaded.Close)
+	if !loaded.Study() {
+		t.Fatal("se perdió el modo estudio")
+	}
+}
+
 func newTestMatch(t *testing.T, timeMs int64, invalidLosesTurn bool) (*Match, *timing.Fake, *testListener) {
 	t.Helper()
 	g := humanStartsWith(t, "TPNAEIO")

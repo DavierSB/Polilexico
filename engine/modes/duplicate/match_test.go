@@ -66,6 +66,14 @@ func TestMatchSaveMidTurnKeepsRackAndTime(t *testing.T) {
 	}
 }
 
+func TestMatchSaveKeepsStudy(t *testing.T) {
+	m, _ := newTestMatch(t)
+	m.SetStudy(true)
+	if !mustReloadMatch(t, m).Study() {
+		t.Fatal("se perdió el modo estudio")
+	}
+}
+
 func mustReloadMatch(t *testing.T, m *Match) *Match {
 	t.Helper()
 	text, err := m.Save()

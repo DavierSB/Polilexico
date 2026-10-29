@@ -62,7 +62,10 @@ private fun OpponentBar(view: ClassicView, style: BoardStyle) {
 @Composable
 private fun BoardWithBanner(view: ClassicView, c: TilePlacer, style: BoardStyle) {
   Box(contentAlignment = Alignment.Center) {
-    PlacingBoard(c, style, enabled = view.turn == Side.ME, latestScore = view.latestScore, showScore = true)
+    PlacingBoard(
+      c, style, enabled = view.turn == Side.ME, latestScore = view.latestScore, showScore = true, lookUpWhenIdle = true,
+      landing = view.moves.lastOrNull()?.side == Side.OPPONENT,
+    )
     OpponentBanner(view.moves, view.opponent)
   }
 }

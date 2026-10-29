@@ -18,7 +18,9 @@ class DuplicateGame private constructor(
   scope: CoroutineScope,
 ) : LiveGame<DuplicateState>(id, Mode.DUPLICATE, saves, scope, DuplicateReader(match).read()) {
   val setup: DuplicateSetup =
-    DuplicateSetup(match.game().invalidPlayLosesTurn(), match.turnMs(), match.game().maxRounds().toInt(), match.game().revealAtEnd())
+    DuplicateSetup(
+      match.game().invalidPlayLosesTurn(), match.turnMs(), match.game().maxRounds().toInt(), match.game().revealAtEnd(), match.study(),
+    )
 
   suspend fun showRack(): String? = act { match.showRack() }
 
@@ -49,7 +51,10 @@ class DuplicateGame private constructor(
 
   internal companion object {
     suspend fun start(setup: DuplicateSetup, id: String, saves: SavedGames, scope: CoroutineScope): DuplicateGame =
-      open(id, saves, scope) { Duplicate.newMatch(setup.turnMs, setup.invalidLosesTurn, setup.revealAtEnd, setup.maxRounds.toLong(), it) }
+      open(id, saves, scope) {
+        Duplicate.newMatch(setup.turnMs, setup.invalidLosesTurn, setup.revealAtEnd, setup.maxRounds.toLong(), it)
+          .also { m -> m.setStudy(setup.study) }
+      }
 
     suspend fun load(text: String, id: String, saves: SavedGames, scope: CoroutineScope): DuplicateGame =
       open(id, saves, scope) { Duplicate.loadMatch(text, it) }

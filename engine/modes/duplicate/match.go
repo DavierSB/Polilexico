@@ -43,6 +43,7 @@ type Match struct {
 	lastErr  string
 	paused   bool
 	closed   bool
+	study    bool
 }
 
 func NewMatch(turnMs int64, invalidLosesTurn, revealAtEnd bool, maxRounds int, l events.Listener) (*Match, error) {
@@ -58,6 +59,18 @@ func NewMatch(turnMs int64, invalidLosesTurn, revealAtEnd bool, maxRounds int, l
 
 func (m *Match) Game() *Game {
 	return m.game
+}
+
+func (m *Match) SetStudy(study bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.study = study
+}
+
+func (m *Match) Study() bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.study
 }
 
 func (m *Match) ShowRack() error {

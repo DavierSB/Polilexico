@@ -23,6 +23,7 @@ type Match struct {
 	notifier *notify.Notifier
 	paused   bool
 	closed   bool
+	study    bool
 	over     bool
 	thinking bool
 	botError string
@@ -38,6 +39,18 @@ func NewMatch(botName string, starter int, timeMs, overtimeMs int64, invalidLose
 
 func (m *Match) Game() *Game {
 	return m.game
+}
+
+func (m *Match) SetStudy(study bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.study = study
+}
+
+func (m *Match) Study() bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.study
 }
 
 func (m *Match) Play(input string) (*Move, error) {

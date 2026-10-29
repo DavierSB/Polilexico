@@ -35,10 +35,12 @@ fun ScrabbleBoard(
   showScore: Boolean = false,
   liveScore: LiveScore? = null,
   wordTap: WordTap = WordTap.NONE,
+  landing: Boolean = false,
   onTap: ((Position) -> Unit)? = null,
 ) {
   val measurer = rememberTextMeasurer(cacheSize = 64)
-  val popup = rememberScorePopup(board, latestScore.takeIf { showScore })
+  val landed = rememberLanding(board, landing)
+  val popup = rememberScorePopup(board, latestScore.takeIf { showScore }, landed?.durationMs ?: 0)
   val lookup = LocalWordLookup.current
   var choices by remember { mutableStateOf<WordChoices?>(null) }
   val current by rememberUpdatedState(board)
@@ -56,7 +58,7 @@ fun ScrabbleBoard(
   Box(modifier.aspectRatio(1f)) {
     Canvas(Modifier.fillMaxSize().then(tapsOn(style, taps)).then(longPresses(style, presses))) {
       with(BoardPainter(style, measurer, BoardGeometry(size.width, style.showCoordinates))) {
-        drawBoard(board, pending, arrow)
+        drawBoard(board, pending, arrow, landed)
         liveScore?.let { drawLiveScore(it) }
         popup?.let { drawScore(it) }
       }

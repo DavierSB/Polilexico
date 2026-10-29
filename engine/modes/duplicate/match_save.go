@@ -14,6 +14,7 @@ type savedMatch struct {
 	TurnMs      int64
 	InTurn      bool
 	TurnSpentMs int64
+	Study       bool
 }
 
 func (m *Match) Save() (string, error) {
@@ -36,6 +37,7 @@ func LoadMatch(text string, l events.Listener) (*Match, error) {
 		return nil, err
 	}
 	m := startMatch(g, turnDuration(s.TurnMs), timing.Real(), l, true)
+	m.study = s.Study
 	return m, m.resumeTurn(s)
 }
 
@@ -58,7 +60,7 @@ func ReadProgress(text string) (*Progress, error) {
 }
 
 func (m *Match) saved(game string) savedMatch {
-	s := savedMatch{Game: game, TurnMs: m.turnTime.Milliseconds(), InTurn: m.phase != PhaseWaiting && m.phase != PhaseFinished}
+	s := savedMatch{Game: game, TurnMs: m.turnTime.Milliseconds(), Study: m.study, InTurn: m.phase != PhaseWaiting && m.phase != PhaseFinished}
 	if usesTurnClock(m.phase) {
 		s.TurnSpentMs = m.turn.Spent().Milliseconds()
 	}

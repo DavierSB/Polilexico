@@ -13,13 +13,14 @@ fun PlacingBoard(
   latestScore: Int? = null,
   showScore: Boolean = false,
   lookUpWhenIdle: Boolean = false,
+  landing: Boolean = false,
 ) {
   val pending = c.drag.from?.let { c.state.pending - it } ?: c.state.pending
   val arrow = if (enabled) c.state.arrow else null
   val live = rememberLiveScore(c.state.board, c.state.pending).takeIf { enabled && c.drag.tile == null }
   ScrabbleBoard(
     c.state.board, modifier.fillMaxWidth().boardDrags(c, style, enabled), style, pending, arrow, latestScore, showScore,
-    liveScore = live, wordTap = if (lookUpWhenIdle && c.idle) WordTap.MENU else WordTap.NONE, onTap = { if (enabled) c.tapBoard(it) },
+    liveScore = live, wordTap = if (lookUpWhenIdle && c.idle) WordTap.MENU else WordTap.NONE, landing = landing, onTap = { if (enabled) c.tapBoard(it) },
   )
   if (c.pendingBlank != null) BlankLetterDialog(c::placeBlank)
 }

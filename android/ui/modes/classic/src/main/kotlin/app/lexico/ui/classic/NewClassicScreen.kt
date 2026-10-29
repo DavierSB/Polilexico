@@ -17,6 +17,7 @@ import app.lexico.ui.common.FitColumn
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
+import app.lexico.ui.common.StudyModeSelector
 import app.lexico.ui.common.TimeField
 import app.lexico.ui.common.TwoOptions
 
@@ -48,6 +49,7 @@ private fun SettingsStep(form: ClassicForm, onBack: () -> Unit, onStart: () -> U
     StarterSection(form)
     ChallengeSection(form)
     TimeSection(form)
+    StudyModeSelector(form.study) { form.study = it }
     StartButton(enabled = form.valid, onClick = onStart)
   }
 }
