@@ -6,8 +6,8 @@ plugins {
   alias(libs.plugins.compose.compiler)
 }
 
-val appVersionCode = 10
-val appVersionName = "0.7"
+val appVersionCode = 11
+val appVersionName = "0.7.9"
 
 val abiCodes = mapOf("armeabi-v7a" to 1, "arm64-v8a" to 2)
 
@@ -52,6 +52,9 @@ android {
   buildFeatures {
     compose = true
   }
+  androidResources {
+    noCompress += "xz"
+  }
   packaging {
     jniLibs {
       useLegacyPackaging = true
@@ -84,6 +87,8 @@ dependencies {
   implementation(project(":ui:games"))
   implementation(project(":ui:modes:recall"))
   implementation(project(":ui:modes:sprint"))
+  implementation(project(":ui:modes:anagram"))
+  implementation(project(":ui:modes:lists"))
   implementation(project(":sounds"))
 
   implementation(platform(libs.androidx.compose.bom))
@@ -92,6 +97,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3)
+  testImplementation(libs.junit)
 }
 
 fun releaseKey(): Properties? =

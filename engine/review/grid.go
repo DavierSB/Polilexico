@@ -28,6 +28,23 @@ func (b *grid) play(description string) {
 	}
 }
 
+func placedBy(description string) int {
+	fields := strings.Fields(description)
+	if len(fields) < 2 {
+		return 0
+	}
+	if _, _, _, err := core.ParseCoords(fields[0]); err != nil {
+		return 0
+	}
+	placed := 0
+	for _, tile := range tokens(fields[1]) {
+		if tile != "." {
+			placed++
+		}
+	}
+	return placed
+}
+
 func (b *grid) text() string {
 	squares := make([]string, 0, size*size)
 	for _, row := range b {

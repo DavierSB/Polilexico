@@ -50,6 +50,7 @@ interface DuplicateActions {
   fun resign()
   fun exit()
   fun analyze()
+  fun export()
   fun pause()
   fun resume()
 }

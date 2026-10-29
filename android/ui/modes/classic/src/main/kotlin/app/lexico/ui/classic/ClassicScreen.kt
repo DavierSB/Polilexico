@@ -1,21 +1,18 @@
 package app.lexico.ui.classic
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.PlacingBoard
 import app.lexico.ui.board.PlacingRack
 import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.board.rememberTilePlacer
+import app.lexico.ui.common.BoardColumn
 import app.lexico.ui.common.GameBar
 import app.lexico.ui.common.NOT_IN_A_LINE
 import app.lexico.ui.common.Notice
@@ -37,14 +34,11 @@ private fun ClassicLayout(
   view: ClassicView, c: TilePlacer, style: BoardStyle, actions: ClassicActions, dialogs: ClassicDialogs, message: String?,
   onTheme: (() -> Unit)?, onNotice: (String) -> Unit,
 ) {
-  Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    TopBar(view, actions, dialogs, onTheme)
-    OpponentBar(view, style)
-    BoardWithBanner(view, c, style)
-    MyBar(view, c, style)
-    message?.let { Notice(it) }
-    Controls(view, c, actions, dialogs, onNotice)
-  }
+  BoardColumn(
+    top = { TopBar(view, actions, dialogs, onTheme); OpponentBar(view, style) },
+    board = { BoardWithBanner(view, c, style) },
+    bottom = { MyBar(view, c, style); message?.let { Notice(it) }; Controls(view, c, actions, dialogs, onNotice) },
+  )
 }
 
 @Composable
@@ -82,7 +76,9 @@ private fun MyBar(view: ClassicView, c: TilePlacer, style: BoardStyle) {
 @Composable
 private fun Controls(view: ClassicView, c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs, onNotice: (String) -> Unit) {
   val end = view.end
-  if (end != null) return ResultPanel(view, end, onAnalyze = actions::analyze, onAnalyzeEndgame = actions::analyzeEndgame, onMenu = actions::exit)
+  if (end != null) return ResultPanel(
+    view, end, onAnalyze = actions::analyze, onAnalyzeEndgame = actions::analyzeEndgame, onExport = actions::export, onMenu = actions::exit,
+  )
   ActionButtons(
     c, myTurn = view.turn == Side.ME,
     onPlay = { c.placement()?.let(actions::play) ?: onNotice(NOT_IN_A_LINE) },

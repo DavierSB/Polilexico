@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import app.lexico.ui.board.BoardStyle
+import app.lexico.ui.board.WordTap
 import app.lexico.ui.board.ScrabbleBoard
 import app.lexico.ui.common.BarIconButton
 import app.lexico.ui.common.LexicoIcons
@@ -100,7 +101,7 @@ private fun PlanBar(review: ReviewView, position: ExploredPosition, tally: PlanT
 
 @Composable
 private fun PlanBoard(step: StepView, style: BoardStyle) {
-  ScrabbleBoard(step.board, Modifier, style, pending = step.move.placement?.placed.orEmpty())
+  ScrabbleBoard(step.board, Modifier, style, pending = step.move.placement?.placed.orEmpty(), wordTap = WordTap.MENU)
 }
 
 @Composable

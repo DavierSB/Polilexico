@@ -11,6 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,19 +30,22 @@ import app.lexico.ui.common.RankedMoveList
 import kotlinx.coroutines.launch
 
 @Composable
-fun AnalyzerScreen(style: BoardStyle, analyst: Analyst, onBack: () -> Unit) {
-  val editor = rememberPositionEditor()
+fun AnalyzerScreen(
+  style: BoardStyle, analyst: Analyst, onBack: () -> Unit, editor: PositionEditor = rememberPositionEditor(), onDeep: (EditedPosition) -> Unit = {},
+) {
   val analysis = rememberAnalysis()
   val scope = rememberCoroutineScope()
+  var scoring by remember { mutableStateOf(false) }
   LaunchedEffect(editor.version) { analysis.clear() }
   Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    Header("Analizador", onBack) { BarTextButton("Vaciar", editor::clear) }
-    AnalysisRack(editor.rack, style, analysis.running, onRemove = editor::removeFromRack) { scope.launch { analysis.run(analyst, editor) } }
+    Header("Analizador", onBack) { BarTextButton("Marcador") { scoring = true }; BarTextButton("Vaciar", editor::clear) }
+    AnalysisRack(editor.rack, style, analysis.running, onRemove = editor::removeFromRack) { scope.launch { analysis.run(analyst, editor, onDeep) } }
     analysis.message?.let { Notice(it) }
     AnalysisBoard(editor, analysis, style)
     if (analysis.result != null) ResultsPanel(editor, analysis) else EditPanel(editor, style)
   }
   if (editor.pendingBlank != null) BlankLetterDialog(editor::placeBlank)
+  if (scoring) ScoreDialog(editor) { scoring = false }
 }
 
 @Composable

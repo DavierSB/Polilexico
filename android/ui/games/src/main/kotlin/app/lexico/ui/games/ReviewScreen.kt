@@ -23,6 +23,8 @@ import app.lexico.ui.common.BagIcon
 import app.lexico.ui.common.BarIconButton
 import app.lexico.ui.common.BarTextButton
 import app.lexico.ui.common.EfficiencyDialog
+import app.lexico.ui.common.ExportButtons
+import app.lexico.ui.common.ExportKind
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.LexicoIcons
 import app.lexico.ui.common.SpreadDialog
@@ -30,7 +32,8 @@ import app.lexico.ui.common.ThemeButton
 
 @Composable
 fun ReviewScreen(
-  review: ReviewView, style: BoardStyle, sessions: EndgameSessions?, atEndgame: Boolean, onBack: () -> Unit, onTheme: () -> Unit,
+  review: ReviewView, style: BoardStyle, sessions: EndgameSessions?, preEndgames: PreEndgameAnalyses?, atEndgame: Boolean, onBack: () -> Unit,
+  onExport: ((ExportKind) -> Unit)? = null, onTheme: () -> Unit,
 ) {
   var page by remember { mutableIntStateOf(firstPage(review, atEndgame)) }
   var dialog by remember { mutableStateOf(if (review.turns.isEmpty() || atEndgame) ReviewDialog.NONE else ReviewDialog.OPENING) }
@@ -40,10 +43,10 @@ fun ReviewScreen(
     if (review.turns.isEmpty()) return@Column Text("La partida no tiene turnos.")
     BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
       val height = maxHeight
-      Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) { TurnPage(review, page, sessions, style, height, go) }
+      Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) { TurnPage(review, page, sessions, preEndgames, style, height, go) }
     }
   }
-  ReviewDialogShown(dialog, review, page, go) { dialog = ReviewDialog.NONE }
+  ReviewDialogShown(dialog, review, page, go, onExport) { dialog = ReviewDialog.NONE }
 }
 
 private fun firstPage(review: ReviewView, atEndgame: Boolean): Int {
@@ -66,9 +69,11 @@ private fun ReviewActions(bag: Int?, chart: String, onTheme: () -> Unit, open: (
 }
 
 @Composable
-private fun ReviewDialogShown(dialog: ReviewDialog, review: ReviewView, page: Int, go: (Int) -> Unit, close: () -> Unit) {
+private fun ReviewDialogShown(
+  dialog: ReviewDialog, review: ReviewView, page: Int, go: (Int) -> Unit, onExport: ((ExportKind) -> Unit)?, close: () -> Unit,
+) {
   when (dialog) {
-    ReviewDialog.OPENING -> OpeningChart(review, page, go, close)
+    ReviewDialog.OPENING -> OpeningChart(review, page, go, onExport, close)
     ReviewDialog.ADVANTAGE -> ChartShown(review, page, go, close)
     ReviewDialog.MOVES -> ReviewMovesDialog(review.moves, close) { go(it); close() }
     ReviewDialog.BAG -> BagDialog(bagTitle(review, review.turns[page]), review.turns[page].unseen, close)
@@ -77,16 +82,18 @@ private fun ReviewDialogShown(dialog: ReviewDialog, review: ReviewView, page: In
 }
 
 @Composable
-private fun ChartShown(review: ReviewView, page: Int, go: (Int) -> Unit, close: () -> Unit) {
+private fun ChartShown(review: ReviewView, page: Int, go: (Int) -> Unit, close: () -> Unit, actions: (@Composable () -> Unit)? = null) {
   val efficiency = review.efficiency
-  if (efficiency != null) EfficiencyDialog(efficiency, close, page, go) else SpreadDialog(review.spread, close, page, go)
+  if (efficiency != null) EfficiencyDialog(efficiency, close, page, go, actions) else SpreadDialog(review.spread, close, page, go, actions)
 }
 
 @Composable
-private fun OpeningChart(review: ReviewView, page: Int, go: (Int) -> Unit, close: () -> Unit) {
-  val endgame = endgameStart(review)
-  if (review.efficiency != null || endgame == null) return ChartShown(review, page, go, close)
-  SpreadDialog(review.spread, close, page, go) { ReviewChoices({ go(review.startTurn); close() }, { go(endgame); close() }) }
+private fun OpeningChart(review: ReviewView, page: Int, go: (Int) -> Unit, onExport: ((ExportKind) -> Unit)?, close: () -> Unit) {
+  val endgame = endgameStart(review).takeIf { review.efficiency == null }
+  val choices = endgame?.let { e -> @Composable { ReviewChoices({ go(review.startTurn); close() }, { go(e); close() }) } }
+  val export = onExport?.let { export -> @Composable { ExportButtons { close(); export(it) } } }
+  if (choices == null && export == null) return ChartShown(review, page, go, close)
+  ChartShown(review, page, go, close) { Column(verticalArrangement = Arrangement.spacedBy(8.dp)) { choices?.invoke(); export?.invoke() } }
 }
 
 @Composable

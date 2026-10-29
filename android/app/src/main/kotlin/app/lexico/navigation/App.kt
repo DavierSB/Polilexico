@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import app.lexico.game.Lexico
+import app.lexico.home.HomeLogo
 import app.lexico.menu.AboutDialog
 import app.lexico.menu.MenuState
 import app.lexico.menu.OptionsDialog
@@ -24,6 +25,7 @@ import app.lexico.menu.Settings
 import app.lexico.menu.SideMenu
 import app.lexico.menu.ThemeState
 import app.lexico.menu.rememberMenuState
+import app.lexico.modes.lists.WordLexicon
 import app.lexico.modes.scoring.engineScorer
 import app.lexico.game.Cue
 import app.lexico.sound.CuePlayer
@@ -33,6 +35,7 @@ import app.lexico.ui.board.ThemeDialog
 import app.lexico.ui.board.Themed
 import app.lexico.ui.classic.LocalShowUnseen
 import app.lexico.ui.common.LocalConfettiStart
+import app.lexico.ui.common.LocalHomeButton
 import app.lexico.update.Updates
 
 @Composable
@@ -71,16 +74,24 @@ private fun Screens(
   hasUpdate: Boolean,
 ) {
   val scorer = remember(lexico) { engineScorer(lexico) }
+  LaunchedEffect(engine) { if (engine?.isSuccess == true) runCatching { WordLexicon.warmInBackground(lexico) } }
   WhenReady(engine, "Cargando el motor…") {
     CompositionLocalProvider(
       LocalPlayScorer provides scorer.takeIf { settings.liveScore },
       LocalShowUnseen provides settings.showUnseen,
       LocalCues provides cues::play,
       LocalConfettiStart provides { cues.play(Cue.CELEBRATION) },
+      LocalHomeButton provides rememberHomeButton(nav),
     ) {
-      Content(nav.current, lexico, nav, settings, themes, hasUpdate, onMenu = menu::open)
+      WordLookupHost(lexico, cues::click) { Content(nav.current, lexico, nav, settings, themes, hasUpdate, onMenu = menu::open) }
     }
   }
+}
+
+@Composable
+private fun rememberHomeButton(nav: Navigator): (@Composable () -> Unit)? {
+  val busy = nav.current.isActivity
+  return remember(nav, busy) { if (busy) null else { { HomeLogo(nav::home) } } }
 }
 
 @Composable

@@ -1,11 +1,9 @@
 package app.lexico.ui.games
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedButton
@@ -21,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.ui.board.BoardStyle
+import app.lexico.ui.board.WordTap
 import app.lexico.ui.board.PlacingBoard
 import app.lexico.ui.board.PlacingRack
 import app.lexico.ui.board.RackRenewal
@@ -32,10 +31,7 @@ import app.lexico.ui.common.Notice
 import kotlinx.coroutines.delay
 
 private const val NOTICE_MS = 3_000L
-private const val FULL_RACK = 7
 private val RACK_TILE = 42.dp
-private val RACK_SPACE = 4.dp
-private val RACK_FRAME = 8.dp
 private val TIGHT = PaddingValues(horizontal = 2.dp)
 private val BUTTON_TEXT = TextAutoSize.StepBased(minFontSize = 9.sp, maxFontSize = 14.sp, stepSize = 0.5.sp)
 
@@ -54,7 +50,7 @@ internal fun EndgamePage(review: ReviewView, index: Int, sessions: EndgameSessio
   BoardFit(
     height,
     top = { Stacked { ExploreTitle(review, index, position.path, go, x::back); SideBar(review, position, 1 - position.me, style) } },
-    board = { PlacingBoard(c, style, enabled = !position.over) },
+    board = { PlacingBoard(c, style, enabled = !position.over, lookUpWhenIdle = true) },
     bottom = { Stacked { PlayerArea(review, index, position, c, style, x, plan) { shown = it } } },
   )
   Dialogs(review, position, shown, x, marked(x.lines, review.turns[index], position), planned, style, plan) { shown = Shown.NOTHING }
@@ -65,7 +61,7 @@ private fun OpeningPage(review: ReviewView, index: Int, style: BoardStyle, heigh
   BoardFit(
     height,
     top = { ExploreTitle(review, index, emptyList(), go) {} },
-    board = { ScrabbleBoard(review.turns[index].board, Modifier, style) },
+    board = { ScrabbleBoard(review.turns[index].board, Modifier, style, wordTap = WordTap.MENU) },
     bottom = { LinesTable(emptyList(), AnalysisState(LiveLines.NONE, analyzing = !failed, failed), plan = {}) },
   )
 }
@@ -97,9 +93,7 @@ private fun Dialogs(
 @Composable
 private fun TurnRack(position: ExploredPosition, c: TilePlacer, style: BoardStyle) {
   if (position.onTurn != position.me) Text("Juega ${position.players[position.onTurn]}".uppercase(), style = captionStyle())
-  BoxWithConstraints(Modifier.fillMaxWidth()) {
-    PlacingRack(c, style, enabled = true, size = minOf(RACK_TILE, (maxWidth - RACK_FRAME - RACK_SPACE * (FULL_RACK - 1)) / FULL_RACK))
-  }
+  PlacingRack(c, style, enabled = true, size = RACK_TILE)
 }
 
 @Composable

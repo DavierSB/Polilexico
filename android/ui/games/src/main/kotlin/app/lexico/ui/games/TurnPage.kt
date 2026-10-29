@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.ui.board.BoardStyle
+import app.lexico.ui.board.WordTap
 import app.lexico.ui.board.RackTile
 import app.lexico.ui.board.ScrabbleBoard
 import app.lexico.ui.classic.OpponentPhoto
@@ -40,24 +41,34 @@ private val RACK_FRAME = 8.dp
 private val NAV_TEXT = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 14.sp, stepSize = 0.5.sp)
 
 @Composable
-internal fun TurnPage(review: ReviewView, index: Int, sessions: EndgameSessions?, style: BoardStyle, height: Dp, go: (Int) -> Unit) {
-  if (sessions != null && review.turns[index].endgame) key(index) { EndgamePage(review, index, sessions, style, height, go) }
-  else PlainPage(review, index, style, height, go)
+internal fun TurnPage(
+  review: ReviewView, index: Int, sessions: EndgameSessions?, preEndgames: PreEndgameAnalyses?, style: BoardStyle, height: Dp, go: (Int) -> Unit,
+) {
+  val turn = review.turns[index]
+  when {
+    sessions != null && turn.endgame -> key(index) { EndgamePage(review, index, sessions, style, height, go) }
+    preEndgames != null && turn.preEndgame -> key(index) { PreEndgamePage(review, index, preEndgames, style, height, go) }
+    else -> PlainPage(review, index, turn, null, style, height, go)
+  }
 }
 
 @Composable
-private fun PlainPage(review: ReviewView, index: Int, style: BoardStyle, height: Dp, go: (Int) -> Unit) {
-  val turn = review.turns[index]
+internal fun PlainPage(review: ReviewView, index: Int, turn: ReviewTurnView, status: String?, style: BoardStyle, height: Dp, go: (Int) -> Unit) {
   var selected by remember(turn) { mutableStateOf<RankedMove?>(null) }
   var listing by remember { mutableStateOf(false) }
   val select: (RankedMove) -> Unit = { m -> selected = if (m == selected) null else m }
   BoardFit(
     height,
     top = { Stacked { TurnTitle(turn, review.turns.size); OpponentBar(review, turn) } },
-    board = { ScrabbleBoard(turn.board, Modifier, style, pending = selected?.placement?.placed.orEmpty()) },
-    bottom = { Stacked { MyArea(turn, style); TurnNavigator(index, review.turns.size, go) { listing = true }; TurnMoves(turn, review.classic, selected, select) } },
+    board = { ScrabbleBoard(turn.board, Modifier, style, pending = selected?.placement?.placed.orEmpty(), wordTap = WordTap.MENU) },
+    bottom = { Stacked { MyArea(turn, style); TurnNavigator(index, review.turns.size, go) { listing = true }; status?.let { Status(it) }; TurnMoves(turn, review.classic, selected, select) } },
   )
   if (listing) CandidatesDialog(turn.candidates, selected, close = { listing = false }) { select(it); listing = false }
+}
+
+@Composable
+private fun Status(text: String) {
+  Text(text, Modifier.fillMaxWidth().padding(horizontal = 8.dp), style = captionStyle(), maxLines = 2, overflow = TextOverflow.Ellipsis)
 }
 
 @Composable
@@ -79,7 +90,7 @@ internal fun TurnTitle(turn: ReviewTurnView, count: Int) {
 
 @Composable
 private fun OpponentBar(review: ReviewView, turn: ReviewTurnView) {
-  val photo: (@Composable () -> Unit)? = if (review.classic) ({ OpponentPhoto(review.opponent, 20.dp) }) else null
+  val photo: (@Composable () -> Unit)? = if (review.photo) ({ OpponentPhoto(review.opponent, 20.dp) }) else null
   PlayerBar(name = review.opponent, points = turn.opponentScore, clock = null, onTurn = turn.mine == false, framed = true, photo = photo)
 }
 

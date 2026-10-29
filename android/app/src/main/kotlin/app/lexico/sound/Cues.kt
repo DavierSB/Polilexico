@@ -6,6 +6,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import app.lexico.game.Cue
 import app.lexico.game.LiveGame
+import app.lexico.ui.anagram.AnagramSession
+import app.lexico.ui.anagram.Signal
 import app.lexico.ui.recall.RecallSession
 import app.lexico.ui.recall.Stage
 import app.lexico.ui.recall.Verdict
@@ -29,6 +31,13 @@ fun PlayCues(session: RecallSession) {
 }
 
 @Composable
+fun PlayCues(session: AnagramSession) {
+  val play = LocalCues.current
+  LaunchedEffect(session) { snapshotFlow { session.signals }.drop(1).mapNotNull { session.signal?.let(::cueOf) }.collect(play) }
+  CelebrateRecord(recordBroken(session.solved, session.best, session.record?.isNew == true))
+}
+
+@Composable
 fun CelebrateRecord(broken: Boolean) {
   val play = LocalCues.current
   LaunchedEffect(broken) { if (broken) play(Cue.CELEBRATION) }
@@ -42,4 +51,12 @@ private fun cueOf(verdict: Verdict?): Cue? = when (verdict) {
   Verdict.HIT -> Cue.CORRECT
   Verdict.INVALID, Verdict.NOT_PLAYED -> Cue.WRONG
   else -> null
+}
+
+private fun cueOf(signal: Signal): Cue = when (signal) {
+  Signal.HIT -> Cue.CORRECT
+  Signal.WRONG -> Cue.WRONG
+  Signal.WARNING -> Cue.WARNING
+  Signal.LAST_SECONDS -> Cue.LAST_SECONDS
+  Signal.TIME_UP -> Cue.TIME_UP
 }

@@ -4,6 +4,8 @@ import app.lexico.game.Outcome
 
 data class Statistics(
   val games: Int,
+  val abandoned: Int,
+  val inProgress: Int,
   val wins: Int,
   val averageScore: Double,
   val bestScore: Int?,
@@ -13,9 +15,13 @@ data class Statistics(
   val averageEfficiency: Double,
   val bestEfficiency: Double,
 ) {
+  val started: Int get() = games + abandoned + inProgress
+
+  val winRate: Double get() = if (games + abandoned > 0) wins * 100.0 / (games + abandoned) else 0.0
+
   companion object {
-    fun of(games: List<FinishedGame>): Statistics = Statistics(
-      games = games.size, wins = games.count { it.outcome == Outcome.WIN },
+    fun of(games: List<FinishedGame>, abandoned: Int = 0, inProgress: Int = 0): Statistics = Statistics(
+      games = games.size, abandoned = abandoned, inProgress = inProgress, wins = games.count { it.outcome == Outcome.WIN },
       averageScore = games.averageOf { it.myScore.toDouble() }, bestScore = games.maxOfOrNull { it.myScore },
       bingos = games.sumOf { it.bingos }, bestWord = bestWord(games), hitRate = hitRate(games),
       averageEfficiency = games.averageOf { it.efficiency }, bestEfficiency = games.maxOfOrNull { it.efficiency } ?: 0.0,

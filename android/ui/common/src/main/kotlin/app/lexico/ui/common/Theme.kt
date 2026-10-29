@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 val PolimitaColors: ColorScheme = palette(
-  primary = 0xFFFFB631, onPrimary = 0xFF2A140C, secondary = 0xFFF2831E, tertiary = 0xFFE8C07A,
+  primary = 0xFFE2A146, onPrimary = 0xFF2A140C, secondary = 0xFFF2831E, tertiary = 0xFFE8C07A,
   background = 0xFF1B1411, surfaceVariant = 0xFF3A2C24, onSurface = 0xFFFFF1D6, onSurfaceVariant = 0xFFD9C4B0,
   outline = 0xFF9E8A7A, outlineVariant = 0xFF4F4037, primaryContainer = 0xFF5A3A12, onPrimaryContainer = 0xFFFFDDA6,
   secondaryContainer = 0xFF4A2C1A, onSecondaryContainer = 0xFFFFDCC2,

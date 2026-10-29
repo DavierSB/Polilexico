@@ -16,20 +16,26 @@ import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.EndButtons
 import app.lexico.ui.common.Spread
 import app.lexico.ui.common.SpreadDialog
+import app.lexico.ui.common.WordSection
 
 @Composable
-fun ResultPanel(view: ClassicView, end: GameEnd, onAnalyze: () -> Unit, onAnalyzeEndgame: () -> Unit, onMenu: () -> Unit) {
+fun ResultPanel(
+  view: ClassicView, end: GameEnd, onAnalyze: () -> Unit, onAnalyzeEndgame: () -> Unit, onExport: () -> Unit, onMenu: () -> Unit,
+) {
   var charting by remember { mutableStateOf(false) }
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
     Text("${resultTitle(view, end)}   ${view.myScore} – ${view.opponentScore}",
       style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-      EndButtons(onAnalyze, onMenu, onAnalyzeEndgame.takeIf { view.bag == 0 })
+      EndButtons(onAnalyze, onMenu, onAnalyzeEndgame.takeIf { view.bag == 0 }, onExport, playedWords(view))
       TextButton(onClick = { charting = true }) { Text("Ventaja") }
     }
   }
   if (charting) SpreadDialog(spread(view), close = { charting = false })
 }
+
+private fun playedWords(view: ClassicView): List<WordSection> =
+  listOf(Side.ME to "Tú", Side.OPPONENT to view.opponent).map { (side, name) -> WordSection(name, view.moves.filter { it.side == side && it.type == MoveType.PLACEMENT }.map { it.text }) }
 
 private fun spread(view: ClassicView): Spread {
   val totals = listOf(0 to 0) + view.moves.map { it.myTotal to it.opponentTotal } + (view.myScore to view.opponentScore)

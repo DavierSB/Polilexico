@@ -74,6 +74,7 @@ interface ClassicActions {
   fun exit()
   fun analyze()
   fun analyzeEndgame()
+  fun export()
   fun pause()
   fun resume()
 }

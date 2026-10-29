@@ -44,8 +44,8 @@ private fun ColumnScope.StageContent(session: RecallSession, style: BoardStyle, 
     Stage.Loading -> Loading()
     is Stage.Watching -> Watching(stage.game, session.config.intervalMs, style, session::watched)
     is Stage.Solving -> Solving(session, stage, style)
-    Stage.RoundDone -> RoundDone(session, style, onExit)
-    Stage.SeriesDone -> SeriesDone(session, style, onExit)
+    Stage.RoundDone -> RoundDone(session, onExit)
+    Stage.SeriesDone -> SeriesDone(session, onExit)
     is Stage.Failed -> Failed(stage.message, session::retry)
   }
 }

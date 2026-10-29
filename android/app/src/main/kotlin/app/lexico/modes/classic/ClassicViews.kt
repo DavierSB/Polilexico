@@ -25,7 +25,7 @@ fun classicView(state: ClassicState, opponent: String, notice: String?): Classic
   opponentClock = state.clocks?.let { Clock(it.opponentMs, it.opponentOvertimeMs) },
   bag = state.bag, unseen = state.unseen,
   moves = state.moves.map(::move), end = state.result?.let(::gameEnd),
-  notice = notice ?: state.botError, paused = state.paused,
+  notice = notice ?: state.botError, paused = state.paused && state.result == null,
 )
 
 private fun opponentRack(state: ClassicState): OpponentRack =

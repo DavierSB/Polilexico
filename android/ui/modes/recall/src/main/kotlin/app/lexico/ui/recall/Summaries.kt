@@ -3,82 +3,50 @@ package app.lexico.ui.recall
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import app.lexico.ui.board.BoardStyle
-import app.lexico.ui.board.RackTile
-import app.lexico.ui.common.Mulish
+import app.lexico.ui.common.Mark
+import app.lexico.ui.common.ResultButtons
+import app.lexico.ui.common.ResultCard
+import app.lexico.ui.common.ResultChip
+import app.lexico.ui.common.ResultSection
+import app.lexico.ui.common.WordRow
 
 @Composable
-internal fun ColumnScope.RoundDone(session: RecallSession, style: BoardStyle, onExit: () -> Unit) {
+internal fun ColumnScope.RoundDone(session: RecallSession, onExit: () -> Unit) {
   val answers = session.answers
-  ScoreCard("RECORDASTE", answers.count { it.hit }, answers.size)
-  Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    Button(onClick = session::nextRound) { Text("Siguiente partida") }
-    OutlinedButton(onClick = onExit) { Text("Salir") }
-  }
-  AnswerList(answers, style)
+  Score("RECORDASTE", answers.count { it.hit }, answers.size, pointsChip(answers), livesChip(session.lives))
+  ResultButtons("Siguiente partida", session::nextRound, "Salir", onExit)
+  AnswerList(answers)
 }
 
 @Composable
-internal fun ColumnScope.SeriesDone(session: RecallSession, style: BoardStyle, onExit: () -> Unit) {
-  ScoreCard("EN LA SERIE", session.recalled, session.asked)
-  session.record?.let { RecordLine(it) }
-  Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    Button(onClick = session::restart) { Text("Otra serie") }
-    OutlinedButton(onClick = onExit) { Text("Menú") }
-  }
-  AnswerList(session.answers, style)
+internal fun ColumnScope.SeriesDone(session: RecallSession, onExit: () -> Unit) {
+  Score("EN LA SERIE", session.recalled, session.asked, *listOfNotNull(session.record?.let(::recordChip)).toTypedArray())
+  ResultButtons("Otra serie", session::restart, "Menú", onExit)
+  AnswerList(session.answers)
 }
 
 @Composable
-private fun RecordLine(record: Record) {
-  if (record.isNew) Text("¡Nuevo récord!", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-  else Text("Récord: ${words(record.best)}")
+private fun Score(title: String, hits: Int, total: Int, vararg chips: ResultChip) {
+  ResultCard(title, "$hits", "/ $total", chips.toList(), progress = if (total > 0) hits.toFloat() / total else 0f)
 }
 
 @Composable
-private fun ColumnScope.AnswerList(answers: List<Answer>, style: BoardStyle) {
+private fun ColumnScope.AnswerList(answers: List<Answer>) {
+  ResultSection("Las palabras de la partida", "Toca para su ficha")
   Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    answers.sortedByDescending { it.word.score }.forEach { AnswerRow(it, style) }
+    answers.sortedByDescending { it.word.score }.forEach { WordRow(it.word.text, score = it.word.score, mark = if (it.hit) Mark.HIT else Mark.MISS) }
   }
 }
 
-@Composable
-private fun ScoreCard(title: String, hits: Int, total: Int) {
-  Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh) {
-    Column(Modifier.padding(vertical = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-      Text(title, fontFamily = Mulish, fontWeight = FontWeight.ExtraBold, fontSize = 12.sp, letterSpacing = 2.sp, color = MaterialTheme.colorScheme.primary)
-      Row(verticalAlignment = Alignment.Bottom) {
-        Text("$hits", fontFamily = Mulish, fontWeight = FontWeight.Black, fontSize = 48.sp, lineHeight = 48.sp)
-        Text(" / $total", Modifier.padding(bottom = 7.dp), fontFamily = Mulish, fontWeight = FontWeight.Bold, fontSize = 20.sp,
-          color = MaterialTheme.colorScheme.onSurfaceVariant)
-      }
-    }
-  }
-}
+private fun pointsChip(answers: List<Answer>): ResultChip =
+  ResultChip("${answers.filter { it.hit }.sumOf { it.word.score }} de ${answers.sumOf { it.word.score }} pts", highlighted = answers.any { it.hit })
 
-@Composable
-private fun AnswerRow(answer: Answer, style: BoardStyle) {
-  Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-    Text(if (answer.hit) "✓" else "✗", color = if (answer.hit) HIT else MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
-    answer.word.tiles.forEach { RackTile(it, style, 26.dp) }
-    Text("${answer.word.score} pts", fontFamily = Mulish, fontWeight = FontWeight.Bold, fontSize = 13.sp,
-      color = MaterialTheme.colorScheme.onSurfaceVariant)
-  }
-}
+private fun livesChip(lives: Int): ResultChip = ResultChip(if (lives == 1) "1 vida" else "$lives vidas")
+
+private fun recordChip(record: Record): ResultChip =
+  if (record.isNew) ResultChip("¡Nuevo récord!", highlighted = true) else ResultChip("Récord: ${words(record.best)}")

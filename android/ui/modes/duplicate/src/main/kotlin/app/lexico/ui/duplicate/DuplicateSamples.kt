@@ -35,6 +35,7 @@ object DuplicateSamples {
     override fun resign() {}
     override fun exit() {}
     override fun analyze() {}
+    override fun export() {}
     override fun pause() {}
     override fun resume() {}
   }

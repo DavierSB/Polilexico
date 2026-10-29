@@ -27,13 +27,35 @@ func ahead(g *game.Game, me int, unseenTiles *tilemapping.Rack) bool {
 }
 
 func lowest(r *tilemapping.Rack, ld *tilemapping.LetterDistribution, n int) int {
+	values := sortedValues(r, ld)
+	return sum(values[:min(n, len(values))])
+}
+
+func highest(r *tilemapping.Rack, ld *tilemapping.LetterDistribution, n int) int {
+	values := sortedValues(r, ld)
+	return sum(values[max(len(values)-n, 0):])
+}
+
+func sortedValues(r *tilemapping.Rack, ld *tilemapping.LetterDistribution) []int {
 	values := make([]int, 0, r.NumTiles())
 	for _, t := range r.TilesOn() {
 		values = append(values, ld.Score(t))
 	}
 	slices.Sort(values)
+	return values
+}
+
+func valueOf(word tilemapping.MachineWord, ld *tilemapping.LetterDistribution) int {
 	total := 0
-	for _, v := range values[:min(n, len(values))] {
+	for _, t := range word {
+		total += ld.Score(t)
+	}
+	return total
+}
+
+func sum(values []int) int {
+	total := 0
+	for _, v := range values {
 		total += v
 	}
 	return total

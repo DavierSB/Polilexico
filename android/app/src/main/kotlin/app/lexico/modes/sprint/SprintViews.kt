@@ -15,10 +15,19 @@ import app.lexico.ui.sprint.Phase
 import app.lexico.ui.sprint.Record
 import app.lexico.ui.sprint.SprintView
 
-fun sprintView(state: SprintState, notice: String?, best: Int, record: SeriesRecord?): SprintView = SprintView(
+fun sprintView(state: SprintState, notice: String?, best: Int, record: SeriesRecord?, played: List<GameBingo>): SprintView = SprintView(
   phase = phase(state.phase), lives = state.lives, maxLives = state.maxLives, solved = state.solved, best = best,
-  notice = notice ?: state.lastError, paused = state.paused, record = record?.let { Record(it.best, it.isNew) },
+  notice = notice ?: state.lastError, paused = state.paused, record = record?.let { Record(it.best, it.isNew) }, played = played.map(::bingo),
 )
+
+fun solvedAnswer(phase: SprintPhase): GameBingo? {
+  val result = when (phase) {
+    is SprintPhase.Revealed -> phase.result
+    is SprintPhase.Finished -> phase.result
+    else -> null
+  }
+  return result?.takeIf { it.outcome == HandOutcome.SOLVED }?.answer
+}
 
 private fun phase(phase: SprintPhase): Phase = when (phase) {
   SprintPhase.Searching -> Phase.Searching

@@ -19,7 +19,7 @@ private val LowTimePink = Color(0xFFF2B8B5)
 fun TurnClock(remainingMs: Long) {
   Text(
     Durations.format(remainingMs), Modifier.fillMaxWidth(), fontSize = 22.sp, fontWeight = FontWeight.Bold,
-    fontFamily = FontFamily.Monospace, textAlign = TextAlign.Center,
+    fontFamily = FontFamily.Monospace, textAlign = TextAlign.Center, maxLines = 1, softWrap = false,
     color = if (remainingMs < LOW_TIME_MS) LowTimePink else MaterialTheme.colorScheme.onSurface,
   )
 }

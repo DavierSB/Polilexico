@@ -1,15 +1,19 @@
 package app.lexico.ui.classic
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.ChallengeModeSelector
 import app.lexico.ui.common.ChoiceOptions
+import app.lexico.ui.common.FitColumn
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
@@ -19,20 +23,33 @@ import app.lexico.ui.common.TwoOptions
 @Composable
 fun NewClassicScreen(onBack: () -> Unit, onStart: (ClassicConfig) -> Unit) {
   val form = rememberClassicForm()
-  Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+  var chosen by remember { mutableStateOf(false) }
+  BackHandler(enabled = chosen) { chosen = false }
+  if (chosen) SettingsStep(form, onBack = { chosen = false }) { onStart(form.toConfig()) }
+  else OpponentStep(form, onBack) { chosen = true }
+}
+
+@Composable
+private fun OpponentStep(form: ClassicForm, onBack: () -> Unit, onChosen: () -> Unit) {
+  FitColumn(10.dp) {
     Header("Clásica", onBack)
-    OpponentSection(form)
-    StarterSection(form)
-    ChallengeSection(form)
-    TimeSection(form)
-    StartButton(enabled = form.valid) { onStart(form.toConfig()) }
+    SectionTitle("Rival")
+    BOTS.forEach { b -> BotOption(b, selected = b.name == form.opponent) { form.opponent = b.name } }
+    Button(modifier = Modifier.fillMaxWidth(), onClick = onChosen) { Text("Seleccionar rival") }
   }
 }
 
 @Composable
-private fun OpponentSection(form: ClassicForm) {
-  SectionTitle("Rival")
-  BOTS.forEach { b -> BotOption(b, selected = b.name == form.opponent) { form.opponent = b.name } }
+private fun SettingsStep(form: ClassicForm, onBack: () -> Unit, onStart: () -> Unit) {
+  FitColumn(10.dp) {
+    Header("Clásica", onBack)
+    SectionTitle("Rival")
+    BotOption(bot(form.opponent), selected = true, select = onBack)
+    StarterSection(form)
+    ChallengeSection(form)
+    TimeSection(form)
+    StartButton(enabled = form.valid, onClick = onStart)
+  }
 }
 
 @Composable

@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -39,6 +40,8 @@ data class RankedMove(
   val placement: Placement? = null,
   val playedBy: String = "",
   val final: Int? = null,
+  val note: String = "",
+  val adjusted: Boolean = false,
 )
 
 @Composable
@@ -66,6 +69,7 @@ private fun TableHeader(column: ValueColumn?, explain: () -> Unit) {
     HeaderCell("Jugada", Modifier.weight(1f))
     HeaderCell("Puntos", Modifier.width(PointsWidth), TextAlign.End)
     if (column != null) ValueHeader(column, explain)
+    if (LocalWordLookup.current != null) Spacer(Modifier.width(PLAY_LOOKUP_WIDTH))
   }
 }
 
@@ -92,6 +96,7 @@ private fun MoveRow(rank: Int, m: RankedMove, withValue: Boolean, active: Boolea
     MoveCell(m)
     Cell("${m.points}", PointsWidth, cellStyle(FontWeight.ExtraBold), TextAlign.End)
     if (withValue) Cell(valueText(m), ValueWidth, cellStyle(FontWeight.SemiBold, muted = true), TextAlign.End)
+    if (LocalWordLookup.current != null) PlayLookup(m.text)
   }
 }
 
@@ -102,8 +107,17 @@ private fun RowScope.MoveCell(m: RankedMove) {
       m.text, Modifier.weight(1f, fill = false), style = cellStyle(FontWeight.Bold).copy(letterSpacing = 0.6.sp), maxLines = 1, softWrap = false,
       autoSize = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 15.sp, stepSize = 0.5.sp),
     )
+    if (m.note.isNotEmpty()) MoveNote(m.note)
     if (m.playedBy.isNotEmpty()) PlayedBy(m.playedBy)
   }
+}
+
+@Composable
+private fun MoveNote(note: String) {
+  Text(
+    note, Modifier.padding(start = 8.dp), maxLines = 1, softWrap = false,
+    style = TextStyle(fontFamily = Mulish, fontWeight = FontWeight.Bold, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant),
+  )
 }
 
 @Composable
@@ -120,6 +134,9 @@ private fun PlayedBy(who: String) {
 }
 
 const val EQUITY_INFO = "El valor de la jugada, considerando su puntuación y lo que queda en la mano."
+
+const val PRE_ENDGAME_INFO = "El equity usual, pero incorpora penalizaciones por conservar la Q sin poder colocarla o arriesgarse a robarla, " +
+  "así como bonificaciones por mandar la Q a la bolsa si se estima que el rival no puede colocarla."
 
 @Composable
 private fun headerStyle(): TextStyle = TextStyle(

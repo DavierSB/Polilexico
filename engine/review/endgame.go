@@ -71,8 +71,18 @@ func positionOf(rack string, scores *tally, mine bool) position {
 }
 
 func (t *Turn) bagEmpty() bool {
-	total := core.TileTotal()
-	return total > 0 && total-placedTiles(t.Board)-len(strings.Fields(t.Rack)) <= fullRack
+	return core.TileTotal() > 0 && t.unseen() <= fullRack
+}
+
+func (t *Turn) bag() int {
+	if core.TileTotal() == 0 {
+		return 0
+	}
+	return max(t.unseen()-fullRack, 0)
+}
+
+func (t *Turn) unseen() int {
+	return core.TileTotal() - placedTiles(t.Board) - len(strings.Fields(t.Rack))
 }
 
 func (t *Turn) endgameGame() (*game.Game, error) {

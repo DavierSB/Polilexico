@@ -22,5 +22,6 @@ dependencies {
   api(project(":model"))
   implementation(project(":engine-bridge"))
   api(libs.kotlinx.coroutines.android)
+  implementation(libs.xz)
   testImplementation(libs.junit)
 }

@@ -78,3 +78,40 @@ func TestPlacementScoreRejectsIllegalPlacements(t *testing.T) {
 		}
 	}
 }
+
+func TestAnagrams(t *testing.T) {
+	testenv.Init(t)
+	words, err := Anagrams("SACA")
+	if err != nil || !strings.Contains(" "+words+" ", " CASA ") {
+		t.Fatalf("%q %v", words, err)
+	}
+	blank, err := Anagrams("[CH]IN?")
+	if err != nil || blank == "" {
+		t.Fatalf("%q %v", blank, err)
+	}
+	t.Log(words, "|", blank)
+}
+
+func TestAnagramTilesKeepDigraphs(t *testing.T) {
+	testenv.Init(t)
+	words, err := AnagramTiles("[CH]IN?")
+	if err != nil || !strings.Contains(" "+words+" ", " [CH]INA ") {
+		t.Fatalf("%q %v", words, err)
+	}
+}
+
+func TestRandomWordHasTheRequestedLength(t *testing.T) {
+	testenv.Init(t)
+	for range 20 {
+		word, err := RandomWord(5, 10)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if n := len(tilesOf(word)); n < 5 || n > 10 {
+			t.Fatalf("%s tiene %d fichas", word, n)
+		}
+		if ok, err := IsValidWord(word); err != nil || !ok {
+			t.Fatalf("%s no es válida: %v", word, err)
+		}
+	}
+}

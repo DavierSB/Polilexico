@@ -57,7 +57,7 @@ private fun StatsContent(
     if (page.rows.isEmpty()) return@Column Text(page.emptyText, style = MaterialTheme.typography.bodyMedium)
     StatsTable(page.rows)
     page.note?.let { Note(it) }
-    Charts(filter.mode, page.games)
+    if (page.games.isNotEmpty()) Charts(filter.mode, page.games)
   }
 }
 
@@ -88,7 +88,7 @@ private fun Note(text: String) {
 @Composable
 private fun ResetDialog(onReset: () -> Unit, onCancel: () -> Unit) {
   ConfirmDialog(
-    "¿Reiniciar las estadísticas? Tus partidas no se borran (siguen en «Mis partidas»), pero solo contarán las que termines a partir de ahora.",
+    "¿Reiniciar las estadísticas? Tus partidas no se borran (siguen en «Mis partidas»), pero solo contarán las que juegues a partir de ahora.",
     yes = "Reiniciar", no = "Cancelar", onYes = onReset, onNo = onCancel,
   )
 }

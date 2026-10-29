@@ -22,10 +22,12 @@ internal class Analysis {
   var running by mutableStateOf(false)
     private set
 
-  suspend fun run(analyst: Analyst, editor: PositionEditor) {
+  suspend fun run(analyst: Analyst, editor: PositionEditor, onDeep: (EditedPosition) -> Unit) {
     running = true
     try {
-      show(analyst.bestMoves(editor.state.board, editor.rack.toList()))
+      val board = editor.state.board
+      val rack = editor.rack.toList()
+      if (editor.scored && analyst.phase(board, rack) != Phase.MIDGAME) onDeep(editor.position()) else show(analyst.bestMoves(board, rack))
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {

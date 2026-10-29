@@ -1,6 +1,7 @@
 package preendgame
 
 import (
+	"slices"
 	"testing"
 	"time"
 
@@ -41,13 +42,64 @@ func TestDrawOddsCapAtOne(t *testing.T) {
 	exch := move.NewExchangeMove(wordOf(t, "QU"), nil, nil)
 	cases := []struct {
 		m    *move.Move
+		bag  int
 		base int
 		want float64
-	}{{exch, 4, 0.5}, {exch, 1, 1}, {move.NewPassMove(nil, nil), 3, 0}}
+	}{{exch, 7, 4, 0.5}, {exch, 7, 1, 1}, {move.NewPassMove(nil, nil), 3, 3, 0}}
 	for _, c := range cases {
-		if got := drawOdds(c.m, c.base); got != c.want {
+		if got := drawOdds(c.m, c.bag, c.base); got != c.want {
 			t.Errorf("probabilidad %v, esperado %v", got, c.want)
 		}
+	}
+}
+
+func TestDrawOddsCountOnlyTilesLeftInBag(t *testing.T) {
+	five := move.NewScoringMove(0, wordOf(t, "CASAR"), nil, false, 5, nil, 7, 7)
+	if got := drawOdds(five, 3, 6); got != 0.5 {
+		t.Errorf("probabilidad %v, esperado 0.5", got)
+	}
+}
+
+func TestQSharesFollowTheBagLeft(t *testing.T) {
+	yes, no := func() bool { return true }, func() bool { return false }
+	cases := []struct {
+		after          int
+		ahead, escapes func() bool
+		mine, theirs   float64
+	}{
+		{0, no, no, 0.25, 0.75},
+		{1, yes, no, 0.25, 0.75},
+		{1, no, no, 1, 0},
+		{2, yes, no, 0.25, 0.75},
+		{2, yes, yes, 1, 0},
+		{2, no, yes, 0.25, 0},
+		{3, yes, no, 0.25, 0},
+		{7, no, no, 0.25, 0},
+	}
+	for _, c := range cases {
+		mine, theirs := split(c.after, 0.25, c.ahead, c.escapes)
+		if mine != c.mine || theirs != c.theirs {
+			t.Errorf("bolsa %d: (%v, %v), esperado (%v, %v)", c.after, mine, theirs, c.mine, c.theirs)
+		}
+	}
+}
+
+func TestLowestAndHighestValues(t *testing.T) {
+	ld, err := core.Distribution()
+	if err != nil {
+		t.Fatal(err)
+	}
+	r := rackOf(t, "AQZ?")
+	if low, high := lowest(r, ld, 2), highest(r, ld, 2); low != 1 || high != 15 {
+		t.Errorf("menores %d, mayores %d; esperado 1 y 15", low, high)
+	}
+}
+
+func TestSinglesSkipQ(t *testing.T) {
+	ls := mustLetters(t)
+	got := ls.singles(rackOf(t, "QQUA?A"))
+	if len(got) != 3 || slices.Contains(got, ls.q) {
+		t.Errorf("letras sueltas %v", got)
 	}
 }
 

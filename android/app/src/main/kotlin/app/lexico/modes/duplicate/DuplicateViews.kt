@@ -11,7 +11,7 @@ import app.lexico.ui.duplicate.RoundPlay
 
 fun duplicateView(state: DuplicateState, notice: String?): DuplicateView = DuplicateView(
   board = state.board, phase = phase(state.phase), rounds = shownRounds(state), bag = state.bag,
-  notice = notice ?: state.lastError, paused = state.paused,
+  notice = notice ?: state.lastError, paused = state.paused && state.phase !is DuplicatePhase.Finished,
   revealAtEnd = state.revealAtEnd, invalidPlays = state.rounds.filter { it.assumed.invalid }.map(::invalidPlay),
 )
 

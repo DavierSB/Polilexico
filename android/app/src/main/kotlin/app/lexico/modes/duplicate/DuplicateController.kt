@@ -15,6 +15,7 @@ class DuplicateController(
   private val game: DuplicateGame,
   scope: CoroutineScope,
   onExit: () -> Unit,
+  private val onExport: (recordPath: String) -> Unit,
   private val onReview: (recordPath: String) -> Unit,
 ) : GameController(game, scope, onExit), DuplicateActions {
   override fun showRack() = act { game.showRack() }
@@ -26,6 +27,8 @@ class DuplicateController(
   override fun cancel() = act { game.cancel() }
 
   override fun analyze() = review(game.state.value.recordPath, onReview)
+
+  override fun export() = review(game.state.value.recordPath, onExport)
 }
 
 fun DuplicateConfig.toSetup(): DuplicateSetup = DuplicateSetup(

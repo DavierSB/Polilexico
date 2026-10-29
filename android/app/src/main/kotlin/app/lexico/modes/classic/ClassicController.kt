@@ -16,6 +16,7 @@ class ClassicController(
   private val game: ClassicGame,
   scope: CoroutineScope,
   onExit: () -> Unit,
+  private val onExport: (recordPath: String) -> Unit,
   private val onReview: (recordPath: String, atEndgame: Boolean) -> Unit,
 ) : GameController(game, scope, onExit), ClassicActions {
   override fun play(placement: Placement) = act { game.play(placement) }
@@ -27,6 +28,8 @@ class ClassicController(
   override fun analyze() = review(game.state.value.result?.recordPath) { onReview(it, false) }
 
   override fun analyzeEndgame() = review(game.state.value.result?.recordPath) { onReview(it, true) }
+
+  override fun export() = review(game.state.value.result?.recordPath, onExport)
 }
 
 fun EndgameConfig.toSetup(): EndgameSetup = EndgameSetup(

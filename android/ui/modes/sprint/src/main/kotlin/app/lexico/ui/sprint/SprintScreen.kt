@@ -100,7 +100,7 @@ private fun ColumnScope.PhasePanel(
       phase, c, style, onPlay = { c.placement()?.let(actions::propose) ?: onNotice(NOT_IN_A_LINE) }, onGiveUp = actions::giveUp,
     )
     is Phase.Revealed -> Box(Modifier.weight(1f)) { Revealed(phase.result, shown, onShow, actions::next) }
-    is Phase.Finished -> Box(Modifier.weight(1f)) { Finished(phase.result, view.solved, view.record, shown, onShow, actions) }
+    is Phase.Finished -> Box(Modifier.weight(1f)) { Finished(phase.result, view, shown, onShow, actions) }
   }
 }
 

@@ -38,6 +38,16 @@ func (l letters) whereIsQ(rack, unseenTiles *tilemapping.Rack) place {
 	return onBoard
 }
 
+func (l letters) singles(r *tilemapping.Rack) []tilemapping.MachineLetter {
+	var out []tilemapping.MachineLetter
+	for ml, n := range r.LetArr {
+		if n > 0 && tilemapping.MachineLetter(ml) != l.q {
+			out = append(out, tilemapping.MachineLetter(ml))
+		}
+	}
+	return out
+}
+
 func (l letters) partnered(r *tilemapping.Rack) bool {
 	blanks := r.CountOf(blank)
 	if r.CountOf(l.u) == 0 {

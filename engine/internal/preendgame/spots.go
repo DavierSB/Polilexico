@@ -36,14 +36,38 @@ func newSpotFinder(b *board.GameBoard, q tilemapping.MachineLetter) (*spotFinder
 }
 
 func (f *spotFinder) canPlace(b *board.GameBoard, m *move.Move, tiles tilemapping.MachineWord) bool {
+	f.prepare(b, m)
+	return twoApart(f.footprints(f.generate(tiles)))
+}
+
+func (f *spotFinder) anyPlace(b *board.GameBoard, m *move.Move, tiles tilemapping.MachineWord) bool {
+	f.prepare(b, m)
+	return len(f.footprints(f.generate(tiles))) > 0
+}
+
+func (f *spotFinder) bestSingle(b *board.GameBoard, m *move.Move, letters []tilemapping.MachineLetter) int {
+	f.prepare(b, m)
+	best := 0
+	for _, l := range letters {
+		for _, p := range f.generate(tilemapping.MachineWord{l}) {
+			best = max(best, p.Score())
+		}
+	}
+	return best
+}
+
+func (f *spotFinder) prepare(b *board.GameBoard, m *move.Move) {
 	f.board.CopyFrom(b)
 	if m.Action() == move.MoveTypePlay {
 		f.board.PlayMove(m)
 		f.crosses.UpdateForMove(f.board, m)
 	}
+}
+
+func (f *spotFinder) generate(tiles tilemapping.MachineWord) []*move.Move {
 	f.rack.Set(tiles)
 	f.gen.GenAll(f.rack, false)
-	return twoApart(f.footprints(f.gen.Plays()))
+	return f.gen.Plays()
 }
 
 func (f *spotFinder) footprints(plays []*move.Move) []footprint {

@@ -3,6 +3,8 @@ package app.lexico.menu
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -47,7 +49,7 @@ private fun Thanks() {
 @Composable
 private fun AboutText(version: String, showAuthor: () -> Unit) {
   val uriHandler = LocalUriHandler.current
-  Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+  Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
     Text(
       "El propósito de Poliléxico es ser la primera aplicación offline para móvil que combine las diferentes " +
         "modalidades del Scrabble con todas sus reglas precisas, y además brinde herramientas didácticas para su aprendizaje."
@@ -55,6 +57,10 @@ private fun AboutText(version: String, showAuthor: () -> Unit) {
     Text(
       "El motor de juego es el de Woogles.io (Macondo), usado bajo los términos de su licencia, " +
         "la GNU General Public License v3."
+    )
+    Text(
+      "Las definiciones sin conexión son de Wikcionario y Wiktionary (colaboradores de Wikimedia), bajo licencia " +
+        "CC BY-SA 4.0, y del Diccionario de la lengua castellana de la Real Academia Española, 14.ª ed. (1914), de dominio público."
     )
     Text(
       "Los avatares de los bots son un tributo a la cultura hispanoamericana, y en especial a la cubana."

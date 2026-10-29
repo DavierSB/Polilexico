@@ -28,6 +28,5 @@ class ThemeState(private val settings: Settings) {
 
   fun chooseLook(look: BoardLook) {
     settings.useLightBoard(look.light)
-    settings.swapBonuses(look.swapped)
   }
 }

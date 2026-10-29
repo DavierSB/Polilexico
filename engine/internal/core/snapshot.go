@@ -39,6 +39,16 @@ func NewEndgame(rows [][]tilemapping.MachineLetter, rack string, scores [2]int) 
 	return g, g.SetRackForOnly(1, bagRack(g))
 }
 
+func NewPreEndgame(rows [][]tilemapping.MachineLetter, rack string, scores [2]int) (*game.Game, error) {
+	g, err := NewGameFromBoard(rows, rack)
+	if err != nil {
+		return nil, err
+	}
+	g.SetPointsFor(0, scores[0])
+	g.SetPointsFor(1, scores[1])
+	return g, g.SetRackForOnly(1, firstTiles(g, fullRack))
+}
+
 func TileTotal() int {
 	if Ready() != nil {
 		return 0
@@ -49,6 +59,13 @@ func TileTotal() int {
 func bagRack(g *game.Game) *tilemapping.Rack {
 	rack := tilemapping.NewRack(g.Alphabet())
 	rack.Set(g.Bag().Peek())
+	return rack
+}
+
+func firstTiles(g *game.Game, n int) *tilemapping.Rack {
+	tiles := g.Bag().Peek()
+	rack := tilemapping.NewRack(g.Alphabet())
+	rack.Set(tiles[:min(n, len(tiles))])
 	return rack
 }
 

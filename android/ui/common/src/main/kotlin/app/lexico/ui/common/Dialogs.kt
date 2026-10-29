@@ -17,6 +17,6 @@ fun ConfirmDialog(question: String, yes: String, no: String, onYes: () -> Unit, 
 
 @Composable
 fun ResignDialog(onResign: () -> Unit, onContinue: () -> Unit) = ConfirmDialog(
-  "¿Abandonar la partida? Se borra de partidas en curso y no cuenta en tus estadísticas.",
+  "¿Abandonar la partida? Se borra de partidas en curso y cuenta como abandonada en tus estadísticas.",
   yes = "Abandonar", no = "Seguir", onYes = onResign, onNo = onContinue,
 )

@@ -51,3 +51,17 @@ func PlacementScore(board, placement string) (int, error) {
 func normalizeWord(word string) string {
 	return core.ExpandEnhe(strings.ToUpper(strings.TrimSpace(word)))
 }
+
+func Anagrams(rack string) (string, error) {
+	words, err := core.Anagrams(normalizeWord(rack))
+	return strings.Join(core.Plain(words), " "), err
+}
+
+func AnagramTiles(rack string) (string, error) {
+	words, err := core.Anagrams(normalizeWord(rack))
+	return strings.Join(words, " "), err
+}
+
+func RandomWord(minTiles, maxTiles int) (string, error) {
+	return core.RandomWord(minTiles, maxTiles)
+}

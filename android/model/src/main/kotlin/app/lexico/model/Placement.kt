@@ -22,7 +22,7 @@ data class Placement(
   override fun toString(): String = coordinates + " " + tiles.joinToString("") { written(it) }
 
   fun spelled(board: Board): String =
-    coordinates + " " + tiles.zip(positions).joinToString("") { (tile, p) -> (tile ?: letterAt(board, p))?.toString() ?: "." }
+    coordinates + " " + tiles.zip(positions).joinToString("") { (tile, p) -> tile?.toString() ?: letterAt(board, p)?.letter ?: "." }
 
   private fun letterAt(board: Board, p: Position): Tile? = if (p.onBoard) board[p] else null
 

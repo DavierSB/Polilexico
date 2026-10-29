@@ -12,7 +12,7 @@ private val BAR_PHOTO = 20.dp
 
 @Composable
 internal fun ScoreBar(review: ReviewView, name: String, points: Int, rack: List<String>?, onTurn: Boolean, style: BoardStyle) {
-  val photo: (@Composable () -> Unit)? = if (name != ME && review.classic) ({ OpponentPhoto(review.opponent, BAR_PHOTO) }) else null
+  val photo: (@Composable () -> Unit)? = if (name != ME && review.photo) ({ OpponentPhoto(review.opponent, BAR_PHOTO) }) else null
   PlayerBar(name = name, points = points, clock = null, onTurn = onTurn, framed = true, photo = photo, tilesBeside = true) {
     rack?.let { OpponentRack(OpponentRack.Visible(it), style, BAR_TILE) }
   }

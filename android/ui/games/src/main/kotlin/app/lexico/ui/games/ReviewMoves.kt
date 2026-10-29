@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
@@ -32,6 +33,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.ui.common.InfoDialog
+import app.lexico.ui.common.LocalWordLookup
+import app.lexico.ui.common.PLAY_LOOKUP_WIDTH
+import app.lexico.ui.common.PlayLookup
 import app.lexico.ui.common.InfoIcon
 import app.lexico.ui.common.Mulish
 import app.lexico.ui.common.RankedMove
@@ -69,8 +73,10 @@ internal fun TurnMoves(turn: ReviewTurnView, classic: Boolean, selected: RankedM
 }
 
 private fun lines(turn: ReviewTurnView, classic: Boolean): List<Line> =
-  listOfNotNull(turn.candidates.firstOrNull()?.takeIf { classic }?.let { Line("Mejor jugada", "#1", it) }) +
-    turn.marks.map { Line(markLabel(it.who), it.rank?.let { r -> "#${r + 1}" } ?: "—", it.move) }
+  listOfNotNull(turn.candidates.firstOrNull()?.takeIf { classic }?.let { Line(noted("Mejor jugada", it), "#1", it) }) +
+    turn.marks.map { Line(noted(markLabel(it.who), it.move), it.rank?.let { r -> "#${r + 1}" } ?: "—", it.move) }
+
+private fun noted(caption: String, move: RankedMove): String = if (move.note.isEmpty()) caption else "$caption · ${move.note}"
 
 private fun markLabel(who: String): String = when (who) {
   "Tú" -> "Tu jugada"
@@ -93,6 +99,7 @@ private fun TableHeader(widths: Widths, column: ValueColumn?, explain: () -> Uni
     HeaderCell("#", Modifier.column(widths.rank), TextAlign.End)
     HeaderCell("Puntos", Modifier.column(widths.points), TextAlign.End)
     if (column != null) ValueHeader(column, widths.value, explain)
+    if (LocalWordLookup.current != null) Spacer(Modifier.width(PLAY_LOOKUP_WIDTH))
   }
 }
 
@@ -120,6 +127,7 @@ private fun LineRow(line: Line, widths: Widths, value: String?, active: Boolean,
     Cell(line.rank, widths.rank, cellStyle(muted = true))
     Cell("${line.move.points}", widths.points, cellStyle())
     if (value != null) Cell(value, widths.value, cellStyle(muted = true))
+    if (LocalWordLookup.current != null) PlayLookup(line.move.text)
   }
 }
 

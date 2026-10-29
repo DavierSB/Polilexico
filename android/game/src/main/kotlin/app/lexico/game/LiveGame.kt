@@ -51,7 +51,7 @@ abstract class LiveGame<S> internal constructor(
   }
 
   fun resign() {
-    scope.launch(serial) { shutDown(keep = false) }
+    scope.launch(serial) { abandon(); shutDown(keep = false) }
   }
 
   internal fun listen(): () -> Unit = { scope.launch(serial) { refresh() } }
@@ -84,6 +84,13 @@ abstract class LiveGame<S> internal constructor(
     pauseMatch()
     if (keep) save() else forget()
     closeMatch()
+  }
+
+  private fun abandon() {
+    val mode = mode ?: return
+    if (closed || isOver(_state.value)) return
+    save()
+    saves.abandon(id, mode)
   }
 
   private fun refresh() {

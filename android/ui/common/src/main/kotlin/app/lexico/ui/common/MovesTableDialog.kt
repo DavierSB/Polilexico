@@ -51,7 +51,7 @@ fun moveNumberWidth(): Dp = with(LocalDensity.current) { 18.sp.toDp() }
 @Composable
 fun MoveText(text: String, modifier: Modifier = Modifier, bingo: Boolean = false) {
   Text(
-    text, modifier, color = if (bingo) MaterialTheme.colorScheme.primary else Color.Unspecified,
+    text, modifier.lookUpOnLongPress(text), color = if (bingo) MaterialTheme.colorScheme.primary else Color.Unspecified,
     fontFamily = FontFamily.Monospace, fontWeight = if (bingo) FontWeight.Bold else null, maxLines = 1, softWrap = false,
     autoSize = TextAutoSize.StepBased(minFontSize = 7.sp, maxFontSize = 12.sp, stepSize = 0.5.sp),
   )

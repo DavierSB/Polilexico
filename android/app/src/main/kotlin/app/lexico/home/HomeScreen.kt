@@ -19,48 +19,45 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.navigation.Screen
 import app.lexico.ui.board.BoardStyle
+import app.lexico.ui.common.Header
+import app.lexico.ui.common.InfoButton
 
 @Composable
 fun HomeScreen(
-  style: BoardStyle, inProgress: Int, demoGame: suspend () -> List<String>, hasUpdate: Boolean, onMenu: () -> Unit,
-  go: (Screen) -> Unit,
+  menu: Screen, style: BoardStyle, counts: MenuCounts, demoGame: suspend () -> List<String>, hasUpdate: Boolean, onMenu: () -> Unit,
+  back: () -> Unit, go: (Screen) -> Unit,
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-    HomeTopBar(hasUpdate, onMenu)
+    if (menu == Screen.Home) HomeTopBar(hasUpdate, onMenu) else Header(menuTitle(menu), back) { MenuInfo(menu) }
     DemoBoard(demoGame, style, Modifier.weight(1f, fill = false))
-    MODES.forEach { (name, screen) -> Button(onClick = { go(screen) }, Modifier.fillMaxWidth()) { Text(name) } }
-    SavedGamesButtons(inProgress, go)
+    menuButtons(menu, counts).forEach { MenuButton(it, go) }
   }
+}
+
+@Composable
+private fun MenuInfo(menu: Screen) {
+  menuInfo(menu)?.let { (title, text) -> InfoButton(title, text) }
+}
+
+@Composable
+private fun MenuButton(entry: MenuEntry, go: (Screen) -> Unit) {
+  val open = { go(entry.screen()) }
+  if (entry.main) Button(onClick = open, Modifier.fillMaxWidth()) { Text(entry.name) }
+  else OutlinedButton(onClick = open, Modifier.fillMaxWidth(), enabled = entry.enabled) { Text(entry.name) }
 }
 
 @Composable
 private fun HomeTopBar(hasUpdate: Boolean, onMenu: () -> Unit) {
   Row(verticalAlignment = Alignment.CenterVertically) {
-    MenuButton(hasUpdate, onMenu)
+    DrawerButton(hasUpdate, onMenu)
     Logo(Modifier.padding(start = 4.dp), scale = 0.8f)
   }
 }
 
 @Composable
-private fun MenuButton(hasUpdate: Boolean, onMenu: () -> Unit) {
+private fun DrawerButton(hasUpdate: Boolean, onMenu: () -> Unit) {
   Box {
     TextButton(onClick = onMenu) { Text("☰", fontSize = 22.sp) }
     if (hasUpdate) Badge(Modifier.align(Alignment.TopEnd).padding(top = 8.dp, end = 8.dp), containerColor = MaterialTheme.colorScheme.primary)
   }
 }
-
-@Composable
-private fun SavedGamesButtons(inProgress: Int, go: (Screen) -> Unit) {
-  OutlinedButton(onClick = { go(Screen.InProgress) }, Modifier.fillMaxWidth(), enabled = inProgress > 0) {
-    Text("Partidas en curso ($inProgress)")
-  }
-  OutlinedButton(onClick = { go(Screen.Finished) }, Modifier.fillMaxWidth()) { Text("Mis partidas") }
-}
-
-private val MODES = listOf(
-  "Clásica" to Screen.NewClassic,
-  "Duplicada" to Screen.NewDuplicate,
-  "Minijuegos" to Screen.Minigames,
-  "Analizador" to Screen.Analyzer,
-)
-

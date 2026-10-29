@@ -29,9 +29,16 @@ class StatisticsTest {
     assertEquals(50.0, s.hitRate, 0.001)
   }
 
+  @Test fun winRateCountsAbandonedGames() {
+    val s = Statistics.of(listOf(game(400, 300, Outcome.WIN), game(300, 400, Outcome.LOSS), game(400, 200, Outcome.WIN)), abandoned = 1, inProgress = 2)
+    assertEquals(6, s.started)
+    assertEquals(50.0, s.winRate, 0.001)
+  }
+
   @Test fun noGames() {
     val s = Statistics.of(emptyList())
     assertEquals(0, s.games)
+    assertEquals(0.0, s.winRate, 0.001)
     assertNull(s.bestScore)
     assertNull(s.bestWord)
   }

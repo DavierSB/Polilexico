@@ -8,9 +8,11 @@ type Turn struct {
 	MyScore       int
 	OpponentScore int
 	Endgame       bool
+	PreEndgame    bool
 	candidates    []*Move
 	marks         []*Mark
 	position      position
+	drawBase      int
 }
 
 type Move struct {

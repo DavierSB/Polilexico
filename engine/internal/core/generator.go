@@ -9,14 +9,18 @@ import (
 )
 
 func NewGenerator(b *board.GameBoard) (*movegen.GordonGenerator, error) {
-	if err := Ready(); err != nil {
-		return nil, err
-	}
-	gd, err := kwg.GetKWG(cfg.WGLConfig(), Lexicon, kwg.WithDistribution(distribution))
+	gd, err := WordGraph()
 	if err != nil {
 		return nil, err
 	}
 	return movegen.NewGordonGenerator(gd, b, rules.LetterDistribution()), nil
+}
+
+func WordGraph() (*kwg.KWG, error) {
+	if err := Ready(); err != nil {
+		return nil, err
+	}
+	return kwg.GetKWG(cfg.WGLConfig(), Lexicon, kwg.WithDistribution(distribution))
 }
 
 func CrossSets() (cross_set.Generator, error) {

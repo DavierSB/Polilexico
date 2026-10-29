@@ -103,8 +103,8 @@ jugador con los del rival en cada partida; al tocar un punto, se abre esa partid
 
 Cuatro esquemas de color, cada uno con su tablero: Polimita, Hoja, Celeste y Noche. El tema de la
 app se elige en el menú lateral; en una partida contra un rival se usa el de ese rival, y también
-se puede cambiar desde la partida. El tablero puede ser oscuro o claro, y los colores de las
-casillas dobles y triples se pueden intercambiar.
+se puede cambiar desde la partida. El tablero puede ser oscuro o claro; como en uno real, las
+casillas dobles van en un tono apagado y más claro que las triples.
 
 <p align="center">
   <img src="screenshots/home.png" width="200" alt="Tema Polimita">

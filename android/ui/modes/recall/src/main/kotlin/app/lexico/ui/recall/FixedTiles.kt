@@ -8,8 +8,12 @@ object FixedTiles {
   fun choose(tiles: List<String>, random: Random = Random.Default, isWord: (String) -> Boolean = { false }): Set<Int> {
     val count = tiles.size - RACK_SIZE
     if (count <= 0) return emptySet()
+    return options(tiles, count, isWord).toList().random(random)
+  }
+
+  fun options(tiles: List<String>, count: Int, isWord: (String) -> Boolean): Sequence<Set<Int>> {
     val valid = memoized(isWord)
-    return subsets(tiles.size, count).filter { fixed -> runsAreWords(tiles, fixed, valid) }.toList().random(random)
+    return subsets(tiles.size, count).filter { fixed -> runsAreWords(tiles, fixed, valid) }
   }
 
   fun runs(fixed: Set<Int>): List<List<Int>> =

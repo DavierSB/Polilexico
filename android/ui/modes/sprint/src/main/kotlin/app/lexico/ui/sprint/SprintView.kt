@@ -19,7 +19,11 @@ data class HandResult(val outcome: Outcome, val answer: Bingo?, val bingos: List
 
 enum class Outcome { SOLVED, TIMEOUT, GAVE_UP, INVALID }
 
-data class Bingo(val placement: String, val score: Int, val text: String)
+data class Bingo(val placement: String, val score: Int, val text: String) {
+  val word: String get() = text.trim().substringAfter(' ')
+
+  val at: String get() = text.trim().substringBefore(' ')
+}
 
 data class SprintView(
   val phase: Phase,
@@ -30,6 +34,7 @@ data class SprintView(
   val paused: Boolean = false,
   val best: Int = 0,
   val record: Record? = null,
+  val played: List<Bingo> = emptyList(),
 )
 
 data class Record(val best: Int, val isNew: Boolean)

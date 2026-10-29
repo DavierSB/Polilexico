@@ -31,13 +31,11 @@ import app.lexico.ui.common.PolimitaColors
 import app.lexico.ui.common.SkyColors
 
 @Immutable
-data class BoardLook(val light: Boolean = false, val swapped: Boolean = false)
+data class BoardLook(val light: Boolean = false)
 
 @Immutable
 data class AppTheme(val name: String, val colors: ColorScheme, val dark: BoardStyle, val light: BoardStyle) {
-  fun board(look: BoardLook): BoardStyle = shade(look.light).let { if (look.swapped) it.swapped() else it }
-
-  private fun shade(lightBoard: Boolean): BoardStyle = if (lightBoard) light else dark
+  fun board(look: BoardLook): BoardStyle = if (look.light) light else dark
 }
 
 object AppThemes {
@@ -68,7 +66,6 @@ fun ThemeDialog(
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         AppThemes.ALL.forEach { ThemeChoice(it, look, selected = it == current) { choose(it); close() } }
         LookSwitch("Tablero claro", look.light) { chooseLook(look.copy(light = it)) }
-        LookSwitch("Intercambiar dobles y triples", look.swapped) { chooseLook(look.copy(swapped = it)) }
       }
     },
   )

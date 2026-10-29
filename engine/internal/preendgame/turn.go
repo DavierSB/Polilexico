@@ -17,18 +17,34 @@ type Turn struct {
 
 func Prepare(g *game.Game) *Turn {
 	bag := g.Bag().TilesRemaining()
-	if bag == 0 || bag > reach {
+	if !Applies(bag) {
 		return nil
 	}
-	return &Turn{game: g.Copy(), drawBase: drawBase(g, bag)}
+	return PrepareFrom(g, drawBase(g, bag))
+}
+
+func Applies(bag int) bool {
+	return bag > 0 && bag <= reach
+}
+
+func PrepareFrom(g *game.Game, drawBase int) *Turn {
+	return &Turn{game: g.Copy(), drawBase: drawBase}
 }
 
 func (t *Turn) Move(c Config) (*move.Move, error) {
+	a, err := t.Analyze(c)
+	if err != nil {
+		return nil, err
+	}
+	return core.CopyMove(a.best()), nil
+}
+
+func (t *Turn) Analyze(c Config) (*Analysis, error) {
 	b, err := newBot(t.game, c)
 	if err != nil {
 		return nil, err
 	}
-	return core.CopyMove(b.move(t.drawBase)), nil
+	return &Analysis{bot: b, situation: b.situation(t.drawBase)}, nil
 }
 
 func drawBase(g *game.Game, bag int) int {

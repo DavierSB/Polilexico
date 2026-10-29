@@ -28,6 +28,7 @@ private val SAVED_AT = SimpleDateFormat("d MMM, HH:mm", Locale("es"))
 private val FINISHED_AT = SimpleDateFormat("d/M/yyyy HH:mm", Locale("es"))
 private const val ME = "Tú"
 private const val MASTER = "Máster"
+private const val RIVAL = "Rival"
 private const val RACK = 7
 private const val TIE = 1e-6
 
@@ -55,6 +56,9 @@ fun reviewView(review: GameReview): ReviewView {
     classic = equity, efficiency = efficiency(review), moves = movesTable(review, opponent),
   )
 }
+
+fun positionView(turn: ReviewTurn): ReviewView =
+  ReviewView("Análisis", listOf(turnView(turn, equity = true, opponent = RIVAL)), opponent = RIVAL, classic = true, photo = false)
 
 private fun efficiency(review: GameReview): Efficiency? {
   if (review.game.mode != Mode.DUPLICATE) return null
@@ -108,6 +112,7 @@ private fun turnView(t: ReviewTurn, equity: Boolean, opponent: String): ReviewTu
   return ReviewTurnView(
     t.number, alias(t.player), t.rack, t.board, candidates(t, equity), t.marks.map { markView(it, t, equity) },
     t.myScore, t.opponentScore, mine(t.player, opponent), unseen, bag(unseen, equity), endgame = equity && t.endgame,
+    preEndgame = equity && t.preEndgame,
   )
 }
 

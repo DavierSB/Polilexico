@@ -29,19 +29,6 @@ func newBot(g *game.Game, c Config) (*preBot, error) {
 	return &preBot{game: g, config: c, hasty: hasty, spots: spots, letters: ls}, err
 }
 
-func (b *preBot) move(drawBase int) *move.Move {
-	s := b.situation(drawBase)
-	top := b.hasty.GenerateMoves(1)[0]
-	if s.where == onBoard {
-		return top
-	}
-	plays := b.hasty.GenerateMoves(allPlays)
-	if m := b.bingoOrPass(s, plays); m != nil {
-		return m
-	}
-	return b.choose(top, plays, s)
-}
-
 func (b *preBot) bingoOrPass(s situation, plays []*move.Move) *move.Move {
 	g := b.game
 	if s.where != unseen || s.bag > game.RackTileLimit || !ahead(g, g.PlayerOnTurn(), s.unseen) {

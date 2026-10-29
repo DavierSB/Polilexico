@@ -4,6 +4,7 @@ import app.lexico.game.Outcome
 import app.lexico.game.records.FinishedGame
 import app.lexico.game.records.Statistics
 import app.lexico.game.storage.Mode
+import app.lexico.game.storage.UnfinishedGame
 import app.lexico.ui.classic.alias
 import app.lexico.ui.games.ChartGame
 import app.lexico.ui.games.StatsFilter
@@ -13,35 +14,46 @@ import app.lexico.ui.games.StatsPage
 private const val EFFICIENCY_NOTE =
   "Efectividad: tus puntos como porcentaje de los del máster. Acierto: un turno con el mismo puntaje que el máster."
 
-fun statsPage(filter: StatsFilter, games: List<FinishedGame>, reset: Boolean): StatsPage {
-  val chosen = games.filter { it.mode == mode(filter.mode) && (filter.opponent == null || alias(it.opponent) == filter.opponent) }
+data class StatsGames(val finished: List<FinishedGame>, val abandoned: List<UnfinishedGame>, val inProgress: List<UnfinishedGame>)
+
+fun statsPage(filter: StatsFilter, games: StatsGames, reset: Boolean): StatsPage {
+  val chosen = games.finished.filter { chosen(filter, it.mode, it.opponent) }
+  val stats = Statistics.of(chosen, games.abandoned.count { chosen(filter, it.mode, it.opponent) }, games.inProgress.count { chosen(filter, it.mode, it.opponent) })
   val empty = emptyText(filter.opponent, reset)
   return when {
-    chosen.isEmpty() -> StatsPage(emptyList(), empty, null, emptyList())
-    filter.mode == StatsMode.CLASSIC -> StatsPage(classicRows(Statistics.of(chosen)), empty, null, chosen.map(::chartGame))
-    else -> StatsPage(duplicateRows(Statistics.of(chosen)), empty, EFFICIENCY_NOTE, chosen.map(::chartGame))
+    stats.started == 0 -> StatsPage(emptyList(), empty, null, emptyList())
+    filter.mode == StatsMode.CLASSIC -> StatsPage(classicRows(stats), empty, null, chosen.map(::chartGame))
+    else -> StatsPage(duplicateRows(stats), empty, EFFICIENCY_NOTE.takeIf { stats.games > 0 }, chosen.map(::chartGame))
   }
 }
+
+private fun chosen(filter: StatsFilter, mode: Mode, opponent: String): Boolean =
+  mode == mode(filter.mode) && (filter.opponent == null || alias(opponent) == filter.opponent)
 
 private fun mode(mode: StatsMode): Mode = if (mode == StatsMode.CLASSIC) Mode.CLASSIC else Mode.DUPLICATE
 
 private fun emptyText(opponent: String?, reset: Boolean): String = when {
-  reset -> "Aún no hay partidas terminadas desde que reiniciaste las estadísticas."
-  opponent != null -> "Aún no hay partidas terminadas contra $opponent."
-  else -> "Aún no hay partidas terminadas."
+  reset -> "Aún no hay partidas desde que reiniciaste las estadísticas."
+  opponent != null -> "Aún no hay partidas contra $opponent."
+  else -> "Aún no hay partidas."
 }
 
-private fun classicRows(s: Statistics): List<Pair<String, String>> = listOf(
-  "Partidas" to "${s.games}",
-  "Victorias" to "${s.wins}  (${s.wins * 100 / s.games} %)",
+private fun countRows(s: Statistics): List<Pair<String, String>> = listOf(
+  "Partidas iniciadas" to "${s.started}",
+  "Terminadas" to "${s.games}",
+  "Abandonadas" to "${s.abandoned}",
+)
+
+private fun classicRows(s: Statistics): List<Pair<String, String>> = countRows(s) + listOf(
+  "Victorias" to "${s.wins}  (%.0f %%)".format(s.winRate),
+) + if (s.games == 0) emptyList() else listOf(
   "Promedio de puntos" to "%.0f".format(s.averageScore),
   "Puntuación máxima" to "${s.bestScore}",
   "Scrabbles" to "${s.bingos}  (%.1f por partida)".format(s.bingos.toDouble() / s.games),
   "Palabra más valiosa" to bestWord(s),
 )
 
-private fun duplicateRows(s: Statistics): List<Pair<String, String>> = listOf(
-  "Partidas" to "${s.games}",
+private fun duplicateRows(s: Statistics): List<Pair<String, String>> = countRows(s) + if (s.games == 0) emptyList() else listOf(
   "Aciertos" to percent(s.hitRate),
   "Efectividad promedio" to percent(s.averageEfficiency),
   "Mejor efectividad" to percent(s.bestEfficiency),

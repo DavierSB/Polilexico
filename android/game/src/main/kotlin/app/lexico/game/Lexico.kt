@@ -2,8 +2,13 @@ package app.lexico.game
 
 import android.content.Context
 import app.lexico.engine.WooglesEngine
+import app.lexico.game.analysis.Anagrammer
 import app.lexico.game.analysis.EngineAnalyst
+import app.lexico.game.analysis.PositionStudies
+import app.lexico.game.dictionary.OfflineDictionary
 import app.lexico.game.engine.engine
+import app.lexico.game.lists.ListFiles
+import app.lexico.game.lists.WordData
 import app.lexico.game.modes.classic.ClassicGame
 import app.lexico.game.modes.classic.ClassicSetup
 import app.lexico.game.modes.classic.EndgameSetup
@@ -12,11 +17,13 @@ import app.lexico.game.modes.duplicate.DuplicateSetup
 import app.lexico.game.modes.recall.DemoGames
 import app.lexico.game.modes.sprint.SprintGame
 import app.lexico.game.modes.sprint.SprintSetup
+import app.lexico.game.records.AnagramRecords
 import app.lexico.game.records.DuplicateRecords
 import app.lexico.game.records.FinishedGames
 import app.lexico.game.records.RecallRecords
 import app.lexico.game.records.SprintRecords
 import app.lexico.game.scoring.EngineScorer
+import app.lexico.game.storage.AbandonedGames
 import app.lexico.game.storage.Mode
 import app.lexico.game.storage.SavedGame
 import app.lexico.game.storage.SavedGames
@@ -30,11 +37,15 @@ import kotlinx.coroutines.SupervisorJob
 class Lexico(private val context: Context) {
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-  val savedGames = SavedGames(File(context.filesDir, "in_progress"))
+  val savedGames = SavedGames(File(context.filesDir, "in_progress"), AbandonedGames(File(context.filesDir, "abandoned.tsv")))
 
   val finishedGames = FinishedGames(File(context.filesDir, "games"))
 
   val analyst = EngineAnalyst()
+
+  val studies = PositionStudies()
+
+  val anagrammer = Anagrammer()
 
   val scorer = EngineScorer()
 
@@ -45,6 +56,14 @@ class Lexico(private val context: Context) {
   val recallRecords = RecallRecords(context)
 
   val duplicateRecords = DuplicateRecords(context)
+
+  val anagramRecords = AnagramRecords(context)
+
+  val wordData = WordData(context)
+
+  val wordLists = ListFiles(File(context.filesDir, "lists"))
+
+  val dictionary = OfflineDictionary(context)
 
   suspend fun start() = engine { WooglesEngine.start(context) }
 

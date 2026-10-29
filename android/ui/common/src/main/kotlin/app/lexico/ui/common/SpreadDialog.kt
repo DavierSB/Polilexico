@@ -27,12 +27,15 @@ fun SpreadDialog(
 }
 
 @Composable
-fun EfficiencyDialog(efficiency: Efficiency, close: () -> Unit, selected: Int? = null, pick: ((Int) -> Unit)? = null) {
+fun EfficiencyDialog(
+  efficiency: Efficiency, close: () -> Unit, selected: Int? = null, pick: ((Int) -> Unit)? = null, actions: (@Composable () -> Unit)? = null,
+) {
   var view by remember { mutableStateOf(EfficiencyView.RUNNING) }
   ChartDialog("Eficiencia", close) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       EfficiencySwitch(view) { view = it }
       EfficiencyChart(efficiency, view, selected = selected, pick = pick, tapped = close)
+      actions?.invoke()
     }
   }
 }

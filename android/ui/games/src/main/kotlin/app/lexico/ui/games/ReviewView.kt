@@ -14,6 +14,7 @@ data class ReviewView(
   val classic: Boolean = false,
   val efficiency: Efficiency? = null,
   val moves: MovesTable = MovesTable("", "", emptyList()),
+  val photo: Boolean = classic,
 )
 
 data class ReviewTurnView(
@@ -29,6 +30,7 @@ data class ReviewTurnView(
   val unseen: List<String> = emptyList(),
   val bag: Int = 0,
   val endgame: Boolean = false,
+  val preEndgame: Boolean = false,
 )
 
 data class MarkView(val who: String, val move: RankedMove, val rank: Int?)

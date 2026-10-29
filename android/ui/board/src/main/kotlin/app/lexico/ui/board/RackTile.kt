@@ -14,9 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import app.lexico.model.Letters
 
 private val MIN_SIZE_WITH_VALUE = 30.dp
@@ -44,10 +44,10 @@ private fun Modifier.tileFace(style: BoardStyle, shape: Shape, marked: Boolean):
 
 @Composable
 private fun BoxScope.TileLabel(letter: String, style: BoardStyle, size: Dp) {
-  val px = size.value
+  val density = LocalDensity.current
   Text(letter, color = style.letter, fontWeight = style.fontWeight, fontFamily = style.fontFamily,
-    fontSize = (px * if (letter.length > 1) 0.36f else 0.55f).sp)
+    fontSize = with(density) { (size * if (letter.length > 1) 0.36f else 0.55f).toSp() }, softWrap = false)
   if (size < MIN_SIZE_WITH_VALUE) return
-  Text("${Letters.value(letter)}", color = style.value, fontSize = (px * 0.22f).sp,
+  Text("${Letters.value(letter)}", color = style.value, fontSize = with(density) { (size * 0.22f).toSp() }, softWrap = false,
     modifier = Modifier.align(Alignment.BottomEnd).padding(end = 3.dp, bottom = 1.dp))
 }

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import app.lexico.model.Board
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.ScrabbleBoard
+import app.lexico.ui.board.WordTap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -31,7 +32,7 @@ fun DemoBoard(nextGame: suspend () -> List<String>, style: BoardStyle, modifier:
     }
   }
   Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-    ScrabbleBoard(board, Modifier.aspectRatio(1f, matchHeightConstraintsFirst = true), style)
+    ScrabbleBoard(board, Modifier.aspectRatio(1f, matchHeightConstraintsFirst = true), style, wordTap = WordTap.OPEN)
   }
 }
 

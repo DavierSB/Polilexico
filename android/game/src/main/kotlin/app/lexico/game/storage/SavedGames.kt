@@ -12,9 +12,13 @@ data class GameProgress(
   val myScore: Int, val opponentScore: Int, val opponent: String? = null, val round: Int? = null, val humanStarts: Boolean = true,
 )
 
-class SavedGames(private val dir: File) {
+class SavedGames(private val dir: File, private val abandoned: AbandonedGames) {
   fun list(): List<SavedGame> =
     dir.listFiles().orEmpty().mapNotNull(::savedGameOf).sortedByDescending { it.updatedAt }
+
+  fun unfinished(): List<UnfinishedGame> = list().map { UnfinishedGame(it.mode, progress(it)?.opponent.orEmpty(), it.updatedAt) }
+
+  fun abandonedGames(): List<UnfinishedGame> = abandoned.list()
 
   fun read(game: SavedGame): String = file(game.id, game.mode).readText()
 
@@ -35,6 +39,12 @@ class SavedGames(private val dir: File) {
 
   fun delete(id: String, mode: Mode) {
     file(id, mode).delete()
+  }
+
+  fun abandon(id: String, mode: Mode) {
+    val opponent = progress(SavedGame(id, mode, 0))?.opponent.orEmpty()
+    abandoned.add(UnfinishedGame(mode, opponent, System.currentTimeMillis()))
+    delete(id, mode)
   }
 
   private fun file(id: String, mode: Mode): File = File(dir, "$id.${mode.name.lowercase()}")

@@ -35,6 +35,12 @@ class PositionEditor {
   var version by mutableIntStateOf(0)
     private set
 
+  var myScore by mutableIntStateOf(0)
+  var opponentScore by mutableIntStateOf(0)
+  var scored by mutableStateOf(false)
+
+  fun position(): EditedPosition = EditedPosition(state.board, rack.toList(), myScore, opponentScore)
+
   fun tapSquare(p: Position) {
     val chosen = letter
     when {
@@ -76,6 +82,9 @@ class PositionEditor {
     state.reset(Board.EMPTY)
     rack.clear()
     letter = null
+    myScore = 0
+    opponentScore = 0
+    scored = false
     version++
   }
 

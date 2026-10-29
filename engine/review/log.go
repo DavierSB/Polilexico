@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"lexico/engine/internal/core"
+	"lexico/engine/internal/preendgame"
 )
 
 type gameLog struct {
@@ -35,15 +36,16 @@ func classicGame(log gameLog) *Game {
 	g := &Game{Mode: classicMode(log), StartedAt: log.StartedAt, Opponent: log.BotName,
 		MyScore: log.FinalScores[0], OpponentScore: log.FinalScores[1], Outcome: classicOutcome(log),
 		StartTurn: log.StartTurn, HumanStarts: humanStarts(log)}
-	board, scores := newGrid(), &tally{}
+	board, scores, drawn := newGrid(), &tally{}, 0
 	for i, t := range log.Turns {
 		mine := t.PlayerName == log.HumanName
-		g.turns = append(g.turns, classicTurn(t, board, scores, mine))
+		g.turns = append(g.turns, classicTurn(t, board, scores, mine, drawn))
 		if mine && i >= log.StartTurn {
 			g.notePlay(board, t.ActualPlay)
 		}
 		scores.add(mine, t.ActualPlay.Score)
 		board.play(t.ActualPlay.Description)
+		drawn = placedBy(t.ActualPlay.Description)
 	}
 	return g
 }
@@ -73,11 +75,13 @@ func duplicateGame(log gameLog) *Game {
 	return g
 }
 
-func classicTurn(t turnLog, board *grid, scores *tally, mine bool) *Turn {
+func classicTurn(t turnLog, board *grid, scores *tally, mine bool, drawn int) *Turn {
 	turn := newTurn(t, t.PlayerName, board, scores, moves(t.GenList, true))
 	turn.marks = []*Mark{turn.mark(t.PlayerName, move(t.ActualPlay, true))}
 	turn.position = positionOf(t.Rack, scores, mine)
 	turn.Endgame = turn.bagEmpty()
+	turn.PreEndgame = preendgame.Applies(turn.bag())
+	turn.drawBase = turn.bag() + drawn
 	return turn
 }
 

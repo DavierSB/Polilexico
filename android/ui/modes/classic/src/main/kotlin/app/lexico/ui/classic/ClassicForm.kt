@@ -16,7 +16,7 @@ internal class ClassicForm {
   var opponent by mutableStateOf("HastyBot")
   var starter by mutableStateOf(0)
   var single by mutableStateOf(true)
-  var timed by mutableStateOf(true)
+  var timed by mutableStateOf(false)
   var time by mutableStateOf(Durations.format(ClassicConfig().timeMs))
   var overtime by mutableStateOf(Durations.format(ClassicConfig().overtimeMs))
 

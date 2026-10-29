@@ -19,10 +19,10 @@ import app.lexico.ui.board.BoardStyle
 private val MAX_TILE = 52.dp
 private val TILE_GAP = 4.dp
 
-internal val HIT = Color(0xFF2E7D32)
+val HIT = Color(0xFF2E7D32)
 
 @Composable
-internal fun TileLine(count: Int, tile: @Composable (index: Int, size: Dp) -> Unit) {
+fun TileLine(count: Int, tile: @Composable (index: Int, size: Dp) -> Unit) {
   BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
     val size = minOf(MAX_TILE, (maxWidth - TILE_GAP * (count - 1)) / count)
     Row(horizontalArrangement = Arrangement.spacedBy(TILE_GAP)) {
@@ -32,7 +32,7 @@ internal fun TileLine(count: Int, tile: @Composable (index: Int, size: Dp) -> Un
 }
 
 @Composable
-internal fun EmptySlot(style: BoardStyle, size: Dp) {
+fun EmptySlot(style: BoardStyle, size: Dp) {
   val shape = RoundedCornerShape(size * style.rounding)
   Box(Modifier.size(size).border(2.dp, style.tileBorder.takeIf { it != Color.Transparent } ?: style.lines, shape))
 }

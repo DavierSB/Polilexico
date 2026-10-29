@@ -10,7 +10,7 @@ data class WordToRecall(val tiles: List<String>, val score: Int, val fixed: Set<
   val text: String get() = tiles.joinToString("")
 }
 
-internal fun dictionaryText(tiles: List<String>): String = tiles.joinToString("") { if (it.length > 1) "[$it]" else it }
+fun dictionaryText(tiles: List<String>): String = tiles.joinToString("") { if (it.length > 1) "[$it]" else it }
 
 object Words {
   const val MIN_TILES = 3

@@ -32,21 +32,21 @@ import app.lexico.ui.common.LexicoIcons
 data class InProgressItem(val id: String, val title: String, val detail: String, val score: String? = null, val note: String? = null)
 
 @Composable
-fun InProgressScreen(items: List<InProgressItem>, onBack: () -> Unit, onOpen: (String) -> Unit, onDelete: (Set<String>) -> Unit) {
+fun InProgressScreen(title: String, items: List<InProgressItem>, onBack: () -> Unit, onOpen: (String) -> Unit, onDelete: (Set<String>) -> Unit) {
   var selected by remember { mutableStateOf(emptySet<String>()) }
   var confirming by remember { mutableStateOf(false) }
   val selecting = selected.isNotEmpty()
   BackHandler(enabled = selecting) { selected = emptySet() }
   Column(Modifier.fillMaxSize()) {
-    InProgressHeader(selected.size, onBack, onClear = { selected = emptySet() }, onTrash = { confirming = true })
+    InProgressHeader(title, selected.size, onBack, onClear = { selected = emptySet() }, onTrash = { confirming = true })
     InProgressBody(items, selected, onOpen) { id -> selected = selected.toggle(id) }
   }
   if (confirming) DeleteDialog(selected.size, onDelete = { onDelete(selected); selected = emptySet(); confirming = false }) { confirming = false }
 }
 
 @Composable
-private fun InProgressHeader(count: Int, onBack: () -> Unit, onClear: () -> Unit, onTrash: () -> Unit) {
-  if (count == 0) return Header("Partidas en curso", onBack)
+private fun InProgressHeader(title: String, count: Int, onBack: () -> Unit, onClear: () -> Unit, onTrash: () -> Unit) {
+  if (count == 0) return Header(title, onBack)
   Header(selectedText(count), onClear) { BarIconButton(LexicoIcons.Trash, "Borrar", onTrash) }
 }
 
@@ -101,8 +101,9 @@ private fun Hint() {
 
 @Composable
 private fun DeleteDialog(count: Int, onDelete: () -> Unit, onKeep: () -> Unit) {
-  val what = if (count == 1) "la partida seleccionada" else "las $count partidas seleccionadas"
-  ConfirmDialog("¿Borrar $what? No se podrán continuar.", yes = "Borrar", no = "No", onYes = onDelete, onNo = onKeep)
+  val question = if (count == 1) "¿Borrar la partida seleccionada? No se podrá continuar y contará como abandonada."
+    else "¿Borrar las $count partidas seleccionadas? No se podrán continuar y contarán como abandonadas."
+  ConfirmDialog(question, yes = "Borrar", no = "No", onYes = onDelete, onNo = onKeep)
 }
 
 private fun selectedText(count: Int): String = if (count == 1) "1 seleccionada" else "$count seleccionadas"

@@ -57,6 +57,8 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
 
   val hasPlaced: Boolean get() = placed.isNotEmpty()
 
+  val idle: Boolean get() = state.arrow == null && selected == null && drag.tile == null && !exchanging && pendingBlank == null
+
   fun recall() {
     state.clear()
     placed.clear()

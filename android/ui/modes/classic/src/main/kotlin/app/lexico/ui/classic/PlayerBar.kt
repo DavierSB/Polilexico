@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.ui.common.Durations
@@ -41,7 +42,7 @@ fun PlayerBar(
 ) {
   Row(Modifier.fillMaxWidth().turnBorder(onTurn, framed).padding(horizontal = 10.dp, vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
     Identity(name, thinking, photo, tilesBeside, tiles)
-    Text("$points", Modifier.padding(horizontal = 10.dp), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+    Text("$points", Modifier.padding(horizontal = 10.dp), fontSize = 22.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
     if (clock != null) PlayerClock(clock, onTurn)
   }
 }
@@ -59,7 +60,7 @@ private fun RowScope.Identity(
   Column(Modifier.weight(1f)) {
     Row(verticalAlignment = Alignment.CenterVertically) {
       photo?.let { it(); Spacer(Modifier.width(6.dp)) }
-      Text(name, fontWeight = FontWeight.Bold)
+      Text(name, Modifier.weight(1f, fill = false), fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
       if (thinking) Text("  pensando…", style = MaterialTheme.typography.labelSmall)
       if (tilesBeside) Row(Modifier.padding(start = 10.dp), Arrangement.spacedBy(2.dp)) { tiles() }
     }
@@ -72,8 +73,9 @@ private fun PlayerClock(clock: Clock, onTurn: Boolean) {
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
     Text(
       if (clock.inOvertime) "-" + Durations.format(-clock.remainingMs) else Durations.format(clock.remainingMs),
-      Modifier.background(clockFill(clock, onTurn), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 4.dp).width(58.dp),
+      Modifier.background(clockFill(clock, onTurn), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 4.dp),
       color = clockInk(clock, onTurn), fontFamily = FontFamily.Monospace, fontSize = 16.sp, textAlign = TextAlign.Center,
+      maxLines = 1, softWrap = false,
     )
     if (clock.inOvertime) Text("descuento", fontSize = 10.sp, color = OvertimePink)
   }

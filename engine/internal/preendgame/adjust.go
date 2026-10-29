@@ -32,15 +32,27 @@ func (b *preBot) holdingAdjustment(m *move.Move, s situation) float64 {
 }
 
 func (b *preBot) unseenAdjustment(m *move.Move, s situation) float64 {
-	odds := drawOdds(m, s.drawBase)
-	if odds == 0 || b.spots.canPlace(s.board, m, append(slices.Clone(m.Leave()), b.letters.q)) {
-		return 0
+	mine, theirs := b.shares(m, s)
+	adjustment := 0.0
+	if theirs > 0 && b.rivalStuck(m, s) {
+		adjustment += theirs
 	}
-	return -b.config.Penalty * odds
+	if mine > 0 && b.meStuck(m, s) {
+		adjustment -= mine
+	}
+	return b.config.Penalty * adjustment
 }
 
-func drawOdds(m *move.Move, base int) float64 {
-	return min(1, float64(drawn(m))/float64(max(base, 1)))
+func (b *preBot) meStuck(m *move.Move, s situation) bool {
+	return !b.spots.canPlace(s.board, m, append(slices.Clone(m.Leave()), b.letters.q))
+}
+
+func (b *preBot) rivalStuck(m *move.Move, s situation) bool {
+	return !b.spots.anyPlace(s.board, m, s.unseen.TilesOn())
+}
+
+func drawOdds(m *move.Move, bag, base int) float64 {
+	return min(1, float64(drawn(m, bag))/float64(max(base, 1)))
 }
 
 func bagAfter(m *move.Move, bag int) int {
@@ -50,10 +62,10 @@ func bagAfter(m *move.Move, bag int) int {
 	return bag
 }
 
-func drawn(m *move.Move) int {
+func drawn(m *move.Move, bag int) int {
 	switch m.Action() {
 	case move.MoveTypePlay:
-		return m.TilesPlayed()
+		return min(m.TilesPlayed(), bag)
 	case move.MoveTypeExchange:
 		return len(m.Tiles())
 	}

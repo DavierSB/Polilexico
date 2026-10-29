@@ -39,11 +39,16 @@ data class ReviewTurn(
   val myScore: Int = 0,
   val opponentScore: Int = 0,
   val endgame: Boolean = false,
+  val preEndgame: Boolean = false,
 )
 
 data class ReviewMove(val text: String, val score: Int, val equity: Double?, val placement: Placement?)
 
 data class ReviewMark(val who: String, val move: ReviewMove, val rank: Int?)
+
+data class PreEndgameReview(val moves: List<RatedMove>, val played: RatedMove?, val playedRank: Int?, val verdict: String, val done: Boolean)
+
+data class RatedMove(val move: ReviewMove, val adjustment: Double, val verdict: String)
 
 data class EndgameReview(val lines: List<EndgameLine>, val depth: Int = 0, val exact: Boolean = false)
 

@@ -1,0 +1,2195 @@
+{
+  "started_at": "2026-10-22T23:47:00.423163741Z",
+  "human_name": "Tú",
+  "bot_name": "HastyBot",
+  "turns": [
+    {
+      "turn_num": 1,
+      "player_name": "Tú",
+      "rack": "DEGNSSU",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n  B|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m                 \u001b[35m-\u001b[0m              |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     |\n  K|            \u001b[35m-\u001b[0m                 \u001b[35m-\u001b[0m              |\n  L|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "H8",
+          "description": "H8 UNGES (14 pts)",
+          "score": 14,
+          "equity": 16.32658100128174
+        },
+        {
+          "coords": "H4",
+          "description": "H4 NEGUS (14 pts)",
+          "score": 14,
+          "equity": 15.626581001281739
+        },
+        {
+          "coords": "H4",
+          "description": "H4 SEGUN (14 pts)",
+          "score": 14,
+          "equity": 15.626581001281739
+        },
+        {
+          "coords": "H4",
+          "description": "H4 UNGES (14 pts)",
+          "score": 14,
+          "equity": 15.626581001281739
+        },
+        {
+          "coords": "H8",
+          "description": "H8 NEGUS (14 pts)",
+          "score": 14,
+          "equity": 15.626581001281739
+        },
+        {
+          "coords": "H8",
+          "description": "H8 SEGUN (14 pts)",
+          "score": 14,
+          "equity": 15.626581001281739
+        },
+        {
+          "coords": "H5",
+          "description": "H5 NEGUS (12 pts)",
+          "score": 12,
+          "equity": 14.326581001281738
+        },
+        {
+          "coords": "H5",
+          "description": "H5 SEGUN (12 pts)",
+          "score": 12,
+          "equity": 14.326581001281738
+        },
+        {
+          "coords": "H5",
+          "description": "H5 UNGES (12 pts)",
+          "score": 12,
+          "equity": 14.326581001281738
+        },
+        {
+          "coords": "H7",
+          "description": "H7 NEGUS (12 pts)",
+          "score": 12,
+          "equity": 14.326581001281738
+        },
+        {
+          "coords": "H7",
+          "description": "H7 SEGUN (12 pts)",
+          "score": 12,
+          "equity": 14.326581001281738
+        },
+        {
+          "coords": "H6",
+          "description": "H6 UNGES (12 pts)",
+          "score": 12,
+          "equity": 13.626581001281739
+        },
+        {
+          "coords": "H7",
+          "description": "H7 UNGES (12 pts)",
+          "score": 12,
+          "equity": 13.626581001281739
+        },
+        {
+          "coords": "H6",
+          "description": "H6 NEGUS (12 pts)",
+          "score": 12,
+          "equity": 12.926581001281738
+        },
+        {
+          "coords": "H6",
+          "description": "H6 SEGUN (12 pts)",
+          "score": 12,
+          "equity": 12.926581001281738
+        }
+      ],
+      "actual_play": {
+        "coords": "H8",
+        "description": "H8 UNGES (14 pts)",
+        "score": 14,
+        "equity": 16.32658100128174
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 2,
+      "player_name": "HastyBot",
+      "rack": "AAEHIRR",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n  B|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m                 \u001b[35m-\u001b[0m              |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     |\n  K|            \u001b[35m-\u001b[0m                 \u001b[35m-\u001b[0m              |\n  L|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "12A",
+          "description": "12A REHARIA. (74 pts)",
+          "score": 74,
+          "equity": 74
+        },
+        {
+          "coords": "9A",
+          "description": "9A REHARIA. (66 pts)",
+          "score": 66,
+          "equity": 66
+        },
+        {
+          "coords": "9D",
+          "description": "9D HARI.EAR (63 pts)",
+          "score": 63,
+          "equity": 63
+        },
+        {
+          "coords": "9D",
+          "description": "9D HARI.ERA (63 pts)",
+          "score": 63,
+          "equity": 63
+        },
+        {
+          "coords": "9E",
+          "description": "9E HER.IARA (63 pts)",
+          "score": 63,
+          "equity": 63
+        },
+        {
+          "coords": "11E",
+          "description": "11E REH.RIA (40 pts)",
+          "score": 40,
+          "equity": 46.55724287033081
+        },
+        {
+          "coords": "I8",
+          "description": "I8 HI (14 pts)",
+          "score": 14,
+          "equity": 35.24858474731445
+        },
+        {
+          "coords": "11G",
+          "description": "11G H.RIA (16 pts)",
+          "score": 16,
+          "equity": 33.606706619262695
+        },
+        {
+          "coords": "11D",
+          "description": "11D HIER. (16 pts)",
+          "score": 16,
+          "equity": 33.25061225891113
+        },
+        {
+          "coords": "12D",
+          "description": "12D HERI. (16 pts)",
+          "score": 16,
+          "equity": 33.25061225891113
+        },
+        {
+          "coords": "I11",
+          "description": "I11 HI (12 pts)",
+          "score": 12,
+          "equity": 33.24858474731445
+        },
+        {
+          "coords": "G11",
+          "description": "G11 HER (14 pts)",
+          "score": 14,
+          "equity": 32.60395431518555
+        },
+        {
+          "coords": "I11",
+          "description": "I11 HER (14 pts)",
+          "score": 14,
+          "equity": 32.60395431518555
+        },
+        {
+          "coords": "11E",
+          "description": "11E HAR. (14 pts)",
+          "score": 14,
+          "equity": 32.591238021850586
+        },
+        {
+          "coords": "G11",
+          "description": "G11 HERI (15 pts)",
+          "score": 15,
+          "equity": 32.25061225891113
+        }
+      ],
+      "actual_play": {
+        "coords": "12A",
+        "description": "12A REHARIA. (74 pts)",
+        "score": 74,
+        "equity": 74
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 3,
+      "player_name": "Tú",
+      "rack": "AADEILS",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           R        \u001b[31m=\u001b[0m  |\n  B|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  \u001b[35m-\u001b[0m        |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m           A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m                 \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     |\n  K|            \u001b[35m-\u001b[0m                 \u001b[35m-\u001b[0m              |\n  L|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "A8",
+          "description": "A8 LADE.IAS (131 pts)",
+          "score": 131,
+          "equity": 131
+        },
+        {
+          "coords": "A6",
+          "description": "A6 DESLIA.A (77 pts)",
+          "score": 77,
+          "equity": 77
+        },
+        {
+          "coords": "A6",
+          "description": "A6 SALIDE.A (77 pts)",
+          "score": 77,
+          "equity": 77
+        },
+        {
+          "coords": "E6",
+          "description": "E6 DESLIA.A (68 pts)",
+          "score": 68,
+          "equity": 68
+        },
+        {
+          "coords": "E6",
+          "description": "E6 SALIDE.A (68 pts)",
+          "score": 68,
+          "equity": 68
+        },
+        {
+          "coords": "E8",
+          "description": "E8 LADE.IAS (68 pts)",
+          "score": 68,
+          "equity": 68
+        },
+        {
+          "coords": "9G",
+          "description": "9G E.SILADA (63 pts)",
+          "score": 63,
+          "equity": 63
+        },
+        {
+          "coords": "9E",
+          "description": "9E ALI.DASE (62 pts)",
+          "score": 62,
+          "equity": 62
+        },
+        {
+          "coords": "9F",
+          "description": "9F LI.EADAS (62 pts)",
+          "score": 62,
+          "equity": 62
+        },
+        {
+          "coords": "G2",
+          "description": "G2 LADEAIS (62 pts)",
+          "score": 62,
+          "equity": 62
+        },
+        {
+          "coords": "9H",
+          "description": "9H .IELADAS (62 pts)",
+          "score": 62,
+          "equity": 62
+        },
+        {
+          "coords": "9D",
+          "description": "9D LEDA.IAS (61 pts)",
+          "score": 61,
+          "equity": 61
+        },
+        {
+          "coords": "8E",
+          "description": "8E ALE.DAIS (60 pts)",
+          "score": 60,
+          "equity": 60
+        },
+        {
+          "coords": "13A",
+          "description": "13A ELIDA (31 pts)",
+          "score": 31,
+          "equity": 44.16740894317627
+        },
+        {
+          "coords": "13B",
+          "description": "13B LID (23 pts)",
+          "score": 23,
+          "equity": 43.71573257446289
+        }
+      ],
+      "actual_play": {
+        "coords": "A8",
+        "description": "A8 LADE.IAS (131 pts)",
+        "score": 131,
+        "equity": 131
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 4,
+      "player_name": "HastyBot",
+      "rack": "AEENNOO",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  \u001b[35m-\u001b[0m        |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m           A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m                 \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     |\n  K|            \u001b[35m-\u001b[0m                 \u001b[35m-\u001b[0m              |\n  L|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "10D",
+          "description": "10D ENEA.ONO (63 pts)",
+          "score": 63,
+          "equity": 63
+        },
+        {
+          "coords": "C12",
+          "description": "C12 .ENO (14 pts)",
+          "score": 14,
+          "equity": 29.300002098083496
+        },
+        {
+          "coords": "11A",
+          "description": "11A .NEO (13 pts)",
+          "score": 13,
+          "equity": 28.300002098083496
+        },
+        {
+          "coords": "C10",
+          "description": "C10 EN.ENO (18 pts)",
+          "score": 18,
+          "equity": 25.803401470184326
+        },
+        {
+          "coords": "E11",
+          "description": "E11 O.EN (8 pts)",
+          "score": 8,
+          "equity": 23.300002098083496
+        },
+        {
+          "coords": "E11",
+          "description": "E11 O.NE (8 pts)",
+          "score": 8,
+          "equity": 23.300002098083496
+        },
+        {
+          "coords": "11H",
+          "description": "11H .NEO (8 pts)",
+          "score": 8,
+          "equity": 23.300002098083496
+        },
+        {
+          "coords": "10A",
+          "description": "10A .ONEO (8 pts)",
+          "score": 8,
+          "equity": 22.624659538269043
+        },
+        {
+          "coords": "E9",
+          "description": "E9 ENE.O (10 pts)",
+          "score": 10,
+          "equity": 22.30361557006836
+        },
+        {
+          "coords": "E11",
+          "description": "E11 O.EEN (10 pts)",
+          "score": 10,
+          "equity": 22.30361557006836
+        },
+        {
+          "coords": "10A",
+          "description": "10A .ONE (7 pts)",
+          "score": 7,
+          "equity": 22.300002098083496
+        },
+        {
+          "coords": "B6",
+          "description": "B6 NEO (7 pts)",
+          "score": 7,
+          "equity": 22.300002098083496
+        },
+        {
+          "coords": "10F",
+          "description": "10F NE.O (7 pts)",
+          "score": 7,
+          "equity": 22.300002098083496
+        },
+        {
+          "coords": "10H",
+          "description": "10H .ENO (7 pts)",
+          "score": 7,
+          "equity": 22.300002098083496
+        },
+        {
+          "coords": "11C",
+          "description": "11C ONA (17 pts)",
+          "score": 17,
+          "equity": 21.86014413833618
+        }
+      ],
+      "actual_play": {
+        "coords": "10D",
+        "description": "10D ENEA.ONO (63 pts)",
+        "score": 63,
+        "equity": 63
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 5,
+      "player_name": "Tú",
+      "rack": "ACIOOOP",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  \u001b[35m-\u001b[0m        |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     E     A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           N           \u001b[34m\"\u001b[0m     |\n  K|            \u001b[35m-\u001b[0m              O  \u001b[35m-\u001b[0m              |\n  L|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "C12",
+          "description": "C12 .OPO (18 pts)",
+          "score": 18,
+          "equity": 33.81982135772705
+        },
+        {
+          "coords": "11K",
+          "description": "11K COIPO (26 pts)",
+          "score": 26,
+          "equity": 33.803401470184326
+        },
+        {
+          "coords": "11K",
+          "description": "11K COPIO (26 pts)",
+          "score": 26,
+          "equity": 33.803401470184326
+        },
+        {
+          "coords": "11J",
+          "description": "11J ACOPIO (30 pts)",
+          "score": 30,
+          "equity": 32.109450578689575
+        },
+        {
+          "coords": "7G",
+          "description": "7G OPO (16 pts)",
+          "score": 16,
+          "equity": 31.81982135772705
+        },
+        {
+          "coords": "14A",
+          "description": "14A .COPIO (24 pts)",
+          "score": 24,
+          "equity": 31.803401470184326
+        },
+        {
+          "coords": "7G",
+          "description": "7G OPIO (17 pts)",
+          "score": 17,
+          "equity": 30.633267402648926
+        },
+        {
+          "coords": "11K",
+          "description": "11K COPO (24 pts)",
+          "score": 24,
+          "equity": 30.618417739868164
+        },
+        {
+          "coords": "11J",
+          "description": "11J ACOPO (28 pts)",
+          "score": 28,
+          "equity": 30.4316987991333
+        },
+        {
+          "coords": "11J",
+          "description": "11J OCIO (22 pts)",
+          "score": 22,
+          "equity": 29.3110089302063
+        },
+        {
+          "coords": "E5",
+          "description": "E5 COPIO. (20 pts)",
+          "score": 20,
+          "equity": 27.803401470184326
+        },
+        {
+          "coords": "E5",
+          "description": "E5 OPCIO. (20 pts)",
+          "score": 20,
+          "equity": 27.803401470184326
+        },
+        {
+          "coords": "E5",
+          "description": "E5 POCIO. (20 pts)",
+          "score": 20,
+          "equity": 27.803401470184326
+        },
+        {
+          "coords": "7E",
+          "description": "7E COIPO (20 pts)",
+          "score": 20,
+          "equity": 27.803401470184326
+        },
+        {
+          "coords": "7F",
+          "description": "7F COPIO (20 pts)",
+          "score": 20,
+          "equity": 27.803401470184326
+        }
+      ],
+      "actual_play": {
+        "coords": "C12",
+        "description": "C12 .OPO (18 pts)",
+        "score": 18,
+        "equity": 33.81982135772705
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 6,
+      "player_name": "HastyBot",
+      "rack": "[CH]GIR[RR]SU",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     E     A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           N           \u001b[34m\"\u001b[0m     |\n  K|            \u001b[35m-\u001b[0m              O  \u001b[35m-\u001b[0m              |\n  L|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "K7",
+          "description": "K7 [CH]U[RR].S (32 pts)",
+          "score": 32,
+          "equity": 29.146453619003296
+        },
+        {
+          "coords": "L6",
+          "description": "L6 [CH]U[RR]IS (34 pts)",
+          "score": 34,
+          "equity": 26.867424488067627
+        },
+        {
+          "coords": "9K",
+          "description": "9K [CH]U[RR]I (29 pts)",
+          "score": 29,
+          "equity": 25.019427061080933
+        },
+        {
+          "coords": "9K",
+          "description": "9K [CH]U[RR]IS (30 pts)",
+          "score": 30,
+          "equity": 22.867424488067627
+        },
+        {
+          "coords": "K6",
+          "description": "K6 GUI[RR].S (28 pts)",
+          "score": 28,
+          "equity": 22.712017059326172
+        },
+        {
+          "coords": "J6",
+          "description": "J6 [CH]U[RR]I. (26 pts)",
+          "score": 26,
+          "equity": 22.019427061080933
+        },
+        {
+          "coords": "D7",
+          "description": "D7 [CH]U[RR]. (16 pts)",
+          "score": 16,
+          "equity": 18.073880672454834
+        },
+        {
+          "coords": "F6",
+          "description": "F6 [CH]IGR. (20 pts)",
+          "score": 20,
+          "equity": 17.78255558013916
+        },
+        {
+          "coords": "F7",
+          "description": "F7 [CH]U[RR]. (15 pts)",
+          "score": 15,
+          "equity": 17.073880672454834
+        },
+        {
+          "coords": "K7",
+          "description": "K7 [CH]U[RR]. (15 pts)",
+          "score": 15,
+          "equity": 17.073880672454834
+        },
+        {
+          "coords": "D7",
+          "description": "D7 [CH]U[RR].R. (18 pts)",
+          "score": 18,
+          "equity": 16.72056746482849
+        },
+        {
+          "coords": "D8",
+          "description": "D8 GU.[RR]. (15 pts)",
+          "score": 15,
+          "equity": 16.68657886981964
+        },
+        {
+          "coords": "D8",
+          "description": "D8 GU.[RR].S (18 pts)",
+          "score": 18,
+          "equity": 15.358343362808228
+        },
+        {
+          "coords": "F6",
+          "description": "F6 GUI[RR]. (17 pts)",
+          "score": 17,
+          "equity": 14.22226595878601
+        },
+        {
+          "coords": "D7",
+          "description": "D7 [CH]I[RR]. (16 pts)",
+          "score": 16,
+          "equity": 13.917967796325684
+        }
+      ],
+      "actual_play": {
+        "coords": "K7",
+        "description": "K7 [CH]U[RR].S (32 pts)",
+        "score": 32,
+        "equity": 29.146453619003296
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 7,
+      "player_name": "Tú",
+      "rack": "ACDIOOT",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     E     A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           N           \u001b[34m\"\u001b[0m     |\n  K|            \u001b[35m-\u001b[0m     CH U  RR O  S              |\n  L|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "L1",
+          "description": "L1 COITADO (82 pts)",
+          "score": 82,
+          "equity": 82
+        },
+        {
+          "coords": "B2",
+          "description": "B2 COITADO (76 pts)",
+          "score": 76,
+          "equity": 76
+        },
+        {
+          "coords": "B4",
+          "description": "B4 COITADO (74 pts)",
+          "score": 74,
+          "equity": 74
+        },
+        {
+          "coords": "E3",
+          "description": "E3 DOTACIO. (72 pts)",
+          "score": 72,
+          "equity": 72
+        },
+        {
+          "coords": "12J",
+          "description": "12J COITAD (39 pts)",
+          "score": 39,
+          "equity": 41.109450578689575
+        },
+        {
+          "coords": "12J",
+          "description": "12J DOCTO (33 pts)",
+          "score": 33,
+          "equity": 40.677613735198975
+        },
+        {
+          "coords": "12J",
+          "description": "12J DOTO (27 pts)",
+          "score": 27,
+          "equity": 40.26673984527588
+        },
+        {
+          "coords": "12J",
+          "description": "12J TODO (27 pts)",
+          "score": 27,
+          "equity": 40.26673984527588
+        },
+        {
+          "coords": "12J",
+          "description": "12J COTI (29 pts)",
+          "score": 29,
+          "equity": 39.8225212097168
+        },
+        {
+          "coords": "12K",
+          "description": "12K OTICO (33 pts)",
+          "score": 33,
+          "equity": 39.71067714691162
+        },
+        {
+          "coords": "12J",
+          "description": "12J CODO (31 pts)",
+          "score": 31,
+          "equity": 38.69965744018555
+        },
+        {
+          "coords": "12J",
+          "description": "12J DO (20 pts)",
+          "score": 20,
+          "equity": 38.6628532409668
+        },
+        {
+          "coords": "12J",
+          "description": "12J CATODO (37 pts)",
+          "score": 37,
+          "equity": 38.63826787471771
+        },
+        {
+          "coords": "12J",
+          "description": "12J COTADO (37 pts)",
+          "score": 37,
+          "equity": 38.63826787471771
+        },
+        {
+          "coords": "12J",
+          "description": "12J TOCADO (37 pts)",
+          "score": 37,
+          "equity": 38.63826787471771
+        }
+      ],
+      "actual_play": {
+        "coords": "L1",
+        "description": "L1 COITADO (82 pts)",
+        "score": 82,
+        "equity": 82
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 8,
+      "player_name": "HastyBot",
+      "rack": "GILÑRRU",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     E     A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           N           \u001b[34m\"\u001b[0m     |\n  K|            \u001b[35m-\u001b[0m     CH U  RR O  S              |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "J3",
+          "description": "J3 GRUÑI (36 pts)",
+          "score": 36,
+          "equity": 31.90419912338257
+        },
+        {
+          "coords": "3H",
+          "description": "3H GRUÑ.R (30 pts)",
+          "score": 30,
+          "equity": 28.242398619651794
+        },
+        {
+          "coords": "D4",
+          "description": "D4 GRUÑIR. (32 pts)",
+          "score": 32,
+          "equity": 27.328315258026123
+        },
+        {
+          "coords": "5H",
+          "description": "5H GRUÑ. (26 pts)",
+          "score": 26,
+          "equity": 25.415354907512665
+        },
+        {
+          "coords": "5F",
+          "description": "5F GRUÑIR. (30 pts)",
+          "score": 30,
+          "equity": 25.328315258026123
+        },
+        {
+          "coords": "5G",
+          "description": "5G GRUÑI. (28 pts)",
+          "score": 28,
+          "equity": 23.90419912338257
+        },
+        {
+          "coords": "5H",
+          "description": "5H GUIÑ.R (28 pts)",
+          "score": 28,
+          "equity": 23.90419912338257
+        },
+        {
+          "coords": "5J",
+          "description": "5J GU.ÑIL (28 pts)",
+          "score": 28,
+          "equity": 23.130767822265625
+        },
+        {
+          "coords": "5K",
+          "description": "5K G.ÑIR (26 pts)",
+          "score": 26,
+          "equity": 20.741644859313965
+        },
+        {
+          "coords": "J4",
+          "description": "J4 RUÑI (34 pts)",
+          "score": 34,
+          "equity": 19.661248207092285
+        },
+        {
+          "coords": "5K",
+          "description": "5K G.ÑIL (26 pts)",
+          "score": 26,
+          "equity": 18.663646697998047
+        },
+        {
+          "coords": "F6",
+          "description": "F6 GRUÑ. (17 pts)",
+          "score": 17,
+          "equity": 16.415354907512665
+        },
+        {
+          "coords": "G10",
+          "description": "G10 .R.ÑIL (23 pts)",
+          "score": 23,
+          "equity": 16.16513967514038
+        },
+        {
+          "coords": "3I",
+          "description": "3I RUÑ.R (26 pts)",
+          "score": 26,
+          "equity": 15.624238967895508
+        },
+        {
+          "coords": "2H",
+          "description": "2H GRUÑ. (15 pts)",
+          "score": 15,
+          "equity": 14.415354907512665
+        }
+      ],
+      "actual_play": {
+        "coords": "J3",
+        "description": "J3 GRUÑI (36 pts)",
+        "score": 36,
+        "equity": 31.90419912338257
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 9,
+      "player_name": "Tú",
+      "rack": "CDEJLLS",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     E     A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N           \u001b[34m\"\u001b[0m     |\n  K|            \u001b[35m-\u001b[0m     CH U  RR O  S              |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "5I",
+          "description": "5I L.J.D (26 pts)",
+          "score": 26,
+          "equity": 34.39919471740723
+        },
+        {
+          "coords": "5I",
+          "description": "5I L.J. (22 pts)",
+          "score": 22,
+          "equity": 24.529385089874268
+        },
+        {
+          "coords": "5I",
+          "description": "5I D.C.L (16 pts)",
+          "score": 16,
+          "equity": 24.290518760681152
+        },
+        {
+          "coords": "5I",
+          "description": "5I L.J.S (24 pts)",
+          "score": 24,
+          "equity": 22.36322009563446
+        },
+        {
+          "coords": "5G",
+          "description": "5G CEL.L.S (18 pts)",
+          "score": 18,
+          "equity": 17.967309392988682
+        },
+        {
+          "coords": "5G",
+          "description": "5G CEL.L. (16 pts)",
+          "score": 16,
+          "equity": 17.898541808128357
+        },
+        {
+          "coords": "5F",
+          "description": "5F DESC.L. (20 pts)",
+          "score": 20,
+          "equity": 17.04428768157959
+        },
+        {
+          "coords": "5G",
+          "description": "5G CED.L.S (20 pts)",
+          "score": 20,
+          "equity": 17.04428768157959
+        },
+        {
+          "coords": "5I",
+          "description": "5I D.C.LES (20 pts)",
+          "score": 20,
+          "equity": 17.04428768157959
+        },
+        {
+          "coords": "5G",
+          "description": "5G CED.L. (18 pts)",
+          "score": 18,
+          "equity": 16.893455028533936
+        },
+        {
+          "coords": "5I",
+          "description": "5I L.J.SE (26 pts)",
+          "score": 26,
+          "equity": 16.612725257873535
+        },
+        {
+          "coords": "",
+          "description": "(Cambiar CDLL)",
+          "score": 0,
+          "equity": 16.03846549987793
+        },
+        {
+          "coords": "D9",
+          "description": "D9 L.J. (11 pts)",
+          "score": 11,
+          "equity": 13.529385089874268
+        },
+        {
+          "coords": "",
+          "description": "(Cambiar DJLL)",
+          "score": 0,
+          "equity": 13.230504035949707
+        },
+        {
+          "coords": "D9",
+          "description": "D9 L.J.S (14 pts)",
+          "score": 14,
+          "equity": 12.36322009563446
+        }
+      ],
+      "actual_play": {
+        "coords": "5I",
+        "description": "5I L.J.D (26 pts)",
+        "score": 26,
+        "equity": 34.39919471740723
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 10,
+      "player_name": "HastyBot",
+      "rack": "AEHLMRU",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     E     A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m     L     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N           \u001b[34m\"\u001b[0m     |\n  K|            J     CH U  RR O  S              |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "B3",
+          "description": "B3 HUMERAL (68 pts)",
+          "score": 68,
+          "equity": 68
+        },
+        {
+          "coords": "N2",
+          "description": "N2 HUMAR (38 pts)",
+          "score": 38,
+          "equity": 38.42447054386139
+        },
+        {
+          "coords": "D14",
+          "description": "D14 UH (22 pts)",
+          "score": 22,
+          "equity": 36.9227294921875
+        },
+        {
+          "coords": "N2",
+          "description": "N2 HULAR (34 pts)",
+          "score": 34,
+          "equity": 36.82126045227051
+        },
+        {
+          "coords": "N1",
+          "description": "N1 HUMEAR (40 pts)",
+          "score": 40,
+          "equity": 35.32831525802612
+        },
+        {
+          "coords": "N2",
+          "description": "N2 HUMARE (40 pts)",
+          "score": 40,
+          "equity": 35.32831525802612
+        },
+        {
+          "coords": "N2",
+          "description": "N2 HUMA (32 pts)",
+          "score": 32,
+          "equity": 35.07713294029236
+        },
+        {
+          "coords": "N2",
+          "description": "N2 HULA (28 pts)",
+          "score": 28,
+          "equity": 35.03592252731323
+        },
+        {
+          "coords": "12K",
+          "description": "12K AHUME (39 pts)",
+          "score": 39,
+          "equity": 34.90419912338257
+        },
+        {
+          "coords": "9D",
+          "description": "9D HUM (19 pts)",
+          "score": 19,
+          "equity": 34.19508743286133
+        },
+        {
+          "coords": "N1",
+          "description": "N1 HULEAR (36 pts)",
+          "score": 36,
+          "equity": 33.665767192840576
+        },
+        {
+          "coords": "N2",
+          "description": "N2 HULARE (36 pts)",
+          "score": 36,
+          "equity": 33.665767192840576
+        },
+        {
+          "coords": "9D",
+          "description": "9D HUME. (25 pts)",
+          "score": 25,
+          "equity": 31.615437030792236
+        },
+        {
+          "coords": "9D",
+          "description": "9D HULE. (21 pts)",
+          "score": 21,
+          "equity": 31.55422306060791
+        },
+        {
+          "coords": "D8",
+          "description": "D8 HU.L. (12 pts)",
+          "score": 12,
+          "equity": 30.787662506103516
+        }
+      ],
+      "actual_play": {
+        "coords": "B3",
+        "description": "B3 HUMERAL (68 pts)",
+        "score": 68,
+        "equity": 68
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 11,
+      "player_name": "Tú",
+      "rack": "CEFLOST",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m  H  U  M  E  R  A  L  \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     E     A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m     L     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N           \u001b[34m\"\u001b[0m     |\n  K|            J     CH U  RR O  S              |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|   \u001b[35m-\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "N1",
+          "description": "N1 FLETOS (36 pts)",
+          "score": 36,
+          "equity": 37.41646766662598
+        },
+        {
+          "coords": "N1",
+          "description": "N1 CELFOS (40 pts)",
+          "score": 40,
+          "equity": 36.47761011123657
+        },
+        {
+          "coords": "N1",
+          "description": "N1 FLECOS (40 pts)",
+          "score": 40,
+          "equity": 36.47761011123657
+        },
+        {
+          "coords": "N1",
+          "description": "N1 FLETO (30 pts)",
+          "score": 30,
+          "equity": 35.919419288635254
+        },
+        {
+          "coords": "N1",
+          "description": "N1 CELFO (34 pts)",
+          "score": 34,
+          "equity": 35.90961456298828
+        },
+        {
+          "coords": "N1",
+          "description": "N1 FLECO (34 pts)",
+          "score": 34,
+          "equity": 35.90961456298828
+        },
+        {
+          "coords": "12J",
+          "description": "12J COLT (29 pts)",
+          "score": 29,
+          "equity": 32.423332929611206
+        },
+        {
+          "coords": "D8",
+          "description": "D8 FL.T. (12 pts)",
+          "score": 12,
+          "equity": 31.47625160217285
+        },
+        {
+          "coords": "7I",
+          "description": "7I F... (15 pts)",
+          "score": 15,
+          "equity": 31.33199691772461
+        },
+        {
+          "coords": "4A",
+          "description": "4A F.EL (22 pts)",
+          "score": 22,
+          "equity": 30.81838607788086
+        },
+        {
+          "coords": "12J",
+          "description": "12J TOFE (31 pts)",
+          "score": 31,
+          "equity": 30.36859768629074
+        },
+        {
+          "coords": "N2",
+          "description": "N2 ELFOS (34 pts)",
+          "score": 34,
+          "equity": 30.133042335510254
+        },
+        {
+          "coords": "N2",
+          "description": "N2 FLEOS (34 pts)",
+          "score": 34,
+          "equity": 30.133042335510254
+        },
+        {
+          "coords": "4A",
+          "description": "4A F.ET (22 pts)",
+          "score": 22,
+          "equity": 30.121886253356934
+        },
+        {
+          "coords": "N2",
+          "description": "N2 FETOS (34 pts)",
+          "score": 34,
+          "equity": 30.037493228912354
+        }
+      ],
+      "actual_play": {
+        "coords": "N1",
+        "description": "N1 FLETOS (36 pts)",
+        "score": 36,
+        "equity": 37.41646766662598
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 12,
+      "player_name": "HastyBot",
+      "rack": "DEMOSTX",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m  H  U  M  E  R  A  L  \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     E     A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m     L     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N           \u001b[34m\"\u001b[0m     |\n  K|            J     CH U  RR O  S              |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|F  L  E  T  O  S           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           \u001b[31m=\u001b[0m           \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "O5",
+          "description": "O5 SEXMO (59 pts)",
+          "score": 59,
+          "equity": 50.6791353225708
+        },
+        {
+          "coords": "O5",
+          "description": "O5 SEXTO (53 pts)",
+          "score": 53,
+          "equity": 46.6555814743042
+        },
+        {
+          "coords": "11G",
+          "description": "11G T.X (22 pts)",
+          "score": 22,
+          "equity": 40.17318916320801
+        },
+        {
+          "coords": "12K",
+          "description": "12K OXTE (39 pts)",
+          "score": 39,
+          "equity": 36.002476930618286
+        },
+        {
+          "coords": "D14",
+          "description": "D14 EX (38 pts)",
+          "score": 38,
+          "equity": 35.436017990112305
+        },
+        {
+          "coords": "O5",
+          "description": "O5 SEXO (50 pts)",
+          "score": 50,
+          "equity": 33.995426177978516
+        },
+        {
+          "coords": "11G",
+          "description": "11G T.XE. (26 pts)",
+          "score": 26,
+          "equity": 32.77119064331055
+        },
+        {
+          "coords": "O6",
+          "description": "O6 OXTE (35 pts)",
+          "score": 35,
+          "equity": 32.002476930618286
+        },
+        {
+          "coords": "L10",
+          "description": "L10 SEXMO (40 pts)",
+          "score": 40,
+          "equity": 31.6791353225708
+        },
+        {
+          "coords": "4A",
+          "description": "4A D.X (13 pts)",
+          "score": 13,
+          "equity": 31.04949188232422
+        },
+        {
+          "coords": "12K",
+          "description": "12K OX (35 pts)",
+          "score": 35,
+          "equity": 31.045918226242065
+        },
+        {
+          "coords": "12J",
+          "description": "12J DOM (29 pts)",
+          "score": 29,
+          "equity": 30.670817375183105
+        },
+        {
+          "coords": "12J",
+          "description": "12J MOD (29 pts)",
+          "score": 29,
+          "equity": 30.670817375183105
+        },
+        {
+          "coords": "D12",
+          "description": "D12 .X (18 pts)",
+          "score": 18,
+          "equity": 29.821162223815918
+        },
+        {
+          "coords": "I10",
+          "description": "I10 .X (18 pts)",
+          "score": 18,
+          "equity": 29.821162223815918
+        }
+      ],
+      "actual_play": {
+        "coords": "O5",
+        "description": "O5 SEXMO (59 pts)",
+        "score": 59,
+        "equity": 50.6791353225708
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 13,
+      "player_name": "Tú",
+      "rack": "??CCDEI",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m  H  U  M  E  R  A  L  \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     E     A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m     L     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N           \u001b[34m\"\u001b[0m     |\n  K|            J     CH U  RR O  S              |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|F  L  E  T  O  S           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m  S  E  X  M  O        \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "D4",
+          "description": "D4 aCCEDI.r. (78 pts)",
+          "score": 78,
+          "equity": 78
+        },
+        {
+          "coords": "N9",
+          "description": "N9 DECreCI (77 pts)",
+          "score": 77,
+          "equity": 77
+        },
+        {
+          "coords": "N9",
+          "description": "N9 DEsCoCI (77 pts)",
+          "score": 77,
+          "equity": 77
+        },
+        {
+          "coords": "N9",
+          "description": "N9 DICaCEs (77 pts)",
+          "score": 77,
+          "equity": 77
+        },
+        {
+          "coords": "N9",
+          "description": "N9 DeCrECI (73 pts)",
+          "score": 73,
+          "equity": 73
+        },
+        {
+          "coords": "E3",
+          "description": "E3 CoDICiE. (72 pts)",
+          "score": 72,
+          "equity": 72
+        },
+        {
+          "coords": "E3",
+          "description": "E3 CoDiCIE. (72 pts)",
+          "score": 72,
+          "equity": 72
+        },
+        {
+          "coords": "E3",
+          "description": "E3 ConDICE. (72 pts)",
+          "score": 72,
+          "equity": 72
+        },
+        {
+          "coords": "E3",
+          "description": "E3 EDuCCIo. (72 pts)",
+          "score": 72,
+          "equity": 72
+        },
+        {
+          "coords": "E3",
+          "description": "E3 aCCEDIa. (72 pts)",
+          "score": 72,
+          "equity": 72
+        },
+        {
+          "coords": "G4",
+          "description": "G4 CICatE.D. (70 pts)",
+          "score": 70,
+          "equity": 70
+        },
+        {
+          "coords": "6A",
+          "description": "6A D.CEnCIa (67 pts)",
+          "score": 67,
+          "equity": 67
+        },
+        {
+          "coords": "6A",
+          "description": "6A D.CrECIa (67 pts)",
+          "score": 67,
+          "equity": 67
+        },
+        {
+          "coords": "6A",
+          "description": "6A D.CrECIo (67 pts)",
+          "score": 67,
+          "equity": 67
+        },
+        {
+          "coords": "6A",
+          "description": "6A D.sCrECI (63 pts)",
+          "score": 63,
+          "equity": 63
+        }
+      ],
+      "actual_play": {
+        "coords": "D4",
+        "description": "D4 aCCEDI.r. (78 pts)",
+        "score": 78,
+        "equity": 78
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 14,
+      "player_name": "HastyBot",
+      "rack": "AADTTYZ",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m  H  U  M  E  R  A  L  \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        a  C  C  E  D  I  E  r  A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m     L     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N           \u001b[34m\"\u001b[0m     |\n  K|            J     CH U  RR O  S              |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m           \u001b[35m-\u001b[0m        |\n  N|F  L  E  T  O  S           \u001b[34m\"\u001b[0m           \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m  S  E  X  M  O        \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "12J",
+          "description": "12J TATAY (33 pts)",
+          "score": 33,
+          "equity": 35.88467526435852
+        },
+        {
+          "coords": "12J",
+          "description": "12J YAZ (47 pts)",
+          "score": 47,
+          "equity": 31.832892417907715
+        },
+        {
+          "coords": "12J",
+          "description": "12J TAZAD (47 pts)",
+          "score": 47,
+          "equity": 27.721031188964844
+        },
+        {
+          "coords": "4A",
+          "description": "4A Y.T. (10 pts)",
+          "score": 10,
+          "equity": 27.118215560913086
+        },
+        {
+          "coords": "G10",
+          "description": "G10 .T.TAY (12 pts)",
+          "score": 12,
+          "equity": 26.031800270080566
+        },
+        {
+          "coords": "12J",
+          "description": "12J ZAYA (49 pts)",
+          "score": 49,
+          "equity": 24.23978614807129
+        },
+        {
+          "coords": "4A",
+          "description": "4A T.Y. (7 pts)",
+          "score": 7,
+          "equity": 24.118215560913086
+        },
+        {
+          "coords": "F9",
+          "description": "F9 Y.T. (7 pts)",
+          "score": 7,
+          "equity": 24.118215560913086
+        },
+        {
+          "coords": "12J",
+          "description": "12J TAZ (41 pts)",
+          "score": 41,
+          "equity": 23.920503616333008
+        },
+        {
+          "coords": "",
+          "description": "(Cambiar DTTY)",
+          "score": 0,
+          "equity": 23.88465690612793
+        },
+        {
+          "coords": "",
+          "description": "(Cambiar TTY)",
+          "score": 0,
+          "equity": 23.846370697021484
+        },
+        {
+          "coords": "",
+          "description": "(Cambiar DTY)",
+          "score": 0,
+          "equity": 20.7899112701416
+        },
+        {
+          "coords": "E2",
+          "description": "E2 ZAYA (44 pts)",
+          "score": 44,
+          "equity": 19.23978614807129
+        },
+        {
+          "coords": "12J",
+          "description": "12J TAZA (43 pts)",
+          "score": 43,
+          "equity": 18.03558349609375
+        },
+        {
+          "coords": "12J",
+          "description": "12J ZATA (43 pts)",
+          "score": 43,
+          "equity": 18.03558349609375
+        }
+      ],
+      "actual_play": {
+        "coords": "12J",
+        "description": "12J TATAY (33 pts)",
+        "score": 33,
+        "equity": 35.88467526435852
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 15,
+      "player_name": "Tú",
+      "rack": "BBENOSU",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m  H  U  M  E  R  A  L  \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        a  C  C  E  D  I  E  r  A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m     L     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N     T     \u001b[34m\"\u001b[0m     |\n  K|            J     CH U  RR O  S  A           |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           T        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        A  \u001b[35m-\u001b[0m        |\n  N|F  L  E  T  O  S           \u001b[34m\"\u001b[0m     Y     \u001b[35m-\u001b[0m     |\n  O|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m  S  E  X  M  O        \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "G2",
+          "description": "G2 BUBONES (65 pts)",
+          "score": 65,
+          "equity": 65
+        },
+        {
+          "coords": "13I",
+          "description": "13I BUS (28 pts)",
+          "score": 28,
+          "equity": 33.48093366622925
+        },
+        {
+          "coords": "M9",
+          "description": "M9 BUB.S (24 pts)",
+          "score": 24,
+          "equity": 33.15621757507324
+        },
+        {
+          "coords": "N10",
+          "description": "N10 BU.OS (32 pts)",
+          "score": 32,
+          "equity": 32.675423085689545
+        },
+        {
+          "coords": "C2",
+          "description": "C2 BU (18 pts)",
+          "score": 18,
+          "equity": 31.792133331298828
+        },
+        {
+          "coords": "13I",
+          "description": "13I BUSO (31 pts)",
+          "score": 31,
+          "equity": 31.675423085689545
+        },
+        {
+          "coords": "N10",
+          "description": "N10 BO.EN (32 pts)",
+          "score": 32,
+          "equity": 30.59595775604248
+        },
+        {
+          "coords": "A1",
+          "description": "A1 BOUS (29 pts)",
+          "score": 29,
+          "equity": 29.675423085689545
+        },
+        {
+          "coords": "A1",
+          "description": "A1 OBUS (29 pts)",
+          "score": 29,
+          "equity": 29.675423085689545
+        },
+        {
+          "coords": "C1",
+          "description": "C1 BUEN (24 pts)",
+          "score": 24,
+          "equity": 28.98071813583374
+        },
+        {
+          "coords": "A1",
+          "description": "A1 BUES (29 pts)",
+          "score": 29,
+          "equity": 28.773682072758675
+        },
+        {
+          "coords": "A1",
+          "description": "A1 UBES (29 pts)",
+          "score": 29,
+          "equity": 28.773682072758675
+        },
+        {
+          "coords": "M9",
+          "description": "M9 BUB. (11 pts)",
+          "score": 11,
+          "equity": 27.901002883911133
+        },
+        {
+          "coords": "C2",
+          "description": "C2 BUS (22 pts)",
+          "score": 22,
+          "equity": 27.480933666229248
+        },
+        {
+          "coords": "10M",
+          "description": "10M BUS (22 pts)",
+          "score": 22,
+          "equity": 27.480933666229248
+        }
+      ],
+      "actual_play": {
+        "coords": "1N",
+        "description": "1N .O (15 pts)",
+        "score": 15,
+        "equity": 0
+      },
+      "was_best": false
+    },
+    {
+      "turn_num": 16,
+      "player_name": "HastyBot",
+      "rack": "CDEIPVZ",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m  H  U  M  E  R  A  L  \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        a  C  C  E  D  I  E  r  A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m     L     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N     T     \u001b[34m\"\u001b[0m     |\n  K|            J     CH U  RR O  S  A           |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           T        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        A  \u001b[35m-\u001b[0m        |\n  N|F  L  E  T  O  S           \u001b[34m\"\u001b[0m     Y     \u001b[35m-\u001b[0m     |\n  O|O        \u001b[36m'\u001b[0m  S  E  X  M  O        \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "M9",
+          "description": "M9 VEZ.D (44 pts)",
+          "score": 44,
+          "equity": 44.12172042578459
+        },
+        {
+          "coords": "M8",
+          "description": "M8 PIZC.D (42 pts)",
+          "score": 42,
+          "equity": 37.756484508514404
+        },
+        {
+          "coords": "C2",
+          "description": "C2 VIP (30 pts)",
+          "score": 30,
+          "equity": 36.59994316101074
+        },
+        {
+          "coords": "M9",
+          "description": "M9 PIC.D (26 pts)",
+          "score": 26,
+          "equity": 27.61091160774231
+        },
+        {
+          "coords": "E2",
+          "description": "E2 VIDE (26 pts)",
+          "score": 26,
+          "equity": 24.76453197002411
+        },
+        {
+          "coords": "7F",
+          "description": "7F VIP (18 pts)",
+          "score": 18,
+          "equity": 24.599943161010742
+        },
+        {
+          "coords": "M9",
+          "description": "M9 DIC.Z (38 pts)",
+          "score": 38,
+          "equity": 24.55341339111328
+        },
+        {
+          "coords": "M9",
+          "description": "M9 PEC.D (26 pts)",
+          "score": 26,
+          "equity": 24.492222666740417
+        },
+        {
+          "coords": "M11",
+          "description": "M11 P.Z (28 pts)",
+          "score": 28,
+          "equity": 23.613608360290527
+        },
+        {
+          "coords": "M11",
+          "description": "M11 C.VI (18 pts)",
+          "score": 18,
+          "equity": 20.01620388031006
+        },
+        {
+          "coords": "G6",
+          "description": "G6 VIP (13 pts)",
+          "score": 13,
+          "equity": 19.599943161010742
+        },
+        {
+          "coords": "G10",
+          "description": "G10 .V.DE (16 pts)",
+          "score": 16,
+          "equity": 19.532678365707397
+        },
+        {
+          "coords": "M11",
+          "description": "M11 V.DE (16 pts)",
+          "score": 16,
+          "equity": 19.532678365707397
+        },
+        {
+          "coords": "7I",
+          "description": "7I V... (15 pts)",
+          "score": 15,
+          "equity": 19.19657611846924
+        },
+        {
+          "coords": "C2",
+          "description": "C2 VI (20 pts)",
+          "score": 20,
+          "equity": 19.085572361946106
+        }
+      ],
+      "actual_play": {
+        "coords": "M9",
+        "description": "M9 VEZ.D (44 pts)",
+        "score": 44,
+        "equity": 44.12172042578459
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 17,
+      "player_name": "Tú",
+      "rack": "BBENNSU",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m  H  U  M  E  R  A  L  \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        a  C  C  E  D  I  E  r  A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m     L     \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N     T     \u001b[34m\"\u001b[0m     |\n  K|            J     CH U  RR O  S  A           |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           T        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     V  E  Z  A  D        |\n  N|F  L  E  T  O  S           \u001b[34m\"\u001b[0m     Y     \u001b[35m-\u001b[0m     |\n  O|O        \u001b[36m'\u001b[0m  S  E  X  M  O        \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "C1",
+          "description": "C1 BUEN (24 pts)",
+          "score": 24,
+          "equity": 20.18532371520996
+        },
+        {
+          "coords": "13I",
+          "description": "13I BUS (28 pts)",
+          "score": 28,
+          "equity": 18.27079677581787
+        },
+        {
+          "coords": "C2",
+          "description": "C2 BEN (22 pts)",
+          "score": 22,
+          "equity": 18.174121141433716
+        },
+        {
+          "coords": "6B",
+          "description": "6B .N.UBEN (17 pts)",
+          "score": 17,
+          "equity": 16.466720461845398
+        },
+        {
+          "coords": "4A",
+          "description": "4A B.N. (8 pts)",
+          "score": 8,
+          "equity": 12.866557598114014
+        },
+        {
+          "coords": "C2",
+          "description": "C2 BUS (22 pts)",
+          "score": 22,
+          "equity": 12.270796775817871
+        },
+        {
+          "coords": "A1",
+          "description": "A1 BUES (29 pts)",
+          "score": 29,
+          "equity": 12.267417907714844
+        },
+        {
+          "coords": "A1",
+          "description": "A1 UBES (29 pts)",
+          "score": 29,
+          "equity": 12.267417907714844
+        },
+        {
+          "coords": "6B",
+          "description": "6B .N.UBE (16 pts)",
+          "score": 16,
+          "equity": 12.185323715209961
+        },
+        {
+          "coords": "13K",
+          "description": "13K SU. (24 pts)",
+          "score": 24,
+          "equity": 11.708649635314941
+        },
+        {
+          "coords": "6B",
+          "description": "6B .N.UBES (17 pts)",
+          "score": 17,
+          "equity": 11.543684005737305
+        },
+        {
+          "coords": "F7",
+          "description": "F7 NUB. (6 pts)",
+          "score": 6,
+          "equity": 10.929214000701904
+        },
+        {
+          "coords": "F9",
+          "description": "F9 N.B. (6 pts)",
+          "score": 6,
+          "equity": 10.866557598114014
+        },
+        {
+          "coords": "13K",
+          "description": "13K SU.EN (31 pts)",
+          "score": 31,
+          "equity": 10.82784652709961
+        },
+        {
+          "coords": "7I",
+          "description": "7I B... (13 pts)",
+          "score": 13,
+          "equity": 10.020835638046265
+        }
+      ],
+      "actual_play": {
+        "coords": "7I",
+        "description": "7I B... (13 pts)",
+        "score": 13,
+        "equity": 0
+      },
+      "was_best": false
+    },
+    {
+      "turn_num": 18,
+      "player_name": "HastyBot",
+      "rack": "AACEI[LL]P",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m  H  U  M  E  R  A  L  \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        a  C  C  E  D  I  E  r  A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m        |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S        \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m     L     B     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m        |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N     T     \u001b[34m\"\u001b[0m     |\n  K|            J     CH U  RR O  S  A           |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           T        \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     V  E  Z  A  D        |\n  N|F  L  E  T  O  S           \u001b[34m\"\u001b[0m     Y     \u001b[35m-\u001b[0m     |\n  O|O        \u001b[36m'\u001b[0m  S  E  X  M  O        \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "14G",
+          "description": "14G ACEPI[LL]A (93 pts)",
+          "score": 93,
+          "equity": 93
+        },
+        {
+          "coords": "14H",
+          "description": "14H PE[LL]ICA (52 pts)",
+          "score": 52,
+          "equity": 58.55724287033081
+        },
+        {
+          "coords": "14L",
+          "description": "14L [LL]APE (45 pts)",
+          "score": 45,
+          "equity": 58.26673984527588
+        },
+        {
+          "coords": "14L",
+          "description": "14L PA[LL]E (45 pts)",
+          "score": 45,
+          "equity": 58.26673984527588
+        },
+        {
+          "coords": "14J",
+          "description": "14J [LL]APA (48 pts)",
+          "score": 48,
+          "equity": 57.246864318847656
+        },
+        {
+          "coords": "14J",
+          "description": "14J [LL]ECA (48 pts)",
+          "score": 48,
+          "equity": 55.557931900024414
+        },
+        {
+          "coords": "14L",
+          "description": "14L [LL]APA (45 pts)",
+          "score": 45,
+          "equity": 54.246864318847656
+        },
+        {
+          "coords": "14L",
+          "description": "14L PA[LL]A (45 pts)",
+          "score": 45,
+          "equity": 54.246864318847656
+        },
+        {
+          "coords": "14J",
+          "description": "14J PI[LL]A (38 pts)",
+          "score": 38,
+          "equity": 53.0324821472168
+        },
+        {
+          "coords": "14L",
+          "description": "14L CA[LL]E (45 pts)",
+          "score": 45,
+          "equity": 52.557931900024414
+        },
+        {
+          "coords": "14J",
+          "description": "14J [LL]ACA (48 pts)",
+          "score": 48,
+          "equity": 52.48709058761597
+        },
+        {
+          "coords": "14J",
+          "description": "14J PE[LL]A (38 pts)",
+          "score": 38,
+          "equity": 51.26673984527588
+        },
+        {
+          "coords": "14M",
+          "description": "14M A[LL]I (39 pts)",
+          "score": 39,
+          "equity": 50.328941345214844
+        },
+        {
+          "coords": "14L",
+          "description": "14L CA[LL]A (45 pts)",
+          "score": 45,
+          "equity": 49.48709058761597
+        },
+        {
+          "coords": "14L",
+          "description": "14L [LL]ACA (45 pts)",
+          "score": 45,
+          "equity": 49.48709058761597
+        }
+      ],
+      "actual_play": {
+        "coords": "14G",
+        "description": "14G ACEPI[LL]A (93 pts)",
+        "score": 93,
+        "equity": 93
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 19,
+      "player_name": "Tú",
+      "rack": "ABENNSU",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m  H  U  M  E  R  A  L  \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        a  C  C  E  D  I  E  r  A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R           |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m     |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m  A     |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S     C  \u001b[31m=\u001b[0m  |\n  I|      \u001b[36m'\u001b[0m     L     B     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m  E     |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N     T     P     |\n  K|            J     CH U  RR O  S  A     I     |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           T     LL \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     V  E  Z  A  D  A     |\n  N|F  L  E  T  O  S           \u001b[34m\"\u001b[0m     Y     \u001b[35m-\u001b[0m     |\n  O|O        \u001b[36m'\u001b[0m  S  E  X  M  O        \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "N11",
+          "description": "N11 A.ES (66 pts)",
+          "score": 66,
+          "equity": 44
+        },
+        {
+          "coords": "N12",
+          "description": "N12 .EN (53 pts)",
+          "score": 53,
+          "equity": 29
+        },
+        {
+          "coords": "N12",
+          "description": "N12 .ES (53 pts)",
+          "score": 53,
+          "equity": 29
+        },
+        {
+          "coords": "14G",
+          "description": "14G .......BA (44 pts)",
+          "score": 44,
+          "equity": 24
+        },
+        {
+          "coords": "15E",
+          "description": "15E BASEN (37 pts)",
+          "score": 37,
+          "equity": 23
+        },
+        {
+          "coords": "15E",
+          "description": "15E BESAN (37 pts)",
+          "score": 37,
+          "equity": 23
+        },
+        {
+          "coords": "N14",
+          "description": "N14 NA (42 pts)",
+          "score": 42,
+          "equity": 18
+        },
+        {
+          "coords": "N14",
+          "description": "N14 NE (42 pts)",
+          "score": 42,
+          "equity": 18
+        },
+        {
+          "coords": "N14",
+          "description": "N14 SE (42 pts)",
+          "score": 42,
+          "equity": 18
+        },
+        {
+          "coords": "N14",
+          "description": "N14 SU (42 pts)",
+          "score": 42,
+          "equity": 18
+        },
+        {
+          "coords": "14G",
+          "description": "14G .......SE (40 pts)",
+          "score": 40,
+          "equity": 16
+        },
+        {
+          "coords": "15E",
+          "description": "15E BASE (32 pts)",
+          "score": 32,
+          "equity": 16
+        },
+        {
+          "coords": "15E",
+          "description": "15E BESA (32 pts)",
+          "score": 32,
+          "equity": 16
+        },
+        {
+          "coords": "A1",
+          "description": "A1 BUAS (29 pts)",
+          "score": 29,
+          "equity": 13
+        },
+        {
+          "coords": "A1",
+          "description": "A1 BUES (29 pts)",
+          "score": 29,
+          "equity": 13
+        }
+      ],
+      "actual_play": {
+        "coords": "15E",
+        "description": "15E BESAN (37 pts)",
+        "score": 37,
+        "equity": 0
+      },
+      "was_best": false
+    },
+    {
+      "turn_num": 20,
+      "player_name": "HastyBot",
+      "rack": "QR",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m  H  U  M  E  R  A  L  \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        a  C  C  E  D  I  E  r  A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R        B  |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m  E  |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m  A  S  |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S     C  A  |\n  I|      \u001b[36m'\u001b[0m     L     B     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m  E  N  |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N     T     P     |\n  K|            J     CH U  RR O  S  A     I     |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           T     LL \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     V  E  Z  A  D  A     |\n  N|F  L  E  T  O  S           \u001b[34m\"\u001b[0m     Y     \u001b[35m-\u001b[0m     |\n  O|O        \u001b[36m'\u001b[0m  S  E  X  M  O        \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "14G",
+          "description": "14G .......R (38 pts)",
+          "score": 38,
+          "equity": 18
+        },
+        {
+          "coords": "3L",
+          "description": "3L .R. (6 pts)",
+          "score": 6,
+          "equity": -14
+        },
+        {
+          "coords": "G10",
+          "description": "G10 .R. (5 pts)",
+          "score": 5,
+          "equity": -15
+        },
+        {
+          "coords": "G12",
+          "description": "G12 .R.. (5 pts)",
+          "score": 5,
+          "equity": -15
+        },
+        {
+          "coords": "6A",
+          "description": "6A R. (2 pts)",
+          "score": 2,
+          "equity": -18
+        },
+        {
+          "coords": "4B",
+          "description": "4B .R. (2 pts)",
+          "score": 2,
+          "equity": -18
+        },
+        {
+          "coords": "F9",
+          "description": "F9 R. (2 pts)",
+          "score": 2,
+          "equity": -18
+        },
+        {
+          "coords": "F12",
+          "description": "F12 .R (2 pts)",
+          "score": 2,
+          "equity": -18
+        },
+        {
+          "coords": "2K",
+          "description": "2K R. (2 pts)",
+          "score": 2,
+          "equity": -18
+        },
+        {
+          "coords": "K14",
+          "description": "K14 .R (2 pts)",
+          "score": 2,
+          "equity": -18
+        },
+        {
+          "coords": "4D",
+          "description": "4D .R (1 pts)",
+          "score": 1,
+          "equity": -19
+        }
+      ],
+      "actual_play": {
+        "coords": "14G",
+        "description": "14G .......R (38 pts)",
+        "score": 38,
+        "equity": 0
+      },
+      "was_best": true
+    },
+    {
+      "turn_num": 21,
+      "player_name": "Tú",
+      "rack": "NU",
+      "board_before": "\n    1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 \n    ---------------------------------------------\n  A|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           L  A  D  E  R  I  A  S  |\n  B|   \u001b[35m-\u001b[0m  H  U  M  E  R  A  L  \u001b[34m\"\u001b[0m     E     \u001b[35m-\u001b[0m     |\n  C|      \u001b[35m-\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m        H  O  P  O  |\n  D|\u001b[36m'\u001b[0m        a  C  C  E  D  I  E  r  A        \u001b[36m'\u001b[0m  |\n  E|            \u001b[35m-\u001b[0m              N  \u001b[35m-\u001b[0m  R        B  |\n  F|   \u001b[34m\"\u001b[0m           \u001b[34m\"\u001b[0m           E     I     \u001b[34m\"\u001b[0m  E  |\n  G|      \u001b[36m'\u001b[0m           \u001b[36m'\u001b[0m     \u001b[36m'\u001b[0m  A     A  \u001b[36m'\u001b[0m  A  S  |\n  H|\u001b[31m=\u001b[0m        \u001b[36m'\u001b[0m           U  N  G  E  S     C  A  |\n  I|      \u001b[36m'\u001b[0m     L     B     \u001b[36m'\u001b[0m  O        \u001b[36m'\u001b[0m  E  N  |\n  J|   \u001b[34m\"\u001b[0m  G  R  U  Ñ  I        N     T     P     |\n  K|            J     CH U  RR O  S  A     I     |\n  L|C  O  I  T  A  D  O  \u001b[36m'\u001b[0m           T     LL \u001b[36m'\u001b[0m  |\n  M|      \u001b[35m-\u001b[0m     D     \u001b[36m'\u001b[0m     V  E  Z  A  D  A     |\n  N|F  L  E  T  O  S           \u001b[34m\"\u001b[0m     Y     R     |\n  O|O        \u001b[36m'\u001b[0m  S  E  X  M  O        \u001b[36m'\u001b[0m        \u001b[31m=\u001b[0m  |\n    ---------------------------------------------\n",
+      "gen_list": [
+        {
+          "coords": "C3",
+          "description": "C3 UN (16 pts)",
+          "score": 16,
+          "equity": 26
+        },
+        {
+          "coords": "C7",
+          "description": "C7 UN (12 pts)",
+          "score": 12,
+          "equity": 22
+        },
+        {
+          "coords": "E6",
+          "description": "E6 UN (8 pts)",
+          "score": 8,
+          "equity": 18
+        },
+        {
+          "coords": "7B",
+          "description": "7B .U.N (5 pts)",
+          "score": 5,
+          "equity": 15
+        },
+        {
+          "coords": "F8",
+          "description": "F8 UN. (3 pts)",
+          "score": 3,
+          "equity": 13
+        },
+        {
+          "coords": "4D",
+          "description": "4D .UN (2 pts)",
+          "score": 2,
+          "equity": 12
+        },
+        {
+          "coords": "3B",
+          "description": "3B .U (10 pts)",
+          "score": 10,
+          "equity": -2
+        },
+        {
+          "coords": "5D",
+          "description": "5D .U (8 pts)",
+          "score": 8,
+          "equity": -4
+        },
+        {
+          "coords": "3A",
+          "description": "3A U. (5 pts)",
+          "score": 5,
+          "equity": -7
+        },
+        {
+          "coords": "8A",
+          "description": "8A ..N. (5 pts)",
+          "score": 5,
+          "equity": -7
+        },
+        {
+          "coords": "8A",
+          "description": "8A ..U. (5 pts)",
+          "score": 5,
+          "equity": -7
+        },
+        {
+          "coords": "G10",
+          "description": "G10 .N. (5 pts)",
+          "score": 5,
+          "equity": -7
+        },
+        {
+          "coords": "G12",
+          "description": "G12 .N.. (5 pts)",
+          "score": 5,
+          "equity": -7
+        },
+        {
+          "coords": "J12",
+          "description": "J12 .U. (5 pts)",
+          "score": 5,
+          "equity": -7
+        },
+        {
+          "coords": "7B",
+          "description": "7B .U. (4 pts)",
+          "score": 4,
+          "equity": -8
+        }
+      ],
+      "actual_play": {
+        "coords": "C3",
+        "description": "C3 UN (16 pts)",
+        "score": 16,
+        "equity": 0
+      },
+      "was_best": true
+    }
+  ],
+  "final_scores": [
+    471,
+    535
+  ],
+  "winner": "HastyBot",
+  "mode": "endgame",
+  "start_turn": 14
+}

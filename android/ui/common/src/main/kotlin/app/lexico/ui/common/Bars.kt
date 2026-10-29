@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -29,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+val LocalHomeButton = staticCompositionLocalOf<(@Composable () -> Unit)?> { null }
 
 @Composable
 fun GameBar(
@@ -55,10 +58,12 @@ fun GameBar(
 
 @Composable
 fun Header(title: String, onBack: () -> Unit, titleLines: Int = 1, extra: @Composable () -> Unit = {}) {
+  val home = LocalHomeButton.current
   Row(Modifier.fillMaxWidth().height(48.dp), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
     BarIconButton(LexicoIcons.Back, "Volver", onBack)
     BarTitle(title, Modifier.weight(1f).padding(start = 6.dp), titleLines)
     extra()
+    home?.invoke()
   }
 }
 
@@ -84,7 +89,7 @@ fun BarIconButton(icon: ImageVector, description: String, onClick: () -> Unit) {
 
 @Composable
 fun BarTextButton(text: String, onClick: () -> Unit) {
-  TextButton(onClick, Modifier.height(36.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text(text, style = barLabel()) }
+  TextButton(onClick, Modifier.height(36.dp), contentPadding = PaddingValues(horizontal = 8.dp)) { Text(text, style = barLabel(), maxLines = 1, softWrap = false) }
 }
 
 @Composable
