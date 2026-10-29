@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,6 +38,7 @@ import kotlinx.coroutines.withContext
 @Composable
 internal fun MeaningLine(word: String, lexicon: Lexicon) {
   val meanings by produceState<List<Meaning>?>(null, word) { value = withContext(Dispatchers.IO) { lexicon.meanings(word) } }
+  if (meanings?.isEmpty() == true) return RaeButton(word)
   var open by remember { mutableStateOf(false) }
   Surface(Modifier.fillMaxWidth().clickable { open = true }, RoundedCornerShape(12.dp), MaterialTheme.colorScheme.surfaceContainerHighest) {
     Row(Modifier.padding(horizontal = 14.dp, vertical = 10.dp), Arrangement.spacedBy(10.dp), Alignment.CenterVertically) {
@@ -45,6 +47,13 @@ internal fun MeaningLine(word: String, lexicon: Lexicon) {
     }
   }
   if (open) MeaningsDialog(word, meanings.orEmpty()) { open = false }
+}
+
+@Composable
+private fun RaeButton(word: String) {
+  var rae by remember { mutableStateOf(false) }
+  OutlinedButton(onClick = { rae = true }, Modifier.fillMaxWidth()) { Text("Consultar en la RAE") }
+  if (rae) RaeDialog(word) { rae = false }
 }
 
 @Composable
