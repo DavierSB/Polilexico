@@ -18,6 +18,7 @@ type gameLog struct {
 	Winner      string       `json:"winner"`
 	Mode        string       `json:"mode,omitempty"`
 	StartTurn   int          `json:"start_turn,omitempty"`
+	Local       bool         `json:"local,omitempty"`
 }
 
 type turnRecord struct {
@@ -63,7 +64,7 @@ func (c *Game) recordPrefix() string {
 
 func (c *Game) playerName(human bool) string {
 	if human {
-		return humanName
+		return c.log.HumanName
 	}
 	return c.botName
 }
@@ -71,7 +72,7 @@ func (c *Game) playerName(human bool) string {
 func (c *Game) winnerName() string {
 	switch c.outcome() {
 	case core.OutcomeWin:
-		return humanName
+		return c.log.HumanName
 	case core.OutcomeLoss:
 		return c.botName
 	}

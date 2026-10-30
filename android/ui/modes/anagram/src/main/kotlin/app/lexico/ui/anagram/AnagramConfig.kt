@@ -17,6 +17,8 @@ data class AnagramConfig(
   val lives: Int = DEFAULT_LIVES,
   val difficulty: Difficulty = Difficulty.MEDIUM,
 ) {
+  val limited: Boolean get() = lives > 0
+
   companion object {
     const val DEFAULT_LIVES = 3
     val LIVES = 1..5

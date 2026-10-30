@@ -18,6 +18,7 @@ import app.lexico.ui.common.Header
 import app.lexico.ui.common.RecordCard
 import app.lexico.ui.common.RulesButton
 import app.lexico.ui.common.SectionTitle
+import app.lexico.ui.common.SoloOrWifiTabs
 import app.lexico.ui.common.StartButton
 import app.lexico.ui.common.Stepper
 import app.lexico.ui.common.StudyModeSelector
@@ -38,7 +39,20 @@ data class DuplicateConfig(
 )
 
 @Composable
-fun NewDuplicateScreen(onBack: () -> Unit, recordFor: (DuplicateConfig) -> Int, onStart: (DuplicateConfig) -> Unit) {
+fun NewDuplicateScreen(
+  onBack: () -> Unit, recordFor: (DuplicateConfig) -> Int, onStart: (DuplicateConfig) -> Unit,
+  onHost: (WifiDuplicateConfig) -> Unit, onJoin: (name: String) -> Unit,
+) {
+  var wifi by remember { mutableStateOf(false) }
+  Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Header("Duplicada", onBack)
+    SoloOrWifiTabs(wifi) { wifi = it }
+    if (wifi) WifiDuplicateForm(onHost, onJoin) else SoloForm(recordFor, onStart)
+  }
+}
+
+@Composable
+private fun SoloForm(recordFor: (DuplicateConfig) -> Int, onStart: (DuplicateConfig) -> Unit) {
   var check by remember { mutableStateOf(PlayCheck.SINGLE) }
   var turn by remember { mutableStateOf(Durations.format(DEFAULT_TURN_MS)) }
   var fixed by remember { mutableStateOf(false) }
@@ -47,22 +61,19 @@ fun NewDuplicateScreen(onBack: () -> Unit, recordFor: (DuplicateConfig) -> Int, 
   var rules by remember { mutableStateOf(false) }
   val turnMs = Durations.parse(turn)?.takeIf { it > 0 }
   val config = turnMs?.let { DuplicateConfig(check, it, if (fixed) rounds else 0, study) }
-  Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-    Header("Duplicada", onBack)
-    RulesButton { rules = true }
-    RoundsSection(fixed, rounds, { fixed = it }, { rounds = it })
-    ChallengeModeSelector(listOf("Single" to SINGLE_HINT, "Al Final" to AT_END_HINT), check.ordinal) { check = PlayCheck.entries[it] }
-    SectionTitle("Tiempo", info = "Si no juegas a tiempo, 0 puntos ese turno.")
-    TimeField(turn, { turn = it }, "Tiempo por turno")
-    StudyModeSelector(study) { study = it }
-    config?.let { RecordLine(recordFor(it)) }
-    StartButton(enabled = config != null) { config?.let(onStart) }
-  }
+  RulesButton { rules = true }
+  RoundsSection(fixed, rounds, { fixed = it }, { rounds = it })
+  ChallengeModeSelector(listOf("Single" to SINGLE_HINT, "Al Final" to AT_END_HINT), check.ordinal) { check = PlayCheck.entries[it] }
+  SectionTitle("Tiempo", info = "Si no juegas a tiempo, 0 puntos ese turno.")
+  TimeField(turn, { turn = it }, "Tiempo por turno")
+  StudyModeSelector(study) { study = it }
+  config?.let { RecordLine(recordFor(it)) }
+  StartButton(enabled = config != null) { config?.let(onStart) }
   if (rules) DuplicateRulesDialog { rules = false }
 }
 
 @Composable
-private fun RoundsSection(fixed: Boolean, rounds: Int, onFixed: (Boolean) -> Unit, onRounds: (Int) -> Unit) {
+internal fun RoundsSection(fixed: Boolean, rounds: Int, onFixed: (Boolean) -> Unit, onRounds: (Int) -> Unit) {
   SectionTitle("Rondas", info = ROUNDS_TEXT)
   TwoOptions("Bolsa completa", "Nº de rondas fijo", fixed, onFixed)
   if (fixed) Stepper(rounds, ROUNDS, onRounds)

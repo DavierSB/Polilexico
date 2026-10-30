@@ -27,16 +27,17 @@ type Status struct {
 }
 
 type Result struct {
-	Outcome    string
-	LostOnTime bool
-	EndReason  string
-	HumanDelta int
-	BotDelta   int
-	HumanTime  int
-	BotTime    int
-	HumanScore int
-	BotScore   int
-	RecordPath string
+	Outcome         string
+	LostOnTime      bool
+	RivalLostOnTime bool
+	EndReason       string
+	HumanDelta      int
+	BotDelta        int
+	HumanTime       int
+	BotTime         int
+	HumanScore      int
+	BotScore        int
+	RecordPath      string
 }
 
 func (c *Game) Status() *Status {
@@ -56,7 +57,7 @@ func (c *Game) Rack() string {
 func (c *Game) OpponentRack() string {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if !c.over() {
+	if !c.over() && !c.local {
 		return ""
 	}
 	return core.RackText(c.g, c.botIdx())
@@ -71,7 +72,7 @@ func (c *Game) Board() string {
 func (c *Game) Unseen() string {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	return core.Unseen(c.g, c.g.RackFor(c.botIdx()).TilesOn()...)
+	return core.Unseen(c.g, c.g.RackFor(1-c.watcherIdx()).TilesOn()...)
 }
 
 func (c *Game) MoveCount() int {
@@ -95,7 +96,7 @@ func (c *Game) Result() *Result {
 	if !c.over() {
 		return nil
 	}
-	r := &Result{Outcome: c.outcome(), LostOnTime: c.lostOnTime, HumanScore: c.score(true),
+	r := &Result{Outcome: c.outcome(), LostOnTime: c.lostOnTime, RivalLostOnTime: c.rivalLostOnTime, HumanScore: c.score(true),
 		BotScore: c.score(false), HumanTime: c.timePenalty(true), BotTime: c.timePenalty(false), RecordPath: c.recordPath}
 	if c.ending != nil {
 		r.EndReason, r.HumanDelta, r.BotDelta = c.ending.Reason, c.ending.HumanDelta, c.ending.BotDelta
@@ -106,11 +107,22 @@ func (c *Game) Result() *Result {
 func (c *Game) humanWonMatch() bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	return c.over() && c.outcome() == core.OutcomeWin
+	return c.over() && (c.outcome() == core.OutcomeWin || c.local && c.outcome() == core.OutcomeLoss)
 }
 
 func (c *Game) over() bool {
-	return c.lostOnTime || c.ending != nil || c.g.Playing() == pb.PlayState_GAME_OVER
+	return c.lostOnTime || c.rivalLostOnTime || c.ending != nil || c.g.Playing() == pb.PlayState_GAME_OVER
+}
+
+func (c *Game) playerToMove() bool {
+	return c.humanToMove() || c.local && c.botToMove()
+}
+
+func (c *Game) watcherIdx() int {
+	if c.local && c.botToMove() {
+		return c.botIdx()
+	}
+	return c.humanIdx
 }
 
 func (c *Game) humanToMove() bool {
@@ -152,6 +164,9 @@ func (c *Game) setTimePenalties(human, bot int) {
 func (c *Game) outcome() string {
 	if c.lostOnTime {
 		return core.OutcomeLoss
+	}
+	if c.rivalLostOnTime {
+		return core.OutcomeWin
 	}
 	return core.Outcome(c.score(true), c.score(false))
 }

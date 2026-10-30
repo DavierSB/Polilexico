@@ -27,29 +27,36 @@ import app.lexico.ui.common.ExitButton
 import app.lexico.ui.common.Lives
 import app.lexico.ui.common.Pausable
 import app.lexico.ui.common.PauseButton
+import app.lexico.ui.common.RaceBar
+import app.lexico.ui.common.RaceBoard
+import app.lexico.ui.common.RaceTrack
+import app.lexico.ui.common.RaceWaiting
 import app.lexico.ui.common.RulesBarButton
 import app.lexico.ui.common.ThemeButton
 import app.lexico.ui.common.TurnClock
+import app.lexico.ui.common.rememberRaceLeft
 
 @Composable
-fun AnagramScreen(session: AnagramSession, style: BoardStyle, onExit: () -> Unit, onTheme: (() -> Unit)? = null) {
+fun AnagramScreen(session: AnagramSession, style: BoardStyle, onExit: () -> Unit, race: RaceBoard? = null, onTheme: (() -> Unit)? = null) {
   Pausable(session.paused, session::resume) {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      TopBar(session, onExit, onTheme)
-      TurnClock(session.remainingMs)
-      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) { StageContent(session, style, onExit) }
+      TopBar(session, onExit, race == null, onTheme)
+      TurnClock(race?.let { rememberRaceLeft(it.endsAt) } ?: session.remainingMs)
+      race?.takeIf { it.goal > 0 }?.let { RaceTrack(it) }
+      Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) { StageContent(session, style, race, onExit) }
       Lives(session.lives, session.config.lives, "Resueltas", session.solved, session.best)
+      race?.takeIf { it.goal == 0 }?.let { RaceBar(it) }
     }
   }
 }
 
 @Composable
-private fun TopBar(session: AnagramSession, onExit: () -> Unit, onTheme: (() -> Unit)?) {
+private fun TopBar(session: AnagramSession, onExit: () -> Unit, pausable: Boolean, onTheme: (() -> Unit)?) {
   var rules by remember { mutableStateOf(false) }
   Row(Modifier.fillMaxWidth().height(44.dp), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
     ExitButton(onExit)
     BarTitle("Anagrama", Modifier.weight(1f).padding(start = 6.dp))
-    if (session.stage is Stage.Solving) PauseButton(session::pause)
+    if (pausable && session.stage is Stage.Solving) PauseButton(session::pause)
     RulesBarButton { rules = true }
     if (onTheme != null) ThemeButton(onTheme)
   }
@@ -57,12 +64,12 @@ private fun TopBar(session: AnagramSession, onExit: () -> Unit, onTheme: (() -> 
 }
 
 @Composable
-private fun ColumnScope.StageContent(session: AnagramSession, style: BoardStyle, onExit: () -> Unit) {
+private fun ColumnScope.StageContent(session: AnagramSession, style: BoardStyle, race: RaceBoard?, onExit: () -> Unit) {
   when (val stage = session.stage) {
     Stage.Loading -> Loading()
     is Stage.Solving -> Solving(session, stage, style)
     is Stage.Revealed -> Revealed(session, stage)
-    is Stage.Finished -> Finished(session, stage, onExit)
+    is Stage.Finished -> race?.let { RaceWaiting(it, "Sin vidas: esperando a los demás") } ?: Finished(session, stage, onExit)
     is Stage.Failed -> Failed(stage.message, session::retry)
   }
 }

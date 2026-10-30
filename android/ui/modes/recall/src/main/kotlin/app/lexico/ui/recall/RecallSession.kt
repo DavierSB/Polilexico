@@ -86,6 +86,9 @@ class RecallSession(
   var asked: Int by mutableStateOf(0)
     private set
 
+  var points: Int by mutableStateOf(0)
+    private set
+
   var best: Int by mutableStateOf(records.best())
     private set
 
@@ -131,10 +134,16 @@ class RecallSession(
     val s = stage as? Stage.Solving ?: return
     if (s.verdict == null) return
     stage = when {
-      lives == 0 -> endSeries()
+      outOfLives() -> endRound()
       s.index + 1 < words.size -> Stage.Solving(s.index + 1)
       else -> endRound()
     }
+  }
+
+  val answeredAll: Boolean get() = words.isNotEmpty() && answers.size == words.size
+
+  fun closeRound() {
+    if (stage is Stage.Watching || stage is Stage.Solving) stage = endRound()
   }
 
   fun retry() {
@@ -151,6 +160,7 @@ class RecallSession(
     lives = config.lives
     recalled = 0
     asked = 0
+    points = 0
     round = 1
     best = records.best()
     record = null
@@ -168,11 +178,18 @@ class RecallSession(
     val hit = verdict == Verdict.HIT
     answers = answers + Answer(words[s.index], hit)
     asked++
-    if (hit) recalled++ else lives--
+    if (hit) score(words[s.index]) else if (config.limited) lives--
     stage = s.copy(verdict = verdict)
   }
 
-  private fun endRound(): Stage = if (lives == 0) endSeries() else Stage.RoundDone
+  private fun score(word: WordToRecall) {
+    recalled++
+    points += word.score
+  }
+
+  private fun outOfLives(): Boolean = config.limited && lives == 0
+
+  private fun endRound(): Stage = if (outOfLives() && !config.shared || config.rounds in 1..round) endSeries() else Stage.RoundDone
 
   private fun endSeries(): Stage {
     record = records.submit(recalled)
@@ -185,6 +202,7 @@ class RecallSession(
   private fun startRound() {
     stage = Stage.Loading
     answers = emptyList()
+    if (config.shared) lives = config.lives
     val pending = next
     next = fetch()
     scope.launch { pending.await().fold(::watch) { stage = Stage.Failed(it.message ?: it.toString()) } }
@@ -200,6 +218,6 @@ class RecallSession(
 
   private suspend fun roundGame(): RoundGame {
     val game = source.game()
-    return RoundGame(game, Words.pick(game, config.wordsPerGame, random, source::isWord))
+    return RoundGame(game, Words.pick(game, config.wordsPerGame, if (config.shared) Random(game.hashCode()) else random, source::isWord))
   }
 }

@@ -63,8 +63,8 @@ func (p *clockPair) stop() {
 	p.bot.Stop()
 }
 
-func (p *clockPair) humanLeft() time.Duration {
-	return p.time + p.overtime - p.human.Spent()
+func (p *clockPair) left(human bool) time.Duration {
+	return p.time + p.overtime - p.side(human).Spent()
 }
 
 func (p *clockPair) marks() []timing.Mark {

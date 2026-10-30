@@ -66,10 +66,46 @@ class RecallSessionTest {
     assertEquals(1, book.stored)
   }
 
-  private fun session(config: RecallConfig = RecallConfig(), test: suspend (RecallSession, Book) -> Unit) = runBlocking {
+  @Test fun raceHasNoLivesAndEndsAfterItsRounds() = session(RecallConfig(lives = 0, rounds = 1)) { s, _ ->
+    s.forget()
+    s.next()
+    s.submit(s.words[1].tiles)
+    s.next()
+    assertEquals(Stage.SeriesDone, s.stage)
+    assertEquals(0, s.lives)
+    assertEquals(1, s.recalled)
+    assertEquals(s.words[1].score, s.points)
+  }
+
+  @Test fun closingTheRoundEndsItWithoutCostingLives() = session(RecallConfig(rounds = 3)) { s, _ ->
+    s.closeRound()
+    assertEquals(Stage.RoundDone, s.stage)
+    assertEquals(3, s.lives)
+  }
+
+  @Test fun sharedLivesOnlyEndTheRoundAndComeBack() = session(RecallConfig(lives = 1, shared = true)) { s, _ ->
+    s.forget()
+    s.next()
+    assertEquals(Stage.RoundDone, s.stage)
+    s.nextRound()
+    assertEquals(1, s.lives)
+  }
+
+  @Test fun sharedSessionsPickTheSameWords() {
+    val words = List(2) { i ->
+      var picked: List<WordToRecall> = emptyList()
+      session(RecallConfig(shared = true), kotlin.random.Random(i)) { s, _ -> picked = s.words }
+      picked
+    }
+    assertEquals(words[0], words[1])
+  }
+
+  private fun session(
+    config: RecallConfig = RecallConfig(), random: kotlin.random.Random = kotlin.random.Random.Default, test: suspend (RecallSession, Book) -> Unit,
+  ) = runBlocking {
     val scope = CoroutineScope(coroutineContext + Job())
     val book = Book()
-    val s = RecallSession(config, source, book, scope)
+    val s = RecallSession(config, source, book, scope, random)
     while (s.stage !is Stage.Watching) yield()
     s.watched()
     test(s, book)

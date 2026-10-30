@@ -11,10 +11,11 @@ import app.lexico.go.classic.Game
 import app.lexico.go.classic.Match
 import app.lexico.go.classic.Move
 import app.lexico.go.classic.Result
+import app.lexico.go.classic.Status
 import app.lexico.model.Board
 import app.lexico.model.Position
 
-internal class ClassicReader(private val match: Match) {
+internal class ClassicReader(private val match: Match, private val seat: Seat = Seat.SHARED) {
   fun read(): ClassicState {
     val game = match.game()
     val status = game.status()
@@ -25,12 +26,18 @@ internal class ClassicReader(private val match: Match) {
       opponentTiles = status.opponentTiles.toInt(), opponentRack = rackTiles(game.opponentRack()),
       myScore = status.humanScore.toInt(), opponentScore = status.botScore.toInt(), myTurn = status.humanToMove,
       bag = status.bagCount.toInt(), unseen = rackTiles(game.unseen()),
-      moves = moves, clocks = clocks(),
+      moves = moves, clocks = clocks(false),
       paused = match.paused(), result = game.result()?.let(::result), botError = match.botError().ifEmpty { null },
-    )
+    ).let { if (seenByRival(game, status)) it.flipped() else it }
   }
 
-  fun clocks(): ClassicClocks? = match.clocks()?.let(::clocks)
+  fun clocks(flipped: Boolean): ClassicClocks? = match.clocks()?.let(::clocks)?.let { if (flipped) it.flipped() else it }
+
+  private fun seenByRival(game: Game, status: Status): Boolean = when (seat) {
+    Seat.SHARED -> game.local() && !status.over && !status.humanToMove
+    Seat.HOST -> false
+    Seat.GUEST -> true
+  }
 
   private fun moves(game: Game, board: Board): List<PlayedMove> =
     (0 until game.moveCount()).map { playedMove(board, game.moveAt(it)) }
@@ -44,7 +51,7 @@ internal class ClassicReader(private val match: Match) {
   private fun clocks(c: Clocks): ClassicClocks =
     ClassicClocks(c.humanMs, c.humanOvertimeMs, c.botMs, c.botOvertimeMs, running(c.running))
 
-  private fun result(r: Result): ClassicResult = ClassicResult(Outcome.of(r.outcome), r.lostOnTime, ending(r), r.humanTime.toInt(), r.botTime.toInt(), r.recordPath)
+  private fun result(r: Result): ClassicResult = ClassicResult(Outcome.of(r.outcome), r.lostOnTime, r.rivalLostOnTime, ending(r), r.humanTime.toInt(), r.botTime.toInt(), r.recordPath)
 
   private fun ending(r: Result): ClassicEnding? =
     endReason(r.endReason)?.let { ClassicEnding(it, r.humanDelta.toInt(), r.botDelta.toInt()) }

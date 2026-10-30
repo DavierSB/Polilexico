@@ -26,6 +26,7 @@ type Match struct {
 	study    bool
 	over     bool
 	thinking bool
+	mirror   bool
 	botError string
 }
 

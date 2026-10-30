@@ -29,6 +29,8 @@ type Game struct {
 	moves            []*Move
 	log              *gameLog
 	lostOnTime       bool
+	rivalLostOnTime  bool
+	local            bool
 	ending           *Ending
 	timePenalties    [2]int
 	invalidLosesTurn bool
@@ -46,7 +48,7 @@ func Start(botName string, starter int) (*Game, error) {
 	}
 	humanIdx := pickFirstPlayer(g, starter)
 	g.StartGame()
-	return newGame(g, botName, humanIdx, newGameLog(botName))
+	return newGame(g, botName, humanIdx, newGameLog(humanName, botName))
 }
 
 func (c *Game) SetInvalidPlayLosesTurn(on bool) {
@@ -64,12 +66,13 @@ func (c *Game) HumanStarts() bool {
 }
 
 func newGame(g *game.Game, botName string, humanIdx int, log *gameLog) (*Game, error) {
-	b, err := core.NewBot(g, botName)
+	local := log.isLocal()
+	b, err := core.NewBot(g, engineBot(botName, local))
 	if err != nil {
 		return nil, err
 	}
 	g.SetMaxScorelessTurns(noScorelessEnd)
-	return &Game{g: g, bot: b, botName: botName, humanIdx: humanIdx, log: log}, nil
+	return &Game{g: g, bot: b, botName: botName, humanIdx: humanIdx, log: log, local: local}, nil
 }
 
 func pickFirstPlayer(g *game.Game, starter int) int {
@@ -80,6 +83,6 @@ func pickFirstPlayer(g *game.Game, starter int) int {
 	return 1
 }
 
-func newGameLog(botName string) *gameLog {
-	return &gameLog{StartedAt: time.Now(), HumanName: humanName, BotName: botName}
+func newGameLog(human, botName string) *gameLog {
+	return &gameLog{StartedAt: time.Now(), HumanName: human, BotName: botName}
 }

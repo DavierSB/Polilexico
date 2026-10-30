@@ -46,7 +46,31 @@ func (s *EndgameSearch) Match(timeMs, overtimeMs int64, invalidLosesTurn bool, l
 	return newMatch(g, timeMs, overtimeMs, invalidLosesTurn, l), nil
 }
 
+func (s *EndgameSearch) LocalMatch(first, second string, starter int, timeMs, overtimeMs int64, invalidLosesTurn bool, l events.Listener) (*Match, error) {
+	g, err := s.FindLocal(first, second, starter)
+	if err != nil {
+		return nil, err
+	}
+	return newMatch(g, timeMs, overtimeMs, invalidLosesTurn, l), nil
+}
+
 func (s *EndgameSearch) Find() (*Game, error) {
+	sim, err := s.found()
+	if err != nil {
+		return nil, err
+	}
+	return sim.game()
+}
+
+func (s *EndgameSearch) FindLocal(first, second string, starter int) (*Game, error) {
+	sim, err := s.found()
+	if err != nil {
+		return nil, err
+	}
+	return sim.localGame(first, second, starter)
+}
+
+func (s *EndgameSearch) found() (*simulation, error) {
 	if err := s.check(); err != nil {
 		return nil, err
 	}
@@ -56,7 +80,7 @@ func (s *EndgameSearch) Find() (*Game, error) {
 			return nil, err
 		}
 		if sim != nil {
-			return sim.game()
+			return sim, nil
 		}
 	}
 	return nil, errSearchStopped

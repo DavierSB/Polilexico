@@ -128,17 +128,23 @@ class AnagramSession(
   }
 
   private fun miss(s: Stage.Solving): Reply {
-    lives--
+    loseLife()
     emit(Signal.WRONG)
-    if (lives == 0) finish(s, Outcome.NO_LIVES)
+    if (outOfLives()) finish(s, Outcome.NO_LIVES)
     return Reply.INVALID
   }
 
   private fun loseLife(s: Stage.Solving, outcome: Outcome) {
-    lives--
+    loseLife()
     emit(Signal.WRONG)
-    if (lives == 0) finish(s, Outcome.NO_LIVES) else stage = Stage.Revealed(s.puzzle, s.found, outcome)
+    if (outOfLives()) finish(s, Outcome.NO_LIVES) else stage = Stage.Revealed(s.puzzle, s.found, outcome)
   }
+
+  private fun loseLife() {
+    if (config.limited) lives--
+  }
+
+  private fun outOfLives(): Boolean = config.limited && lives == 0
 
   private fun finish(s: Stage.Solving?, outcome: Outcome) {
     record = records.submit(solved)

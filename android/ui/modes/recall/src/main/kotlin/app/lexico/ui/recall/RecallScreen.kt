@@ -21,31 +21,48 @@ import androidx.compose.ui.unit.dp
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.Lives
+import app.lexico.ui.common.RaceBar
+import app.lexico.ui.common.RaceBoard
+import app.lexico.ui.common.RaceTrack
+import app.lexico.ui.common.RaceWaiting
+import app.lexico.ui.common.TurnClock
+import app.lexico.ui.common.rememberRaceLeft
 import app.lexico.ui.common.RulesBarButton
 import app.lexico.ui.common.ThemeButton
 
 @Composable
-fun RecallScreen(session: RecallSession, style: BoardStyle, onExit: () -> Unit, onTheme: (() -> Unit)? = null) {
+fun RecallScreen(
+  session: RecallSession, style: BoardStyle, onExit: () -> Unit, race: RaceBoard? = null, onNextRound: () -> Unit = session::nextRound,
+  onTheme: (() -> Unit)? = null,
+) {
   var rules by remember { mutableStateOf(false) }
   Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     Header("¿Cuántas recuerdas?", onExit) {
       RulesBarButton { rules = true }
       if (onTheme != null) ThemeButton(onTheme)
     }
-    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) { StageContent(session, style, onExit) }
-    Lives(session.lives, session.config.lives, "Recordadas", session.recalled, session.best)
+    race?.let { RaceTop(session, it) }
+    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) { StageContent(session, style, race, onNextRound, onExit) }
+    if (session.config.limited) Lives(session.lives, session.config.lives, "Recordadas", session.recalled, session.best)
+    race?.takeIf { it.goal == 0 }?.let { RaceBar(it) }
   }
   if (rules) RecallRulesDialog { rules = false }
 }
 
 @Composable
-private fun ColumnScope.StageContent(session: RecallSession, style: BoardStyle, onExit: () -> Unit) {
+private fun RaceTop(session: RecallSession, race: RaceBoard) {
+  if (race.goal > 0) RaceTrack(race)
+  if (session.stage is Stage.Solving) rememberRaceLeft(race.endsAt)?.let { TurnClock(it) }
+}
+
+@Composable
+private fun ColumnScope.StageContent(session: RecallSession, style: BoardStyle, race: RaceBoard?, onNextRound: () -> Unit, onExit: () -> Unit) {
   when (val stage = session.stage) {
-    Stage.Loading -> Loading()
+    Stage.Loading -> race?.let { RaceWaiting(it, "Esperando a que todos estén listos") } ?: Loading()
     is Stage.Watching -> Watching(stage.game, session.config.intervalMs, style, session::watched)
     is Stage.Solving -> Solving(session, stage, style)
-    Stage.RoundDone -> RoundDone(session, onExit)
-    Stage.SeriesDone -> SeriesDone(session, onExit)
+    Stage.RoundDone -> RoundDone(session, onNextRound, onExit)
+    Stage.SeriesDone -> race?.let { RaceWaiting(it, "Sin vidas: esperando a los demás") } ?: SeriesDone(session, onExit)
     is Stage.Failed -> Failed(stage.message, session::retry)
   }
 }

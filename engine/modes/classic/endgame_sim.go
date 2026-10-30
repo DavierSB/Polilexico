@@ -1,6 +1,8 @@
 package classic
 
 import (
+	"math/rand"
+
 	"lexico/engine/internal/core"
 )
 
@@ -58,17 +60,26 @@ func (sim *simulation) step() error {
 }
 
 func (sim *simulation) game() (*Game, error) {
+	return sim.seated(sim.play.Game.PlayerOnTurn(), humanName, core.DefaultBot, newGameLog(humanName, core.DefaultBot))
+}
+
+func (sim *simulation) localGame(first, second string, starter int) (*Game, error) {
+	log := newGameLog(first, second)
+	log.Local = true
+	return sim.seated(localSide(sim.play.Game.PlayerOnTurn(), starter), first, second, log)
+}
+
+func (sim *simulation) seated(humanIdx int, human, other string, log *gameLog) (*Game, error) {
 	g := sim.play.Game
-	humanIdx := g.PlayerOnTurn()
-	first, second := playerNames(humanIdx)
+	first, second := playerNames(humanIdx, human, other)
 	if err := core.RenamePlayers(g, first, second); err != nil {
 		return nil, err
 	}
-	c, err := newGame(g, core.DefaultBot, humanIdx, newGameLog(core.DefaultBot))
+	log.Mode, log.StartTurn = ModeEndgame, len(sim.turns)
+	c, err := newGame(g, other, humanIdx, log)
 	if err != nil {
 		return nil, err
 	}
-	c.log.Mode, c.log.StartTurn = ModeEndgame, len(sim.turns)
 	for _, t := range sim.turns {
 		c.addPastTurn(t)
 	}
@@ -82,9 +93,16 @@ func (c *Game) addPastTurn(t simTurn) {
 	c.moves = append(c.moves, moveOf(t.play, byHuman, t.totals[c.humanIdx], t.totals[c.botIdx()]))
 }
 
-func playerNames(humanIdx int) (string, string) {
+func playerNames(humanIdx int, human, other string) (string, string) {
 	if humanIdx == 0 {
-		return humanName, core.DefaultBot
+		return human, other
 	}
-	return core.DefaultBot, humanName
+	return other, human
+}
+
+func localSide(onTurn, starter int) int {
+	if starter == StarterBot || starter != StarterHuman && rand.Intn(2) == 0 {
+		return 1 - onTurn
+	}
+	return onTurn
 }

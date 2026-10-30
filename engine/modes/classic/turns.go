@@ -21,7 +21,7 @@ var (
 func (c *Game) Play(input string) (*Move, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if !c.humanToMove() {
+	if !c.playerToMove() {
 		return nil, errNotYourTurn
 	}
 	m, play, err := c.humanMove(input)
@@ -83,12 +83,16 @@ func (c *Game) LoseOnTime() {
 	if c.over() {
 		return
 	}
-	c.lostOnTime = true
+	if c.local && c.botToMove() {
+		c.rivalLostOnTime = true
+	} else {
+		c.lostOnTime = true
+	}
 	c.finish()
 }
 
 func (c *Game) humanMove(input string) (*move.Move, core.Play, error) {
-	m, err := core.ParseInput(c.g, c.humanIdx, input)
+	m, err := core.ParseInput(c.g, c.g.PlayerOnTurn(), input)
 	if invalid, ok := core.AsInvalidWords(err); ok && c.invalidLosesTurn {
 		return c.loseTurn(invalid.Play)
 	}
@@ -100,7 +104,7 @@ func (c *Game) humanMove(input string) (*move.Move, core.Play, error) {
 
 func (c *Game) loseTurn(attempt core.Play) (*move.Move, core.Play, error) {
 	tp := &turnplayer.BaseTurnPlayer{Game: c.g}
-	m, err := tp.NewPassMove(c.humanIdx)
+	m, err := tp.NewPassMove(c.g.PlayerOnTurn())
 	return m, attempt, err
 }
 
@@ -125,6 +129,9 @@ func (c *Game) candidates() []core.Candidate {
 }
 
 func (c *Game) newMove(p core.Play, byHuman bool) *Move {
+	if c.local {
+		p = hideExchange(p)
+	}
 	return moveOf(p, byHuman, c.points(true), c.points(false))
 }
 

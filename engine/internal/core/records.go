@@ -33,8 +33,12 @@ func writeJSON(path string, v any) error {
 	return os.WriteFile(path, data, 0o644)
 }
 
+const gcgDescription = "Poliléxico"
+
 func writeGCG(path string, g *game.Game) {
-	if gcg, err := gcgio.GameHistoryToGCG(g.History(), true); err == nil {
+	h := g.History()
+	h.Description = gcgDescription
+	if gcg, err := gcgio.GameHistoryToGCG(h, true); err == nil {
 		_ = os.WriteFile(path, []byte(gcg), 0o644)
 	}
 }

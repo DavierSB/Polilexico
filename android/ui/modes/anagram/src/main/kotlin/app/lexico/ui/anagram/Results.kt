@@ -30,7 +30,7 @@ import app.lexico.ui.common.WordRow
 
 @Composable
 internal fun ColumnScope.Revealed(session: AnagramSession, stage: Stage.Revealed) {
-  HandBanner(stage.outcome)
+  HandBanner(stage.outcome, session.config.limited)
   NextButton(session::next)
   Answers(stage.puzzle, stage.found, "Tenía")
 }
@@ -49,10 +49,10 @@ private fun NextButton(onNext: () -> Unit) {
 }
 
 @Composable
-private fun HandBanner(outcome: Outcome) {
+private fun HandBanner(outcome: Outcome, limited: Boolean) {
   when (outcome) {
     Outcome.SOLVED -> OutcomeBanner("¡RESUELTA!", "Mano completa", good = true)
-    Outcome.GAVE_UP -> OutcomeBanner("TE RENDISTE", "Pierdes una vida", good = false)
+    Outcome.GAVE_UP -> OutcomeBanner("TE RENDISTE", if (limited) "Pierdes una vida" else "Mano perdida", good = false)
     Outcome.NO_LIVES -> OutcomeBanner("SIN VIDAS", "Fin de la serie", good = false)
     Outcome.TIMEOUT -> OutcomeBanner("SE ACABÓ EL TIEMPO", "Fin de la serie", good = false)
   }

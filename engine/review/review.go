@@ -25,6 +25,8 @@ type Game struct {
 	BestWordScore int
 	LongestWord   string
 	HumanStarts   bool
+	Local         bool
+	Me            string
 	turns         []*Turn
 }
 

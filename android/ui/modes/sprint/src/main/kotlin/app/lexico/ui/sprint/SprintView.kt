@@ -2,6 +2,7 @@ package app.lexico.ui.sprint
 
 import app.lexico.model.Board
 import app.lexico.model.Placement
+import app.lexico.ui.common.RaceBoard
 
 sealed interface Phase {
   data object Searching : Phase
@@ -35,6 +36,7 @@ data class SprintView(
   val best: Int = 0,
   val record: Record? = null,
   val played: List<Bingo> = emptyList(),
+  val race: RaceBoard? = null,
 )
 
 data class Record(val best: Int, val isNew: Boolean)

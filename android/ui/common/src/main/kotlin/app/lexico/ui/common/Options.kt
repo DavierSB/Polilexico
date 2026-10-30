@@ -1,6 +1,7 @@
 package app.lexico.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +21,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun TwoOptions(first: String, second: String, secondSelected: Boolean, onChange: (secondSelected: Boolean) -> Unit) {
-  Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+  FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
     Option(first, selected = !secondSelected) { onChange(false) }
     Option(second, selected = secondSelected) { onChange(true) }
   }
@@ -28,7 +29,7 @@ fun TwoOptions(first: String, second: String, secondSelected: Boolean, onChange:
 
 @Composable
 fun ChoiceOptions(options: List<String>, selected: Int, onSelect: (Int) -> Unit) {
-  Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+  FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
     options.forEachIndexed { i, text -> Option(text, selected = i == selected) { onSelect(i) } }
   }
 }
@@ -79,7 +80,12 @@ fun StartButton(enabled: Boolean, onClick: () -> Unit) {
 
 @Composable
 private fun Option(text: String, selected: Boolean, select: () -> Unit) {
-  if (selected) Button(onClick = {}) { Text(text) } else OutlinedButton(onClick = select) { Text(text) }
+  if (selected) Button(onClick = {}) { OneLine(text) } else OutlinedButton(onClick = select) { OneLine(text) }
+}
+
+@Composable
+private fun OneLine(text: String) {
+  Text(text, maxLines = 1, softWrap = false)
 }
 
 private const val CHALLENGE_INTRO = "Existen varios modos de comprobación de jugadas:"

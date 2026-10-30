@@ -12,6 +12,7 @@ THEMES = [
     ("plantas", "Plantas", []),
     ("animales", "Animales", []),
     ("extranjerismos", "Extranjerismos", []),
+    ("unidades", "Unidades de medida", ["metro", "gramo", "litro", "io"]),
 ]
 LENGTHS = [("2 a 5 letras", 2, 5), ("6 y 7 letras", 6, 7), ("8 y 9 letras", 8, 9)]
 OTHER_ENDINGS = "Otras terminaciones"

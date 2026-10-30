@@ -8,16 +8,21 @@ import (
 func (m *Match) afterChange() {
 	status := m.game.Status()
 	running := !m.paused && !m.closed && !status.Over
+	ticking := running && m.personToMove(status) && !m.mirror
 	m.runClocks(running, status.HumanToMove)
 	m.chargeTime()
 	m.schedulePenalty(running, status.HumanToMove)
-	m.scheduleTimeout(running && status.HumanToMove)
-	m.scheduleMarks(running && status.HumanToMove)
+	m.scheduleTimeout(ticking, status.HumanToMove)
+	m.scheduleMarks(ticking, status.HumanToMove)
 	m.noteEnding(status.Over)
-	if running && !status.HumanToMove && !m.thinking {
+	if running && !m.personToMove(status) && !m.thinking && !m.mirror {
 		m.startBot()
 	}
 	m.notifier.Notify()
+}
+
+func (m *Match) personToMove(status *Status) bool {
+	return status.HumanToMove || m.game.local
 }
 
 func (m *Match) runClocks(running, humanToMove bool) {
@@ -55,20 +60,21 @@ func (m *Match) onPenalty() {
 	}
 }
 
-func (m *Match) scheduleTimeout(humanRunning bool) {
+func (m *Match) scheduleTimeout(ticking, human bool) {
 	m.timeout.Cancel()
-	if m.clocks != nil && humanRunning {
-		m.timeout.Set(m.clocks.humanLeft(), m.onTimeout)
+	if m.clocks != nil && ticking {
+		m.timeout.Set(m.clocks.left(human), m.onTimeout)
 	}
 }
 
 func (m *Match) onTimeout() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if m.paused || m.closed || !m.game.Status().HumanToMove {
+	status := m.game.Status()
+	if m.paused || m.closed || status.Over || !m.personToMove(status) {
 		return
 	}
-	if m.clocks.humanLeft() <= 0 {
+	if m.clocks.left(status.HumanToMove) <= 0 {
 		m.chargeTime()
 		m.game.LoseOnTime()
 		m.cues.Emit(events.CueTimeUp)
@@ -76,16 +82,17 @@ func (m *Match) onTimeout() {
 	m.afterChange()
 }
 
-func (m *Match) scheduleMarks(humanRunning bool) {
+func (m *Match) scheduleMarks(ticking, human bool) {
 	if m.clocks != nil {
-		m.marks.Sync(humanRunning, m.clocks.humanLeft(), m.onMark)
+		m.marks.Sync(ticking, m.clocks.left(human), m.onMark)
 	}
 }
 
 func (m *Match) onMark(mark timing.Mark) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if m.paused || m.closed || !m.game.Status().HumanToMove || m.clocks.humanLeft() > mark.Left {
+	status := m.game.Status()
+	if m.paused || m.closed || status.Over || !m.personToMove(status) || m.clocks.left(status.HumanToMove) > mark.Left {
 		return
 	}
 	m.cues.Emit(mark.Cue)

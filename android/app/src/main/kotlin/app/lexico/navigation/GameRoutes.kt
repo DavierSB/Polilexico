@@ -111,10 +111,12 @@ internal fun SprintRoute(screen: Screen.Sprint, lexico: Lexico, nav: Navigator, 
 }
 
 @Composable
-internal fun ClassicPlay(game: ClassicGame, nav: Navigator, themes: ThemeState, finished: FinishedGames) {
+internal fun ClassicPlay(
+  game: ClassicGame, nav: Navigator, themes: ThemeState, finished: FinishedGames, wifiNotice: String? = null, handOff: Boolean = true,
+) {
   PauseWhenHidden(game)
   PlayCues(game) { it.takeIf { cue -> cue != Cue.CELEBRATION } }
-  GameTheme(game, themes, bot(game.opponent).theme)
+  GameTheme(game, themes, if (game.host == null) bot(game.opponent).theme else themes.appTheme)
   val scope = rememberCoroutineScope()
   var exporting by remember { mutableStateOf<String?>(null) }
   val controller = remember(game) {
@@ -122,7 +124,8 @@ internal fun ClassicPlay(game: ClassicGame, nav: Navigator, themes: ThemeState, 
   }
   val state by game.state.collectAsState()
   LookupOnlyWhenOver(state.result != null || game.study) {
-    ClassicScreen(classicView(state, game.opponent, controller.notice), themes.board, controller) { themes.picking = true }
+    val view = classicView(state, game.opponent, controller.notice, game.host, handOff && game.host != null).copy(status = wifiNotice)
+    ClassicScreen(view, themes.board, controller) { themes.picking = true }
   }
   exporting?.let { GameExport(it, finished, themes.board) { exporting = null } }
 }
@@ -164,7 +167,7 @@ internal fun SprintPlay(
 }
 
 @Composable
-private fun rememberPlayed(game: SprintGame, state: SprintState): List<Bingo> {
+internal fun rememberPlayed(game: SprintGame, state: SprintState): List<Bingo> {
   val played = remember(game) { mutableStateMapOf<Int, Bingo>() }
   LaunchedEffect(state.phase) { solvedAnswer(state.phase)?.let { played[state.posed] = it } }
   return played.toSortedMap().values.toList()
@@ -179,6 +182,6 @@ internal fun GameTheme(game: Any, themes: ThemeState, initial: AppTheme) {
 }
 
 @Composable
-private fun LookupOnlyWhenOver(over: Boolean, content: @Composable () -> Unit) {
+internal fun LookupOnlyWhenOver(over: Boolean, content: @Composable () -> Unit) {
   if (over) content() else CompositionLocalProvider(LocalWordLookup provides null, content = content)
 }

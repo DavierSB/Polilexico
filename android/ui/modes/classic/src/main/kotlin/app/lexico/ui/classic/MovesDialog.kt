@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,8 +36,19 @@ fun MovesDialog(view: ClassicView, close: () -> Unit) {
   val starter = view.moves.firstOrNull()?.side ?: Side.ME
   val turns = remember(view.moves) { byTurn(view.moves, starter) }
   val footer = view.end?.takeIf { it.ending != null || it.timePenalized }?.let { e -> @Composable { EndingRows(view, e, starter) } }
-  MovesTableDialog(turns, header = { MovesHeader(inOrder(starter, "Tú", view.opponent)) }, close = close, footer = footer) { i, turn ->
+  MovesTableDialog(turns, header = { MovesHeader(inOrder(starter, view.me, view.opponent)) }, close = close, footer = footer) { i, turn ->
     TurnRow(i + 1, turn)
+  }
+}
+
+@Composable
+internal fun MovesList(view: ClassicView, modifier: Modifier) {
+  val starter = view.moves.firstOrNull()?.side ?: Side.ME
+  val turns = remember(view.moves) { byTurn(view.moves, starter) }
+  val list = rememberLazyListState(initialFirstVisibleItemIndex = maxOf(turns.lastIndex, 0))
+  Column(modifier) {
+    MovesHeader(inOrder(starter, view.me, view.opponent))
+    LazyColumn(state = list) { itemsIndexed(turns) { i, turn -> TurnRow(i + 1, turn) } }
   }
 }
 

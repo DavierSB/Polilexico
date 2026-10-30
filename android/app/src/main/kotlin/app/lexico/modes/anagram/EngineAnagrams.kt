@@ -2,9 +2,14 @@ package app.lexico.modes.anagram
 
 import app.lexico.game.Lexico
 import app.lexico.game.modes.anagram.AnagramSetup
+import app.lexico.game.race.RaceGame
+import app.lexico.game.race.RaceSetup
 import app.lexico.game.records.AnagramRecords
 import app.lexico.ui.anagram.AnagramConfig
+import app.lexico.ui.anagram.AnagramRace
 import app.lexico.ui.anagram.AnagramSource
+import app.lexico.ui.anagram.Difficulty
+import app.lexico.ui.common.RACE_LIVES
 import app.lexico.ui.recall.Record
 import app.lexico.ui.recall.RecordBook
 
@@ -25,3 +30,8 @@ fun anagramRecords(records: AnagramRecords, config: AnagramConfig): RecordBook =
 
   override fun submit(recalled: Int): Record = records.submit(setup, recalled).let { Record(it.best, it.isNew) }
 }
+
+fun AnagramRace.toRace(): RaceSetup = RaceSetup(RaceGame.ANAGRAM, timeMs = config.totalMs, goal = goal, difficulty = config.difficulty.key)
+
+fun RaceSetup.toAnagramConfig(totalMs: Long): AnagramConfig =
+  AnagramConfig(totalMs, RACE_LIVES, Difficulty.entries.first { it.key == difficulty })

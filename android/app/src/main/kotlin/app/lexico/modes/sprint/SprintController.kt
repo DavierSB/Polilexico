@@ -3,10 +3,14 @@ package app.lexico.modes.sprint
 import androidx.compose.runtime.Stable
 import app.lexico.game.modes.sprint.SprintGame
 import app.lexico.game.modes.sprint.SprintSetup
+import app.lexico.game.race.RaceGame
+import app.lexico.game.race.RaceSetup
 import app.lexico.model.Placement
 import app.lexico.modes.GameController
+import app.lexico.ui.common.RACE_LIVES
 import app.lexico.ui.sprint.SprintActions
 import app.lexico.ui.sprint.SprintConfig
+import app.lexico.ui.sprint.SprintRace
 import kotlinx.coroutines.CoroutineScope
 
 @Stable
@@ -27,3 +31,7 @@ class SprintController(
 
 fun SprintConfig.toSetup(): SprintSetup =
   SprintSetup(totalMs = totalMs, lives = lives, invalidCostsLife = single, difficulty = difficulty.engineName)
+
+fun SprintRace.toRace(): RaceSetup = RaceSetup(RaceGame.SPRINT, timeMs = config.totalMs, goal = goal, difficulty = config.difficulty.engineName)
+
+fun RaceSetup.toSprintSetup(totalMs: Long): SprintSetup = SprintSetup(totalMs, RACE_LIVES, invalidCostsLife = false, difficulty = difficulty)

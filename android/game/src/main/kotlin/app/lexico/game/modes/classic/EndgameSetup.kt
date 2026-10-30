@@ -9,4 +9,6 @@ data class EndgameSetup(
   val invalidLosesTurn: Boolean,
   val timeMs: Long,
   val overtimeMs: Long,
+  val starter: Int = 0,
+  val players: LocalPlayers? = null,
 )

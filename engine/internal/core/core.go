@@ -65,10 +65,11 @@ func NewGameFromBoard(rows [][]tilemapping.MachineLetter, rack string) (*game.Ga
 }
 
 func RenamePlayers(g *game.Game, first, second string) error {
-	if err := g.RenamePlayer(0, player(first)); err != nil {
+	p := players(first, second)
+	if err := g.RenamePlayer(0, p[0]); err != nil {
 		return err
 	}
-	return g.RenamePlayer(1, player(second))
+	return g.RenamePlayer(1, p[1])
 }
 
 func setUp(dataDir, saves string) error {
@@ -98,15 +99,30 @@ func newRules(c *config.Config) (*game.GameRules, error) {
 }
 
 func players(first, second string) []*pb.PlayerInfo {
-	return []*pb.PlayerInfo{player(first), player(second)}
+	return []*pb.PlayerInfo{player(first, ""), player(second, nickname(first))}
 }
 
-func player(name string) *pb.PlayerInfo {
-	return &pb.PlayerInfo{Nickname: nickname(name), RealName: name}
+func player(name, taken string) *pb.PlayerInfo {
+	nick := nickname(name)
+	if nick == taken {
+		nick += "2"
+	}
+	return &pb.PlayerInfo{Nickname: nick, RealName: name}
 }
 
 func nickname(name string) string {
-	return withoutAccents.Replace(strings.ToLower(name))
+	nick := strings.Map(keepNickRune, withoutAccents.Replace(strings.ToLower(name)))
+	if nick == "" {
+		return "jugador"
+	}
+	return nick
 }
 
-var withoutAccents = strings.NewReplacer("á", "a", "é", "e", "í", "i", "ó", "o", "ú", "u", "ñ", "n")
+func keepNickRune(r rune) rune {
+	if r >= 'a' && r <= 'z' || r >= '0' && r <= '9' {
+		return r
+	}
+	return -1
+}
+
+var withoutAccents = strings.NewReplacer("á", "a", "é", "e", "í", "i", "ó", "o", "ú", "u", "ü", "u", "ñ", "n")

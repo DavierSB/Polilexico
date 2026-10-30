@@ -84,7 +84,7 @@ private suspend fun statsGames(lexico: Lexico, since: Long): StatsGames = StatsG
 @Composable
 internal fun ReviewRoute(screen: Screen.Review, lexico: Lexico, nav: Navigator, themes: ThemeState) {
   WhenReady(rememberCreated(screen) { lexico.finishedGames.open(screen.path) }, "Abriendo la partida…") { review ->
-    GameTheme(review, themes, if (review.game.mode == Mode.DUPLICATE) themes.appTheme else bot(review.game.opponent).theme)
+    GameTheme(review, themes, if (review.game.mode == Mode.DUPLICATE || review.game.host != null) themes.appTheme else bot(review.game.opponent).theme)
     val view = remember(review) { reviewView(review) }
     val sessions: EndgameSessions = remember(view) { { i -> endgameSession(lexico.finishedGames.explore(screen.path, i), view.turns[i], view.opponent) } }
     val preEndgames: PreEndgameAnalyses = remember(view) {

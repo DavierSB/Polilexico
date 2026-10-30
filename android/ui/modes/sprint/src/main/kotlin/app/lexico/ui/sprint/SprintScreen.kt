@@ -36,10 +36,15 @@ import app.lexico.ui.common.NOT_IN_A_LINE
 import app.lexico.ui.common.Notice
 import app.lexico.ui.common.Pausable
 import app.lexico.ui.common.PauseButton
+import app.lexico.ui.common.RaceBar
+import app.lexico.ui.common.RaceBoard
+import app.lexico.ui.common.RaceTrack
+import app.lexico.ui.common.RaceWaiting
 import app.lexico.ui.common.RulesBarButton
 import app.lexico.ui.common.ThemeButton
 import app.lexico.ui.common.TurnClock
 import app.lexico.ui.common.rememberNotice
+import app.lexico.ui.common.rememberRaceLeft
 
 @Composable
 fun SprintScreen(view: SprintView, style: BoardStyle, actions: SprintActions, onTheme: (() -> Unit)? = null) {
@@ -60,11 +65,13 @@ private fun SprintLayout(
 ) {
   Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
     TopBar(view, actions, onTheme)
+    view.race?.takeIf { it.goal > 0 }?.let { RaceTrack(it) }
     if (view.phase.hand == null) Searching() else PlacingBoard(c, style, enabled = view.phase is Phase.Solving)
     PhasePanel(view, c, style, actions, onNotice, shown, onShow)
     message?.let { Notice(it, bold = true) }
     if (!view.phase.showsBingos) Spacer(Modifier.weight(1f))
     Lives(view.lives, view.maxLives, "Resueltas", view.solved, view.best)
+    view.race?.takeIf { it.goal == 0 }?.let { RaceBar(it) }
   }
 }
 
@@ -74,7 +81,7 @@ private fun TopBar(view: SprintView, actions: SprintActions, onTheme: (() -> Uni
   Row(Modifier.fillMaxWidth().height(44.dp), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
     ExitButton(actions::exit)
     BarTitle("Scrabble Sprint", Modifier.weight(1f).padding(start = 6.dp))
-    if (view.phase !is Phase.Finished) PauseButton(actions::pause)
+    if (view.race == null && view.phase !is Phase.Finished) PauseButton(actions::pause)
     RulesBarButton { rules = true }
     if (onTheme != null) ThemeButton(onTheme)
   }
@@ -97,16 +104,16 @@ private fun ColumnScope.PhasePanel(
   when (val phase = view.phase) {
     Phase.Searching -> Unit
     is Phase.Solving -> Solving(
-      phase, c, style, onPlay = { c.placement()?.let(actions::propose) ?: onNotice(NOT_IN_A_LINE) }, onGiveUp = actions::giveUp,
+      phase, view.race, c, style, onPlay = { c.placement()?.let(actions::propose) ?: onNotice(NOT_IN_A_LINE) }, onGiveUp = actions::giveUp,
     )
     is Phase.Revealed -> Box(Modifier.weight(1f)) { Revealed(phase.result, shown, onShow, actions::next) }
-    is Phase.Finished -> Box(Modifier.weight(1f)) { Finished(phase.result, view, shown, onShow, actions) }
+    is Phase.Finished -> Box(Modifier.weight(1f)) { view.race?.let { RaceWaiting(it, "Sin vidas: esperando a los demás") } ?: Finished(phase.result, view, shown, onShow, actions) }
   }
 }
 
 @Composable
-private fun Solving(phase: Phase.Solving, c: TilePlacer, style: BoardStyle, onPlay: () -> Unit, onGiveUp: () -> Unit) {
-  TurnClock(phase.remainingMs)
+private fun Solving(phase: Phase.Solving, race: RaceBoard?, c: TilePlacer, style: BoardStyle, onPlay: () -> Unit, onGiveUp: () -> Unit) {
+  TurnClock(race?.let { rememberRaceLeft(it.endsAt) } ?: phase.remainingMs)
   PlacingRack(c, style, enabled = true)
   SolvingButtons(c, onPlay, onGiveUp)
 }

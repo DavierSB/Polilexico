@@ -35,16 +35,23 @@ fun ResultPanel(
 }
 
 private fun playedWords(view: ClassicView): List<WordSection> =
-  listOf(Side.ME to "Tú", Side.OPPONENT to view.opponent).map { (side, name) -> WordSection(name, view.moves.filter { it.side == side && it.type == MoveType.PLACEMENT }.map { it.text }) }
+  listOf(Side.ME to view.me, Side.OPPONENT to view.opponent).map { (side, name) -> WordSection(name, view.moves.filter { it.side == side && it.type == MoveType.PLACEMENT }.map { it.text }) }
 
 private fun spread(view: ClassicView): Spread {
   val totals = listOf(0 to 0) + view.moves.map { it.myTotal to it.opponentTotal } + (view.myScore to view.opponentScore)
-  return Spread.of("Tú", view.opponent, view.moves.firstOrNull()?.side != Side.OPPONENT, totals.distinctLast())
+  return Spread.of(view.me, view.opponent, view.moves.firstOrNull()?.side != Side.OPPONENT, totals.distinctLast())
+}
+
+internal fun localVerdict(view: ClassicView, end: GameEnd): String = when (end.winner) {
+  Side.ME -> "Ganó ${view.me}"
+  Side.OPPONENT -> "Ganó ${view.opponent}"
+  null -> "Empate"
 }
 
 private fun <T> List<T>.distinctLast(): List<T> = if (size > 1 && last() == this[lastIndex - 1]) dropLast(1) else this
 
 private fun resultTitle(view: ClassicView, end: GameEnd): String = when {
+  view.local -> localVerdict(view, end) + if (end.byTimeout) " por tiempo" else ""
   end.byTimeout -> "Perdiste por tiempo"
   end.winner == Side.ME -> "¡Ganaste!"
   end.winner == Side.OPPONENT -> "Ganó ${view.opponent}"

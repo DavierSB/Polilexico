@@ -31,6 +31,8 @@ val BOTS = listOf(
 
 fun bot(name: String): Bot = BOTS.find { it.name == name || it.alias == name } ?: BOTS.last()
 
+fun isBot(name: String): Boolean = BOTS.any { it.name.equals(name, true) || it.alias.equals(name, true) }
+
 fun alias(name: String): String = BOTS.find { it.name == name }?.alias ?: name
 
 @Composable

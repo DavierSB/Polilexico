@@ -1,11 +1,14 @@
 package app.lexico.navigation
 
+import app.lexico.game.race.RaceGame
+import app.lexico.game.race.RaceSetup
 import app.lexico.game.storage.Mode
 import app.lexico.game.storage.SavedGame
 import app.lexico.ui.anagram.AnagramConfig
 import app.lexico.ui.analysis.EditedPosition
 import app.lexico.ui.analysis.PositionEditor
 import app.lexico.ui.classic.ClassicConfig
+import app.lexico.ui.duplicate.WifiDuplicateConfig
 import app.lexico.ui.classic.EndgameConfig
 import app.lexico.ui.duplicate.DuplicateConfig
 import app.lexico.ui.games.GameFolder
@@ -19,8 +22,16 @@ sealed interface Screen {
   data object DuplicateMenu : Screen
   data object NewClassic : Screen
   data class Classic(val config: ClassicConfig) : Screen
+  data class WifiHost(val config: ClassicConfig, val name: String) : Screen
+  data class WifiJoin(val name: String) : Screen
+  data class DuplicateWifiHost(val config: WifiDuplicateConfig) : Screen
+  data class DuplicateWifiJoin(val name: String) : Screen
   data object NewEndgame : Screen
   data class Endgame(val config: EndgameConfig) : Screen
+  data class EndgameWifiHost(val config: EndgameConfig, val name: String) : Screen
+  data class EndgameWifiJoin(val name: String) : Screen
+  data class RaceHost(val setup: RaceSetup, val name: String) : Screen
+  data class RaceJoin(val game: RaceGame, val name: String) : Screen
   data object NewDuplicate : Screen
   data class Duplicate(val config: DuplicateConfig) : Screen
   data object Minigames : Screen
@@ -49,7 +60,8 @@ sealed interface Screen {
   data class Review(val path: String, val atEndgame: Boolean = false) : Screen
   data object Stats : Screen
 
-  val isGame: Boolean get() = this is Classic || this is Endgame || this is Duplicate || this is Recall || this is Sprint || this is Anagram || this is Continue
+  val isGame: Boolean get() = this is Classic || this is WifiHost || this is WifiJoin || this is DuplicateWifiHost || this is DuplicateWifiJoin || this is Endgame ||
+    this is EndgameWifiHost || this is EndgameWifiJoin || this is RaceHost || this is RaceJoin || this is Duplicate || this is Recall || this is Sprint || this is Anagram || this is Continue
 
   val hasBoard: Boolean get() = isGame || this is Analyzer || this is PositionReview || this is Review
 

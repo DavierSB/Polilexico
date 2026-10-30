@@ -18,8 +18,9 @@ import app.lexico.ui.classic.MoveType
 import app.lexico.ui.classic.OpponentRack
 import app.lexico.ui.classic.Side
 
-fun classicView(state: ClassicState, opponent: String, notice: String?): ClassicView = ClassicView(
-  opponent = alias(opponent), board = state.board, rack = state.rack, opponentRack = opponentRack(state),
+fun classicView(state: ClassicState, opponent: String, notice: String?, host: String? = null, handOff: Boolean = host != null): ClassicView = ClassicView(
+  opponent = if (host == null) alias(opponent) else seated(state, opponent, host).second,
+  me = if (host == null) "Tú" else seated(state, opponent, host).first, local = host != null, handOff = handOff, board = state.board, rack = state.rack, opponentRack = opponentRack(state),
   myScore = state.myScore, opponentScore = state.opponentScore, turn = turn(state),
   myClock = state.clocks?.let { Clock(it.myMs, it.myOvertimeMs) },
   opponentClock = state.clocks?.let { Clock(it.opponentMs, it.opponentOvertimeMs) },
@@ -27,6 +28,9 @@ fun classicView(state: ClassicState, opponent: String, notice: String?): Classic
   moves = state.moves.map(::move), end = state.result?.let(::gameEnd),
   notice = notice ?: state.botError, paused = state.paused && state.result == null,
 )
+
+private fun seated(state: ClassicState, opponent: String, host: String): Pair<String, String> =
+  if (state.flipped) opponent to host else host to opponent
 
 private fun opponentRack(state: ClassicState): OpponentRack =
   if (state.result == null) OpponentRack.Hidden(state.opponentTiles) else OpponentRack.Visible(state.opponentRack)
@@ -50,7 +54,7 @@ private fun moveType(kind: MoveKind): MoveType = when (kind) {
 }
 
 private fun gameEnd(result: ClassicResult): GameEnd = GameEnd(
-  winner = winner(result.outcome), byTimeout = result.lostOnTime, ending = result.ending?.let(::ending),
+  winner = winner(result.outcome), byTimeout = result.lostOnTime || result.rivalLostOnTime, ending = result.ending?.let(::ending),
   myTimePenalty = result.myTimePenalty, opponentTimePenalty = result.opponentTimePenalty,
 )
 

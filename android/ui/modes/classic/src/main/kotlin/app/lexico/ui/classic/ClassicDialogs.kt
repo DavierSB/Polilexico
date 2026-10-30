@@ -24,20 +24,21 @@ internal fun rememberClassicDialogs(view: ClassicView): ClassicDialogs {
     if (wasOver == false && end != null) dialogs.announce(end)
     wasOver = end != null
   }
-  WatchInvalid(view.moves, dialogs)
+  WatchInvalid(view, dialogs)
   return dialogs
 }
 
 @Composable
-private fun WatchInvalid(moves: List<Move>, dialogs: ClassicDialogs) {
+private fun WatchInvalid(view: ClassicView, dialogs: ClassicDialogs) {
   var seen by remember { mutableIntStateOf(-1) }
+  val moves = view.moves
   LaunchedEffect(moves.size) {
-    if (seen >= 0 && moves.drop(seen).any(::isMyInvalid)) dialogs.invalid = true
+    if (seen >= 0 && moves.drop(seen).any { isMyInvalid(it, view.local) }) dialogs.invalid = true
     seen = moves.size
   }
 }
 
-private fun isMyInvalid(move: Move): Boolean = move.side == Side.ME && move.type == MoveType.INVALID
+private fun isMyInvalid(move: Move, local: Boolean): Boolean = (move.side == Side.ME || local) && move.type == MoveType.INVALID
 
 @Stable
 internal class ClassicDialogs {

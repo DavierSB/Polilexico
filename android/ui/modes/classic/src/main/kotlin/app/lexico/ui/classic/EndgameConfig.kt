@@ -12,6 +12,8 @@ data class EndgameConfig(
   val timed: Boolean = false,
   val timeMs: Long = 5 * 60_000L,
   val overtimeMs: Long = 60_000L,
+  val starter: Int = 0,
+  val players: Pair<String, String>? = null,
 )
 
 enum class QPlace(val engineName: String, val option: String, val summary: String) {

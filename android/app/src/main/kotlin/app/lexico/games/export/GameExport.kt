@@ -69,7 +69,7 @@ private suspend fun write(context: Context, uri: Uri, export: Export) = withCont
   val out = requireNotNull(context.contentResolver.openOutputStream(uri)) { "no se pudo abrir $uri" }
   out.buffered().use {
     when (export.format) {
-      ExportFormat.GCG -> gcgFile(export.recordPath).inputStream().use { gcg -> gcg.copyTo(it) }
+      ExportFormat.GCG -> it.write(withBotAliases(gcgFile(export.recordPath).readText()).toByteArray())
       ExportFormat.GIF -> GameGif(context, export.style).write(export.games.open(export.recordPath), it)
     }
   }

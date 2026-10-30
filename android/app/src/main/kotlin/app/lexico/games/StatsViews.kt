@@ -6,6 +6,7 @@ import app.lexico.game.records.Statistics
 import app.lexico.game.storage.Mode
 import app.lexico.game.storage.UnfinishedGame
 import app.lexico.ui.classic.alias
+import app.lexico.ui.classic.isBot
 import app.lexico.ui.games.ChartGame
 import app.lexico.ui.games.StatsFilter
 import app.lexico.ui.games.StatsMode
@@ -28,7 +29,7 @@ fun statsPage(filter: StatsFilter, games: StatsGames, reset: Boolean): StatsPage
 }
 
 private fun chosen(filter: StatsFilter, mode: Mode, opponent: String): Boolean =
-  mode == mode(filter.mode) && (filter.opponent == null || alias(opponent) == filter.opponent)
+  mode == mode(filter.mode) && (mode != Mode.CLASSIC || isBot(opponent)) && (filter.opponent == null || alias(opponent) == filter.opponent)
 
 private fun mode(mode: StatsMode): Mode = if (mode == StatsMode.CLASSIC) Mode.CLASSIC else Mode.DUPLICATE
 

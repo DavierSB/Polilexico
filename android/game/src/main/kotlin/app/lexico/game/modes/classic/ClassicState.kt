@@ -18,6 +18,7 @@ data class ClassicState(
   val paused: Boolean,
   val result: ClassicResult?,
   val botError: String?,
+  val flipped: Boolean = false,
 )
 
 enum class MoveKind { PLACEMENT, PASS, EXCHANGE, INVALID }
@@ -45,7 +46,7 @@ data class ClassicClocks(
 )
 
 data class ClassicResult(
-  val outcome: Outcome, val lostOnTime: Boolean, val ending: ClassicEnding?, val myTimePenalty: Int, val opponentTimePenalty: Int,
+  val outcome: Outcome, val lostOnTime: Boolean, val rivalLostOnTime: Boolean, val ending: ClassicEnding?, val myTimePenalty: Int, val opponentTimePenalty: Int,
   val recordPath: String,
 )
 

@@ -62,6 +62,10 @@ data class ClassicView(
   val end: GameEnd? = null,
   val notice: String? = null,
   val paused: Boolean = false,
+  val me: String = "Tú",
+  val local: Boolean = false,
+  val handOff: Boolean = local,
+  val status: String? = null,
 ) {
   val latestScore: Int? get() = moves.lastOrNull { it.type == MoveType.PLACEMENT }?.points
 }

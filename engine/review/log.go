@@ -19,6 +19,7 @@ type gameLog struct {
 	FinalHits   int       `json:"final_aciertos"`
 	Mode        string    `json:"mode"`
 	StartTurn   int       `json:"start_turn"`
+	Local       bool      `json:"local"`
 }
 
 type turnLog struct {
@@ -35,7 +36,7 @@ type turnLog struct {
 func classicGame(log gameLog) *Game {
 	g := &Game{Mode: classicMode(log), StartedAt: log.StartedAt, Opponent: log.BotName,
 		MyScore: log.FinalScores[0], OpponentScore: log.FinalScores[1], Outcome: classicOutcome(log),
-		StartTurn: log.StartTurn, HumanStarts: humanStarts(log)}
+		StartTurn: log.StartTurn, HumanStarts: humanStarts(log), Local: log.Mode == localMode || log.Local, Me: log.HumanName}
 	board, scores, drawn := newGrid(), &tally{}, 0
 	for i, t := range log.Turns {
 		mine := t.PlayerName == log.HumanName
@@ -49,6 +50,8 @@ func classicGame(log gameLog) *Game {
 	}
 	return g
 }
+
+const localMode = "local"
 
 func humanStarts(log gameLog) bool {
 	return len(log.Turns) == 0 || log.Turns[0].PlayerName == log.HumanName

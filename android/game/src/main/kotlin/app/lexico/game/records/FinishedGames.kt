@@ -36,7 +36,7 @@ class FinishedGames internal constructor(private val dir: File) {
     opponent = g.opponent, myScore = g.myScore.toInt(), opponentScore = g.opponentScore.toInt(),
     outcome = Outcome.of(g.outcome), hits = g.hits.toInt(), bingos = g.bingos.toInt(), bestWord = g.bestWord,
     bestWordScore = g.bestWordScore.toInt(), longestWord = g.longestWord, turns = g.turnCount().toInt(),
-    humanStarts = g.humanStarts,
+    humanStarts = g.humanStarts, host = g.me.takeIf { g.local },
   )
 
   private fun mode(mode: String): Mode = when (mode) {

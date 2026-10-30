@@ -37,8 +37,9 @@ import kotlinx.coroutines.withContext
 
 @Composable
 internal fun MeaningLine(word: String, lexicon: Lexicon) {
-  val meanings by produceState<List<Meaning>?>(null, word) { value = withContext(Dispatchers.IO) { lexicon.meanings(word) } }
-  if (meanings?.isEmpty() == true) return RaeButton(word)
+  val found by produceState<List<Meaning>?>(null, word) { value = withContext(Dispatchers.IO) { lexicon.meanings(word) } }
+  val meanings = found ?: return
+  if (meanings.isEmpty()) return RaeButton(word)
   var open by remember { mutableStateOf(false) }
   Surface(Modifier.fillMaxWidth().clickable { open = true }, RoundedCornerShape(12.dp), MaterialTheme.colorScheme.surfaceContainerHighest) {
     Row(Modifier.padding(horizontal = 14.dp, vertical = 10.dp), Arrangement.spacedBy(10.dp), Alignment.CenterVertically) {
@@ -46,7 +47,7 @@ internal fun MeaningLine(word: String, lexicon: Lexicon) {
       Text("Ver más", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
     }
   }
-  if (open) MeaningsDialog(word, meanings.orEmpty()) { open = false }
+  if (open) MeaningsDialog(word, meanings) { open = false }
 }
 
 @Composable
@@ -97,10 +98,7 @@ private fun Muted(text: String) {
   Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
-private fun summaryText(meanings: List<Meaning>?) = when {
-  meanings == null -> "Buscando el significado…"
-  else -> Summary.of(meanings)?.text ?: NO_MEANING
-}
+private fun summaryText(meanings: List<Meaning>) = Summary.of(meanings)?.text ?: NO_MEANING
 
 private fun heading(meaning: Meaning, word: String): String? = when {
   meaning.relation.isNotEmpty() -> meaning.relation

@@ -46,9 +46,16 @@ class AnagramSessionTest {
     assertEquals(Outcome.GAVE_UP, (s.stage as Stage.Revealed).outcome)
   }
 
-  private fun session(difficulty: Difficulty, test: suspend (AnagramSession) -> Unit) = runBlocking {
+  @Test fun raceNeverRunsOutOfLives() = session(Difficulty.MEDIUM, lives = 0) { s ->
+    repeat(5) { assertEquals(Reply.INVALID, s.submit(tiles("OSCA"))) }
+    assertTrue(s.stage is Stage.Solving)
+    s.giveUp()
+    assertEquals(Outcome.GAVE_UP, (s.stage as Stage.Revealed).outcome)
+  }
+
+  private fun session(difficulty: Difficulty, lives: Int = AnagramConfig.DEFAULT_LIVES, test: suspend (AnagramSession) -> Unit) = runBlocking {
     val scope = CoroutineScope(coroutineContext + Job())
-    val s = AnagramSession(AnagramConfig(difficulty = difficulty), FakeWords("SACO", "SACO", "CAOS"), Book(), scope)
+    val s = AnagramSession(AnagramConfig(lives = lives, difficulty = difficulty), FakeWords("SACO", "SACO", "CAOS"), Book(), scope)
     while (s.stage !is Stage.Solving) yield()
     test(s)
     scope.cancel()

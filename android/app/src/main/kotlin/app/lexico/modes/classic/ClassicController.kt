@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import app.lexico.game.modes.classic.ClassicGame
 import app.lexico.game.modes.classic.ClassicSetup
 import app.lexico.game.modes.classic.EndgameSetup
+import app.lexico.game.modes.classic.LocalPlayers
 import app.lexico.model.Placement
 import app.lexico.modes.GameController
 import app.lexico.ui.classic.ClassicActions
@@ -34,10 +35,12 @@ class ClassicController(
 
 fun EndgameConfig.toSetup(): EndgameSetup = EndgameSetup(
   minBag = minBag, maxBag = maxBag, minLead = minLead, maxLead = maxLead, q = q.engineName, invalidLosesTurn = single,
-  timeMs = if (timed) timeMs else 0, overtimeMs = overtimeMs,
+  timeMs = if (timed) timeMs else 0, overtimeMs = overtimeMs, starter = starter,
+  players = players?.let { LocalPlayers(it.first, it.second) },
 )
 
 fun ClassicConfig.toSetup(): ClassicSetup =
   ClassicSetup(
     bot = bot, starter = starter, invalidLosesTurn = single, timeMs = if (timed) timeMs else 0, overtimeMs = overtimeMs, study = study,
+    players = players?.let { LocalPlayers(it.first, it.second) },
   )

@@ -69,7 +69,7 @@ private fun HandCard(session: AnagramSession, stage: Stage.Solving, attempt: Att
       Text(handTitle(session, stage), fontFamily = Mulish, fontWeight = FontWeight.ExtraBold, fontSize = 12.sp, letterSpacing = 2.sp,
         color = MaterialTheme.colorScheme.primary)
       TileLine(attempt.answer.slots.size) { i, size -> Slot(attempt, i, size, style) }
-      attempt.reply?.let { ReplyText(it) }
+      attempt.reply?.let { ReplyText(it, session.config.limited) }
     }
   }
 }
@@ -90,9 +90,9 @@ private fun Slot(attempt: Attempt, slot: Int, size: Dp, style: BoardStyle) {
 }
 
 @Composable
-private fun ReplyText(reply: Reply) {
+private fun ReplyText(reply: Reply, limited: Boolean) {
   val (text, color) = when (reply) {
-    Reply.INVALID -> "No es válida: pierdes una vida." to MaterialTheme.colorScheme.error
+    Reply.INVALID -> (if (limited) "No es válida: pierdes una vida." else "No es válida.") to MaterialTheme.colorScheme.error
     Reply.REPEATED -> "Esa ya la encontraste." to MaterialTheme.colorScheme.onSurfaceVariant
     Reply.FOUND -> "✓  ¡Esa es! Busca otra." to HIT
     Reply.SOLVED -> "✓  ¡Esa es!" to HIT

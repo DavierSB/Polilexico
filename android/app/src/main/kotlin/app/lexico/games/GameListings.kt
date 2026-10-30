@@ -33,7 +33,7 @@ private const val RACK = 7
 private const val TIE = 1e-6
 
 fun inProgressItem(saved: SavedGame, progress: GameProgress?): InProgressItem = InProgressItem(
-  saved.id, gameTitle(saved.mode, progress?.opponent), savedAt(saved),
+  saved.id, gameTitle(saved.mode, progress?.opponent, progress?.host), savedAt(saved),
   progress?.let { scoreText(saved.mode, it.myScore, it.opponentScore, it.humanStarts) }, progress?.round?.let { "Ronda $it" },
 )
 
@@ -68,7 +68,7 @@ private fun efficiency(review: GameReview): Efficiency? {
 
 private fun spread(review: GameReview, opponent: String): Spread {
   val totals = review.turns.map { it.myScore to it.opponentScore } + (review.game.myScore to review.game.opponentScore)
-  return Spread.of(ME, opponent, review.humanStarts, totals)
+  return Spread.of(review.game.host ?: ME, opponent, review.humanStarts, totals)
 }
 
 private fun savedAt(saved: SavedGame): String = "Guardada el " + SAVED_AT.format(Date(saved.updatedAt))
@@ -87,10 +87,13 @@ private fun modeName(mode: Mode): String = when (mode) {
   Mode.DUPLICATE -> "Duplicada"
 }
 
-private fun title(g: FinishedGame): String = gameTitle(g.mode, g.opponent)
+private fun title(g: FinishedGame): String = gameTitle(g.mode, g.opponent, g.host)
 
-private fun gameTitle(mode: Mode, opponent: String?): String =
-  if (mode == Mode.DUPLICATE || opponent == null) modeName(mode) else "${modeName(mode)} contra ${alias(opponent)}"
+private fun gameTitle(mode: Mode, opponent: String?, host: String?): String = when {
+  mode == Mode.DUPLICATE || opponent == null -> modeName(mode)
+  host != null -> "${modeName(mode)}: $host contra $opponent"
+  else -> "${modeName(mode)} contra ${alias(opponent)}"
+}
 
 private fun detail(g: FinishedGame): String {
   val date = finishedAt(g)

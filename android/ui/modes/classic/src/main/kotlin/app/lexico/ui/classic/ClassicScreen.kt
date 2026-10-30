@@ -25,7 +25,9 @@ fun ClassicScreen(view: ClassicView, style: BoardStyle, actions: ClassicActions,
   LaunchedEffect(view.board, view.rack) { c.reset(view.board, view.rack) }
   val dialogs = rememberClassicDialogs(view)
   var message by rememberNotice(view.notice)
-  Pausable(view.paused, actions::resume) { ClassicLayout(view, c, style, actions, dialogs, message, onTheme) { message = it } }
+  Pausable(view.paused, actions::resume.takeIf { view.status == null }, view.status) {
+    HandOff(view) { ClassicLayout(view, c, style, actions, dialogs, message, onTheme) { message = it } }
+  }
   ClassicDialogsShown(view, c, actions, dialogs)
 }
 
@@ -37,7 +39,7 @@ private fun ClassicLayout(
   BoardColumn(
     top = { TopBar(view, actions, dialogs, onTheme); OpponentBar(view, style) },
     board = { BoardWithBanner(view, c, style) },
-    bottom = { MyBar(view, c, style); message?.let { Notice(it) }; Controls(view, c, actions, dialogs, onNotice) },
+    bottom = { MyBar(view, c, style); view.status?.let { Notice(it, bold = true) }; message?.let { Notice(it) }; Controls(view, c, actions, dialogs, onNotice) },
   )
 }
 
@@ -55,7 +57,7 @@ private fun OpponentBar(view: ClassicView, style: BoardStyle) {
   val onTurn = view.turn == Side.OPPONENT
   PlayerBar(
     name = view.opponent, points = view.opponentScore, clock = view.opponentClock, onTurn = onTurn, thinking = onTurn,
-    photo = { OpponentPhoto(view.opponent, 24.dp) },
+    photo = if (view.local) null else ({ OpponentPhoto(view.opponent, 24.dp) }),
   ) { OpponentRack(view.opponentRack, style) }
 }
 
@@ -72,7 +74,7 @@ private fun BoardWithBanner(view: ClassicView, c: TilePlacer, style: BoardStyle)
 
 @Composable
 private fun MyBar(view: ClassicView, c: TilePlacer, style: BoardStyle) {
-  PlayerBar(name = "Tú", points = view.myScore, clock = view.myClock, onTurn = view.turn == Side.ME)
+  PlayerBar(name = view.me, points = view.myScore, clock = view.myClock, onTurn = view.turn == Side.ME)
   PlacingRack(c, style, enabled = view.turn == Side.ME)
 }
 

@@ -10,6 +10,7 @@ data class SavedGame(val id: String, val mode: Mode, val updatedAt: Long)
 
 data class GameProgress(
   val myScore: Int, val opponentScore: Int, val opponent: String? = null, val round: Int? = null, val humanStarts: Boolean = true,
+  val host: String? = null,
 )
 
 class SavedGames(private val dir: File, private val abandoned: AbandonedGames) {
@@ -26,7 +27,7 @@ class SavedGames(private val dir: File, private val abandoned: AbandonedGames) {
     val text = read(game)
     when (game.mode) {
       Mode.DUPLICATE -> Duplicate.readProgress(text).let { GameProgress(it.humanTotal.toInt(), it.masterTotal.toInt(), round = it.round.toInt()) }
-      Mode.CLASSIC, Mode.ENDGAME -> Classic.readProgress(text).let { GameProgress(it.humanTotal.toInt(), it.botTotal.toInt(), it.botName, humanStarts = it.humanStarts) }
+      Mode.CLASSIC, Mode.ENDGAME -> Classic.readProgress(text).let { GameProgress(it.humanTotal.toInt(), it.botTotal.toInt(), it.botName, humanStarts = it.humanStarts, host = it.humanName.takeIf { _ -> it.local }) }
     }
   }.getOrNull()
 

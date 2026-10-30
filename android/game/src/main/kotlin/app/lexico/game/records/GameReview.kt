@@ -21,6 +21,7 @@ data class FinishedGame(
   val turns: Int = 0,
   val finishedAt: Long = 0,
   val humanStarts: Boolean = true,
+  val host: String? = null,
 ) {
   val efficiency: Double get() = if (opponentScore > 0) myScore * 100.0 / opponentScore else 0.0
 }

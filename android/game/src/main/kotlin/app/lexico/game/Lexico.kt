@@ -10,6 +10,7 @@ import app.lexico.game.engine.engine
 import app.lexico.game.lists.ListFiles
 import app.lexico.game.lists.WordData
 import app.lexico.game.modes.classic.ClassicGame
+import app.lexico.game.modes.classic.ClassicRemote
 import app.lexico.game.modes.classic.ClassicSetup
 import app.lexico.game.modes.classic.EndgameSetup
 import app.lexico.game.modes.duplicate.DuplicateGame
@@ -71,7 +72,14 @@ class Lexico(private val context: Context) {
 
   suspend fun newClassic(setup: ClassicSetup): ClassicGame = ClassicGame.start(setup, newId(), savedGames, scope)
 
+  suspend fun newWifiHost(setup: ClassicSetup): ClassicGame = ClassicGame.startHost(setup, newId(), savedGames, scope)
+
+  suspend fun joinWifi(text: String, paused: Boolean, remote: ClassicRemote): ClassicGame =
+    ClassicGame.joinGuest(text, paused, remote, newId(), savedGames, scope)
+
   suspend fun newEndgame(setup: EndgameSetup): ClassicGame = ClassicGame.startEndgame(setup, newId(), savedGames, scope)
+
+  suspend fun newWifiEndgame(setup: EndgameSetup): ClassicGame = ClassicGame.startEndgameHost(setup, newId(), savedGames, scope)
 
   suspend fun newDuplicate(setup: DuplicateSetup): DuplicateGame = DuplicateGame.start(setup, newId(), savedGames, scope)
 
