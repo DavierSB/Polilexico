@@ -10,17 +10,31 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Stable
-class Updates(ctx: Context, private val current: String) {
+class Updates(private val ctx: Context, private val current: String) {
   private val prefs = ctx.getSharedPreferences("updates", Context.MODE_PRIVATE)
 
   var available: Release? by mutableStateOf(stored())
     private set
 
+  var progress: Float? by mutableStateOf(null)
+    private set
+
   suspend fun check() {
-    if (!due()) return
+    if (due()) refresh()
+  }
+
+  suspend fun refresh() {
     val latest = withContext(Dispatchers.IO) { fetchLatest() } ?: return
     save(latest)
     available = latest.takeIf { isNewer(it.version, current) }
+  }
+
+  suspend fun install() {
+    if (progress != null) return
+    progress = 0f
+    val apk = withContext(Dispatchers.IO) { runCatching { downloadApk(ctx) { progress = it } }.getOrNull() }
+    progress = null
+    apk?.let { ctx.startActivity(installIntent(ctx, it)) }
   }
 
   private fun due(): Boolean = System.currentTimeMillis() - prefs.getLong(CHECKED_KEY, 0L) >= DAY_MS

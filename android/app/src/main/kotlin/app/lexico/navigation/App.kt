@@ -12,9 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import app.lexico.game.Lexico
 import app.lexico.home.HomeLogo
@@ -37,6 +37,7 @@ import app.lexico.ui.classic.LocalShowUnseen
 import app.lexico.ui.common.LocalConfettiStart
 import app.lexico.ui.common.LocalHomeButton
 import app.lexico.update.Updates
+import kotlinx.coroutines.launch
 
 @Composable
 fun App(lexico: Lexico, settings: Settings, updates: Updates, version: String) {
@@ -102,16 +103,18 @@ private fun rememberCuePlayer(settings: Settings): CuePlayer {
 
 @Composable
 private fun AppMenu(nav: Navigator, menu: MenuState, themes: ThemeState, updates: Updates, click: () -> Unit) {
-  val uriHandler = LocalUriHandler.current
+  val scope = rememberCoroutineScope()
+  LaunchedEffect(menu.drawer.isOpen) { if (menu.drawer.isOpen) updates.refresh() }
   SideMenu(
     atHome = nav.current == Screen.Home,
-    update = updates.available,
+    hasUpdate = updates.available != null,
+    progress = updates.progress,
     onHome = { nav.home(); menu.close() },
     onStats = { nav.go(Screen.Stats); menu.close() },
     onTheme = { click(); themes.picking = true; menu.close() },
     onOptions = { click(); menu.showOptions = true; menu.close() },
     onAbout = { click(); menu.showAbout = true; menu.close() },
-    onUpdate = { click(); uriHandler.openUri(it.url); menu.close() },
+    onUpdate = { click(); scope.launch { updates.install() } },
   )
 }
 
