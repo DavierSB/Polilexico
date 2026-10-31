@@ -13,11 +13,13 @@ VOWEL_RUNS = ["a", "e", "i", "o", "u", "ie", "ue", "ai", "ei", "oi", "au", "eu",
 SOUND, AR_EAR, FINAL_VOWEL, CLUSTER, VOWEL, COMMON, RARE_PAIR, CROSS = "1", "2", "3", "4", "5", "6", "7", "8"
 
 
-def similar_lines(families):
+def similar_lines(families, forms):
     pool = defaultdict(set)
     for i, f in enumerate(families):
         for w in f["words"]:
             pool[w].add(i)
+            for form in forms.get(w, ()) if f["verbal"] else ():
+                pool[form].add(i)
     return [" ".join(similar(i, f, pool)) for i, f in enumerate(families)]
 
 

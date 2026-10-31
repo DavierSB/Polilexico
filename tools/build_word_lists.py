@@ -33,10 +33,10 @@ def main():
     ranks = permilles([f["points"] for f in families])
     write("families.tsv", [family_line(f, r) for f, r in zip(families, ranks)])
     write("words.tsv", word_lines(families, points))
-    write("similar.tsv", similar_lines(families))
+    write("similar.tsv", similar_lines(families, verb_forms()))
     common = common_words()
     study = [f for f in families if common.get(f["words"][0], 0) < COMMON]
-    write("default_lists.tsv", default_lines(study, top_lines(top_words(common))) + themed_lines(study))
+    write("default_lists.tsv", default_lines(study, top_lines(study, word_stats(), verb_forms())) + themed_lines(study))
 
 
 def key(word):
@@ -61,11 +61,10 @@ def common_words():
     return {key(w): p for w, p in zip(df.word, df.pct) if pd.notna(p)}
 
 
-def top_words(common):
+def word_stats():
     columns = ["word", "scrabble_count", "total_points", "scrabble_points"]
     df = pd.read_parquet(WORD_FAMILIES / "Importancia" / "palabras.parquet", columns=columns)
-    rows = ({"word": key(w), "scrabble_count": c, "total_points": t, "scrabble_points": s} for w, c, t, s in df.itertuples(index=False))
-    return [r for r in rows if fits(r["word"]) and common.get(r["word"], 0) < COMMON]
+    return {key(w): {"scrabble_count": c, "total_points": t, "scrabble_points": s} for w, c, t, s in df.itertuples(index=False)}
 
 
 def family_points(kind):

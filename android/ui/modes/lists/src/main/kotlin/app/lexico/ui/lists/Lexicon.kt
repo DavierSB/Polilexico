@@ -40,7 +40,7 @@ class Lexicon internal constructor(
 
   fun word(key: String): Family? = table.find(key)
 
-  fun familyOf(member: String): Family? = members.find(member)
+  fun familyOf(member: String): Family? = members.find(member) ?: word(member)?.owners?.firstOrNull()?.let(families::get)
 
   fun resolve(entry: String): Family? = find(entry) ?: familyOf(WordKeys.bare(entry))
 

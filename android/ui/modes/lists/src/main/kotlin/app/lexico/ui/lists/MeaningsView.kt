@@ -4,7 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,13 +38,15 @@ import app.lexico.model.dictionary.Summary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+private val LINE_HEIGHT = 48.dp
+
 @Composable
 internal fun MeaningLine(word: String, lexicon: Lexicon) {
   val found by produceState<List<Meaning>?>(null, word) { value = withContext(Dispatchers.IO) { lexicon.meanings(word) } }
-  val meanings = found ?: return
+  val meanings = found ?: return Spacer(Modifier.fillMaxWidth().height(LINE_HEIGHT))
   if (meanings.isEmpty()) return RaeButton(word)
   var open by remember { mutableStateOf(false) }
-  Surface(Modifier.fillMaxWidth().clickable { open = true }, RoundedCornerShape(12.dp), MaterialTheme.colorScheme.surfaceContainerHighest) {
+  Surface(Modifier.fillMaxWidth().heightIn(min = LINE_HEIGHT).clickable { open = true }, RoundedCornerShape(12.dp), MaterialTheme.colorScheme.surfaceContainerHighest) {
     Row(Modifier.padding(horizontal = 14.dp, vertical = 10.dp), Arrangement.spacedBy(10.dp), Alignment.CenterVertically) {
       Text(summaryText(meanings), Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyLarge)
       Text("Ver más", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
@@ -53,7 +58,7 @@ internal fun MeaningLine(word: String, lexicon: Lexicon) {
 @Composable
 private fun RaeButton(word: String) {
   var rae by remember { mutableStateOf(false) }
-  OutlinedButton(onClick = { rae = true }, Modifier.fillMaxWidth()) { Text("Consultar en la RAE") }
+  OutlinedButton(onClick = { rae = true }, Modifier.fillMaxWidth().heightIn(min = LINE_HEIGHT)) { Text("Consultar en la RAE") }
   if (rae) RaeDialog(word) { rae = false }
 }
 
