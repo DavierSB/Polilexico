@@ -1,0 +1,43 @@
+package app.lexico.ui.board
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import app.lexico.ui.common.Compact
+
+@Composable
+fun MoveButtons(c: TilePlacer, playEnabled: Boolean, onPlay: () -> Unit, small: @Composable RowScope.() -> Unit) {
+  Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), content = small)
+    PlayButton(playEnabled && c.hasPlaced, onPlay)
+  }
+}
+
+@Composable
+fun RowScope.SmallButton(text: String, enabled: Boolean = true, onClick: () -> Unit) {
+  OutlinedButton(onClick = onClick, modifier = Modifier.weight(1f).height(36.dp), enabled = enabled, contentPadding = Compact) {
+    Text(text, fontSize = 14.sp)
+  }
+}
+
+@Composable
+fun RowScope.ShuffleOrRecall(c: TilePlacer) =
+  SmallButton(if (c.hasPlaced) "Recoger" else "Mezclar") { if (c.hasPlaced) c.recall() else c.shuffle() }
+
+@Composable
+private fun PlayButton(enabled: Boolean, onPlay: () -> Unit) {
+  Button(onClick = onPlay, modifier = Modifier.fillMaxWidth().height(52.dp), enabled = enabled) {
+    Text("Jugar", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+  }
+}

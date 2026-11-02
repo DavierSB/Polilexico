@@ -21,6 +21,7 @@ import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.board.rememberTilePlacer
 import app.lexico.ui.common.BagCountDialog
 import app.lexico.ui.common.BoardColumn
+import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.GameBar
 import app.lexico.ui.common.NOT_IN_A_LINE
 import app.lexico.ui.common.Notice
@@ -66,7 +67,12 @@ private fun Playing(view: SeatView, c: TilePlacer, style: BoardStyle, actions: S
   PlacingRack(c, style, enabled = true)
   Text(view.proposal?.let { "Tu jugada: ${it.text} · ${it.points} pts" } ?: "Aún no has jugado", fontWeight = FontWeight.Bold)
   message?.let { Notice(it, bold = true) }
-  PlayingButtons(c, onPlay = { c.placement()?.let(actions::propose) ?: onNotice(NOT_IN_A_LINE) }, onPass = actions::pass)
+  var pass by remember { mutableStateOf(false) }
+  PlayingButtons(c, onPlay = { c.placement()?.let(actions::propose) ?: onNotice(NOT_IN_A_LINE) }, onPass = { pass = true })
+  if (pass) ConfirmDialog(
+    "¿Pasar el turno?", yes = "Pasar", no = "No",
+    onYes = { pass = false; c.recall(); actions.pass() }, onNo = { pass = false },
+  )
 }
 
 @Composable
