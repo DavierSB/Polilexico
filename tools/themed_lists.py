@@ -8,7 +8,7 @@ THEMES_DIR = Path(__file__).resolve().parent.parent.parent / "WordFamilies" / "o
 ROOT = "Temáticas"
 THEMES = [
     ("gentilicios", "Gentilicios", ["ense", "ano", "eño", "ino", "es", "ita", "ero", "co", "io", "eo"]),
-    ("quimica", "Química", ["ina", "ico", "ato", "ito", "ido", "uro", "eno", "ano", "io", "ol", "osa"]),
+    ("quimica", "Química", ["ina", "ita", "ico", "ato", "ito", "ido", "uro", "eno", "ano", "io", "ol", "osa"]),
     ("plantas", "Plantas", []),
     ("animales", "Animales", []),
     ("extranjerismos", "Extranjerismos", []),
