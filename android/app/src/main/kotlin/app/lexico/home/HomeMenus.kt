@@ -29,6 +29,7 @@ internal fun menuButtons(menu: Screen, counts: MenuCounts): List<MenuEntry> = wh
 }
 
 private val HOME = listOf(
+  MenuEntry("En línea") { Screen.Online },
   MenuEntry("Clásica") { Screen.ClassicMenu },
   MenuEntry("Duplicada") { Screen.DuplicateMenu },
   MenuEntry("Minijuegos") { Screen.Minigames },

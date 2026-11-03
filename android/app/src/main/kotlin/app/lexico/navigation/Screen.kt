@@ -4,6 +4,7 @@ import app.lexico.game.race.RaceGame
 import app.lexico.game.race.RaceSetup
 import app.lexico.game.storage.Mode
 import app.lexico.game.storage.SavedGame
+import app.lexico.online.Person
 import app.lexico.ui.anagram.AnagramConfig
 import app.lexico.ui.analysis.EditedPosition
 import app.lexico.ui.analysis.PositionEditor
@@ -59,9 +60,14 @@ sealed interface Screen {
   data class FinishedFolder(val folder: GameFolder) : Screen
   data class Review(val path: String, val atEndgame: Boolean = false) : Screen
   data object Stats : Screen
+  data object Online : Screen
+  data class OnlineNewClassic(val rival: Person? = null) : Screen
+  data object OnlineNewDuplicate : Screen
+  data object OnlineStats : Screen
+  data object OnlinePlay : Screen
 
   val isGame: Boolean get() = this is Classic || this is WifiHost || this is WifiJoin || this is DuplicateWifiHost || this is DuplicateWifiJoin || this is Endgame ||
-    this is EndgameWifiHost || this is EndgameWifiJoin || this is RaceHost || this is RaceJoin || this is Duplicate || this is Recall || this is Sprint || this is Anagram || this is Continue
+    this is EndgameWifiHost || this is EndgameWifiJoin || this is RaceHost || this is RaceJoin || this is Duplicate || this is Recall || this is Sprint || this is Anagram || this is Continue || this is OnlinePlay
 
   val hasBoard: Boolean get() = isGame || this is Analyzer || this is PositionReview || this is Review
 

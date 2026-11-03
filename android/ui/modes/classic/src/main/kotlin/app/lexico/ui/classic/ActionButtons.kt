@@ -2,16 +2,15 @@ package app.lexico.ui.classic
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.lexico.ui.board.MoveButtons
+import app.lexico.ui.board.ShuffleOrRecall
+import app.lexico.ui.board.SmallButton
 import app.lexico.ui.board.TilePlacer
-import app.lexico.ui.common.Compact
 
 @Composable
 fun ActionButtons(
@@ -26,18 +25,10 @@ fun ActionButtons(
 
 @Composable
 private fun TurnButtons(c: TilePlacer, myTurn: Boolean, onPlay: () -> Unit, onPass: () -> Unit) {
-  Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-    Button(modifier = Modifier.weight(1f), contentPadding = Compact, enabled = myTurn && c.hasPlaced, onClick = onPlay) { Text("Jugar") }
+  MoveButtons(c, myTurn, onPlay) {
+    SmallButton("Pasar", enabled = myTurn, onClick = onPass)
     ShuffleOrRecall(c)
-    OutlinedButton(modifier = Modifier.weight(1f), contentPadding = Compact, enabled = myTurn, onClick = c::startExchange) { Text("Cambiar") }
-    OutlinedButton(modifier = Modifier.weight(1f), contentPadding = Compact, enabled = myTurn, onClick = onPass) { Text("Pasar") }
-  }
-}
-
-@Composable
-private fun RowScope.ShuffleOrRecall(c: TilePlacer) {
-  FilledTonalButton(modifier = Modifier.weight(1f), contentPadding = Compact, onClick = { if (c.hasPlaced) c.recall() else c.shuffle() }) {
-    Text(if (c.hasPlaced) "Recoger" else "Mezclar")
+    SmallButton("Cambiar", enabled = myTurn, onClick = c::startExchange)
   }
 }
 

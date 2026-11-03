@@ -131,7 +131,7 @@ internal fun TimeSection(form: ClassicForm) {
   TimeField(form.overtime, { form.overtime = it }, "Tiempo de descuento")
 }
 
-private const val TIME_INFO =
+internal const val TIME_INFO =
   "Cuando se te acaba el tiempo empieza el descuento. Por cada minuto de descuento que empieces se te restan 10 puntos; " +
     "si agotas también el descuento, pierdes por tiempo."
 

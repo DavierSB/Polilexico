@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.RackTile
 import app.lexico.ui.common.Compact
+import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.Mulish
 import app.lexico.ui.recall.AnswerBoard
 import app.lexico.ui.recall.EmptySlot
@@ -122,13 +123,18 @@ private fun FoundWords(found: List<List<String>>) {
 
 @Composable
 private fun SolvingButtons(session: AnagramSession, attempt: Attempt) {
+  var giveUp by remember { mutableStateOf(false) }
   Row(Modifier.fillMaxWidth().padding(bottom = 8.dp), Arrangement.spacedBy(6.dp)) {
     Button(onClick = { send(session, attempt) }, Modifier.weight(1f), contentPadding = Compact, enabled = attempt.answer.isComplete) {
       Text("Enviar")
     }
     FilledTonalButton(onClick = { attempt.change(attempt.answer.reset()) }, Modifier.weight(1f), contentPadding = Compact) { Text("Recoger") }
-    OutlinedButton(onClick = session::giveUp, Modifier.weight(1f), contentPadding = Compact) { Text("Rendirse") }
+    OutlinedButton(onClick = { giveUp = true }, Modifier.weight(1f), contentPadding = Compact) { Text("Rendirse") }
   }
+  if (giveUp) ConfirmDialog(
+    "¿Rendirse? Pierdes una vida.", yes = "Rendirse", no = "Seguir",
+    onYes = { giveUp = false; session.giveUp() }, onNo = { giveUp = false },
+  )
 }
 
 private fun send(session: AnagramSession, attempt: Attempt) {

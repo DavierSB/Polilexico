@@ -43,7 +43,11 @@ private fun NameField(name: String, onChange: (String) -> Unit) {
 }
 
 @Composable
-private fun HostForm(name: String, valid: Boolean, onHost: (WifiDuplicateConfig) -> Unit) {
+private fun HostForm(name: String, valid: Boolean, onHost: (WifiDuplicateConfig) -> Unit) =
+  DuplicateRoomSettings(valid) { turnMs, rounds, live -> onHost(WifiDuplicateConfig(name, turnMs, rounds, live)) }
+
+@Composable
+internal fun DuplicateRoomSettings(enabled: Boolean, onCreate: (turnMs: Long, rounds: Int, live: Boolean) -> Unit) {
   var turn by remember { mutableStateOf(Durations.format(DEFAULT_TURN_MS)) }
   var fixed by remember { mutableStateOf(false) }
   var rounds by remember { mutableIntStateOf(PRESET_ROUNDS) }
@@ -54,8 +58,8 @@ private fun HostForm(name: String, valid: Boolean, onHost: (WifiDuplicateConfig)
   TimeField(turn, { turn = it }, "Tiempo por ronda")
   SectionTitle("Puntuaciones en vivo", info = LIVE_INFO)
   TwoOptions("Sí", "No", !live) { live = !it }
-  Button(modifier = Modifier.fillMaxWidth(), enabled = valid && turnMs != null, onClick = {
-    turnMs?.let { onHost(WifiDuplicateConfig(name, it, if (fixed) rounds else 0, live)) }
+  Button(modifier = Modifier.fillMaxWidth(), enabled = enabled && turnMs != null, onClick = {
+    turnMs?.let { onCreate(it, if (fixed) rounds else 0, live) }
   }) { Text("Crear sala") }
 }
 

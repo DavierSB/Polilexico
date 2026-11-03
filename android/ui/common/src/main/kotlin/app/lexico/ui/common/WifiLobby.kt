@@ -37,22 +37,22 @@ import androidx.compose.ui.unit.sp
 data class RoomItem(val name: String, val address: String)
 
 @Composable
-fun WaitingRoomScreen(name: String, error: String?, onBack: () -> Unit) {
+fun WaitingRoomScreen(name: String, error: String?, onBack: () -> Unit, waiting: String = "Esperando rival…", wifi: Boolean = true) {
   FitColumn(14.dp) {
     Header("Sala de $name", onBack)
     if (error != null) return@FitColumn Text(error, color = MaterialTheme.colorScheme.error)
-    PlayerGrid(listOf(name), host = name, me = name, waiting = "Esperando rival…")
-    HostHint()
+    PlayerGrid(listOf(name), host = name, me = name, waiting = waiting)
+    if (wifi) HostHint()
   }
 }
 
 @Composable
-fun HostLobbyScreen(name: String, players: List<String>, error: String?, onStart: () -> Unit, onBack: () -> Unit) {
+fun HostLobbyScreen(name: String, players: List<String>, error: String?, onStart: () -> Unit, onBack: () -> Unit, wifi: Boolean = true) {
   FitColumn(12.dp) {
     Header("Sala de $name", onBack)
     if (error != null) return@FitColumn Text(error, color = MaterialTheme.colorScheme.error)
     PlayerGrid(players, host = name, me = name, waiting = "Esperando…")
-    HostHint()
+    if (wifi) HostHint()
     Button(modifier = Modifier.fillMaxWidth().height(52.dp), enabled = players.size > 1, onClick = onStart) {
       Text("Empezar la partida", fontWeight = FontWeight.Bold)
     }
