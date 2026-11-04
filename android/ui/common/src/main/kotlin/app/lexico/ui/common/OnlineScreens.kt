@@ -19,6 +19,8 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -26,8 +28,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -99,12 +100,32 @@ private fun HubTab.count(state: OnlineHubState): Int = when (this) {
 @Composable
 private fun HubTabs(pager: PagerState, state: OnlineHubState) {
   val scope = rememberCoroutineScope()
-  PrimaryScrollableTabRow(selectedTabIndex = pager.currentPage, edgePadding = 0.dp) {
+  Row(
+    Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(14.dp)).padding(3.dp),
+    horizontalArrangement = Arrangement.spacedBy(3.dp),
+  ) {
     HubTab.entries.forEach { tab ->
-      Tab(pager.currentPage == tab.ordinal, { scope.launch { pager.animateScrollToPage(tab.ordinal) } }) {
-        Text("${tab.label} · ${tab.count(state)}", Modifier.padding(horizontal = 4.dp, vertical = 12.dp), maxLines = 1, softWrap = false)
+      TabCell(tab.label, tab.count(state), pager.currentPage == tab.ordinal, Modifier.weight(1f)) {
+        scope.launch { pager.animateScrollToPage(tab.ordinal) }
       }
     }
+  }
+}
+
+@Composable
+private fun TabCell(label: String, count: Int, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
+  val colors = MaterialTheme.colorScheme
+  val ink = if (selected) colors.onPrimary else colors.onSurfaceVariant
+  Column(
+    modifier.clip(RoundedCornerShape(11.dp)).background(if (selected) colors.primary else colors.surfaceVariant)
+      .clickable(onClick = onClick).padding(horizontal = 2.dp, vertical = 6.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    BasicText(
+      label, maxLines = 1, autoSize = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 14.sp),
+      style = TextStyle(color = ink, fontWeight = FontWeight.Bold),
+    )
+    Text("$count", color = ink, style = MaterialTheme.typography.labelMedium)
   }
 }
 
