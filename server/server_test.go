@@ -518,3 +518,13 @@ func TestSeeksGoAwayWithTheirHost(t *testing.T) {
 	again := srv.connect(t, srv.logIn(t, "Ana", "CU"))
 	again.mySeeks(0)
 }
+
+func TestNewConnectionReplacesTheOldOne(t *testing.T) {
+	srv := newTestServer(t)
+	sess := srv.signUp(t, "Ana", "CU")
+	first := srv.connect(t, sess)
+	srv.connect(t, sess)
+	if m := first.waitFor("refused"); m.Reason == "" {
+		t.Fatal("sin motivo")
+	}
+}

@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,6 +26,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,6 +35,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 
 data class OnlineProfile(val name: String, val country: String)
 
@@ -65,27 +73,61 @@ class OnlineHubActions(
 
 @Composable
 fun OnlineHubScreen(profile: OnlineProfile, state: OnlineHubState, actions: OnlineHubActions) {
-  Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+  Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     CompositionLocalProvider(LocalHomeButton provides null) {
       Header("En línea", actions.back) { HubProfile(profile, actions.profile) }
     }
     state.status?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-    val scroll = rememberScrollState()
-    Column(Modifier.weight(1f).scrollbar(scroll).verticalScroll(scroll).padding(end = 8.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-      if (state.inRoom) Button(onClick = actions.resume, Modifier.fillMaxWidth().height(52.dp)) { Text("Volver a la partida") }
-      GamesSection(state.games, actions.watch)
-      SeeksSection(state.seeks, actions)
-      PeopleSection(state.people, actions.challenge)
-    }
+    if (state.inRoom) Button(onClick = actions.resume, Modifier.fillMaxWidth().height(52.dp)) { Text("Volver a la partida") }
+    val pager = rememberPagerState(if (state.duplicate && !state.classic) HubTab.DUPLICATES.ordinal else 0) { HubTab.entries.size }
+    HubTabs(pager, state)
+    HorizontalPager(pager, Modifier.weight(1f), verticalAlignment = Alignment.Top) { page -> TabPage { TabContent(HubTab.entries[page], state, actions) } }
     PublishButtons(state, actions)
   }
   state.invite?.let { InviteDialog(it, actions) }
 }
 
+private enum class HubTab(val label: String) { CLASSICS("Clásicas"), DUPLICATES("Duplicadas"), GAMES("En juego"), PEOPLE("Conectados") }
+
+private fun HubTab.count(state: OnlineHubState): Int = when (this) {
+  HubTab.CLASSICS -> state.seeks.count { !it.duplicate }
+  HubTab.DUPLICATES -> state.seeks.count { it.duplicate }
+  HubTab.PEOPLE -> state.people.size
+  HubTab.GAMES -> state.games.size
+}
+
 @Composable
-private fun GamesSection(games: List<GameItem>, onWatch: (String) -> Unit) {
-  if (games.isEmpty()) return
-  SectionTitle("En juego · ${games.size}")
+private fun HubTabs(pager: PagerState, state: OnlineHubState) {
+  val scope = rememberCoroutineScope()
+  PrimaryScrollableTabRow(selectedTabIndex = pager.currentPage, edgePadding = 0.dp) {
+    HubTab.entries.forEach { tab ->
+      Tab(pager.currentPage == tab.ordinal, { scope.launch { pager.animateScrollToPage(tab.ordinal) } }) {
+        Text("${tab.label} · ${tab.count(state)}", Modifier.padding(horizontal = 4.dp, vertical = 12.dp), maxLines = 1, softWrap = false)
+      }
+    }
+  }
+}
+
+@Composable
+private fun TabPage(content: @Composable ColumnScope.() -> Unit) {
+  val scroll = rememberScrollState()
+  Column(
+    Modifier.fillMaxSize().scrollbar(scroll).verticalScroll(scroll).padding(top = 4.dp, end = 8.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp), content = content,
+  )
+}
+
+@Composable
+private fun TabContent(tab: HubTab, state: OnlineHubState, actions: OnlineHubActions) = when (tab) {
+  HubTab.CLASSICS -> SeekList(state.seeks.filter { !it.duplicate }, "No hay clásicas ofrecidas.", actions)
+  HubTab.DUPLICATES -> SeekList(state.seeks.filter { it.duplicate }, "No hay duplicadas ofrecidas.", actions)
+  HubTab.PEOPLE -> PeopleList(state.people, actions.challenge)
+  HubTab.GAMES -> GameList(state.games, actions.watch)
+}
+
+@Composable
+private fun GameList(games: List<GameItem>, onWatch: (String) -> Unit) {
+  if (games.isEmpty()) return EmptyState("🎲", "No se está jugando ninguna partida.")
   games.forEach { g ->
     Row(
       Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(14.dp)).clickable { onWatch(g.id) }
@@ -110,16 +152,8 @@ private fun PublishButtons(state: OnlineHubState, actions: OnlineHubActions) {
 }
 
 @Composable
-private fun SeeksSection(seeks: List<SeekItem>, actions: OnlineHubActions) {
-  if (seeks.isEmpty()) return EmptyState("🔍", "No se está buscando ninguna partida.")
-  SeekGroup("Clásicas", seeks.filter { !it.duplicate }, actions)
-  SeekGroup("Duplicadas", seeks.filter { it.duplicate }, actions)
-}
-
-@Composable
-private fun SeekGroup(title: String, seeks: List<SeekItem>, actions: OnlineHubActions) {
-  if (seeks.isEmpty()) return
-  SectionTitle("$title · ${seeks.size}")
+private fun SeekList(seeks: List<SeekItem>, empty: String, actions: OnlineHubActions) {
+  if (seeks.isEmpty()) return EmptyState("🔍", empty)
   seeks.sortedByDescending { it.mine }.forEach { s ->
     PlayerRow(s.host, s.country, s.detail, mine = s.mine) { SeekActions(s, actions) }
   }
@@ -143,8 +177,7 @@ private fun SeekActions(s: SeekItem, actions: OnlineHubActions) {
 }
 
 @Composable
-private fun PeopleSection(people: List<PersonItem>, onChallenge: (PersonItem) -> Unit) {
-  SectionTitle("Conectados · ${people.size}")
+private fun PeopleList(people: List<PersonItem>, onChallenge: (PersonItem) -> Unit) {
   if (people.isEmpty()) EmptyState("👥", "No hay nadie más conectado.")
   people.forEach { p ->
     PlayerRow(p.name, p.country, if (p.busy) "Ocupado" else "Disponible") {

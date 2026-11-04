@@ -21,12 +21,13 @@ type bot struct {
 	mySeeks  []seek
 	asked    map[string]time.Time
 	starting map[string]bool
+	fresh    bool
 }
 
 var challenged = map[string]bool{}
 
 func newBot(l *link, o options, p *progress) *bot {
-	return &bot{link: l, o: o, progress: p, played: -1, acted: map[string]bool{}, asked: map[string]time.Time{}, starting: map[string]bool{}}
+	return &bot{link: l, o: o, progress: p, played: -1, acted: map[string]bool{}, asked: map[string]time.Time{}, starting: map[string]bool{}, fresh: true}
 }
 
 func (b *bot) run() error {
@@ -136,6 +137,10 @@ func (b *bot) createMessage(mode string) message {
 }
 
 func (b *bot) lobby(m message) {
+	if b.fresh {
+		b.fresh = false
+		b.cancelLeftovers(mineOnly(m.Seeks))
+	}
 	b.mySeeks = mineOnly(m.Seeks)
 	b.startFull()
 	b.challengeFree(m.People)
@@ -155,6 +160,13 @@ func (b *bot) join(s seek) {
 	log.Printf("acepta la %s de %s", s.Mode, s.Host)
 	b.seated = true
 	b.link.send(message{T: "join", Code: s.ID})
+}
+
+func (b *bot) cancelLeftovers(seeks []seek) {
+	for _, s := range seeks {
+		log.Printf("retira una %s que quedó de antes", s.Mode)
+		b.link.send(message{T: "cancel", Code: s.ID})
+	}
 }
 
 func (b *bot) startFull() {
@@ -234,7 +246,8 @@ func (b *bot) challengeFree(people []person) {
 	}
 	for _, p := range people {
 		key := p.Name + "/" + p.Country
-		if !p.Playing && !challenged[key] {
+		ignored := b.o.ignore != "" && strings.HasPrefix(p.Name, b.o.ignore)
+		if !p.Playing && !challenged[key] && !ignored {
 			challenged[key] = true
 			log.Printf("reta a %s (%s)", p.Name, p.Country)
 			b.link.send(message{T: "challenge", Name: p.Name, Country: p.Country, TimeMs: b.o.clock.Milliseconds()})

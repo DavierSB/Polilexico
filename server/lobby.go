@@ -46,6 +46,9 @@ type person struct {
 func (h *hub) goOnline(c *client) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
+	if old := h.online[c.player.ID]; old != nil && old != c {
+		old.kick("Entraste desde otro dispositivo.")
+	}
 	h.online[c.player.ID] = c
 }
 

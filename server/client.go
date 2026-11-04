@@ -14,6 +14,7 @@ const (
 	writeTimeout = 10 * time.Second
 	pingEvery    = 20 * time.Second
 	pongTimeout  = 15 * time.Second
+	kickGrace    = time.Second
 )
 
 type client struct {
@@ -36,6 +37,11 @@ func (c *client) send(m message) {
 	default:
 		c.close()
 	}
+}
+
+func (c *client) kick(reason string) {
+	c.send(notice("refused", reason))
+	time.AfterFunc(kickGrace, c.close)
 }
 
 func (c *client) close() {
