@@ -3,7 +3,7 @@ package app.lexico.online
 import android.content.Context
 import androidx.core.content.edit
 
-const val DEFAULT_SERVER = "https://polilexico.onrender.com"
+const val DEFAULT_SERVER = "https://polilexico1.onrender.com"
 
 data class OnlineSession(val accessToken: String, val refreshToken: String, val expiresAt: Long, val name: String, val country: String)
 

@@ -35,7 +35,7 @@ go test -race ./...
    - `SUPABASE_SECRET_KEY`: la clave `sb_secret_...` de Supabase. Solo va en Render, nunca en el
      repositorio ni en la app.
 3. **GitHub:** en *Settings → Secrets and variables → Actions → Variables*, crear
-   `POLILEXICO_SERVER` con la dirección de Render (por ejemplo `https://polilexico.onrender.com`).
+   `POLILEXICO_SERVER` con la dirección de Render (por ejemplo `https://polilexico1.onrender.com`).
    El flujo [`keepalive.yml`](../.github/workflows/keepalive.yml) la visita cada 10 minutos para
    que no se duerman ni Render ni Supabase.
 
