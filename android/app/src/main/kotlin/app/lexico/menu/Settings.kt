@@ -67,6 +67,12 @@ class Settings(ctx: Context) {
     prefs.edit { putBoolean(VIBRATION_KEY, on) }
   }
 
+  fun adoptStatsSince(at: Long) {
+    if (at <= statsSince) return
+    statsSince = at
+    prefs.edit { putLong(STATS_SINCE_KEY, at) }
+  }
+
   fun resetStats() {
     statsSince = System.currentTimeMillis()
     prefs.edit { putLong(STATS_SINCE_KEY, statsSince) }

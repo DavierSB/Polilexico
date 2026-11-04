@@ -1,0 +1,9 @@
+*
+!engine/
+!server/
+!third_party/woogles-lexica/
+engine/wifibots/
+server/db/
+**/*_test.go
+third_party/woogles-lexica/*.kwg
+third_party/woogles-lexica/*.klv2

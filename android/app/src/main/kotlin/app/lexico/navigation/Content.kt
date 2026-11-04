@@ -52,6 +52,7 @@ private fun GameScreens(screen: Screen, lexico: Lexico, nav: Navigator, themes: 
     is Screen.Sprint -> SprintRoute(screen, lexico, nav, themes)
     is Screen.Anagram -> AnagramRoute(screen, lexico, nav, themes)
     is Screen.Continue -> ContinueRoute(screen, lexico, nav, themes)
+    Screen.OnlinePlay -> OnlinePlayRoute(lexico, nav, themes)
     else -> Unit
   }
 }
@@ -102,6 +103,10 @@ private fun OtherScreens(
     is Screen.FinishedFolder -> FinishedFolderRoute(screen, lexico, nav)
     is Screen.Review -> ReviewRoute(screen, lexico, nav, themes)
     Screen.Stats -> StatsRoute(lexico, settings, nav)
+    is Screen.Online -> OnlineRoute(screen.mode, lexico, settings, nav)
+    is Screen.OnlineNewClassic -> NewOnlineClassicRoute(screen, lexico, nav)
+    Screen.OnlineNewDuplicate -> NewOnlineDuplicateRoute(lexico, nav)
+    Screen.OnlineProfile -> OnlineProfileRoute(nav)
     else -> Unit
   }
 }

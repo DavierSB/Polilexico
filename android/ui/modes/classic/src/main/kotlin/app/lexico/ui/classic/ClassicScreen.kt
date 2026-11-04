@@ -48,7 +48,7 @@ private fun TopBar(view: ClassicView, actions: ClassicActions, dialogs: ClassicD
   GameBar(
     bag = view.bag, onExit = actions::exit, onMoves = { dialogs.moves = true }, onBag = { dialogs.bag = true },
     onResign = if (view.end == null) ({ dialogs.resign = true }) else null,
-    onPause = if (view.end == null && view.myClock != null) actions::pause else null, onTheme = onTheme,
+    onPause = if (view.pausable && view.end == null && view.myClock != null) actions::pause else null, onTheme = onTheme,
   )
 }
 

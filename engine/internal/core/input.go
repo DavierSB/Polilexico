@@ -2,7 +2,6 @@ package core
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/domino14/macondo/game"
@@ -97,7 +96,7 @@ func placementMove(tp *turnplayer.BaseTurnPlayer, player int, coords, word strin
 	}
 	m, err := tp.NewPlacementMove(player, move.ToBoardGameCoords(row, col, vertical), ExpandEnhe(word), false)
 	if err != nil {
-		return nil, fmt.Errorf("jugada inválida: %w", err)
+		return nil, placementError(err)
 	}
 	return m, nil
 }
@@ -105,7 +104,7 @@ func placementMove(tp *turnplayer.BaseTurnPlayer, player int, coords, word strin
 func checkWords(g *game.Game, m *move.Move) error {
 	words, err := g.Board().FormedWords(m)
 	if err != nil {
-		return fmt.Errorf("jugada inválida: %w", err)
+		return placementError(err)
 	}
 	if bad := invalidWords(g, words); len(bad) > 0 {
 		return &InvalidWordsError{Play: invalidPlay(m), Words: bad, Score: m.Score()}

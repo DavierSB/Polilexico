@@ -50,12 +50,13 @@ type tableRound struct {
 }
 
 type TablePlay struct {
-	Name   string
-	Kind   string
-	Coords string
-	Tiles  string
-	Points int
-	Total  int
+	Name      string
+	Kind      string
+	Coords    string
+	Tiles     string
+	TileCount int
+	Points    int
+	Total     int
 }
 
 func NewTable(players string, turnMs int64, maxRounds int, live bool, l events.Listener) (*Table, error) {
@@ -211,7 +212,7 @@ func (t *Table) scored(player string, play core.Play) *TablePlay {
 		points = play.Score
 	}
 	t.totals[player] += points
-	return &TablePlay{Name: player, Kind: play.Kind, Coords: play.Coords, Tiles: play.Tiles, Points: points, Total: t.totals[player]}
+	return &TablePlay{Name: player, Kind: play.Kind, Coords: play.Coords, Tiles: play.Tiles, TileCount: play.TileCount, Points: points, Total: t.totals[player]}
 }
 
 func (d *Game) currentRack() string {

@@ -87,9 +87,9 @@ private fun GuestSeat(name: String, room: Room, nav: Navigator, themes: ThemeSta
     ?: GuestLobbyScreen(room.name, players, status, name) { onRefused("") }
 }
 
-private suspend fun read(json: String): TableState = withContext(Dispatchers.Default) { readTable(json) }
+internal suspend fun read(json: String): TableState = withContext(Dispatchers.Default) { readTable(json) }
 
-private fun seatActions(nav: Navigator, propose: (String) -> Unit, ready: () -> Unit): SeatActions = object : SeatActions {
+internal fun seatActions(nav: Navigator, propose: (String) -> Unit, ready: () -> Unit): SeatActions = object : SeatActions {
   override fun propose(placement: Placement) = propose(placement.toString())
   override fun pass() = propose("pasar")
   override fun ready() = ready()

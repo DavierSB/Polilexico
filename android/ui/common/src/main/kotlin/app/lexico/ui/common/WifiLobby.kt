@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -37,22 +38,22 @@ import androidx.compose.ui.unit.sp
 data class RoomItem(val name: String, val address: String)
 
 @Composable
-fun WaitingRoomScreen(name: String, error: String?, onBack: () -> Unit) {
+fun WaitingRoomScreen(name: String, error: String?, onBack: () -> Unit, waiting: String = "Esperando rival…", wifi: Boolean = true) {
   FitColumn(14.dp) {
     Header("Sala de $name", onBack)
     if (error != null) return@FitColumn Text(error, color = MaterialTheme.colorScheme.error)
-    PlayerGrid(listOf(name), host = name, me = name, waiting = "Esperando rival…")
-    HostHint()
+    PlayerGrid(listOf(name), host = name, me = name, waiting = waiting)
+    if (wifi) HostHint()
   }
 }
 
 @Composable
-fun HostLobbyScreen(name: String, players: List<String>, error: String?, onStart: () -> Unit, onBack: () -> Unit) {
+fun HostLobbyScreen(name: String, players: List<String>, error: String?, onStart: () -> Unit, onBack: () -> Unit, wifi: Boolean = true) {
   FitColumn(12.dp) {
     Header("Sala de $name", onBack)
     if (error != null) return@FitColumn Text(error, color = MaterialTheme.colorScheme.error)
     PlayerGrid(players, host = name, me = name, waiting = "Esperando…")
-    HostHint()
+    if (wifi) HostHint()
     Button(modifier = Modifier.fillMaxWidth().height(52.dp), enabled = players.size > 1, onClick = onStart) {
       Text("Empezar la partida", fontWeight = FontWeight.Bold)
     }
@@ -131,11 +132,9 @@ private fun StatusCard(text: String) {
 }
 
 @Composable
-internal fun PlayerAvatar(name: String, highlighted: Boolean, size: Dp = 40.dp) {
-  val colors = MaterialTheme.colorScheme
-  Box(Modifier.size(size).background(if (highlighted) colors.primary else colors.outlineVariant, CircleShape), contentAlignment = Alignment.Center) {
-    Text(name.trim().take(1).uppercase(), fontSize = (size.value * 0.45f).sp, fontWeight = FontWeight.Black, color = if (highlighted) colors.onPrimary else colors.onSurface)
-  }
+fun PlayerAvatar(name: String, highlighted: Boolean, size: Dp = 40.dp, image: ImageBitmap? = null) {
+  if (image != null) return PhotoCircle(image, name, size)
+  InitialTile(name, highlighted, size)
 }
 
 private val TILE_HEIGHT = 60.dp

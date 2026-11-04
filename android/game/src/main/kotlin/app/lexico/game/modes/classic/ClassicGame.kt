@@ -20,6 +20,7 @@ interface ClassicRemote {
   fun move(input: String)
   fun pause()
   fun resume()
+  fun resign() {}
 }
 
 class ClassicGame private constructor(
@@ -75,10 +76,13 @@ class ClassicGame private constructor(
 
   override fun closeMatch() = match.close()
 
-  private suspend fun move(input: String): String? = when (seat) {
-    Seat.SHARED -> act { match.play(input) }
-    Seat.HOST -> playAs(rival = false, input)
-    Seat.GUEST -> null.also { remote?.move(input) }
+  override fun resignMatch() {
+    remote?.resign()
+  }
+
+  private suspend fun move(input: String): String? {
+    remote?.let { it.move(input); return null }
+    return if (seat == Seat.HOST) playAs(rival = false, input) else act { match.play(input) }
   }
 
   private suspend fun playAs(rival: Boolean, input: String): String? = act {
@@ -93,8 +97,9 @@ class ClassicGame private constructor(
     suspend fun startHost(setup: ClassicSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame =
       open(id, null, saves, scope, Seat.HOST) { newMatch(setup, it) }
 
-    suspend fun joinGuest(text: String, paused: Boolean, remote: ClassicRemote, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame =
-      open(id, null, saves, scope, Seat.GUEST, remote) { Classic.loadMirror(text, paused, it) }
+    suspend fun joinGuest(
+      text: String, paused: Boolean, remote: ClassicRemote, id: String, saves: SavedGames, scope: CoroutineScope, seat: Seat = Seat.GUEST,
+    ): ClassicGame = open(id, null, saves, scope, seat, remote) { Classic.loadMirror(text, paused, it) }
 
     suspend fun startEndgame(setup: EndgameSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame =
       searchEndgame(setup) { search -> open(id, Mode.ENDGAME, saves, scope) { endgameMatch(search, setup, it) } }

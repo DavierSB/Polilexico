@@ -2,6 +2,7 @@ package app.lexico.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +29,7 @@ fun HomeScreen(
   back: () -> Unit, go: (Screen) -> Unit,
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-    if (menu == Screen.Home) HomeTopBar(hasUpdate, onMenu) else Header(menuTitle(menu), back) { MenuInfo(menu) }
+    if (menu == Screen.Home) HomeTopBar(hasUpdate, onMenu) { go(Screen.Online()) } else Header(menuTitle(menu), back) { MenuInfo(menu) }
     DemoBoard(demoGame, style, Modifier.weight(1f, fill = false))
     menuButtons(menu, counts).forEach { MenuButton(it, go) }
   }
@@ -47,12 +48,22 @@ private fun MenuButton(entry: MenuEntry, go: (Screen) -> Unit) {
 }
 
 @Composable
-private fun HomeTopBar(hasUpdate: Boolean, onMenu: () -> Unit) {
-  Row(verticalAlignment = Alignment.CenterVertically) {
-    DrawerButton(hasUpdate, onMenu)
-    Logo(Modifier.padding(start = 4.dp), scale = 0.8f)
+private fun HomeTopBar(hasUpdate: Boolean, onMenu: () -> Unit, onOnline: () -> Unit) {
+  val presence = rememberPresence()
+  BoxWithConstraints(Modifier.fillMaxWidth()) {
+    val narrow = maxWidth < NARROW_BAR
+    val tiny = maxWidth < TINY_BAR
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+      DrawerButton(hasUpdate, onMenu)
+      Logo(Modifier.padding(start = 4.dp).weight(1f), scale = if (narrow) 0.62f else 0.8f)
+      OnlineChip(presence, compact = tiny, onClick = onOnline)
+    }
   }
 }
+
+private val NARROW_BAR = 380.dp
+
+private val TINY_BAR = 330.dp
 
 @Composable
 private fun DrawerButton(hasUpdate: Boolean, onMenu: () -> Unit) {

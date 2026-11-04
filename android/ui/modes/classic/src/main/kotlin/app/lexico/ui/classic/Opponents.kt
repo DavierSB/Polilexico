@@ -11,6 +11,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import app.lexico.ui.board.AppTheme
 import app.lexico.ui.board.AppThemes
+import app.lexico.ui.common.LocalPhotos
+import app.lexico.ui.common.SeatAvatar
 
 data class Bot(
   val name: String,
@@ -37,5 +39,6 @@ fun alias(name: String): String = BOTS.find { it.name == name }?.alias ?: name
 
 @Composable
 fun OpponentPhoto(name: String, size: Dp) {
+  if (LocalPhotos.current != null) return SeatAvatar(name, size)
   Image(painterResource(bot(name).photo), alias(name), Modifier.size(size).clip(CircleShape))
 }

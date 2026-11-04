@@ -13,6 +13,7 @@ import app.lexico.game.modes.classic.ClassicGame
 import app.lexico.game.modes.classic.ClassicRemote
 import app.lexico.game.modes.classic.ClassicSetup
 import app.lexico.game.modes.classic.EndgameSetup
+import app.lexico.game.modes.classic.Seat
 import app.lexico.game.modes.duplicate.DuplicateGame
 import app.lexico.game.modes.duplicate.DuplicateSetup
 import app.lexico.game.modes.recall.DemoGames
@@ -76,6 +77,9 @@ class Lexico(private val context: Context) {
 
   suspend fun joinWifi(text: String, paused: Boolean, remote: ClassicRemote): ClassicGame =
     ClassicGame.joinGuest(text, paused, remote, newId(), savedGames, scope)
+
+  suspend fun joinOnline(text: String, first: Boolean, remote: ClassicRemote): ClassicGame =
+    ClassicGame.joinGuest(text, false, remote, newId(), savedGames, scope, if (first) Seat.HOST else Seat.GUEST)
 
   suspend fun newEndgame(setup: EndgameSetup): ClassicGame = ClassicGame.startEndgame(setup, newId(), savedGames, scope)
 
