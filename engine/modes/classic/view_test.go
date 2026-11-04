@@ -118,7 +118,12 @@ func mirrorOf(t *testing.T, m *Match, first bool) *Match {
 
 func viewHistory(t *testing.T, m *Match, first bool) *pb.GameHistory {
 	t.Helper()
-	text, err := m.ViewFor(first)
+	return historyOf(t, func() (string, error) { return m.ViewFor(first) })
+}
+
+func historyOf(t *testing.T, view func() (string, error)) *pb.GameHistory {
+	t.Helper()
+	text, err := view()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,4 +160,14 @@ func tileCount(t *testing.T, m *Match, tiles string) int {
 		t.Fatal(err)
 	}
 	return len(mls)
+}
+
+func TestSpectatorSeesBothRacks(t *testing.T) {
+	m := viewMatch(t)
+	h := historyOf(t, func() (string, error) { return m.SpectatorView() })
+	for i, rack := range h.LastKnownRacks {
+		if want := core.RackText(m.game.g, i); rack == "" || len(rack) > len(want)+16 {
+			t.Fatalf("atril %d: %q, quería %q", i, rack, want)
+		}
+	}
 }

@@ -24,6 +24,9 @@ type options struct {
 	style      string
 	drop       int
 	chatEvery  time.Duration
+	challenge  bool
+	from       string
+	ignore     string
 }
 
 func main() {
@@ -60,6 +63,9 @@ func parseOptions() options {
 	flag.StringVar(&o.style, "style", "best", "best | mixed (a veces inválida o pase)")
 	flag.IntVar(&o.drop, "drop", 0, "se desconecta una vez tras esa jugada suya")
 	flag.DurationVar(&o.chatEvery, "chat", 0, "manda un mensaje de chat cada tanto en partida (0 = nunca)")
+	flag.BoolVar(&o.challenge, "challenge", false, "reta una vez a cada conectado libre")
+	flag.StringVar(&o.from, "from", "", "solo acepta búsquedas de este anfitrión")
+	flag.StringVar(&o.ignore, "ignore", "", "no acepta búsquedas de anfitriones que empiecen así")
 	flag.Parse()
 	return o
 }

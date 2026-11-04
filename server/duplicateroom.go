@@ -22,6 +22,7 @@ type duplicateRoom struct {
 	started  time.Time
 	recorded bool
 	timer    *time.Timer
+	watchers spectators
 }
 
 func newDuplicateRoom(h *hub, code string, host player, m message) *duplicateRoom {
@@ -48,6 +49,9 @@ func (r *duplicateRoom) handle(c *client, m message) {
 	defer r.mu.Unlock()
 	s := r.seatOf(c.player.ID)
 	if s == nil || s.client != c {
+		if m.T == "leave" && r.watchers.remove(c) {
+			r.watchers.countFor(r.seats)
+		}
 		return
 	}
 	switch m.T {
@@ -70,6 +74,41 @@ func (r *duplicateRoom) drop(c *client) {
 	if s := r.seatOf(c.player.ID); s != nil && s.client == c {
 		s.client = nil
 		r.setPresent(s, false)
+		return
+	}
+	if r.watchers.remove(c) {
+		r.watchers.countFor(r.seats)
+	}
+}
+
+func (r *duplicateRoom) ongoing() (liveGame, bool) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.table == nil || r.table.Finished() {
+		return liveGame{}, false
+	}
+	names, countries := seatNames(r.seats)
+	return liveGame{ID: r.code, Mode: modeDuplicate, Players: names, Countries: countries}, true
+}
+
+func (r *duplicateRoom) watch(c *client) bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.table == nil || r.table.Finished() {
+		return false
+	}
+	r.watchers.add(c, r)
+	r.watchers.countFor(r.seats)
+	m := r.roomMessage(r.seats[0])
+	m.Name, m.First, m.Watching = c.player.Name, false, true
+	c.send(m)
+	r.sendSpectatorView()
+	return true
+}
+
+func (r *duplicateRoom) sendSpectatorView() {
+	if view, err := r.table.SpectatorView(); err == nil {
+		r.watchers.send(message{T: "table", View: view})
 	}
 }
 
@@ -150,6 +189,7 @@ func (r *duplicateRoom) attach(s *seat, c *client) {
 	}
 	r.sendView(s)
 	r.setPresent(s, true)
+	s.send(message{T: "watchers", Watchers: len(r.watchers.list)})
 }
 
 func (r *duplicateRoom) start(s *seat) {
@@ -178,6 +218,7 @@ func (r *duplicateRoom) changed() {
 	for _, s := range r.seats {
 		r.sendView(s)
 	}
+	r.sendSpectatorView()
 	if final, ok := r.finalView(); ok {
 		r.finish(final)
 	}
@@ -230,6 +271,7 @@ func (r *duplicateRoom) finish(final tableSummary) {
 	r.recorded = true
 	record(r.hub.store, duplicateResult(r, final))
 	r.expireIn(finishedTTL)
+	r.hub.changed()
 }
 
 func (r *duplicateRoom) expireIn(d time.Duration) {
@@ -251,6 +293,7 @@ func (r *duplicateRoom) closeAll(reason string) {
 		}
 		s.client = nil
 	}
+	r.watchers.dismiss(reason)
 	r.hub.release(r.code, r)
 	if r.table != nil {
 		r.table.Close()

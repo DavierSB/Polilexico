@@ -63,7 +63,7 @@ sealed interface Screen {
   data class Online(val mode: Mode? = null) : Screen
   data class OnlineNewClassic(val rival: Person? = null) : Screen
   data object OnlineNewDuplicate : Screen
-  data object OnlineStats : Screen
+  data object OnlineProfile : Screen
   data object OnlinePlay : Screen
 
   val isGame: Boolean get() = this is Classic || this is WifiHost || this is WifiJoin || this is DuplicateWifiHost || this is DuplicateWifiJoin || this is Endgame ||

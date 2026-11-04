@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -131,11 +132,9 @@ private fun StatusCard(text: String) {
 }
 
 @Composable
-internal fun PlayerAvatar(name: String, highlighted: Boolean, size: Dp = 40.dp) {
-  val colors = MaterialTheme.colorScheme
-  Box(Modifier.size(size).background(if (highlighted) colors.primary else colors.outlineVariant, CircleShape), contentAlignment = Alignment.Center) {
-    Text(name.trim().take(1).uppercase(), fontSize = (size.value * 0.45f).sp, fontWeight = FontWeight.Black, color = if (highlighted) colors.onPrimary else colors.onSurface)
-  }
+fun PlayerAvatar(name: String, highlighted: Boolean, size: Dp = 40.dp, image: ImageBitmap? = null) {
+  if (image != null) return PhotoCircle(image, name, size)
+  InitialTile(name, highlighted, size)
 }
 
 private val TILE_HEIGHT = 60.dp

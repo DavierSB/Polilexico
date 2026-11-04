@@ -6,23 +6,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
-import java.text.Normalizer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import java.text.Normalizer
 import java.util.Locale
 
 data class AccountInput(val name: String, val country: String, val password: String, val email: String)
@@ -45,8 +45,19 @@ data class Country(val code: String, val name: String) {
 val COUNTRIES: List<Country> by lazy {
   val spanish = Locale.forLanguageTag("es")
   Locale.getISOCountries().map { Country(it, Locale.Builder().setRegion(it).build().getDisplayCountry(spanish)) }
-    .sortedWith(compareBy({ it.code !in HISPANIC }, { plain(it.name) }))
+    .sortedWith(compareBy({ countryRank(it.code) }, { plain(it.name) }))
 }
+
+private fun countryRank(code: String): Int = when (code) {
+  DEFAULT_COUNTRY -> 0
+  in HISPANIC -> 1
+  in FAVORITES -> 2 + FAVORITES.indexOf(code)
+  else -> 2 + FAVORITES.size
+}
+
+const val DEFAULT_COUNTRY = "CU"
+
+private val FAVORITES = listOf("FR", "US", "CA", "DE")
 
 private val HISPANIC = setOf(
   "AR", "BO", "CL", "CO", "CR", "CU", "DO", "EC", "ES", "GQ", "GT", "HN", "MX", "NI", "PA", "PE", "PR", "PY", "SV", "UY", "VE",
@@ -59,7 +70,7 @@ fun OnlineAccountScreen(
   busy: Boolean, error: String?, onBack: () -> Unit, onServer: () -> Unit, onSignUp: (AccountInput) -> Unit, onLogIn: (AccountInput) -> Unit,
 ) {
   var existing by rememberSaveable { mutableStateOf(false) }
-  var input by remember { mutableStateOf(AccountInput("", Locale.getDefault().country, "", "")) }
+  var input by remember { mutableStateOf(AccountInput("", DEFAULT_COUNTRY, "", "")) }
   FitColumn(10.dp) {
     Header("En línea", onBack) { BarTextButton("Servidor", onServer) }
     AccountCard {

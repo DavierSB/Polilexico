@@ -23,6 +23,8 @@ type bot struct {
 	starting map[string]bool
 }
 
+var challenged = map[string]bool{}
+
 func newBot(l *link, o options, p *progress) *bot {
 	return &bot{link: l, o: o, progress: p, played: -1, acted: map[string]bool{}, asked: map[string]time.Time{}, starting: map[string]bool{}}
 }
@@ -136,14 +138,23 @@ func (b *bot) createMessage(mode string) message {
 func (b *bot) lobby(m message) {
 	b.mySeeks = mineOnly(m.Seeks)
 	b.startFull()
+	b.challengeFree(m.People)
 	if b.seated || !b.o.accept {
 		return
 	}
-	if s, ok := firstOpen(append(m.Invites, m.Seeks...)); ok {
-		log.Printf("acepta la %s de %s", s.Mode, s.Host)
-		b.seated = true
-		b.link.send(message{T: "join", Code: s.ID})
+	if s, ok := firstOpen(m.Invites, b.o.from, ""); ok {
+		b.join(s)
+		return
 	}
+	if s, ok := firstOpen(m.Seeks, b.o.from, b.o.ignore); ok {
+		b.join(s)
+	}
+}
+
+func (b *bot) join(s seek) {
+	log.Printf("acepta la %s de %s", s.Mode, s.Host)
+	b.seated = true
+	b.link.send(message{T: "join", Code: s.ID})
 }
 
 func (b *bot) startFull() {
@@ -166,9 +177,9 @@ func mineOnly(seeks []seek) []seek {
 	return out
 }
 
-func firstOpen(seeks []seek) (seek, bool) {
+func firstOpen(seeks []seek, from, ignore string) (seek, bool) {
 	for _, s := range seeks {
-		if !s.Mine {
+		if !s.Mine && (from == "" || s.Host == from) && (ignore == "" || !strings.HasPrefix(s.Host, ignore)) {
 			return s, true
 		}
 	}
@@ -214,5 +225,19 @@ func (b *bot) say() {
 func (b *bot) unsay(reason string) {
 	if strings.HasPrefix(reason, "Espera") && b.progress.said > 0 {
 		b.progress.said--
+	}
+}
+
+func (b *bot) challengeFree(people []person) {
+	if !b.o.challenge || b.seated {
+		return
+	}
+	for _, p := range people {
+		key := p.Name + "/" + p.Country
+		if !p.Playing && !challenged[key] {
+			challenged[key] = true
+			log.Printf("reta a %s (%s)", p.Name, p.Country)
+			b.link.send(message{T: "challenge", Name: p.Name, Country: p.Country, TimeMs: b.o.clock.Milliseconds()})
+		}
 	}
 }

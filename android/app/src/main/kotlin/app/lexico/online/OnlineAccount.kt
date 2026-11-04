@@ -17,6 +17,10 @@ class OnlineAccount(private val store: OnlineStore, private val api: OnlineApi) 
 
   suspend fun logIn(form: AccountForm): String? = adopt(api.logIn(form))
 
+  fun renamed(name: String, country: String) {
+    _session.value?.let { keep(it.copy(name = name, country = country)) }
+  }
+
   fun logOut() {
     store.save(null)
     _session.value = null

@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import kotlin.math.abs
 
 private const val MIN_SCALE = 0.6f
 
@@ -41,6 +42,12 @@ fun FitColumn(gap: Dp, content: @Composable ColumnScope.() -> Unit) {
 
 internal fun scaled(density: Density, scale: Float, maxFontScale: Float = density.fontScale): Density =
   Density(density.density * scale, minOf(density.fontScale, maxFontScale))
+
+internal fun refit(scale: MutableFloatState, room: Int, needed: Int) {
+  if (needed <= 0) return
+  val wanted = (scale.floatValue * room / needed).coerceIn(MIN_SCALE, 1f)
+  if (abs(scale.floatValue - wanted) > SCALE_STEP) scale.floatValue = wanted
+}
 
 internal fun fit(scale: MutableFloatState, room: Int, needed: Int) {
   if (needed <= 0) return

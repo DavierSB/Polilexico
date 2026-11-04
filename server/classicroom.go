@@ -28,6 +28,7 @@ type classicRoom struct {
 	inviteeTo  string
 	voidMode   bool
 	untimed    bool
+	watchers   spectators
 }
 
 type listener func()
@@ -65,6 +66,9 @@ func (r *classicRoom) handle(c *client, m message) {
 	defer r.mu.Unlock()
 	s := r.seatOf(c.player.ID)
 	if s == nil || s.client != c {
+		if m.T == "leave" && r.watchers.remove(c) {
+			r.watchers.countFor(r.seats)
+		}
 		return
 	}
 	switch m.T {
@@ -83,6 +87,45 @@ func (r *classicRoom) drop(c *client) {
 	if s := r.seatOf(c.player.ID); s != nil && s.client == c {
 		s.client = nil
 		r.sendPresence()
+		return
+	}
+	if r.watchers.remove(c) {
+		r.watchers.countFor(r.seats)
+	}
+}
+
+func (r *classicRoom) ongoing() (liveGame, bool) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.match == nil || r.match.Game().Status().Over {
+		return liveGame{}, false
+	}
+	names, countries := seatNames(r.seats)
+	return liveGame{ID: r.code, Mode: modeClassic, Players: names, Countries: countries}, true
+}
+
+func (r *classicRoom) watch(c *client) bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.match == nil || r.match.Game().Status().Over {
+		return false
+	}
+	r.watchers.add(c, r)
+	r.watchers.countFor(r.seats)
+	c.send(r.watcherMessage(c))
+	r.sendSpectatorState()
+	return true
+}
+
+func (r *classicRoom) watcherMessage(c *client) message {
+	m := r.roomMessage(r.seats[0])
+	m.Name, m.First, m.Watching = c.player.Name, true, true
+	return m
+}
+
+func (r *classicRoom) sendSpectatorState() {
+	if view, err := r.match.SpectatorView(); err == nil {
+		r.watchers.send(message{T: "state", Save: view, First: true})
 	}
 }
 
@@ -167,6 +210,7 @@ func (r *classicRoom) attach(s *seat, c *client) {
 		r.sendState(s)
 	}
 	r.sendPresence()
+	s.send(message{T: "watchers", Watchers: len(r.watchers.list)})
 }
 
 func (r *classicRoom) start() {
@@ -188,6 +232,7 @@ func (r *classicRoom) changed() {
 	for _, s := range r.seats {
 		r.sendState(s)
 	}
+	r.sendSpectatorState()
 	if r.match.Game().Status().Over {
 		r.finish()
 	} else if r.untimed {
@@ -251,6 +296,7 @@ func (r *classicRoom) finish() {
 	r.recorded = true
 	record(r.hub.store, classicResult(r))
 	r.expireIn(finishedTTL)
+	r.hub.changed()
 }
 
 func (r *classicRoom) expireIn(d time.Duration) {
@@ -274,6 +320,7 @@ func (r *classicRoom) closeAll(reason string) {
 		}
 		s.client = nil
 	}
+	r.watchers.dismiss(reason)
 	r.hub.release(r.code, r)
 	if r.match != nil {
 		r.match.Close()

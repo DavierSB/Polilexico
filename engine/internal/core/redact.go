@@ -13,8 +13,10 @@ import (
 
 func RedactedHistoryJSON(g *game.Game, viewer int) (json.RawMessage, error) {
 	h := proto.Clone(g.History()).(*pb.GameHistory)
-	if len(h.LastKnownRacks) == 2 {
-		h.LastKnownRacks[1-viewer] = ""
+	for i := range h.LastKnownRacks {
+		if i != viewer {
+			h.LastKnownRacks[i] = ""
+		}
 	}
 	for i, evt := range h.Events {
 		if int(evt.PlayerIndex) != viewer {

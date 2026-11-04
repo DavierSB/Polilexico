@@ -27,7 +27,8 @@ go test -race ./...
 
 ## Desplegar
 
-1. **Supabase:** pegar [`db/schema.sql`](db/schema.sql) en el *SQL Editor* y ejecutarlo. En
+1. **Supabase:** pegar [`db/schema.sql`](db/schema.sql) en el *SQL Editor* y ejecutarlo (en un proyecto
+   ya creado, solo lo nuevo; por ejemplo la tabla `photos` de las fotos de perfil). En
    *Authentication → Sign In / Providers → Email*, desactivar *Confirm email*.
 2. **Render:** *New → Blueprint* con este repositorio; [`render.yaml`](../render.yaml) crea el
    servicio gratis en Oregon. Pide dos variables:

@@ -23,6 +23,8 @@ type room interface {
 	cancel(playerID, reason string)
 	startBy(c *client)
 	active() bool
+	ongoing() (liveGame, bool)
+	watch(c *client) bool
 }
 
 type hub struct {
@@ -50,7 +52,9 @@ func (h *hub) serve(w http.ResponseWriter, r *http.Request) {
 	if c.room != nil {
 		c.room.drop(c)
 	}
-	h.goOffline(c)
+	if h.goOffline(c) {
+		h.withdrawSeeksOf(c.player.ID, "")
+	}
 	h.changed()
 }
 
@@ -70,6 +74,8 @@ func (h *hub) handle(ctx context.Context, c *client, m message) {
 		h.decline(c, m.Code)
 	case m.T == "cancel":
 		h.cancel(c, m.Code)
+	case m.T == "watch":
+		h.watch(c, m.Code)
 	case m.T == "start" && m.Code != "":
 		h.startSeek(c, m.Code)
 	case c.room != nil:
@@ -112,7 +118,7 @@ func (h *hub) create(c *client, m message, invitee *player) {
 
 func (h *hub) canPublish(c *client) string {
 	switch {
-	case c.room != nil && c.room.active():
+	case h.playing(c):
 		return "Termina tu partida antes de publicar otra."
 	case h.seekCount(c.player.ID) >= maxSeeks:
 		return "Ya tienes " + strconv.Itoa(maxSeeks) + " búsquedas publicadas."
@@ -168,8 +174,24 @@ func (h *hub) cancel(c *client, code string) {
 	}
 }
 
+func (h *hub) playing(c *client) bool {
+	r := h.roomOf(c.player.ID)
+	return r != nil && r.active()
+}
+
+func (h *hub) watch(c *client, code string) {
+	if h.playing(c) {
+		c.send(notice("error", "Termina tu partida antes de mirar otra."))
+		return
+	}
+	h.leaveCurrent(c)
+	if r := h.roomByCode(code); r == nil || !r.watch(c) {
+		c.send(notice("error", "Esa partida ya terminó."))
+	}
+}
+
 func (h *hub) startSeek(c *client, code string) {
-	if c.room != nil && c.room.active() {
+	if h.playing(c) {
 		c.send(notice("error", "Termina tu partida antes de empezar otra."))
 		return
 	}

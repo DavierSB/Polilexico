@@ -23,8 +23,8 @@ fun MoveButtons(c: TilePlacer, playEnabled: Boolean, onPlay: () -> Unit, small: 
   val chat = LocalChat.current
   Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-      small()
       chat?.let { ChatButton(it.onOpen) }
+      small()
     }
     PlayButton(playEnabled && c.hasPlaced, onPlay)
   }

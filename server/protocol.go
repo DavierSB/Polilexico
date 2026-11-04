@@ -34,6 +34,9 @@ type message struct {
 	Seeks      []seek   `json:"seeks,omitempty"`
 	Invites    []seek   `json:"invites,omitempty"`
 	People     []person `json:"people,omitempty"`
+	Games      []liveGame `json:"games,omitempty"`
+	Watching   bool     `json:"watching,omitempty"`
+	Watchers   int      `json:"watchers,omitempty"`
 }
 
 func notice(kind, reason string) message {

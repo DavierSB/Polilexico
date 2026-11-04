@@ -5,7 +5,12 @@ import org.json.JSONObject
 
 internal const val ONLINE_PROTOCOL = 2
 
-data class RoomInfo(val id: String, val duplicate: Boolean, val me: String, val host: String, val players: List<String>, val first: Boolean)
+data class RoomInfo(
+  val id: String, val duplicate: Boolean, val me: String, val host: String, val players: List<String>, val first: Boolean,
+  val watching: Boolean = false,
+)
+
+data class LiveGame(val id: String, val duplicate: Boolean, val players: List<String>, val countries: List<String>)
 
 data class Seek(
   val id: String, val duplicate: Boolean, val host: String, val country: String, val timeMs: Long, val overtimeMs: Long,
@@ -15,7 +20,10 @@ data class Seek(
 
 data class Person(val name: String, val country: String, val busy: Boolean)
 
-data class Lobby(val seeks: List<Seek> = emptyList(), val invites: List<Seek> = emptyList(), val people: List<Person> = emptyList())
+data class Lobby(
+  val seeks: List<Seek> = emptyList(), val invites: List<Seek> = emptyList(), val people: List<Person> = emptyList(),
+  val games: List<LiveGame> = emptyList(),
+)
 
 sealed interface Proposal {
   data class Classic(val timeMs: Long, val overtimeMs: Long, val single: Boolean = true, val timed: Boolean = true) : Proposal
@@ -32,6 +40,7 @@ internal sealed interface OnlineEvent {
   data class Table(val view: String) : OnlineEvent
   data class Rejected(val reason: String) : OnlineEvent
   data class Chat(val from: String, val text: String) : OnlineEvent
+  data class Watchers(val count: Int) : OnlineEvent
   data class Rival(val online: Boolean) : OnlineEvent
   data class Closed(val reason: String) : OnlineEvent
 }
@@ -63,7 +72,10 @@ private fun event(o: JSONObject): OnlineEvent? = when (o.getString("t")) {
   "welcome" -> OnlineEvent.Welcome
   "refused" -> OnlineEvent.Refused(o.optString("reason"))
   "error" -> OnlineEvent.Failed(o.optString("reason"))
-  "lobby" -> OnlineEvent.LobbyChanged(Lobby(seeks(o.optJSONArray("seeks")), seeks(o.optJSONArray("invites")), people(o.optJSONArray("people"))))
+  "lobby" -> OnlineEvent.LobbyChanged(
+    Lobby(seeks(o.optJSONArray("seeks")), seeks(o.optJSONArray("invites")), people(o.optJSONArray("people")), games(o.optJSONArray("games"))),
+  )
+  "watchers" -> OnlineEvent.Watchers(o.optInt("watchers"))
   "room" -> OnlineEvent.Room(roomInfo(o))
   "state" -> OnlineEvent.State(o.getString("save"), o.optBoolean("first"))
   "table" -> OnlineEvent.Table(o.getString("view"))
@@ -76,8 +88,12 @@ private fun event(o: JSONObject): OnlineEvent? = when (o.getString("t")) {
 
 private fun roomInfo(o: JSONObject): RoomInfo = RoomInfo(
   o.getString("code"), o.optString("mode") == "duplicate", o.optString("name"), o.optString("host"), strings(o.optJSONArray("players")),
-  o.optBoolean("first"),
+  o.optBoolean("first"), o.optBoolean("watching"),
 )
+
+private fun games(a: JSONArray?): List<LiveGame> = objects(a).map {
+  LiveGame(it.getString("id"), it.optString("mode") == "duplicate", strings(it.optJSONArray("players")), strings(it.optJSONArray("countries")))
+}
 
 private fun seeks(a: JSONArray?): List<Seek> = objects(a).map { s ->
   Seek(

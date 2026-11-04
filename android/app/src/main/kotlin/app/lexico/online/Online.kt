@@ -2,10 +2,11 @@ package app.lexico.online
 
 import android.content.Context
 import app.lexico.game.Lexico
+import okhttp3.OkHttpClient
+import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
 
 class Online private constructor(context: Context) {
   val store = OnlineStore(context)
@@ -22,10 +23,26 @@ class Online private constructor(context: Context) {
 
   private val backup = OfflineBackup(context.filesDir)
 
+  val photos = OnlinePhotos(File(context.cacheDir, "photos"), api)
+
   private var client: OnlineClient? = null
 
   @Synchronized
   fun client(lexico: Lexico): OnlineClient = client ?: OnlineClient(this, lexico).also { client = it }
+
+  suspend fun loadAccount(): AccountForm? = account.token()?.let { api.account(it).getOrNull() }
+
+  suspend fun editAccount(form: AccountForm): String? {
+    val token = account.token() ?: return "La sesión caducó: vuelve a entrar."
+    return api.updateAccount(token, form).fold({ saved -> account.renamed(saved.name, saved.country); client?.shutDown(); null }) { it.message }
+  }
+
+  suspend fun setPhoto(base64: String): String? {
+    val token = account.token() ?: return "La sesión caducó: vuelve a entrar."
+    val failed = api.savePhoto(token, base64).exceptionOrNull()?.message
+    account.session.value?.let { photos.forget(it.name, it.country); photos.request(it.name, it.country) }
+    return failed
+  }
 
   fun logOut() {
     client?.shutDown()

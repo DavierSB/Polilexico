@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -426,4 +427,94 @@ func TestChatWaitsForAnAnswer(t *testing.T) {
 	if chatRefusal(from, "hola") != "" {
 		t.Fatal("la respuesta no desbloquea")
 	}
+}
+
+func TestPhotoIsSavedServedAndRemoved(t *testing.T) {
+	srv := newTestServer(t)
+	sess := srv.signUp(t, "Ana", "CU")
+	jpeg := base64.StdEncoding.EncodeToString([]byte{0xFF, 0xD8, 0xFF, 0xE0, 1, 2, 3})
+	put := func(data string) int {
+		body, _ := json.Marshal(map[string]string{"data": data})
+		req, _ := http.NewRequest("PUT", srv.URL+"/photo", bytes.NewReader(body))
+		req.Header.Set("Authorization", "Bearer "+sess.AccessToken)
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		res.Body.Close()
+		return res.StatusCode
+	}
+	if put("bm8gZXMgdW5hIGZvdG8=") != http.StatusBadRequest || put(jpeg) != http.StatusOK {
+		t.Fatal("validación")
+	}
+	res, _ := http.Get(srv.URL + "/photo?name=ana&country=CU")
+	if res.StatusCode != http.StatusOK || res.Header.Get("Content-Type") != "image/jpeg" {
+		t.Fatal(res.Status)
+	}
+	again, _ := http.NewRequest("GET", srv.URL+"/photo?name=Ana&country=CU", nil)
+	again.Header.Set("If-None-Match", res.Header.Get("ETag"))
+	if cached, _ := http.DefaultClient.Do(again); cached.StatusCode != http.StatusNotModified {
+		t.Fatal(cached.Status)
+	}
+	put("")
+	if gone, _ := http.Get(srv.URL + "/photo?name=Ana&country=CU"); gone.StatusCode != http.StatusNotFound {
+		t.Fatal(gone.Status)
+	}
+}
+
+func TestSpectatorWatchesAndIsCounted(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto, carla := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES"), srv.player(t, "Carla", "MX")
+	ana.send(message{T: "create", Mode: modeClassic})
+	beto.send(message{T: "join", Code: ana.mySeeks(1)[0].ID})
+	beto.waitFor("state")
+	game := carla.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Games) == 1 }).Games[0]
+	if game.Players[0] != "Ana" || game.Countries[1] != "ES" {
+		t.Fatalf("%+v", game)
+	}
+	carla.send(message{T: "watch", Code: game.ID})
+	if room := carla.waitFor("room"); !room.Watching {
+		t.Fatalf("%+v", room)
+	}
+	carla.waitFor("state")
+	ana.waitUntil(func(m message) bool { return m.T == "watchers" && m.Watchers == 1 })
+	carla.send(message{T: "leave"})
+	ana.waitUntil(func(m message) bool { return m.T == "watchers" && m.Watchers == 0 })
+}
+
+func TestAccountCanBeEdited(t *testing.T) {
+	srv := newTestServer(t)
+	sess := srv.signUp(t, "Ana", "CU")
+	srv.signUp(t, "Beto", "ES")
+	edit := func(a account) int {
+		body, _ := json.Marshal(a)
+		req, _ := http.NewRequest("PUT", srv.URL+"/account", bytes.NewReader(body))
+		req.Header.Set("Authorization", "Bearer "+sess.AccessToken)
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		res.Body.Close()
+		return res.StatusCode
+	}
+	if edit(account{Name: "Beto", Country: "ES"}) == http.StatusOK {
+		t.Fatal("tomó un nombre ocupado")
+	}
+	if code := edit(account{Name: "Anita", Country: "MX", Email: "ana@correo.com"}); code != http.StatusOK {
+		t.Fatal(code)
+	}
+	if again := srv.logIn(t, "anita", "MX"); again.Name != "Anita" {
+		t.Fatalf("%+v", again)
+	}
+}
+
+func TestSeeksGoAwayWithTheirHost(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeClassic})
+	beto.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Seeks) == 1 })
+	ana.conn.Close(websocket.StatusNormalClosure, "")
+	beto.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Seeks) == 0 })
+	again := srv.connect(t, srv.logIn(t, "Ana", "CU"))
+	again.mySeeks(0)
 }

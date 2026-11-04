@@ -10,7 +10,8 @@ import (
 
 type memoryUser struct {
 	player
-	hash string
+	hash  string
+	email string
 }
 
 type memoryStore struct {
@@ -21,11 +22,12 @@ type memoryStore struct {
 	refresh map[string]string
 	results []result
 	backups map[string]string
+	photos  map[string]photo
 }
 
 func newMemoryStore() *memoryStore {
 	return &memoryStore{users: map[string]*memoryUser{}, byName: map[string]string{}, access: map[string]string{},
-		refresh: map[string]string{}, backups: map[string]string{}}
+		refresh: map[string]string{}, backups: map[string]string{}, photos: map[string]photo{}}
 }
 
 func (s *memoryStore) Name() string { return "sin Supabase: cuentas en memoria" }
@@ -37,7 +39,7 @@ func (s *memoryStore) SignUp(_ context.Context, a account) (session, error) {
 	if _, ok := s.byName[key]; ok {
 		return session{}, errTaken
 	}
-	u := &memoryUser{player: player{ID: token(), Name: a.Name, Country: a.Country}, hash: hashOf(a.Password)}
+	u := &memoryUser{player: player{ID: token(), Name: a.Name, Country: a.Country}, hash: hashOf(a.Password), email: a.Email}
 	s.users[u.ID], s.byName[key] = u, u.ID
 	return s.open(u), nil
 }

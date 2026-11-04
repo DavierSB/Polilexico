@@ -14,6 +14,16 @@ func (m *Match) ViewFor(first bool) (string, error) {
 	return core.JSON(m.saved(game))
 }
 
+func (m *Match) SpectatorView() (string, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	game, err := m.game.openView()
+	if err != nil {
+		return "", err
+	}
+	return core.JSON(m.saved(game))
+}
+
 func (m *Match) Forfeit(first bool) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -36,6 +46,16 @@ func (c *Game) viewFor(first bool) (string, error) {
 		viewer = 1 - c.humanIdx
 	}
 	history, err := core.RedactedHistoryJSON(c.g, viewer)
+	if err != nil {
+		return "", err
+	}
+	return core.JSON(c.withoutRecord(c.saved(history)))
+}
+
+func (c *Game) openView() (string, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	history, err := core.HistoryJSON(c.g)
 	if err != nil {
 		return "", err
 	}

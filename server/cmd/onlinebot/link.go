@@ -16,6 +16,12 @@ type seek struct {
 	Players int    `json:"players"`
 }
 
+type person struct {
+	Name    string `json:"name"`
+	Country string `json:"country"`
+	Playing bool   `json:"playing"`
+}
+
 type message struct {
 	T       string   `json:"t"`
 	Version int      `json:"version,omitempty"`
@@ -37,6 +43,8 @@ type message struct {
 	Players []string `json:"players,omitempty"`
 	Seeks   []seek   `json:"seeks,omitempty"`
 	Invites []seek   `json:"invites,omitempty"`
+	People  []person `json:"people,omitempty"`
+	Country string   `json:"country,omitempty"`
 }
 
 type link struct {

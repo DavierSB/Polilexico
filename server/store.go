@@ -18,6 +18,10 @@ type store interface {
 	Stats(ctx context.Context, p player) ([]statsRow, error)
 	Backup(ctx context.Context, p player) (string, error)
 	SaveBackup(ctx context.Context, p player, data string) error
+	SavePhoto(ctx context.Context, p player, data string) error
+	Account(ctx context.Context, p player) (accountView, error)
+	UpdateAccount(ctx context.Context, p player, a account) (accountView, error)
+	Photo(ctx context.Context, name, country string) (photo, error)
 	Ping(ctx context.Context) error
 }
 

@@ -36,6 +36,12 @@ create table public.backups (
   updated_at timestamptz not null default now()
 );
 
+create table public.photos (
+  user_id uuid primary key references public.profiles on delete cascade,
+  data text not null,
+  updated_at timestamptz not null default now()
+);
+
 create view public.player_stats with (security_invoker = true) as
 select
   p.user_id,
@@ -57,11 +63,12 @@ alter table public.profiles enable row level security;
 alter table public.games enable row level security;
 alter table public.game_players enable row level security;
 alter table public.backups enable row level security;
+alter table public.photos enable row level security;
 
 create policy "Perfiles públicos" on public.profiles for select using (true);
 create policy "Partidas públicas" on public.games for select using (true);
 create policy "Resultados públicos" on public.game_players for select using (true);
 
 grant select on public.player_stats to anon, authenticated;
-grant all on public.profiles, public.games, public.game_players, public.backups, public.player_stats to service_role;
+grant all on public.profiles, public.games, public.game_players, public.backups, public.photos, public.player_stats to service_role;
 grant usage, select on all sequences in schema public to service_role;

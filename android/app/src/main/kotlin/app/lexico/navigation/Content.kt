@@ -106,7 +106,7 @@ private fun OtherScreens(
     is Screen.Online -> OnlineRoute(screen.mode, lexico, settings, nav)
     is Screen.OnlineNewClassic -> NewOnlineClassicRoute(screen, lexico, nav)
     Screen.OnlineNewDuplicate -> NewOnlineDuplicateRoute(lexico, nav)
-    Screen.OnlineStats -> OnlineStatsRoute(nav)
+    Screen.OnlineProfile -> OnlineProfileRoute(nav)
     else -> Unit
   }
 }

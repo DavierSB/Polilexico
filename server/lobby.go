@@ -30,6 +30,13 @@ type listing struct {
 	invitee string
 }
 
+type liveGame struct {
+	ID        string   `json:"id"`
+	Mode      string   `json:"mode"`
+	Players   []string `json:"players"`
+	Countries []string `json:"countries"`
+}
+
 type person struct {
 	Name    string `json:"name"`
 	Country string `json:"country"`
@@ -48,12 +55,14 @@ func (h *hub) onlineCount() int {
 	return len(h.online)
 }
 
-func (h *hub) goOffline(c *client) {
+func (h *hub) goOffline(c *client) bool {
 	h.mu.Lock()
 	defer h.mu.Unlock()
-	if h.online[c.player.ID] == c {
-		delete(h.online, c.player.ID)
+	if c.player.ID == "" || h.online[c.player.ID] != c {
+		return false
 	}
+	delete(h.online, c.player.ID)
+	return true
 }
 
 func (h *hub) findOnline(name, country string) *client {
@@ -72,14 +81,35 @@ func (h *hub) changed() {
 }
 
 func (h *hub) broadcastLobby() {
-	listings, people := h.visibleListings(), h.people()
+	listings, people, games := h.visibleListings(), h.people(), h.liveGames()
 	for _, c := range h.onlineClients() {
-		c.send(lobbyMessage(listings, people, c.player))
+		m := lobbyMessage(listings, people, c.player)
+		m.Games = games
+		c.send(m)
 	}
 }
 
 func (h *hub) lobbyFor(p player) message {
-	return lobbyMessage(h.visibleListings(), h.people(), p)
+	m := lobbyMessage(h.visibleListings(), h.people(), p)
+	m.Games = h.liveGames()
+	return m
+}
+
+func (h *hub) liveGames() []liveGame {
+	h.mu.Lock()
+	rooms := make([]room, 0, len(h.rooms))
+	for _, r := range h.rooms {
+		rooms = append(rooms, r)
+	}
+	h.mu.Unlock()
+	games := []liveGame{}
+	for _, r := range rooms {
+		if g, ok := r.ongoing(); ok {
+			games = append(games, g)
+		}
+	}
+	sort.Slice(games, func(i, j int) bool { return games[i].ID < games[j].ID })
+	return games
 }
 
 func (h *hub) visibleListings() []listing {
