@@ -148,7 +148,7 @@ private fun TabContent(tab: HubTab, state: OnlineHubState, actions: OnlineHubAct
 
 @Composable
 private fun GameList(games: List<GameItem>, onWatch: (String) -> Unit) {
-  if (games.isEmpty()) return EmptyState("🎲", "No se está jugando ninguna partida.")
+  if (games.isEmpty()) return EmptyState({ InitialTile("J", highlighted = false, size = 34.dp) }, "No se está jugando ninguna partida.")
   games.forEach { g ->
     Row(
       Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(14.dp)).clickable { onWatch(g.id) }
@@ -181,9 +181,12 @@ private fun SeekList(seeks: List<SeekItem>, empty: String, actions: OnlineHubAct
 }
 
 @Composable
-private fun EmptyState(icon: String, text: String) {
-  Column(Modifier.fillMaxWidth().padding(vertical = 10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-    Text(icon, fontSize = 28.sp)
+private fun EmptyState(icon: String, text: String) = EmptyState({ Text(icon, fontSize = 28.sp) }, text)
+
+@Composable
+private fun EmptyState(icon: @Composable () -> Unit, text: String) {
+  Column(Modifier.fillMaxWidth().padding(vertical = 10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    icon()
     Text(text, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
   }
 }
