@@ -60,7 +60,7 @@ sealed interface Screen {
   data class FinishedFolder(val folder: GameFolder) : Screen
   data class Review(val path: String, val atEndgame: Boolean = false) : Screen
   data object Stats : Screen
-  data object Online : Screen
+  data class Online(val mode: Mode? = null) : Screen
   data class OnlineNewClassic(val rival: Person? = null) : Screen
   data object OnlineNewDuplicate : Screen
   data object OnlineStats : Screen

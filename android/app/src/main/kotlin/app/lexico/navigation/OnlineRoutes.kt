@@ -1,6 +1,7 @@
 package app.lexico.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -12,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import app.lexico.game.Lexico
+import app.lexico.game.storage.Mode
 import app.lexico.game.modes.duplicate.table.TableState
 import app.lexico.menu.Settings
 import app.lexico.menu.ThemeState
@@ -21,12 +23,17 @@ import app.lexico.online.Online
 import app.lexico.online.OnlineClient
 import app.lexico.online.OnlineSession
 import app.lexico.online.OnlineStatsRow
+import app.lexico.online.Lobby
 import app.lexico.online.Person
 import app.lexico.online.Proposal
 import app.lexico.online.RoomInfo
 import app.lexico.online.Seek
 import app.lexico.ui.classic.NewOnlineClassicScreen
 import app.lexico.ui.common.AccountInput
+import app.lexico.ui.common.ChatComposer
+import app.lexico.ui.common.ChatEntry
+import app.lexico.ui.common.ChatPopup
+import app.lexico.ui.common.LocalChat
 import app.lexico.ui.common.Durations
 import app.lexico.ui.common.GuestLobbyScreen
 import app.lexico.ui.common.HostLobbyScreen
@@ -52,11 +59,11 @@ private const val RIVAL_AWAY = "Tu rival se desconectó. Su reloj sigue corriend
 private var backupSynced = false
 
 @Composable
-internal fun OnlineRoute(lexico: Lexico, settings: Settings, nav: Navigator) {
+internal fun OnlineRoute(mode: Mode?, lexico: Lexico, settings: Settings, nav: Navigator) {
   val online = rememberOnline()
   val session by online.account.session.collectAsState()
   var editingServer by remember { mutableStateOf(false) }
-  session?.let { OnlineHub(it, online, lexico, settings, nav) } ?: AccountRoute(online, nav) { editingServer = true }
+  session?.let { OnlineHub(it, mode, online, lexico, settings, nav) } ?: AccountRoute(online, nav) { editingServer = true }
   if (editingServer) ServerDialog(online.store.server, { online.store.server = it }) { editingServer = false }
 }
 
@@ -65,10 +72,10 @@ internal fun NewOnlineClassicRoute(screen: Screen.OnlineNewClassic, lexico: Lexi
   val client = rememberClient(lexico)
   val rival = screen.rival
   val title = rival?.let { "Retar a ${it.name} ${flagOf(it.country)}" } ?: "Buscar clásica"
-  NewOnlineClassicScreen(title, if (rival == null) "Publicar búsqueda" else "Enviar reto", nav::back) { time, overtime ->
-    val proposal = Proposal.Classic(time, overtime)
+  NewOnlineClassicScreen(title, if (rival == null) "Publicar búsqueda" else "Enviar reto", nav::back) { time, overtime, single, timed ->
+    val proposal = Proposal.Classic(time, overtime, single, timed)
     if (rival == null) client.publish(proposal) else client.challenge(rival, proposal)
-    nav.replace(Screen.OnlinePlay)
+    nav.back()
   }
 }
 
@@ -77,7 +84,7 @@ internal fun NewOnlineDuplicateRoute(lexico: Lexico, nav: Navigator) {
   val client = rememberClient(lexico)
   NewOnlineDuplicateScreen(nav::back) { turn, rounds, live ->
     client.publish(Proposal.Duplicate(turn, rounds, live))
-    nav.replace(Screen.OnlinePlay)
+    nav.back()
   }
 }
 
@@ -101,8 +108,8 @@ internal fun OnlinePlayRoute(lexico: Lexico, nav: Navigator, themes: ThemeState)
   val current = info
   when {
     current == null -> OnlineWaitScreen("En línea", ended ?: status ?: "Conectando…", ended != null) { client.forget(); nav.back() }
-    current.duplicate -> DuplicateOnline(client, current, nav, themes)
-    else -> ClassicOnline(client, current, lexico, nav, themes)
+    current.duplicate -> WithChat(client, current) { DuplicateOnline(client, current, nav, themes) }
+    else -> WithChat(client, current) { ClassicOnline(client, current, lexico, nav, themes) }
   }
 }
 
@@ -123,26 +130,45 @@ private fun AccountRoute(online: Online, nav: Navigator, onServer: () -> Unit) {
 }
 
 @Composable
-private fun OnlineHub(session: OnlineSession, online: Online, lexico: Lexico, settings: Settings, nav: Navigator) {
+private fun OnlineHub(session: OnlineSession, mode: Mode?, online: Online, lexico: Lexico, settings: Settings, nav: Navigator) {
   val client = rememberClient(lexico)
   LaunchedEffect(session.name) { syncBackupOnce(online, settings) }
   val lobby by client.lobby.collectAsState()
   val room by client.room.collectAsState()
+  val game by client.game.collectAsState()
   val status by client.status.collectAsState()
   val refused by client.refused.collectAsState()
+  val ended by client.ended.collectAsState()
+  JumpWhenSeated(room?.id) { nav.go(Screen.OnlinePlay) }
+  val actions = hubActions(client, online, lobby, nav)
+  val seeks = lobby.seeks.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }
+  val state = OnlineHubState(
+    refused ?: status ?: ended.takeIf { room == null }, room != null && game?.state?.value?.result == null, seeks.map(::seekItem),
+    lobby.people.map { PersonItem(it.name, it.country, it.busy) }, lobby.invites.firstOrNull()?.let(::seekItem),
+    classic = mode != Mode.DUPLICATE, duplicate = mode != Mode.CLASSIC,
+  )
+  OnlineHubScreen(profileOf(session), state, actions)
+}
+
+@Composable
+private fun JumpWhenSeated(roomId: String?, jump: () -> Unit) {
+  var seen by remember { mutableStateOf(roomId) }
+  LaunchedEffect(roomId) {
+    if (roomId != null && roomId != seen) jump()
+    seen = roomId
+  }
+}
+
+private fun hubActions(client: OnlineClient, online: Online, lobby: Lobby, nav: Navigator): OnlineHubActions {
   val seekOf = { id: String -> (lobby.seeks + lobby.invites).find { it.id == id } }
-  val actions = OnlineHubActions(
+  return OnlineHubActions(
     back = nav::back, logOut = online::logOut, resume = { nav.go(Screen.OnlinePlay) },
     seekClassic = { nav.go(Screen.OnlineNewClassic()) }, createDuplicate = { nav.go(Screen.OnlineNewDuplicate) },
     accept = { id -> seekOf(id)?.let { client.accept(it); nav.go(Screen.OnlinePlay) } },
     challenge = { nav.go(Screen.OnlineNewClassic(Person(it.name, it.country, it.busy))) },
     decline = { id -> seekOf(id)?.let(client::decline) }, stats = { nav.go(Screen.OnlineStats) },
+    cancel = { id -> seekOf(id)?.let(client::cancel) }, start = { id -> seekOf(id)?.let(client::startSeek) },
   )
-  val state = OnlineHubState(
-    refused ?: status, room != null, lobby.seeks.map(::seekItem), lobby.people.map { PersonItem(it.name, it.country, it.busy) },
-    lobby.invites.firstOrNull()?.let(::seekItem),
-  )
-  OnlineHubScreen(profileOf(session), state, actions)
 }
 
 @Composable
@@ -176,6 +202,22 @@ private fun DuplicateOnline(client: OnlineClient, info: RoomInfo, nav: Navigator
 }
 
 @Composable
+private fun WithChat(client: OnlineClient, info: RoomInfo, content: @Composable () -> Unit) {
+  var composing by remember { mutableStateOf(false) }
+  val inbox by client.inbox.collectAsState()
+  val ignoring by client.ignoring.collectAsState()
+  val unanswered by client.unanswered.collectAsState()
+  val entry = remember { ChatEntry { composing = true } }
+  CompositionLocalProvider(LocalChat provides entry, content = content)
+  if (!composing) ChatPopup(inbox, client::closeChat) { client.ignore(true) }
+  if (composing) ChatComposer(chatTarget(info), unanswered >= CHAT_UNANSWERED, ignoring, client::say, { client.ignore(false) }) { composing = false }
+}
+
+private fun chatTarget(info: RoomInfo): String = info.players.filter { it != info.me }.singleOrNull() ?: "la mesa"
+
+private const val CHAT_UNANSWERED = 3
+
+@Composable
 private fun rememberClient(lexico: Lexico): OnlineClient {
   val online = rememberOnline()
   val client = remember { online.client(lexico) }
@@ -194,11 +236,16 @@ private suspend fun syncBackupOnce(online: Online, settings: Settings) {
   online.syncBackup(settings.statsSince)?.let { settings.adoptStatsSince(it); backupSynced = true }
 }
 
-private fun seekItem(s: Seek): SeekItem = SeekItem(s.id, s.host, s.country, seekDetail(s), s.mine)
+private fun seekItem(s: Seek): SeekItem =
+  SeekItem(s.id, s.host, s.country, seekDetail(s), s.mine, s.duplicate, s.players, s.to)
 
 private fun seekDetail(s: Seek): String =
   if (s.duplicate) "Duplicada · ${Durations.format(s.turnMs)} por ronda · ${s.players} en la sala"
-  else "Clásica · ${Durations.format(s.timeMs)} + ${Durations.format(s.overtimeMs)} de descuento"
+  else if (s.mine && s.to.isNotEmpty()) "Reto a ${s.to} · ${classicTime(s)} · ${if (s.single) "Single" else "Void"}"
+  else "Clásica · ${classicTime(s)} · ${if (s.single) "Single" else "Void"}"
+
+private fun classicTime(s: Seek): String =
+  if (s.timed) "${Durations.format(s.timeMs)} + ${Durations.format(s.overtimeMs)}" else "Sin tiempo"
 
 private fun profileOf(session: OnlineSession): OnlineProfile = OnlineProfile(session.name, session.country)
 

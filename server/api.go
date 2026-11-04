@@ -14,6 +14,7 @@ func routes(h *hub, st store) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", health(st))
 	mux.HandleFunc("GET /ws", h.serve)
+	mux.HandleFunc("GET /presence", presence(h))
 	mux.HandleFunc("POST /signup", signUp(st))
 	mux.HandleFunc("POST /login", logIn(st))
 	mux.HandleFunc("POST /refresh", refresh(st))
@@ -24,6 +25,13 @@ func routes(h *hub, st store) http.Handler {
 }
 
 type playerHandler func(w http.ResponseWriter, r *http.Request, p player)
+
+func presence(h *hub) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]int{"online": h.onlineCount()})
+	}
+}
 
 func health(st store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

@@ -57,6 +57,8 @@ func (r *duplicateRoom) handle(c *client, m message) {
 		r.propose(s, m.Input)
 	case "ready":
 		r.ready(s)
+	case "chat":
+		relayChat(s, r.seats, m.Text)
 	case "leave":
 		r.leave(s)
 	}
@@ -72,6 +74,42 @@ func (r *duplicateRoom) drop(c *client) {
 }
 
 func (r *duplicateRoom) decline(*client) {}
+
+func (r *duplicateRoom) cancel(playerID, reason string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.table == nil && r.seats[0].player.ID == playerID {
+		r.closeAll(reason)
+	}
+}
+
+func (r *duplicateRoom) startBy(c *client) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	host := r.seats[0]
+	switch {
+	case host.player.ID != c.player.ID || r.table != nil:
+		return
+	case len(r.seats) < 2:
+		c.send(notice("error", "Espera a que entre al menos otro jugador."))
+		return
+	}
+	r.hub.seat(host.player.ID, r)
+	r.hub.matched(host.player.ID, r.code)
+	host.client, c.room = c, r
+	c.send(r.roomMessage(host))
+	r.start(host)
+}
+
+func (r *duplicateRoom) active() bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.table == nil {
+		return false
+	}
+	_, over := r.finalView()
+	return !over
+}
 
 func (r *duplicateRoom) listing() (listing, bool) {
 	r.mu.Lock()

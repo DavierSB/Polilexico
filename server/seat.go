@@ -11,6 +11,7 @@ type seat struct {
 	player player
 	name   string
 	client *client
+	chat   chatState
 }
 
 func (s *seat) send(m message) {

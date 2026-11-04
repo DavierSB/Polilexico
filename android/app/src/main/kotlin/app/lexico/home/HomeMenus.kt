@@ -29,7 +29,6 @@ internal fun menuButtons(menu: Screen, counts: MenuCounts): List<MenuEntry> = wh
 }
 
 private val HOME = listOf(
-  MenuEntry("En línea") { Screen.Online },
   MenuEntry("Clásica") { Screen.ClassicMenu },
   MenuEntry("Duplicada") { Screen.DuplicateMenu },
   MenuEntry("Minijuegos") { Screen.Minigames },
@@ -38,6 +37,7 @@ private val HOME = listOf(
 
 private fun games(mode: Mode, inProgress: Int): List<MenuEntry> = listOf(
   MenuEntry("Nueva partida") { if (mode == Mode.DUPLICATE) Screen.NewDuplicate else Screen.NewClassic },
+  MenuEntry("Jugar en línea") { Screen.Online(mode) },
   MenuEntry("Continuar partida en curso ($inProgress)", main = false, enabled = inProgress > 0) { Screen.InProgress(mode) },
   MenuEntry("Partidas terminadas", main = false) { Screen.FinishedFolder(folderOf(mode)) },
 )

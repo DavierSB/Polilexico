@@ -26,7 +26,7 @@ fun Logo(modifier: Modifier = Modifier, scale: Float = 1f) {
   Row(modifier, verticalAlignment = Alignment.CenterVertically) {
     Image(painterResource(R.drawable.logo_shell), null, Modifier.width((40 * scale).dp))
     Text("Poliléxico", Modifier.padding(start = (10 * scale).dp), color = MaterialTheme.colorScheme.primary,
-      fontFamily = Mulish, fontWeight = FontWeight.Black, fontSize = (28 * scale).sp, letterSpacing = (-0.03).em)
+      fontFamily = Mulish, fontWeight = FontWeight.Black, fontSize = (28 * scale).sp, letterSpacing = (-0.03).em, maxLines = 1, softWrap = false)
   }
 }
 

@@ -5,8 +5,11 @@ import (
 	"strings"
 )
 
+const maxSeeks = 6
+
 type seek struct {
 	ID         string `json:"id"`
+	To         string `json:"to,omitempty"`
 	Mode       string `json:"mode"`
 	Host       string `json:"host"`
 	Country    string `json:"country"`
@@ -15,6 +18,8 @@ type seek struct {
 	TurnMs     int64  `json:"turnMs,omitempty"`
 	Rounds     int    `json:"rounds,omitempty"`
 	Live       bool   `json:"live,omitempty"`
+	Void       bool   `json:"void,omitempty"`
+	Untimed    bool   `json:"untimed,omitempty"`
 	Players    int    `json:"players"`
 	Mine       bool   `json:"mine,omitempty"`
 	hostID     string
@@ -35,6 +40,12 @@ func (h *hub) goOnline(c *client) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	h.online[c.player.ID] = c
+}
+
+func (h *hub) onlineCount() int {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	return len(h.online)
 }
 
 func (h *hub) goOffline(c *client) {
@@ -61,14 +72,24 @@ func (h *hub) changed() {
 }
 
 func (h *hub) broadcastLobby() {
-	listings, people := h.listings(), h.people()
+	listings, people := h.visibleListings(), h.people()
 	for _, c := range h.onlineClients() {
 		c.send(lobbyMessage(listings, people, c.player))
 	}
 }
 
 func (h *hub) lobbyFor(p player) message {
-	return lobbyMessage(h.listings(), h.people(), p)
+	return lobbyMessage(h.visibleListings(), h.people(), p)
+}
+
+func (h *hub) visibleListings() []listing {
+	var out []listing
+	for _, l := range h.listings() {
+		if h.isOnline(l.seek.hostID) {
+			out = append(out, l)
+		}
+	}
+	return out
 }
 
 func (h *hub) people() []person {
@@ -114,7 +135,7 @@ func lobbyMessage(listings []listing, people []person, p player) message {
 		s := l.seek
 		s.Mine = s.hostID == p.ID
 		switch {
-		case l.invitee == "":
+		case l.invitee == "" || s.Mine:
 			m.Seeks = append(m.Seeks, s)
 		case l.invitee == p.ID:
 			m.Invites = append(m.Invites, s)

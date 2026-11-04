@@ -11,6 +11,8 @@ val appVersionName = "0.8"
 
 val abiCodes = mapOf("armeabi-v7a" to 1, "arm64-v8a" to 2)
 
+val debugCopy = providers.gradleProperty("debugCopy").getOrElse("a")
+
 android {
   namespace = "app.lexico"
   compileSdk = 36
@@ -20,6 +22,7 @@ android {
     targetSdk = 36
     versionCode = appVersionCode
     versionName = appVersionName
+    manifestPlaceholders["appLabel"] = "@string/app_name"
   }
   signingConfigs {
     releaseKey()?.let { key ->
@@ -32,6 +35,10 @@ android {
     }
   }
   buildTypes {
+    debug {
+      applicationIdSuffix = ".debug.$debugCopy"
+      manifestPlaceholders["appLabel"] = "Poliléxico ${debugCopy.uppercase()}"
+    }
     release {
       isMinifyEnabled = false
       signingConfig = signingConfigs.findByName("release")

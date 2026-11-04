@@ -53,7 +53,7 @@ func TestClassicGameBetweenTwoPlayers(t *testing.T) {
 	srv := newTestServer(t)
 	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
 	ana.send(message{T: "create", Mode: modeClassic, TimeMs: 600_000})
-	code := ana.waitFor("room").Code
+	code := ana.mySeeks(1)[0].ID
 	beto.send(message{T: "join", Code: code})
 	first := ana.waitFor("state")
 	beto.waitFor("state")
@@ -74,7 +74,7 @@ func TestClassicRoomRejectsThirdPlayer(t *testing.T) {
 	srv := newTestServer(t)
 	ana, beto, carla := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES"), srv.player(t, "Carla", "MX")
 	ana.send(message{T: "create", Mode: modeClassic})
-	code := ana.waitFor("room").Code
+	code := ana.mySeeks(1)[0].ID
 	beto.send(message{T: "join", Code: code})
 	beto.waitFor("state")
 	carla.send(message{T: "join", Code: code})
@@ -85,7 +85,7 @@ func TestReconnectReturnsToTheGame(t *testing.T) {
 	srv := newTestServer(t)
 	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
 	ana.send(message{T: "create", Mode: modeClassic})
-	beto.send(message{T: "join", Code: ana.waitFor("room").Code})
+	beto.send(message{T: "join", Code: ana.mySeeks(1)[0].ID})
 	beto.waitFor("state")
 	beto.conn.Close(websocket.StatusNormalClosure, "")
 	ana.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
@@ -98,13 +98,15 @@ func TestDuplicateRoomStartsForEveryone(t *testing.T) {
 	srv := newTestServer(t)
 	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Ana", "ES")
 	ana.send(message{T: "create", Mode: modeDuplicate, TurnMs: 60_000})
-	code := ana.waitFor("room").Code
+	code := ana.mySeeks(1)[0].ID
 	beto.send(message{T: "join", Code: code})
-	lobby := ana.waitUntil(func(m message) bool { return m.T == "room" && len(m.Players) == 2 })
+	lobby := beto.waitUntil(func(m message) bool { return m.T == "room" && len(m.Players) == 2 })
 	if lobby.Players[1] != "Ana (ES)" {
 		t.Fatalf("%v", lobby.Players)
 	}
-	ana.send(message{T: "start"})
+	ana.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Seeks) == 1 && m.Seeks[0].Players == 2 })
+	ana.send(message{T: "start", Code: code})
+	ana.waitFor("room")
 	ana.waitFor("table")
 	view := beto.waitFor("table").View
 	if !strings.Contains(view, `"Phase":"playing"`) {
@@ -312,4 +314,116 @@ func TestChallengeNeedsAnOnlinePlayer(t *testing.T) {
 	srv.signUp(t, "Beto", "ES")
 	ana.send(message{T: "challenge", Name: "Beto", Country: "ES"})
 	ana.waitFor("error")
+}
+
+func TestUntimedVoidClassicKeepsTheTurn(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeClassic, Void: true, Untimed: true})
+	mine := ana.mySeeks(1)[0]
+	if mine.TimeMs != 0 || !mine.Void || !mine.Untimed {
+		t.Fatalf("%+v", mine)
+	}
+	beto.send(message{T: "join", Code: mine.ID})
+	first := ana.waitFor("state")
+	beto.waitFor("state")
+	onTurn := beto
+	if turnIsFirst(t, first.Save) {
+		onTurn = ana
+	}
+	onTurn.send(message{T: "move", Input: "h8 ZZXQ"})
+	if r := onTurn.waitFor("rejected"); r.Reason == "" {
+		t.Fatal("sin motivo")
+	}
+}
+
+func (c *testClient) mySeeks(n int) []seek {
+	c.t.Helper()
+	lobby := c.waitUntil(func(m message) bool { return m.T == "lobby" && len(mine(m.Seeks)) == n })
+	return mine(lobby.Seeks)
+}
+
+func mine(seeks []seek) []seek {
+	var out []seek
+	for _, s := range seeks {
+		if s.Mine {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
+func TestSeveralSeeksAndTheRestAreWithdrawn(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeClassic, TimeMs: 600_000})
+	ana.send(message{T: "create", Mode: modeClassic, Void: true})
+	ana.send(message{T: "create", Mode: modeDuplicate})
+	seeks := ana.mySeeks(3)
+	classic := seeks[0]
+	for _, s := range seeks {
+		if s.Mode == modeClassic {
+			classic = s
+		}
+	}
+	beto.send(message{T: "join", Code: classic.ID})
+	ana.waitFor("state")
+	ana.mySeeks(0)
+}
+
+func TestCancelledSeekDisappears(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeClassic})
+	code := ana.mySeeks(1)[0].ID
+	ana.send(message{T: "cancel", Code: code})
+	ana.mySeeks(0)
+	beto.send(message{T: "join", Code: code})
+	beto.waitFor("error")
+}
+
+func TestNoPublishingDuringAGame(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeClassic})
+	beto.send(message{T: "join", Code: ana.mySeeks(1)[0].ID})
+	beto.waitFor("state")
+	beto.send(message{T: "create", Mode: modeClassic})
+	beto.waitFor("error")
+}
+
+func TestChatIsRelayedWithinLimits(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeClassic})
+	beto.send(message{T: "join", Code: ana.mySeeks(1)[0].ID})
+	beto.waitFor("state")
+	ana.waitFor("state")
+	ana.send(message{T: "chat", Text: "  Hola  "})
+	if m := beto.waitFor("chat"); m.Name != "Ana" || m.Text != "Hola" {
+		t.Fatalf("%+v", m)
+	}
+	ana.send(message{T: "chat", Text: "otra vez"})
+	if m := ana.waitFor("error"); m.Reason != chatTooSoon {
+		t.Fatal(m.Reason)
+	}
+	ana.send(message{T: "chat", Text: strings.Repeat("a", chatMaxRunes+1)})
+	ana.waitFor("error")
+}
+
+func TestChatWaitsForAnAnswer(t *testing.T) {
+	from, other := &seat{name: "Ana"}, &seat{name: "Beto"}
+	seats := []*seat{from, other}
+	for range chatUnanswered {
+		from.chat.last = time.Time{}
+		relayChat(from, seats, "hola")
+	}
+	from.chat.last = time.Time{}
+	if chatRefusal(from, "hola") != chatWaitAnswer {
+		t.Fatal("no espera respuesta")
+	}
+	relayChat(other, seats, "dime")
+	if chatRefusal(from, "hola") != "" {
+		t.Fatal("la respuesta no desbloquea")
+	}
 }

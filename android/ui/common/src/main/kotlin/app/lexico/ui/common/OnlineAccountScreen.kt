@@ -1,16 +1,25 @@
 package app.lexico.ui.common
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import java.text.Normalizer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -35,8 +44,13 @@ data class Country(val code: String, val name: String) {
 
 val COUNTRIES: List<Country> by lazy {
   val spanish = Locale.forLanguageTag("es")
-  Locale.getISOCountries().map { Country(it, Locale.Builder().setRegion(it).build().getDisplayCountry(spanish)) }.sortedBy { it.name }
+  Locale.getISOCountries().map { Country(it, Locale.Builder().setRegion(it).build().getDisplayCountry(spanish)) }
+    .sortedWith(compareBy({ it.code !in HISPANIC }, { plain(it.name) }))
 }
+
+private val HISPANIC = setOf(
+  "AR", "BO", "CL", "CO", "CR", "CU", "DO", "EC", "ES", "GQ", "GT", "HN", "MX", "NI", "PA", "PE", "PR", "PY", "SV", "UY", "VE",
+)
 
 fun flagOf(code: String): String = Country(code, "").flag
 
@@ -48,11 +62,21 @@ fun OnlineAccountScreen(
   var input by remember { mutableStateOf(AccountInput("", Locale.getDefault().country, "", "")) }
   FitColumn(10.dp) {
     Header("En línea", onBack) { BarTextButton("Servidor", onServer) }
-    TwoOptions("Crear cuenta", "Ya tengo cuenta", existing) { existing = it }
-    AccountFields(input, existing) { input = it }
-    error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-    AccountButton(if (existing) "Entrar" else "Crear cuenta", busy, valid(input)) { if (existing) onLogIn(input) else onSignUp(input) }
+    AccountCard {
+      TwoOptions("Crear cuenta", "Ya tengo cuenta", existing) { existing = it }
+      AccountFields(input, existing) { input = it }
+      error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+      AccountButton(if (existing) "Entrar" else "Crear cuenta", busy, valid(input)) { if (existing) onLogIn(input) else onSignUp(input) }
+    }
   }
+}
+
+@Composable
+private fun AccountCard(content: @Composable ColumnScope.() -> Unit) {
+  Column(
+    Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(20.dp)).padding(16.dp),
+    verticalArrangement = Arrangement.spacedBy(10.dp), content = content,
+  )
 }
 
 @Composable
@@ -72,21 +96,44 @@ private fun AccountFields(input: AccountInput, existing: Boolean, onChange: (Acc
   )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CountryField(code: String, onChange: (String) -> Unit) {
   var open by remember { mutableStateOf(false) }
   val chosen = COUNTRIES.find { it.code == code }
-  ExposedDropdownMenuBox(open, { open = it }) {
+  Box {
     OutlinedTextField(
-      chosen?.let { "${it.flag}  ${it.name}" }.orEmpty(), {}, Modifier.fillMaxWidth().menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
-      readOnly = true, singleLine = true, label = { Text("País") }, trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(open) },
+      chosen?.let { "${it.flag}  ${it.name}" }.orEmpty(), {}, Modifier.fillMaxWidth(), readOnly = true, singleLine = true,
+      label = { Text("País") }, trailingIcon = { Text("▾") },
     )
-    ExposedDropdownMenu(open, { open = false }) {
-      COUNTRIES.forEach { c -> DropdownMenuItem({ Text("${c.flag}  ${c.name}") }, { onChange(c.code); open = false }) }
-    }
+    Box(Modifier.matchParentSize().clickable { open = true })
   }
+  if (open) CountryDialog({ onChange(it); open = false }) { open = false }
 }
+
+@Composable
+private fun CountryDialog(onPick: (String) -> Unit, onClose: () -> Unit) {
+  var query by remember { mutableStateOf("") }
+  val shown = remember(query) { COUNTRIES.filter { plain(it.name).contains(plain(query)) } }
+  AlertDialog(
+    onDismissRequest = onClose, title = { Text("País") }, confirmButton = {}, dismissButton = { TextButton(onClick = onClose) { Text("Cancelar") } },
+    text = {
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        OutlinedTextField(query, { query = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text("Buscar") })
+        LazyColumn(Modifier.heightIn(max = 360.dp)) { items(shown, key = { it.code }) { CountryRow(it, onPick) } }
+      }
+    },
+  )
+}
+
+@Composable
+private fun CountryRow(country: Country, onPick: (String) -> Unit) {
+  Text("${country.flag}  ${country.name}", Modifier.fillMaxWidth().clickable { onPick(country.code) }.padding(vertical = 12.dp), maxLines = 1)
+}
+
+private fun plain(text: String): String =
+  Normalizer.normalize(text.lowercase(), Normalizer.Form.NFD).replace(DIACRITICS, "")
+
+private val DIACRITICS = Regex("\\p{Mn}+")
 
 @Composable
 private fun AccountButton(text: String, busy: Boolean, valid: Boolean, onClick: () -> Unit) {

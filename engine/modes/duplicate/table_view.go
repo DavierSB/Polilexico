@@ -28,13 +28,22 @@ func (t *Table) View(player string) (string, error) {
 
 func (t *Table) viewFor(player string) tableView {
 	v := tableView{Phase: t.phase, Board: t.game.Board(), Unseen: t.game.Unseen(), Round: len(t.rounds),
-		RemainingMs: -1, Proposal: t.attempts[player], IAmReady: t.ready[player], Live: t.live,
+		RemainingMs: -1, Proposal: unrevealed(t.attempts[player]), IAmReady: t.ready[player], Live: t.live,
 		Players: t.players, Rounds: t.roundsFor(player)}
 	v.Ready, v.Waiting = t.readiness()
 	if t.phase == TablePlaying {
 		v.Rack, v.Round, v.RemainingMs = t.game.currentRack(), len(t.rounds)+1, max(t.turn.Left(), 0).Milliseconds()
 	}
 	return v
+}
+
+func unrevealed(a *Attempt) *Attempt {
+	if a == nil || a.Kind != core.KindInvalid {
+		return a
+	}
+	shown := *a
+	shown.Kind = core.KindPlay
+	return &shown
 }
 
 func (t *Table) roundsFor(player string) []*tableRound {

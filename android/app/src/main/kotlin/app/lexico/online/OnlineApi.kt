@@ -30,6 +30,8 @@ class OnlineApi(private val server: () -> String, private val http: OkHttpClient
 
   suspend fun stats(token: String): Result<List<OnlineStatsRow>> = call("GET", "/stats", token = token).map { statsRows(it.optJSONArray("rows")) }
 
+  suspend fun presence(): Result<Int> = call("GET", "/presence").map { it.optInt("online") }
+
   suspend fun backup(token: String): Result<String> = call("GET", "/backup", token = token).map { it.optString("data") }
 
   suspend fun saveBackup(token: String, data: String): Result<Unit> =

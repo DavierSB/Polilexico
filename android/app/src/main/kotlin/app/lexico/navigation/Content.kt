@@ -103,7 +103,7 @@ private fun OtherScreens(
     is Screen.FinishedFolder -> FinishedFolderRoute(screen, lexico, nav)
     is Screen.Review -> ReviewRoute(screen, lexico, nav, themes)
     Screen.Stats -> StatsRoute(lexico, settings, nav)
-    Screen.Online -> OnlineRoute(lexico, settings, nav)
+    is Screen.Online -> OnlineRoute(screen.mode, lexico, settings, nav)
     is Screen.OnlineNewClassic -> NewOnlineClassicRoute(screen, lexico, nav)
     Screen.OnlineNewDuplicate -> NewOnlineDuplicateRoute(lexico, nav)
     Screen.OnlineStats -> OnlineStatsRoute(nav)

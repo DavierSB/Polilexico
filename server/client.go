@@ -12,6 +12,8 @@ import (
 const (
 	outboxSize   = 64
 	writeTimeout = 10 * time.Second
+	pingEvery    = 20 * time.Second
+	pongTimeout  = 15 * time.Second
 )
 
 type client struct {
@@ -72,4 +74,26 @@ func (c *client) write(ctx context.Context, m message) bool {
 	ctx, cancel := context.WithTimeout(ctx, writeTimeout)
 	defer cancel()
 	return wsjson.Write(ctx, c.conn, m) == nil
+}
+
+func (c *client) pingLoop(ctx context.Context) {
+	tick := time.NewTicker(pingEvery)
+	defer tick.Stop()
+	for {
+		select {
+		case <-tick.C:
+			if !c.ping(ctx) {
+				c.close()
+				return
+			}
+		case <-c.done:
+			return
+		}
+	}
+}
+
+func (c *client) ping(ctx context.Context) bool {
+	ctx, cancel := context.WithTimeout(ctx, pongTimeout)
+	defer cancel()
+	return c.conn.Ping(ctx) == nil
 }

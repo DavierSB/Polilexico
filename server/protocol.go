@@ -1,6 +1,6 @@
 package main
 
-const protocolVersion = 1
+const protocolVersion = 2
 
 const (
 	modeClassic   = "classic"
@@ -19,7 +19,10 @@ type message struct {
 	TurnMs     int64    `json:"turnMs,omitempty"`
 	Rounds     int      `json:"rounds,omitempty"`
 	Live       bool     `json:"live,omitempty"`
+	Void       bool     `json:"void,omitempty"`
+	Untimed    bool     `json:"untimed,omitempty"`
 	Input      string   `json:"input,omitempty"`
+	Text       string   `json:"text,omitempty"`
 	Reason     string   `json:"reason,omitempty"`
 	Save       string   `json:"save,omitempty"`
 	View       string   `json:"view,omitempty"`

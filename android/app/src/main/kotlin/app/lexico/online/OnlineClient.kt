@@ -3,6 +3,7 @@ package app.lexico.online
 import app.lexico.game.Lexico
 import app.lexico.game.modes.classic.ClassicGame
 import app.lexico.game.modes.classic.ClassicRemote
+import app.lexico.ui.common.ChatLine
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 
 private const val LINGER_MS = 15_000L
 private const val FINISHED_PHASE = "\"Phase\":\"finished\""
+private const val INBOX_SIZE = 10
 
 class OnlineClient internal constructor(private val online: Online, private val lexico: Lexico) : ClassicRemote {
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -40,6 +42,15 @@ class OnlineClient internal constructor(private val online: Online, private val 
   private val _ended = MutableStateFlow<String?>(null)
   val ended: StateFlow<String?> = _ended.asStateFlow()
 
+  private val _inbox = MutableStateFlow<List<ChatLine>>(emptyList())
+  val inbox: StateFlow<List<ChatLine>> = _inbox.asStateFlow()
+
+  private val _ignoring = MutableStateFlow(false)
+  val ignoring: StateFlow<Boolean> = _ignoring.asStateFlow()
+
+  private val _unanswered = MutableStateFlow(0)
+  val unanswered: StateFlow<Int> = _unanswered.asStateFlow()
+
   @Synchronized
   fun acquire() {
     users++
@@ -54,13 +65,20 @@ class OnlineClient internal constructor(private val online: Online, private val 
   }
 
   fun publish(p: Proposal) {
-    forget()
+    _ended.value = null
     send(create(p))
   }
 
   fun challenge(person: Person, p: Proposal.Classic) {
-    forget()
+    _ended.value = null
     send(challengeMessage(person.name, person.country, p))
+  }
+
+  fun cancel(seek: Seek) = send(roomAction("cancel", seek.id))
+
+  fun startSeek(seek: Seek) {
+    forget()
+    send(roomAction("start", seek.id))
   }
 
   fun accept(seek: Seek) {
@@ -79,6 +97,20 @@ class OnlineClient internal constructor(private val online: Online, private val 
     send(moveMessage(input))
   }
 
+  fun say(text: String) {
+    _unanswered.value++
+    send(chatMessage(text))
+  }
+
+  fun closeChat() {
+    _inbox.value = emptyList()
+  }
+
+  fun ignore(on: Boolean) {
+    _ignoring.value = on
+    closeChat()
+  }
+
   fun leave() {
     send(signal("leave"))
     forget()
@@ -92,6 +124,9 @@ class OnlineClient internal constructor(private val online: Online, private val 
     _notice.value = null
     _ended.value = null
     _rivalOnline.value = true
+    _inbox.value = emptyList()
+    _ignoring.value = false
+    _unanswered.value = 0
   }
 
   fun forgetIfFinished() {
@@ -143,7 +178,13 @@ class OnlineClient internal constructor(private val online: Online, private val 
       is OnlineEvent.Rejected -> _notice.value = e.reason
       is OnlineEvent.Rival -> _rivalOnline.value = e.online
       is OnlineEvent.Closed -> _ended.value = e.reason.ifEmpty { "La sala se cerró." }
+      is OnlineEvent.Chat -> heard(ChatLine(e.from, e.text))
     }
+  }
+
+  private fun heard(line: ChatLine) {
+    _unanswered.value = 0
+    if (!_ignoring.value) _inbox.value = (_inbox.value + line).takeLast(INBOX_SIZE)
   }
 
   private suspend fun mirror(state: OnlineEvent.State) {

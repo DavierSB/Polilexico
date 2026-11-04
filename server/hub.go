@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"context"
 	"crypto/rand"
 	"math/big"
@@ -19,6 +20,9 @@ type room interface {
 	drop(c *client)
 	decline(c *client)
 	listing() (listing, bool)
+	cancel(playerID, reason string)
+	startBy(c *client)
+	active() bool
 }
 
 type hub struct {
@@ -41,6 +45,7 @@ func (h *hub) serve(w http.ResponseWriter, r *http.Request) {
 	c := newClient(conn)
 	ctx := r.Context()
 	go c.writeLoop(ctx)
+	go c.pingLoop(ctx)
 	c.readLoop(ctx, func(m message) { h.handle(ctx, c, m) })
 	if c.room != nil {
 		c.room.drop(c)
@@ -56,13 +61,17 @@ func (h *hub) handle(ctx context.Context, c *client, m message) {
 	case c.player.ID == "":
 		c.send(notice("refused", errSession.Error()))
 	case m.T == "create":
-		h.create(c, m, "")
+		h.create(c, m, nil)
 	case m.T == "challenge":
 		h.challenge(c, m)
 	case m.T == "join":
 		h.join(c, m.Code)
 	case m.T == "decline":
 		h.decline(c, m.Code)
+	case m.T == "cancel":
+		h.cancel(c, m.Code)
+	case m.T == "start" && m.Code != "":
+		h.startSeek(c, m.Code)
 	case c.room != nil:
 		c.room.handle(c, m)
 	}
@@ -88,15 +97,37 @@ func (h *hub) hello(ctx context.Context, c *client, m message) {
 	}
 }
 
-func (h *hub) create(c *client, m message, invitee string) {
+func (h *hub) create(c *client, m message, invitee *player) {
+	if err := h.canPublish(c); err != "" {
+		c.send(notice("error", err))
+		return
+	}
 	h.leaveCurrent(c)
 	h.mu.Lock()
 	code := h.freeCode()
-	r := newRoom(h, code, c.player, m, invitee)
-	h.rooms[code], h.seats[c.player.ID] = r, r
+	h.rooms[code] = newRoom(h, code, c.player, m, invitee)
 	h.mu.Unlock()
-	r.enter(c)
 	h.changed()
+}
+
+func (h *hub) canPublish(c *client) string {
+	switch {
+	case c.room != nil && c.room.active():
+		return "Termina tu partida antes de publicar otra."
+	case h.seekCount(c.player.ID) >= maxSeeks:
+		return "Ya tienes " + strconv.Itoa(maxSeeks) + " búsquedas publicadas."
+	}
+	return ""
+}
+
+func (h *hub) seekCount(playerID string) int {
+	n := 0
+	for _, l := range h.listings() {
+		if l.seek.hostID == playerID {
+			n++
+		}
+	}
+	return n
 }
 
 func (h *hub) challenge(c *client, m message) {
@@ -108,21 +139,74 @@ func (h *hub) challenge(c *client, m message) {
 		c.send(notice("error", "No puedes retarte a ti mismo."))
 	default:
 		m.Mode = modeClassic
-		h.create(c, m, target.player.ID)
+		h.create(c, m, &target.player)
 	}
 }
 
 func (h *hub) join(c *client, code string) {
 	r := h.roomByCode(code)
-	if r == nil {
+	if r == nil || !h.joinable(r, c) {
 		c.send(notice("error", "Esa partida ya no está disponible."))
 		return
 	}
 	if r != c.room {
 		h.leaveCurrent(c)
 	}
+	h.withdrawSeeksOf(c.player.ID, code)
 	r.enter(c)
 	h.changed()
+}
+
+func (h *hub) joinable(r room, c *client) bool {
+	l, waiting := r.listing()
+	return !waiting || (l.seek.hostID != c.player.ID && h.isOnline(l.seek.hostID))
+}
+
+func (h *hub) cancel(c *client, code string) {
+	if r := h.roomByCode(code); r != nil {
+		r.cancel(c.player.ID, "El anfitrión cerró la sala.")
+	}
+}
+
+func (h *hub) startSeek(c *client, code string) {
+	if c.room != nil && c.room.active() {
+		c.send(notice("error", "Termina tu partida antes de empezar otra."))
+		return
+	}
+	if r := h.roomByCode(code); r != nil {
+		h.leaveCurrent(c)
+		r.startBy(c)
+	}
+}
+
+func (h *hub) matched(playerID, code string) {
+	go h.withdrawSeeksOf(playerID, code)
+}
+
+func (h *hub) withdrawSeeksOf(playerID, except string) {
+	for _, l := range h.listings() {
+		if l.seek.hostID == playerID && l.seek.ID != except {
+			if r := h.roomByCode(l.seek.ID); r != nil {
+				r.cancel(playerID, "El anfitrión empezó otra partida.")
+			}
+		}
+	}
+}
+
+func (h *hub) notify(playerID string, m message) {
+	if c := h.clientOf(playerID); c != nil {
+		c.send(m)
+	}
+}
+
+func (h *hub) clientOf(playerID string) *client {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	return h.online[playerID]
+}
+
+func (h *hub) isOnline(playerID string) bool {
+	return h.clientOf(playerID) != nil
 }
 
 func (h *hub) decline(c *client, code string) {
@@ -131,7 +215,7 @@ func (h *hub) decline(c *client, code string) {
 	}
 }
 
-func newRoom(h *hub, code string, host player, m message, invitee string) room {
+func newRoom(h *hub, code string, host player, m message, invitee *player) room {
 	if m.Mode == modeDuplicate {
 		return newDuplicateRoom(h, code, host, m)
 	}

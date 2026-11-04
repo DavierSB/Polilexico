@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -15,12 +16,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.ui.common.Compact
+import app.lexico.ui.common.LocalChat
 
 @Composable
 fun MoveButtons(c: TilePlacer, playEnabled: Boolean, onPlay: () -> Unit, small: @Composable RowScope.() -> Unit) {
+  val chat = LocalChat.current
   Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), content = small)
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+      small()
+      chat?.let { ChatButton(it.onOpen) }
+    }
     PlayButton(playEnabled && c.hasPlaced, onPlay)
+  }
+}
+
+@Composable
+private fun ChatButton(onOpen: () -> Unit) {
+  OutlinedButton(onClick = onOpen, modifier = Modifier.width(48.dp).height(36.dp), contentPadding = Compact) {
+    Text("💬", fontSize = 16.sp)
   }
 }
 

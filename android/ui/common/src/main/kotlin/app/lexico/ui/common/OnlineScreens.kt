@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -35,17 +36,22 @@ data class OnlineProfile(val name: String, val country: String)
 
 data class StatsSection(val title: String, val rows: List<Pair<String, String>>)
 
-data class SeekItem(val id: String, val host: String, val country: String, val detail: String, val mine: Boolean)
+data class SeekItem(
+  val id: String, val host: String, val country: String, val detail: String, val mine: Boolean,
+  val duplicate: Boolean = false, val players: Int = 1, val to: String = "",
+)
 
 data class PersonItem(val name: String, val country: String, val busy: Boolean)
 
 data class OnlineHubState(
   val status: String?, val inRoom: Boolean, val seeks: List<SeekItem>, val people: List<PersonItem>, val invite: SeekItem?,
+  val classic: Boolean = true, val duplicate: Boolean = true,
 )
 
 class OnlineHubActions(
   val back: () -> Unit, val logOut: () -> Unit, val resume: () -> Unit, val seekClassic: () -> Unit, val createDuplicate: () -> Unit,
   val accept: (String) -> Unit, val challenge: (PersonItem) -> Unit, val decline: (String) -> Unit, val stats: () -> Unit,
+  val cancel: (String) -> Unit = {}, val start: (String) -> Unit = {},
 )
 
 @Composable
@@ -54,29 +60,36 @@ fun OnlineHubScreen(profile: OnlineProfile, state: OnlineHubState, actions: Onli
     Header("En línea", actions.back) { BarTextButton("Estadísticas", actions.stats) }
     ProfileCard(profile, state.status, actions.logOut)
     if (state.inRoom) Button(onClick = actions.resume, Modifier.fillMaxWidth().height(52.dp)) { Text("Volver a la partida") }
-    PublishButtons(actions)
-    SeeksSection(state.seeks, actions.accept)
+    PublishButtons(state, actions)
+    SeeksSection(state.seeks, actions)
     PeopleSection(state.people, actions.challenge)
   }
   state.invite?.let { InviteDialog(it, actions) }
 }
 
 @Composable
-private fun PublishButtons(actions: OnlineHubActions) {
+private fun PublishButtons(state: OnlineHubState, actions: OnlineHubActions) {
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    Button(onClick = actions.seekClassic, Modifier.weight(1f)) { Text("Buscar clásica") }
-    Button(onClick = actions.createDuplicate, Modifier.weight(1f)) { Text("Crear duplicada") }
+    if (state.classic) Button(onClick = actions.seekClassic, Modifier.weight(1f)) { Text("Buscar clásica", maxLines = 1) }
+    if (state.duplicate) Button(onClick = actions.createDuplicate, Modifier.weight(1f)) { Text("Crear duplicada", maxLines = 1) }
   }
 }
 
 @Composable
-private fun SeeksSection(seeks: List<SeekItem>, onAccept: (String) -> Unit) {
+private fun SeeksSection(seeks: List<SeekItem>, actions: OnlineHubActions) {
   SectionTitle("Búsquedas · ${seeks.size}")
   if (seeks.isEmpty()) EmptyCard("Nadie está buscando partida.")
-  seeks.forEach { s ->
-    PlayerRow(s.host, s.country, s.detail) {
-      if (s.mine) Text("Tuya", color = MaterialTheme.colorScheme.onSurfaceVariant) else Button(onClick = { onAccept(s.id) }) { Text("Jugar") }
-    }
+  seeks.sortedByDescending { it.mine }.forEach { s ->
+    PlayerRow(s.host, s.country, s.detail, mine = s.mine) { SeekActions(s, actions) }
+  }
+}
+
+@Composable
+private fun SeekActions(s: SeekItem, actions: OnlineHubActions) {
+  if (!s.mine) return Button(onClick = { actions.accept(s.id) }) { Text("Jugar") }
+  Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+    if (s.duplicate) Button(onClick = { actions.start(s.id) }, enabled = s.players >= 2) { Text("Empezar") }
+    TextButton(onClick = { actions.cancel(s.id) }) { Text("Cancelar") }
   }
 }
 
@@ -92,9 +105,11 @@ private fun PeopleSection(people: List<PersonItem>, onChallenge: (PersonItem) ->
 }
 
 @Composable
-private fun PlayerRow(name: String, country: String, detail: String, action: @Composable () -> Unit) {
+private fun PlayerRow(name: String, country: String, detail: String, mine: Boolean = false, action: @Composable () -> Unit) {
+  val colors = MaterialTheme.colorScheme
   Row(
-    Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(14.dp)).padding(horizontal = 10.dp, vertical = 8.dp),
+    Modifier.fillMaxWidth().background(if (mine) colors.primaryContainer else colors.surfaceVariant, RoundedCornerShape(14.dp))
+      .padding(horizontal = 10.dp, vertical = 8.dp),
     horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically,
   ) {
     PlayerAvatar(name, highlighted = false)

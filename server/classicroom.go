@@ -10,6 +10,7 @@ import (
 const (
 	waitingTTL  = 30 * time.Minute
 	finishedTTL = 10 * time.Minute
+	idleTTL     = 24 * time.Hour
 )
 
 type classicRoom struct {
@@ -24,15 +25,25 @@ type classicRoom struct {
 	recorded   bool
 	timer      *time.Timer
 	invitee    string
+	inviteeTo  string
+	voidMode   bool
+	untimed    bool
 }
 
 type listener func()
 
 func (l listener) OnChange() { go l() }
 
-func newClassicRoom(h *hub, code string, host player, m message, invitee string) *classicRoom {
+func newClassicRoom(h *hub, code string, host player, m message, invitee *player) *classicRoom {
 	r := &classicRoom{hub: h, code: code, timeMs: clamp(m.TimeMs, 60_000, 90*60_000, 25*60_000),
-		overtimeMs: clamp(m.OvertimeMs, 0, 30*60_000, 10*60_000), seats: []*seat{{player: host, name: host.Name}}, invitee: invitee}
+		overtimeMs: clamp(m.OvertimeMs, 0, 30*60_000, 10*60_000), seats: []*seat{{player: host, name: host.Name}},
+		voidMode: m.Void, untimed: m.Untimed}
+	if invitee != nil {
+		r.invitee, r.inviteeTo = invitee.ID, invitee.Name
+	}
+	if r.untimed {
+		r.timeMs, r.overtimeMs = 0, 0
+	}
 	r.expireIn(waitingTTL)
 	return r
 }
@@ -59,6 +70,8 @@ func (r *classicRoom) handle(c *client, m message) {
 	switch m.T {
 	case "move":
 		r.play(s, m.Input)
+	case "chat":
+		relayChat(s, r.seats, m.Text)
 	case "leave":
 		r.leave(s)
 	}
@@ -77,8 +90,25 @@ func (r *classicRoom) decline(c *client) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if r.match == nil && c.player.ID == r.invitee {
-		r.closeAll(c.player.Name + " rechazó el reto.")
+		r.hub.notify(r.seats[0].player.ID, notice("closed", c.player.Name+" rechazó el reto."))
+		r.closeAll("")
 	}
+}
+
+func (r *classicRoom) cancel(playerID, reason string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.match == nil && r.seats[0].player.ID == playerID {
+		r.closeAll(reason)
+	}
+}
+
+func (r *classicRoom) startBy(*client) {}
+
+func (r *classicRoom) active() bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.match != nil && !r.match.Game().Status().Over
 }
 
 func (r *classicRoom) listing() (listing, bool) {
@@ -89,7 +119,8 @@ func (r *classicRoom) listing() (listing, bool) {
 	}
 	host := r.seats[0]
 	return listing{seek: seek{ID: r.code, Mode: modeClassic, Host: host.name, Country: host.player.Country, TimeMs: r.timeMs,
-		OvertimeMs: r.overtimeMs, Players: len(r.seats), hostID: host.player.ID}, invitee: r.invitee}, true
+		OvertimeMs: r.overtimeMs, Void: r.voidMode, Untimed: r.untimed, Players: len(r.seats), To: r.inviteeTo, hostID: host.player.ID},
+		invitee: r.invitee}, true
 }
 
 func (r *classicRoom) admit(c *client) *seat {
@@ -105,7 +136,24 @@ func (r *classicRoom) admit(c *client) *seat {
 	r.seats = append(r.seats, s)
 	r.hub.seat(c.player.ID, r)
 	r.start()
+	if r.match != nil {
+		r.seatHost()
+	}
 	return s
+}
+
+func (r *classicRoom) seatHost() {
+	host := r.seats[0]
+	r.hub.seat(host.player.ID, r)
+	r.hub.matched(host.player.ID, r.code)
+	c := r.hub.clientOf(host.player.ID)
+	if c == nil {
+		return
+	}
+	if c.room != nil && c.room != r {
+		r.hub.leaveCurrent(c)
+	}
+	r.attach(host, c)
 }
 
 func (r *classicRoom) attach(s *seat, c *client) {
@@ -122,7 +170,7 @@ func (r *classicRoom) attach(s *seat, c *client) {
 }
 
 func (r *classicRoom) start() {
-	m, err := classic.NewLocalMatch(r.seats[0].name, r.seats[1].name, classic.StarterAny, r.timeMs, r.overtimeMs, true, listener(r.changed))
+	m, err := classic.NewLocalMatch(r.seats[0].name, r.seats[1].name, classic.StarterAny, r.timeMs, r.overtimeMs, !r.voidMode, listener(r.changed))
 	if err != nil {
 		r.closeAll("No se pudo empezar la partida.")
 		return
@@ -142,7 +190,22 @@ func (r *classicRoom) changed() {
 	}
 	if r.match.Game().Status().Over {
 		r.finish()
+	} else if r.untimed {
+		r.forfeitIdleIn(idleTTL)
 	}
+}
+
+func (r *classicRoom) forfeitIdleIn(d time.Duration) {
+	if r.timer != nil {
+		r.timer.Stop()
+	}
+	r.timer = time.AfterFunc(d, func() {
+		r.mu.Lock()
+		defer r.mu.Unlock()
+		if status := r.match.Game().Status(); !status.Over {
+			r.match.Forfeit(status.HumanToMove)
+		}
+	})
 }
 
 func (r *classicRoom) play(s *seat, input string) {
@@ -238,7 +301,7 @@ func (r *classicRoom) roomMessage(s *seat) message {
 		names[i] = seated.name
 	}
 	return message{T: "room", Mode: modeClassic, Code: r.code, Name: s.name, Host: r.seats[0].name, Players: names,
-		First: r.first(s), TimeMs: r.timeMs, OvertimeMs: r.overtimeMs}
+		First: r.first(s), TimeMs: r.timeMs, OvertimeMs: r.overtimeMs, Void: r.voidMode, Untimed: r.untimed}
 }
 
 func (r *classicRoom) seatOf(playerID string) *seat {
