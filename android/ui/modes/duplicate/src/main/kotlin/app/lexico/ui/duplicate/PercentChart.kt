@@ -1,6 +1,13 @@
 package app.lexico.ui.duplicate
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -34,6 +42,7 @@ internal fun ChartDialog(view: SeatView, close: () -> Unit) {
 private fun ChartAndStandings(view: SeatView) {
   Column {
     if (view.rounds.isEmpty()) Text("Aún no ha terminado ninguna ronda.")
+    else if (view.watching) ColoredChart(percents(view))
     else PercentChart(percents(view), view.me)
     StandingsTable(view, maxHeight = 200)
   }
@@ -52,6 +61,36 @@ private fun PercentChart(lines: Map<String, List<Float>>, me: String) {
     lines[me]?.let { plot.line(this, it, mine, 6f) }
   }
 }
+
+@Composable
+private fun ColoredChart(lines: Map<String, List<Float>>) {
+  val colors = lines.keys.withIndex().associate { (i, name) -> name to PLAYER_COLORS[i % PLAYER_COLORS.size] }
+  val measurer = rememberTextMeasurer()
+  val label = MaterialTheme.typography.labelSmall
+  val floor = floorOf(lines)
+  Canvas(Modifier.fillMaxWidth().height(190.dp).padding(top = 22.dp, bottom = 8.dp, start = 6.dp, end = 26.dp)) {
+    val plot = Plot(floor, measurer, label)
+    lines.forEach { (name, points) -> plot.line(this, points, colors.getValue(name), 4f) }
+  }
+  Legend(colors)
+}
+
+@Composable
+private fun Legend(colors: Map<String, Color>) {
+  FlowRow(Modifier.fillMaxWidth().padding(bottom = 8.dp), Arrangement.spacedBy(10.dp), Arrangement.spacedBy(4.dp)) {
+    colors.forEach { (name, color) ->
+      Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Box(Modifier.size(10.dp).background(color, CircleShape))
+        Text(name, style = MaterialTheme.typography.labelMedium)
+      }
+    }
+  }
+}
+
+private val PLAYER_COLORS = listOf(
+  Color(0xFFE53935), Color(0xFF1E88E5), Color(0xFF43A047), Color(0xFFFB8C00), Color(0xFF8E24AA), Color(0xFF00ACC1),
+  Color(0xFFFDD835), Color(0xFFD81B60), Color(0xFF3949AB), Color(0xFF7CB342), Color(0xFF6D4C41), Color(0xFF90A4AE),
+)
 
 private class Plot(val floor: Float, val measurer: TextMeasurer, val label: TextStyle) {
   fun line(scope: DrawScope, points: List<Float>, color: Color, width: Float) = with(scope) {

@@ -28,6 +28,7 @@ data class SeatView(
   val notice: String? = null,
   val status: String? = null,
   val watchers: List<PersonItem> = emptyList(),
+  val watching: Boolean = false,
 ) {
   val standings: List<SeatEntry>
     get() = rounds.lastOrNull()?.entries.orEmpty().sortedByDescending { it.total }

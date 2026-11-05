@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import app.lexico.game.modes.classic.ClassicState
 import app.lexico.game.modes.classic.ClassicGame
-import app.lexico.game.modes.duplicate.table.TablePhase
 import app.lexico.game.modes.duplicate.table.TableState
 import app.lexico.menu.ThemeState
 import app.lexico.model.Placement
@@ -24,9 +23,9 @@ import app.lexico.ui.classic.OpponentRack
 import app.lexico.ui.classic.Side
 import app.lexico.ui.common.OnlineWaitScreen
 import app.lexico.ui.common.PersonItem
-import app.lexico.ui.duplicate.Standing
-import app.lexico.ui.duplicate.WatchDuplicateScreen
-import app.lexico.ui.duplicate.WatchDuplicateView
+import app.lexico.modes.duplicate.seatView
+import app.lexico.ui.duplicate.SeatActions
+import app.lexico.ui.duplicate.SeatScreen
 
 @Composable
 internal fun Watch(client: OnlineClient, info: RoomInfo, nav: Navigator, themes: ThemeState) {
@@ -89,11 +88,13 @@ private fun WatchTable(client: OnlineClient, watchers: List<PersonItem>, themes:
   var table by remember { mutableStateOf<TableState?>(null) }
   LaunchedEffect(json) { json?.let { table = read(it) } }
   val shown = table ?: return OnlineWaitScreen("Observando", "Conectando…", false, leave)
-  WatchDuplicateScreen(watchTableView(shown, watchers), themes.board, leave)
+  val actions = remember(leave) { watchSeatActions(leave) }
+  SeatScreen(seatView(shown, "", null).copy(watching = true, watchers = watchers), themes.board, actions)
 }
 
-private fun watchTableView(t: TableState, watchers: List<PersonItem>): WatchDuplicateView {
-  val totals = t.rounds.lastOrNull()?.entries.orEmpty().map { Standing(it.name, it.total) }.sortedByDescending { it.total }
-  val round = if (t.phase == TablePhase.PLAYING) t.round else t.rounds.size
-  return WatchDuplicateView(t.board, t.rack, round, t.phase == TablePhase.PLAYING, totals, watchers)
+private fun watchSeatActions(leave: () -> Unit): SeatActions = object : SeatActions {
+  override fun propose(placement: Placement) {}
+  override fun pass() {}
+  override fun ready() {}
+  override fun exit() = leave()
 }

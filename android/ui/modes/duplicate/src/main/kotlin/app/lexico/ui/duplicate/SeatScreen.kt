@@ -41,18 +41,20 @@ fun SeatScreen(view: SeatView, style: BoardStyle, actions: SeatActions) {
     top = {
       GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = null, onStandings = { chart = true }, watchers = view.watchers)
     },
-    board = { PlacingBoard(c, style, enabled = view.phase == SeatPhase.PLAYING, lookUpWhenIdle = view.phase == SeatPhase.FINISHED) },
+    board = { PlacingBoard(c, style, enabled = view.phase == SeatPhase.PLAYING && !view.watching, lookUpWhenIdle = view.phase == SeatPhase.FINISHED) },
     bottom = { SeatBottom(view, c, style, actions, message) { message = it } },
   )
   if (chart) ChartDialog(view) { chart = false }
-  if (moves) MovesDialog(myRounds(view)) { moves = false }
+  if (moves) MovesDialog(movesOf(view), if (view.watching) "Mejor" else "Tú") { moves = false }
   if (bag) BagCountDialog("En la bolsa", view.bag) { bag = false }
+  SeatVerdictOnce(view)
 }
 
 @Composable
 private fun SeatBottom(view: SeatView, c: TilePlacer, style: BoardStyle, actions: SeatActions, message: String?, onNotice: (String) -> Unit) {
   view.status?.let { Notice(it, bold = true) }
   when {
+    view.phase == SeatPhase.PLAYING && view.watching -> WatchingRound(view, c, style)
     view.phase == SeatPhase.PLAYING -> Playing(view, c, style, actions, message, onNotice)
     view.phase == SeatPhase.FINISHED -> Finished(view, actions)
     view.iAmReady -> WaitingRound(view)
@@ -76,10 +78,18 @@ private fun Playing(view: SeatView, c: TilePlacer, style: BoardStyle, actions: S
 }
 
 @Composable
+private fun WatchingRound(view: SeatView, c: TilePlacer, style: BoardStyle) {
+  Text("Ronda ${view.round}", style = MaterialTheme.typography.labelLarge)
+  view.remainingMs?.let { TurnClock(rememberLeft(it)) }
+  PlacingRack(c, style, enabled = false)
+  if (view.live) StandingsTable(view)
+}
+
+@Composable
 private fun RoundResults(view: SeatView, actions: SeatActions) {
   Text("Resultados de la ronda ${view.round}", style = MaterialTheme.typography.titleSmall)
   StandingsTable(view)
-  Button(modifier = Modifier.fillMaxWidth(), onClick = actions::ready) { Text("Comenzar nueva ronda") }
+  if (!view.watching) Button(modifier = Modifier.fillMaxWidth(), onClick = actions::ready) { Text("Comenzar nueva ronda") }
 }
 
 @Composable
@@ -108,10 +118,12 @@ private fun rememberLeft(remainingMs: Long): Long {
   return left
 }
 
-private fun myRounds(view: SeatView): List<Round> = view.rounds.mapNotNull { r ->
+private fun movesOf(view: SeatView): List<Round> = view.rounds.mapNotNull { r ->
   val master = r.entries.find { it.name == MASTER_NAME } ?: return@mapNotNull null
-  val mine = r.entries.find { it.name == view.me } ?: return@mapNotNull null
-  Round(r.number, RoundPlay(master.text, master.points), RoundPlay(mine.text, mine.points), hit = mine.points > 0 && mine.points == master.points)
+  val other = (if (view.watching) bestOf(r) else r.entries.find { it.name == view.me }) ?: return@mapNotNull null
+  Round(r.number, RoundPlay(master.text, master.points), RoundPlay(other.text, other.points), hit = other.points > 0 && other.points == master.points)
 }
+
+private fun bestOf(r: SeatRound): SeatEntry? = r.entries.filter { it.name != MASTER_NAME }.maxByOrNull { it.points }
 
 private const val TICK_MS = 200L

@@ -19,16 +19,16 @@ import app.lexico.ui.common.moveNumberWidth
 import app.lexico.ui.common.MovesTableDialog
 
 @Composable
-fun MovesDialog(rounds: List<Round>, close: () -> Unit) {
-  MovesTableDialog(rounds, header = { MovesHeader() }, close = close) { _, round -> RoundRow(round) }
+fun MovesDialog(rounds: List<Round>, second: String = "Tú", close: () -> Unit) {
+  MovesTableDialog(rounds, header = { MovesHeader(second) }, close = close) { _, round -> RoundRow(round) }
 }
 
 @Composable
-private fun MovesHeader() {
+private fun MovesHeader(second: String) {
   Row(Modifier.fillMaxWidth().padding(bottom = 4.dp)) {
     Text("#", Modifier.width(moveNumberWidth()), fontSize = 11.sp, fontWeight = FontWeight.Bold)
     Text("Máster", Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
-    Text("Tú", Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+    Text(second, Modifier.weight(1f), fontSize = 12.sp, fontWeight = FontWeight.Bold)
   }
 }
 
