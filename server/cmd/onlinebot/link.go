@@ -92,7 +92,9 @@ func (l *link) send(m message) {
 }
 
 func (l *link) read() (message, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
 	var m message
-	err := wsjson.Read(context.Background(), l.conn, &m)
+	err := wsjson.Read(ctx, l.conn, &m)
 	return m, err
 }

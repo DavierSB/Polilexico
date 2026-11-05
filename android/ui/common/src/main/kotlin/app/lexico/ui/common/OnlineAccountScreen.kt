@@ -50,17 +50,14 @@ val COUNTRIES: List<Country> by lazy {
 
 private fun countryRank(code: String): Int = when (code) {
   DEFAULT_COUNTRY -> 0
-  in HISPANIC -> 1
-  in FAVORITES -> 2 + FAVORITES.indexOf(code)
-  else -> 2 + FAVORITES.size
+  in FILE_MEMBERS -> 1
+  else -> 2
 }
 
 const val DEFAULT_COUNTRY = "CU"
 
-private val FAVORITES = listOf("FR", "US", "CA", "DE")
-
-private val HISPANIC = setOf(
-  "AR", "BO", "CL", "CO", "CR", "CU", "DO", "EC", "ES", "GQ", "GT", "HN", "MX", "NI", "PA", "PE", "PR", "PY", "SV", "UY", "VE",
+private val FILE_MEMBERS = setOf(
+  "AR", "CL", "CO", "CR", "DO", "EC", "ES", "FR", "GB", "GT", "HN", "IL", "MX", "NZ", "PA", "PE", "PR", "PY", "US", "UY", "VE",
 )
 
 fun flagOf(code: String): String = Country(code, "").flag
