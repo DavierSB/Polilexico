@@ -25,7 +25,7 @@ import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.GameBar
 import app.lexico.ui.common.NOT_IN_A_LINE
 import app.lexico.ui.common.Notice
-import app.lexico.ui.common.TurnClock
+import app.lexico.ui.common.RoundBar
 import app.lexico.ui.common.rememberNotice
 import kotlinx.coroutines.delay
 
@@ -64,8 +64,7 @@ private fun SeatBottom(view: SeatView, c: TilePlacer, style: BoardStyle, actions
 
 @Composable
 private fun Playing(view: SeatView, c: TilePlacer, style: BoardStyle, actions: SeatActions, message: String?, onNotice: (String) -> Unit) {
-  Text("Ronda ${view.round}", style = MaterialTheme.typography.labelLarge)
-  view.remainingMs?.let { TurnClock(rememberLeft(it)) }
+  RoundBar(view.round, view.remainingMs?.let { rememberLeft(it) })
   PlacingRack(c, style, enabled = true)
   Text(view.proposal?.let { "Tu jugada: ${it.text} · ${it.points} pts" } ?: "Aún no has jugado", fontWeight = FontWeight.Bold)
   message?.let { Notice(it, bold = true) }
@@ -79,29 +78,28 @@ private fun Playing(view: SeatView, c: TilePlacer, style: BoardStyle, actions: S
 
 @Composable
 private fun WatchingRound(view: SeatView, c: TilePlacer, style: BoardStyle) {
-  Text("Ronda ${view.round}", style = MaterialTheme.typography.labelLarge)
-  view.remainingMs?.let { TurnClock(rememberLeft(it)) }
+  RoundBar(view.round, view.remainingMs?.let { rememberLeft(it) })
   PlacingRack(c, style, enabled = false)
-  if (view.live) StandingsTable(view)
+  if (view.live) Table(view)
 }
 
 @Composable
 private fun RoundResults(view: SeatView, actions: SeatActions) {
   Text("Resultados de la ronda ${view.round}", style = MaterialTheme.typography.titleSmall)
-  StandingsTable(view)
+  Table(view)
   if (!view.watching) Button(modifier = Modifier.fillMaxWidth(), onClick = actions::ready) { Text("Comenzar nueva ronda") }
 }
 
 @Composable
 private fun WaitingRound(view: SeatView) {
   Text("Esperando la nueva ronda: ${view.ready} de ${view.waiting} listos", style = MaterialTheme.typography.titleSmall)
-  if (view.live) StandingsTable(view)
+  if (view.live) Table(view)
 }
 
 @Composable
 private fun Finished(view: SeatView, actions: SeatActions) {
   Text("Partida terminada", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-  StandingsTable(view)
+  Table(view)
   Button(modifier = Modifier.fillMaxWidth(), onClick = actions::exit) { Text("Salir") }
 }
 
@@ -117,6 +115,9 @@ private fun rememberLeft(remainingMs: Long): Long {
   }
   return left
 }
+
+@Composable
+private fun Table(view: SeatView) = if (view.watching) LeaderboardTable(view) else StandingsTable(view)
 
 private fun movesOf(view: SeatView): List<Round> = view.rounds.mapNotNull { r ->
   val master = r.entries.find { it.name == MASTER_NAME } ?: return@mapNotNull null

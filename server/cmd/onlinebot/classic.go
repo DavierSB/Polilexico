@@ -54,6 +54,9 @@ func score(s *classic.Status, first bool) string {
 func (b *bot) choose(board, rack string) string {
 	best := pick(board, rack)
 	b.fallback = best
+	if b.o.style == "random" {
+		return pickRandom(board, rack)
+	}
 	if b.o.style != "mixed" {
 		return best
 	}

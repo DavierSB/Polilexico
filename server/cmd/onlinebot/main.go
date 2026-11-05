@@ -66,7 +66,7 @@ func parseOptions() options {
 	flag.DurationVar(&o.turn, "turn", 30*time.Second, "duplicada: tiempo por ronda")
 	flag.DurationVar(&o.clock, "clock", 10*time.Minute, "clásica: reloj de cada jugador")
 	flag.IntVar(&o.games, "games", 0, "partidas antes de salir (0 = sin fin)")
-	flag.StringVar(&o.style, "style", "best", "best | mixed (a veces inválida o pase)")
+	flag.StringVar(&o.style, "style", "best", "best | mixed (a veces inválida o pase) | random (al azar entre las 20 mejores)")
 	flag.IntVar(&o.drop, "drop", 0, "se desconecta una vez tras esa jugada suya")
 	flag.DurationVar(&o.chatEvery, "chat", 0, "manda un mensaje de chat cada tanto en partida (0 = nunca)")
 	flag.BoolVar(&o.challenge, "challenge", false, "reta una vez a cada conectado libre")

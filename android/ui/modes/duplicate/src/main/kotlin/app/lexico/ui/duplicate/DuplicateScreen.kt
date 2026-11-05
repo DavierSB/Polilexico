@@ -17,7 +17,7 @@ import app.lexico.ui.common.GameBar
 import app.lexico.ui.common.NOT_IN_A_LINE
 import app.lexico.ui.common.Notice
 import app.lexico.ui.common.Pausable
-import app.lexico.ui.common.TurnClock
+import app.lexico.ui.common.RoundBar
 import app.lexico.ui.common.rememberNotice
 
 @Composable
@@ -39,7 +39,7 @@ private fun DuplicateLayout(
     top = { TopBar(view, actions, dialogs, onTheme) },
     board = { PlacingBoard(c, style, enabled = view.phase is Phase.Playing, lookUpWhenIdle = true) },
     bottom = {
-      PhasePanel(view.phase, c, style, actions)
+      PhasePanel(view.phase, view.round, c, style, actions)
       message?.let { Notice(it, bold = true) }
       PhaseButtons(view, c, actions, dialogs, onNotice)
     },
@@ -57,20 +57,20 @@ private fun TopBar(view: DuplicateView, actions: DuplicateActions, dialogs: Dupl
 }
 
 @Composable
-private fun PhasePanel(phase: Phase, c: TilePlacer, style: BoardStyle, actions: DuplicateActions) {
+private fun PhasePanel(phase: Phase, round: Int, c: TilePlacer, style: BoardStyle, actions: DuplicateActions) {
   when (phase) {
     is Phase.Waiting -> ShowRackButton(phase.turnMs, actions::showRack)
     is Phase.InvalidRack -> InvalidRack(phase.rack, style)
     is Phase.ManyInvalid -> ManyInvalidDialog(phase.rack, style)
-    is Phase.Playing -> ClockAndRack(phase.remainingMs, c, style, enabled = true)
-    is Phase.Confirming -> ClockAndRack(phase.remainingMs, c, style, enabled = false)
+    is Phase.Playing -> ClockAndRack(round, phase.remainingMs, c, style, enabled = true)
+    is Phase.Confirming -> ClockAndRack(round, phase.remainingMs, c, style, enabled = false)
     Phase.Finished -> Unit
   }
 }
 
 @Composable
-private fun ClockAndRack(remainingMs: Long?, c: TilePlacer, style: BoardStyle, enabled: Boolean) {
-  remainingMs?.let { TurnClock(it) }
+private fun ClockAndRack(round: Int, remainingMs: Long?, c: TilePlacer, style: BoardStyle, enabled: Boolean) {
+  RoundBar(round, remainingMs)
   PlacingRack(c, style, enabled = enabled)
 }
 

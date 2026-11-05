@@ -1,6 +1,7 @@
 package app.lexico.ui.classic
 
-import androidx.compose.foundation.background
+import app.lexico.ui.common.ClockAlarm
+import app.lexico.ui.common.ClockChip
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,15 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.ui.common.Durations
 
-private val OvertimeRed = Color(0xFFB3261E)
 private val OvertimePink = Color(0xFFF2B8B5)
 
 @Composable
@@ -71,11 +69,9 @@ private fun RowScope.Identity(
 @Composable
 private fun PlayerClock(clock: Clock, onTurn: Boolean) {
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
-    Text(
+    ClockChip(
       if (clock.inOvertime) "-" + Durations.format(-clock.remainingMs) else Durations.format(clock.remainingMs),
-      Modifier.background(clockFill(clock, onTurn), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 4.dp),
-      color = clockInk(clock, onTurn), fontFamily = FontFamily.Monospace, fontSize = 16.sp, textAlign = TextAlign.Center,
-      maxLines = 1, softWrap = false,
+      clockFill(clock, onTurn), clockInk(clock, onTurn),
     )
     if (clock.inOvertime) Text("descuento", fontSize = 10.sp, color = OvertimePink)
   }
@@ -83,7 +79,7 @@ private fun PlayerClock(clock: Clock, onTurn: Boolean) {
 
 @Composable
 private fun clockFill(clock: Clock, onTurn: Boolean): Color = when {
-  clock.inOvertime -> OvertimeRed
+  clock.inOvertime -> ClockAlarm
   onTurn -> MaterialTheme.colorScheme.primary
   else -> MaterialTheme.colorScheme.surfaceVariant
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"math/rand/v2"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -36,7 +37,15 @@ func initEngine(thirdParty string) {
 }
 
 func pick(board, rack string) string {
-	text, err := engine.BestMoves(board, engineRack(rack), 1)
+	return pickAmong(board, rack, 1)
+}
+
+func pickRandom(board, rack string) string {
+	return pickAmong(board, rack, 20)
+}
+
+func pickAmong(board, rack string, n int) string {
+	text, err := engine.BestMoves(board, engineRack(rack), n)
 	if err != nil {
 		log.Printf("motor: %v", err)
 		return "pasar"
@@ -46,7 +55,7 @@ func pick(board, rack string) string {
 	if len(cs) == 0 {
 		return "pasar"
 	}
-	return input(cs[0])
+	return input(cs[rand.IntN(len(cs))])
 }
 
 func engineRack(spaced string) string {
