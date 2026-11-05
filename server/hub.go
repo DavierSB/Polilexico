@@ -47,7 +47,6 @@ func (h *hub) serve(w http.ResponseWriter, r *http.Request) {
 	c := newClient(conn)
 	ctx := r.Context()
 	go c.writeLoop(ctx)
-	go c.pingLoop(ctx)
 	c.readLoop(ctx, func(m message) { h.handle(ctx, c, m) })
 	if c.room != nil {
 		c.room.drop(c)
@@ -60,6 +59,8 @@ func (h *hub) serve(w http.ResponseWriter, r *http.Request) {
 
 func (h *hub) handle(ctx context.Context, c *client, m message) {
 	switch {
+	case m.T == "ping":
+		c.send(message{T: "pong"})
 	case m.T == "hello":
 		h.hello(ctx, c, m)
 	case c.player.ID == "":
@@ -97,10 +98,10 @@ func (h *hub) hello(ctx context.Context, c *client, m message) {
 	h.goOnline(c)
 	defer h.changed()
 	c.send(message{T: "welcome", Name: p.Name, Country: p.Country})
-	c.send(h.lobbyFor(p))
 	if r := h.roomOf(p.ID); r != nil {
 		r.enter(c)
 	}
+	c.send(h.lobbyFor(p))
 }
 
 func (h *hub) create(c *client, m message, invitee *player) {

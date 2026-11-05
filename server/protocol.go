@@ -1,6 +1,6 @@
 package main
 
-const protocolVersion = 2
+const protocolVersion = 3
 
 const (
 	modeClassic   = "classic"

@@ -14,6 +14,9 @@ type options struct {
 	password   string
 	thirdParty string
 	delay      time.Duration
+	delayMax   time.Duration
+	dropEvery  int
+	dropFor    time.Duration
 	create     string
 	accept     bool
 	players    int
@@ -39,7 +42,7 @@ func main() {
 		if err := session(o, state); err != nil {
 			log.Printf("desconectado: %v", err)
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(state.pause())
 	}
 	log.Printf("terminó sus %d partidas", o.games)
 	os.Exit(0)
@@ -53,6 +56,9 @@ func parseOptions() options {
 	flag.StringVar(&o.password, "password", "robot-polilexico", "contraseña del bot")
 	flag.StringVar(&o.thirdParty, "third-party", "../third_party", "carpeta third_party del repo")
 	flag.DurationVar(&o.delay, "delay", 3*time.Second, "espera antes de cada jugada")
+	flag.DurationVar(&o.delayMax, "delay-max", 0, "si es mayor que -delay, la espera es al azar entre ambas")
+	flag.IntVar(&o.dropEvery, "drop-every", 0, "se desconecta tras cada N jugadas suyas")
+	flag.DurationVar(&o.dropFor, "drop-for", 3*time.Second, "cuánto tarda en volver tras desconectarse a propósito")
 	flag.StringVar(&o.create, "create", "", "publica búsquedas: classic, duplicate o classic,duplicate")
 	flag.BoolVar(&o.accept, "accept", true, "acepta retos y búsquedas ajenas")
 	flag.IntVar(&o.players, "players", 2, "duplicada: jugadores para empezar")
@@ -74,6 +80,16 @@ type progress struct {
 	finished int
 	dropped  bool
 	said     int
+	away     time.Duration
+}
+
+func (p *progress) pause() time.Duration {
+	if p.away > 0 {
+		d := p.away
+		p.away = 0
+		return d
+	}
+	return 3 * time.Second
 }
 
 func (p *progress) done(o options) bool {

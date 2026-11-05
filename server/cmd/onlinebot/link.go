@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
@@ -61,8 +62,19 @@ func session(o options, p *progress) error {
 		return err
 	}
 	defer l.conn.CloseNow()
-	l.send(message{T: "hello", Version: 2, Token: t})
+	l.send(message{T: "hello", Version: 3, Token: t})
+	go l.heartbeat()
 	return newBot(l, o, p).run()
+}
+
+func (l *link) heartbeat() {
+	tick := time.NewTicker(8 * time.Second)
+	defer tick.Stop()
+	for range tick.C {
+		if wsjson.Write(context.Background(), l.conn, message{T: "ping"}) != nil {
+			return
+		}
+	}
 }
 
 func dial(server string) (*link, error) {

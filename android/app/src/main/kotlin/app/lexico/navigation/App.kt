@@ -47,6 +47,7 @@ fun App(lexico: Lexico, settings: Settings, updates: Updates, version: String) {
   val menu = rememberMenuState()
   val themes = remember { ThemeState(settings) }
   BackHandler(enabled = nav.canGoBack, onBack = nav::back)
+  ReturnToOnlineGame(nav)
   LaunchedEffect(updates) { updates.check() }
   Themed(themes.current) {
     Surface(Modifier.fillMaxSize()) {

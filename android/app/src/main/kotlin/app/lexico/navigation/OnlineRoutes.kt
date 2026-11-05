@@ -42,6 +42,7 @@ import app.lexico.ui.classic.NewOnlineClassicScreen
 import app.lexico.ui.classic.WatchClassicScreen
 import app.lexico.ui.classic.WatchClassicView
 import app.lexico.ui.classic.WatchSeat
+import app.lexico.ui.common.Disconnected
 import app.lexico.ui.common.AccountInput
 import app.lexico.ui.common.ChatComposer
 import app.lexico.ui.common.ChatEntry
@@ -64,7 +65,6 @@ import app.lexico.ui.common.PhotoSource
 import app.lexico.ui.common.ProfileActions
 import app.lexico.ui.common.ProfileData
 import app.lexico.ui.common.SeekItem
-import app.lexico.ui.common.ServerDialog
 import app.lexico.ui.common.StatsDialog
 import app.lexico.ui.common.StatsSection
 import app.lexico.ui.common.WaitingRoomScreen
@@ -84,9 +84,7 @@ private var backupSynced = false
 internal fun OnlineRoute(mode: Mode?, lexico: Lexico, settings: Settings, nav: Navigator) {
   val online = rememberOnline()
   val session by online.account.session.collectAsState()
-  var editingServer by remember { mutableStateOf(false) }
-  session?.let { OnlineHub(it, mode, online, lexico, settings, nav) } ?: AccountRoute(online, nav) { editingServer = true }
-  if (editingServer) ServerDialog(online.store.server, { online.store.server = it }) { editingServer = false }
+  session?.let { OnlineHub(it, mode, online, lexico, settings, nav) } ?: AccountRoute(online, nav)
 }
 
 @Composable
@@ -156,13 +154,24 @@ internal fun OnlinePlayRoute(lexico: Lexico, nav: Navigator, themes: ThemeState)
   when {
     current == null -> OnlineWaitScreen("En línea", ended ?: status ?: "Conectando…", ended != null) { client.forget(); nav.back() }
     current.watching -> ProvidePhotos(rememberOnline(), client.lobby.collectAsState().value) { Watch(client, current, nav, themes) }
-    current.duplicate -> WithChat(client, current) { DuplicateOnline(client, current, nav, themes) }
-    else -> WithChat(client, current) { ProvidePhotos(rememberOnline(), client.lobby.collectAsState().value) { ClassicOnline(client, current, lexico, nav, themes) } }
+    else -> Disconnected(status != null && ended == null, nav::home) { SeatedGame(client, current, lexico, nav, themes) }
   }
 }
 
 @Composable
-private fun AccountRoute(online: Online, nav: Navigator, onServer: () -> Unit) {
+private fun SeatedGame(client: OnlineClient, info: RoomInfo, lexico: Lexico, nav: Navigator, themes: ThemeState) {
+  if (info.duplicate) return WithChat(client, info) { DuplicateOnline(client, info, nav, themes) }
+  WithChat(client, info) { ProvidePhotos(rememberOnline(), client.lobby.collectAsState().value) { ClassicOnline(client, info, lexico, nav, themes) } }
+}
+
+@Composable
+internal fun ReturnToOnlineGame(nav: Navigator) {
+  val client by rememberOnline().current.collectAsState()
+  LaunchedEffect(client) { client?.rejoined?.collect { if (nav.current != Screen.OnlinePlay) nav.go(Screen.OnlinePlay) } }
+}
+
+@Composable
+private fun AccountRoute(online: Online, nav: Navigator) {
   val scope = rememberCoroutineScope()
   var busy by remember { mutableStateOf(false) }
   var error by remember { mutableStateOf<String?>(null) }
@@ -174,7 +183,7 @@ private fun AccountRoute(online: Online, nav: Navigator, onServer: () -> Unit) {
     }
     Unit
   }
-  OnlineAccountScreen(busy, error, nav::back, onServer, { submit(true, it) }) { submit(false, it) }
+  OnlineAccountScreen(busy, error, nav::back, { submit(true, it) }) { submit(false, it) }
 }
 
 @Composable

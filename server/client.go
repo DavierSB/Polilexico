@@ -12,8 +12,7 @@ import (
 const (
 	outboxSize   = 64
 	writeTimeout = 10 * time.Second
-	pingEvery    = 20 * time.Second
-	pongTimeout  = 15 * time.Second
+	silenceLimit = 25 * time.Second
 	kickGrace    = time.Second
 )
 
@@ -54,12 +53,20 @@ func (c *client) close() {
 func (c *client) readLoop(ctx context.Context, handle func(message)) {
 	defer c.close()
 	for {
-		var m message
-		if err := wsjson.Read(ctx, c.conn, &m); err != nil {
+		m, err := c.read(ctx)
+		if err != nil {
 			return
 		}
 		handle(m)
 	}
+}
+
+func (c *client) read(ctx context.Context) (message, error) {
+	ctx, cancel := context.WithTimeout(ctx, silenceLimit)
+	defer cancel()
+	var m message
+	err := wsjson.Read(ctx, c.conn, &m)
+	return m, err
 }
 
 func (c *client) writeLoop(ctx context.Context) {
@@ -80,26 +87,4 @@ func (c *client) write(ctx context.Context, m message) bool {
 	ctx, cancel := context.WithTimeout(ctx, writeTimeout)
 	defer cancel()
 	return wsjson.Write(ctx, c.conn, m) == nil
-}
-
-func (c *client) pingLoop(ctx context.Context) {
-	tick := time.NewTicker(pingEvery)
-	defer tick.Stop()
-	for {
-		select {
-		case <-tick.C:
-			if !c.ping(ctx) {
-				c.close()
-				return
-			}
-		case <-c.done:
-			return
-		}
-	}
-}
-
-func (c *client) ping(ctx context.Context) bool {
-	ctx, cancel := context.WithTimeout(ctx, pongTimeout)
-	defer cancel()
-	return c.conn.Ping(ctx) == nil
 }

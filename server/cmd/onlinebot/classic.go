@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"math/rand/v2"
 	"time"
 
 	"lexico/engine/modes/classic"
@@ -66,13 +67,11 @@ func (b *bot) choose(board, rack string) string {
 }
 
 func (b *bot) playLater(in string) {
-	drop := b.o.drop > 0 && b.mine == b.o.drop && !b.progress.dropped
-	if drop {
-		b.progress.dropped = true
-	}
+	drop := b.dropsAfterThis()
+	wait := b.wait()
 	go func() {
-		time.Sleep(b.o.delay)
-		log.Printf("juega %s", in)
+		time.Sleep(wait)
+		log.Printf("juega %s (pensó %s)", in, wait.Round(time.Second))
 		b.link.send(message{T: "move", Input: in})
 		if drop {
 			b.dropNow()
@@ -80,8 +79,27 @@ func (b *bot) playLater(in string) {
 	}()
 }
 
+func (b *bot) dropsAfterThis() bool {
+	if b.o.dropEvery > 0 {
+		return b.mine%b.o.dropEvery == 0
+	}
+	drop := b.o.drop > 0 && b.mine == b.o.drop && !b.progress.dropped
+	if drop {
+		b.progress.dropped = true
+	}
+	return drop
+}
+
+func (b *bot) wait() time.Duration {
+	if b.o.delayMax <= b.o.delay {
+		return b.o.delay
+	}
+	return b.o.delay + rand.N(b.o.delayMax-b.o.delay)
+}
+
 func (b *bot) dropNow() {
 	time.Sleep(time.Second)
-	log.Printf("se desconecta a propósito")
+	b.progress.away = b.o.dropFor
+	log.Printf("se desconecta a propósito por %s", b.o.dropFor)
 	b.link.conn.CloseNow()
 }
