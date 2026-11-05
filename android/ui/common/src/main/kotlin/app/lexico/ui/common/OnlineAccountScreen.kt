@@ -57,7 +57,7 @@ private fun countryRank(code: String): Int = when (code) {
 const val DEFAULT_COUNTRY = "CU"
 
 private val FILE_MEMBERS = setOf(
-  "AR", "CL", "CO", "CR", "DO", "EC", "ES", "FR", "GB", "GT", "HN", "IL", "MX", "NZ", "PA", "PE", "PR", "PY", "US", "UY", "VE",
+  "AR", "CL", "CO", "CR", "DO", "EC", "ES", "FR", "GB", "GT", "HN", "IL", "JP", "MX", "NZ", "PA", "PE", "PR", "PY", "US", "UY", "VE",
 )
 
 fun flagOf(code: String): String = Country(code, "").flag
