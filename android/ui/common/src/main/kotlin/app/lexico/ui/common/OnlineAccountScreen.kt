@@ -67,12 +67,12 @@ fun flagOf(code: String): String = Country(code, "").flag
 
 @Composable
 fun OnlineAccountScreen(
-  busy: Boolean, error: String?, onBack: () -> Unit, onServer: () -> Unit, onSignUp: (AccountInput) -> Unit, onLogIn: (AccountInput) -> Unit,
+  busy: Boolean, error: String?, onBack: () -> Unit, onSignUp: (AccountInput) -> Unit, onLogIn: (AccountInput) -> Unit,
 ) {
   var existing by rememberSaveable { mutableStateOf(false) }
   var input by remember { mutableStateOf(AccountInput("", DEFAULT_COUNTRY, "", "")) }
   FitColumn(10.dp) {
-    Header("En línea", onBack) { BarTextButton("Servidor", onServer) }
+    Header("En línea", onBack)
     AccountCard {
       TwoOptions("Crear cuenta", "Ya tengo cuenta", existing) { existing = it }
       AccountFields(input, existing) { input = it }
