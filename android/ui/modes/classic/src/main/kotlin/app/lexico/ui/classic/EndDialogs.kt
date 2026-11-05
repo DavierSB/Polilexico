@@ -59,7 +59,7 @@ private fun endingTitle(view: ClassicView, reason: EndingReason): String = when 
 
 private fun wentOutTitle(view: ClassicView): String = when {
   view.rack.isNotEmpty() -> "${view.opponent} se pegó"
-  view.local -> "${view.me} se pegó"
+  view.local || view.watching -> "${view.me} se pegó"
   else -> "Te pegaste"
 }
 
