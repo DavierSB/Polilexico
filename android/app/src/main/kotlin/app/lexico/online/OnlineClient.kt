@@ -215,6 +215,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
   private fun welcomed() {
     _refused.value = null
     awaitingRoom = true
+    _room.value?.takeIf { it.watching }?.let { send(roomAction("watch", it.id)) }
   }
 
   private fun seated(info: RoomInfo) {

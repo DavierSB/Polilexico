@@ -79,7 +79,9 @@ func (l *link) heartbeat() {
 
 func dial(server string) (*link, error) {
 	url := "ws" + strings.TrimPrefix(server, "http") + "/ws"
-	conn, _, err := websocket.Dial(context.Background(), url, nil)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	conn, _, err := websocket.Dial(ctx, url, nil)
 	if err != nil {
 		return nil, err
 	}

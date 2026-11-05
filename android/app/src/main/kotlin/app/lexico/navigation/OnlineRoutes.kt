@@ -144,7 +144,9 @@ internal fun OnlinePlayRoute(lexico: Lexico, nav: Navigator, themes: ThemeState)
   val current = info
   when {
     current == null -> OnlineWaitScreen("En línea", ended ?: status ?: "Conectando…", ended != null) { client.forget(); nav.back() }
-    current.watching -> ProvidePhotos(rememberOnline(), client.lobby.collectAsState().value) { Watch(client, current, nav, themes) }
+    current.watching -> Disconnected(status != null && ended == null, nav::home, note = null) {
+      ProvidePhotos(rememberOnline(), client.lobby.collectAsState().value) { Watch(client, current, nav, themes) }
+    }
     else -> Disconnected(status != null && ended == null, nav::home) { SeatedGame(client, current, lexico, nav, themes) }
   }
 }

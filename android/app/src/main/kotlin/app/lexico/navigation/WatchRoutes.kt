@@ -19,6 +19,9 @@ import app.lexico.online.RoomInfo
 import app.lexico.ui.classic.ClassicActions
 import app.lexico.ui.classic.ClassicScreen
 import app.lexico.ui.classic.ClassicView
+import app.lexico.ui.classic.Move
+import app.lexico.ui.classic.OpponentRack
+import app.lexico.ui.classic.Side
 import app.lexico.ui.common.OnlineWaitScreen
 import app.lexico.ui.common.PersonItem
 import app.lexico.ui.duplicate.Standing
@@ -48,13 +51,23 @@ private fun WatchedGame(game: ClassicGame, players: List<String>, watchers: List
 
 private fun spectatorView(state: ClassicState, players: List<String>, watchers: List<PersonItem>): ClassicView {
   val view = classicView(state, players.getOrElse(1) { "" }, null, players.getOrElse(0) { "" }, handOff = false)
-  return view.copy(local = false, rack = onTurnRack(state), watching = true, watchers = watchers)
+    .copy(local = false, watching = true, watchers = watchers)
+  return if (state.result == null && !state.myTurn) fromSecondSeat(view, state) else view
 }
 
-private fun onTurnRack(state: ClassicState): List<String> = when {
-  state.result != null -> emptyList()
-  state.myTurn -> state.rack
-  else -> state.opponentRack
+private fun fromSecondSeat(view: ClassicView, state: ClassicState): ClassicView = view.copy(
+  me = view.opponent, opponent = view.me, rack = state.opponentRack, opponentRack = OpponentRack.Hidden(state.rack.size),
+  myScore = view.opponentScore, opponentScore = view.myScore, myClock = view.opponentClock, opponentClock = view.myClock,
+  turn = Side.ME, unseen = view.unseen.without(state.opponentRack) + state.rack, moves = view.moves.map(::otherSide),
+)
+
+private fun otherSide(m: Move): Move =
+  m.copy(side = if (m.side == Side.ME) Side.OPPONENT else Side.ME, myTotal = m.opponentTotal, opponentTotal = m.myTotal)
+
+private fun List<String>.without(tiles: List<String>): List<String> {
+  val left = toMutableList()
+  tiles.forEach { left.remove(it) }
+  return left
 }
 
 private fun watchActions(leave: () -> Unit): ClassicActions = object : ClassicActions {

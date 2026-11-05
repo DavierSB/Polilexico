@@ -13,13 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 private const val OFFLINE_ALPHA = 0.92f
+private const val CLOCK_RUNS = "Tu reloj sigue corriendo."
 
 @Composable
-fun Disconnected(offline: Boolean, onHome: () -> Unit, content: @Composable () -> Unit) {
+fun Disconnected(offline: Boolean, onHome: () -> Unit, note: String? = CLOCK_RUNS, content: @Composable () -> Unit) {
   Covered(offline, OFFLINE_ALPHA, content) {
     Text("Te desconectaste", style = MaterialTheme.typography.headlineSmall)
     Reconnecting()
-    Text("Tu reloj sigue corriendo.")
+    note?.let { Text(it) }
     TextButton(onClick = onHome) { Text("Ir al inicio") }
   }
 }

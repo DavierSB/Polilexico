@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
+
+var web = &http.Client{Timeout: 20 * time.Second}
 
 type credentials struct {
 	Name     string `json:"name"`
@@ -23,7 +26,7 @@ func token(o options) (string, error) {
 
 func post(url string, c credentials) (string, error) {
 	body, _ := json.Marshal(c)
-	res, err := http.Post(url, "application/json", bytes.NewReader(body))
+	res, err := web.Post(url, "application/json", bytes.NewReader(body))
 	if err != nil {
 		return "", err
 	}
