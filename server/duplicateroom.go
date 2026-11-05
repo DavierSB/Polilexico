@@ -150,6 +150,16 @@ func (r *duplicateRoom) active() bool {
 	return !over
 }
 
+func (r *duplicateRoom) finished() bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.table == nil {
+		return false
+	}
+	_, over := r.finalView()
+	return over
+}
+
 func (r *duplicateRoom) listing() (listing, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()

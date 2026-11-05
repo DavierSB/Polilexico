@@ -27,6 +27,7 @@ internal class OnlineLink(
   private val network: NetworkWatch,
   private val scope: CoroutineScope,
   private val token: suspend () -> String?,
+  private val signedIn: () -> Boolean,
   private val onStatus: (String?) -> Unit,
   private val onEvent: suspend (OnlineEvent) -> Unit,
 ) {
@@ -57,8 +58,9 @@ internal class OnlineLink(
 
   private suspend fun connectWhileOpen() {
     while (!closed) {
-      val t = token() ?: return refuse()
-      connectOnce(t).await()
+      val t = token()
+      if (t == null && !signedIn()) return refuse()
+      t?.let { connectOnce(it).await() }
       if (closed) return
       onStatus(LINK_DOWN)
       withTimeoutOrNull(RETRY_MS) { wake.receive() }

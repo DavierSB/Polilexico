@@ -182,7 +182,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
 
   private fun connect() {
     _refused.value = null
-    link = OnlineLink(online.store.server, online.http, online.network, scope, online.account::token, { _status.value = it }, ::handle)
+    link = OnlineLink(online.store.server, online.http, online.network, scope, online.account::token, { online.account.session.value != null }, { _status.value = it }, ::handle)
       .also { it.open() }
   }
 

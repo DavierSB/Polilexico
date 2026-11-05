@@ -154,6 +154,12 @@ func (r *classicRoom) active() bool {
 	return r.match != nil && !r.match.Game().Status().Over
 }
 
+func (r *classicRoom) finished() bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.match != nil && r.match.Game().Status().Over
+}
+
 func (r *classicRoom) listing() (listing, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()

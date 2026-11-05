@@ -23,6 +23,7 @@ type room interface {
 	cancel(playerID, reason string)
 	startBy(c *client)
 	active() bool
+	finished() bool
 	ongoing() (liveGame, bool)
 	watch(c *client) bool
 }
@@ -98,7 +99,7 @@ func (h *hub) hello(ctx context.Context, c *client, m message) {
 	h.goOnline(c)
 	defer h.changed()
 	c.send(message{T: "welcome", Name: p.Name, Country: p.Country})
-	if r := h.roomOf(p.ID); r != nil {
+	if r := h.roomOf(p.ID); r != nil && !r.finished() {
 		r.enter(c)
 	}
 	c.send(h.lobbyFor(p))

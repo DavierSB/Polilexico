@@ -120,6 +120,15 @@ func (b *bot) modes() []string {
 	return strings.Split(b.o.create, ",")
 }
 
+func (b *bot) wants(mode string) bool {
+	for _, m := range b.modes() {
+		if m == mode {
+			return true
+		}
+	}
+	return false
+}
+
 func (b *bot) hasSeek(mode string) bool {
 	for _, s := range b.mySeeks {
 		if s.Mode == mode {
@@ -140,6 +149,7 @@ func (b *bot) lobby(m message) {
 	if b.fresh {
 		b.fresh = false
 		b.cancelLeftovers(mineOnly(m.Seeks))
+		return
 	}
 	b.mySeeks = mineOnly(m.Seeks)
 	b.startFull()
@@ -171,7 +181,7 @@ func (b *bot) cancelLeftovers(seeks []seek) {
 
 func (b *bot) startFull() {
 	for _, s := range b.mySeeks {
-		if s.Mode == "duplicate" && s.Players >= b.o.players && !b.starting[s.ID] {
+		if s.Mode == "duplicate" && b.wants("duplicate") && s.Players >= b.o.players && !b.starting[s.ID] {
 			log.Printf("empieza su duplicada con %d jugadores", s.Players)
 			b.starting[s.ID] = true
 			b.link.send(message{T: "start", Code: s.ID})
