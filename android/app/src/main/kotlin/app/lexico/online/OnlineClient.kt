@@ -9,7 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -17,6 +19,8 @@ import kotlinx.coroutines.launch
 private const val LINGER_MS = 15_000L
 private const val FINISHED_PHASE = "\"Phase\":\"finished\""
 private const val INBOX_SIZE = 10
+private const val UNSENT = "Sin conexión: la jugada no se envió."
+private const val GAME_GONE = "La partida ya no está disponible."
 
 class OnlineClient internal constructor(private val online: Online, private val lexico: Lexico) : ClassicRemote {
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -54,6 +58,12 @@ class OnlineClient internal constructor(private val online: Online, private val 
   private val _unanswered = MutableStateFlow(0)
   val unanswered: StateFlow<Int> = _unanswered.asStateFlow()
 
+  private val _rejoined = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+  val rejoined: SharedFlow<Unit> = _rejoined
+
+  private var awaitingRoom = false
+  private var awaitingGame = false
+
   @Synchronized
   fun acquire() {
     users++
@@ -77,7 +87,9 @@ class OnlineClient internal constructor(private val online: Online, private val 
     send(challengeMessage(person.name, person.country, p))
   }
 
-  fun cancel(seek: Seek) = send(roomAction("cancel", seek.id))
+  fun cancel(seek: Seek) {
+    send(roomAction("cancel", seek.id))
+  }
 
   fun startSeek(seek: Seek) {
     forget()
@@ -89,20 +101,25 @@ class OnlineClient internal constructor(private val online: Online, private val 
     send(roomAction("join", seek.id))
   }
 
-  fun decline(seek: Seek) = send(roomAction("decline", seek.id))
+  fun decline(seek: Seek) {
+    send(roomAction("decline", seek.id))
+  }
 
   fun watch(game: LiveGame) {
     forget()
     send(roomAction("watch", game.id))
   }
 
-  fun start() = send(signal("start"))
+  fun start() {
+    send(signal("start"))
+  }
 
-  fun ready() = send(signal("ready"))
+  fun ready() {
+    send(signal("ready"))
+  }
 
   fun propose(input: String) {
-    _notice.value = null
-    send(moveMessage(input))
+    _notice.value = if (send(moveMessage(input))) null else UNSENT
   }
 
   fun say(text: String) {
@@ -139,9 +156,13 @@ class OnlineClient internal constructor(private val online: Online, private val 
   }
 
   fun forgetIfFinished() {
-    val over = _game.value?.state?.value?.result != null || _table.value?.contains(FINISHED_PHASE) == true
-    if (over || _ended.value != null) forget()
+    if (finished() || _ended.value != null) forget()
   }
+
+  private fun finished(): Boolean =
+    _game.value?.state?.value?.result != null || _table.value?.contains(FINISHED_PHASE) == true
+
+  private fun seatedInGame(): Boolean = _room.value?.watching == false && !finished() && _ended.value == null
 
   @Synchronized
   fun shutDown() {
@@ -161,35 +182,56 @@ class OnlineClient internal constructor(private val online: Online, private val 
 
   private fun connect() {
     _refused.value = null
-    link = OnlineLink(online.store.server, online.http, scope, online.account::token, { _status.value = it }, ::handle).also { it.open() }
+    link = OnlineLink(online.store.server, online.http, online.network, scope, online.account::token, { _status.value = it }, ::handle)
+      .also { it.open() }
   }
 
   @Synchronized
   private fun disconnectIfIdle() {
-    if (users > 0) return
+    if (users > 0 || seatedInGame()) return
     link?.close()
     link = null
   }
 
-  private fun send(text: String) {
-    link?.send(text)
-  }
+  private fun send(text: String): Boolean = link?.send(text) == true
 
   private suspend fun handle(e: OnlineEvent) {
     when (e) {
-      OnlineEvent.Welcome -> _refused.value = null
+      OnlineEvent.Welcome -> welcomed()
       is OnlineEvent.Refused -> refuse(e.reason)
       is OnlineEvent.Failed -> if (_room.value == null) _ended.value = e.reason else _notice.value = e.reason
-      is OnlineEvent.LobbyChanged -> _lobby.value = e.lobby
-      is OnlineEvent.Room -> _room.value = e.info
-      is OnlineEvent.State -> mirror(e)
-      is OnlineEvent.Table -> _table.value = e.view
+      is OnlineEvent.LobbyChanged -> lobbyChanged(e.lobby)
+      is OnlineEvent.Room -> seated(e.info)
+      is OnlineEvent.State -> { mirror(e); rejoinIfLive() }
+      is OnlineEvent.Table -> { _table.value = e.view; rejoinIfLive() }
       is OnlineEvent.Rejected -> _notice.value = e.reason
       is OnlineEvent.Rival -> _rivalOnline.value = e.online
       is OnlineEvent.Closed -> _ended.value = e.reason.ifEmpty { "La sala se cerró." }
       is OnlineEvent.Chat -> heard(ChatLine(e.from, e.text))
       is OnlineEvent.Watchers -> _watchers.value = e.count
     }
+  }
+
+  private fun welcomed() {
+    _refused.value = null
+    awaitingRoom = true
+  }
+
+  private fun seated(info: RoomInfo) {
+    _room.value = info
+    awaitingRoom = false
+    awaitingGame = !info.watching
+  }
+
+  private fun lobbyChanged(lobby: Lobby) {
+    _lobby.value = lobby
+    if (awaitingRoom && seatedInGame()) _ended.value = GAME_GONE
+    awaitingRoom = false
+  }
+
+  private fun rejoinIfLive() {
+    if (awaitingGame && !finished()) _rejoined.tryEmit(Unit)
+    awaitingGame = false
   }
 
   private fun heard(line: ChatLine) {

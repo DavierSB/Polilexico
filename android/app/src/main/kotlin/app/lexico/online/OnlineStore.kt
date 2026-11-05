@@ -10,9 +10,7 @@ data class OnlineSession(val accessToken: String, val refreshToken: String, val 
 class OnlineStore(context: Context) {
   private val prefs = context.getSharedPreferences("online", Context.MODE_PRIVATE)
 
-  var server: String
-    get() = prefs.getString(SERVER, null) ?: DEFAULT_SERVER
-    set(value) = prefs.edit { putString(SERVER, value.trim().trimEnd('/').ifEmpty { DEFAULT_SERVER }) }
+  val server: String = DEFAULT_SERVER
 
   fun session(): OnlineSession? {
     val access = prefs.getString(ACCESS, null) ?: return null
@@ -30,7 +28,6 @@ class OnlineStore(context: Context) {
   }
 
   private companion object {
-    const val SERVER = "server"
     const val ACCESS = "access"
     const val REFRESH = "refresh"
     const val EXPIRES = "expires"

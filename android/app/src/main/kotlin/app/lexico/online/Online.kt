@@ -2,6 +2,9 @@ package app.lexico.online
 
 import android.content.Context
 import app.lexico.game.Lexico
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -14,7 +17,6 @@ class Online private constructor(context: Context) {
   val http: OkHttpClient = OkHttpClient.Builder()
     .connectTimeout(90, TimeUnit.SECONDS)
     .readTimeout(90, TimeUnit.SECONDS)
-    .pingInterval(20, TimeUnit.SECONDS)
     .build()
 
   val api = OnlineApi({ store.server }, http)
@@ -25,10 +27,15 @@ class Online private constructor(context: Context) {
 
   val photos = OnlinePhotos(File(context.cacheDir, "photos"), api)
 
-  private var client: OnlineClient? = null
+  internal val network = NetworkWatch(context)
+
+  private val _current = MutableStateFlow<OnlineClient?>(null)
+  val current: StateFlow<OnlineClient?> = _current.asStateFlow()
+
+  private val client: OnlineClient? get() = _current.value
 
   @Synchronized
-  fun client(lexico: Lexico): OnlineClient = client ?: OnlineClient(this, lexico).also { client = it }
+  fun client(lexico: Lexico): OnlineClient = client ?: OnlineClient(this, lexico).also { _current.value = it }
 
   suspend fun loadAccount(): AccountForm? = account.token()?.let { api.account(it).getOrNull() }
 

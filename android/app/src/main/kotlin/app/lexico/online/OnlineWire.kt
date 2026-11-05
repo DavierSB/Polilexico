@@ -3,7 +3,7 @@ package app.lexico.online
 import org.json.JSONArray
 import org.json.JSONObject
 
-internal const val ONLINE_PROTOCOL = 2
+internal const val ONLINE_PROTOCOL = 3
 
 data class RoomInfo(
   val id: String, val duplicate: Boolean, val me: String, val host: String, val players: List<String>, val first: Boolean,
@@ -59,6 +59,8 @@ internal fun moveMessage(input: String): String = message("move").put("input", i
 internal fun chatMessage(text: String): String = message("chat").put("text", text).toString()
 
 internal fun signal(type: String): String = message(type).toString()
+
+internal fun ping(): String = signal("ping")
 
 internal fun event(text: String): OnlineEvent? = runCatching { event(JSONObject(text)) }.getOrNull()
 
