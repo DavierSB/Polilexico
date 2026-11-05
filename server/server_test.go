@@ -24,9 +24,11 @@ type testServer struct {
 }
 
 type testClient struct {
-	t    *testing.T
-	conn *websocket.Conn
-	in   chan message
+	t       *testing.T
+	conn    *websocket.Conn
+	in      chan message
+	name    string
+	country string
 }
 
 func TestSignUpAndLogIn(t *testing.T) {
@@ -551,7 +553,7 @@ func TestAdjournByAgreementAndResume(t *testing.T) {
 	}
 }
 
-func TestAdjudicationGoesToTheLeader(t *testing.T) {
+func TestAdjudicationAnnulsWhenNotAhead(t *testing.T) {
 	adjudicateAfter = 0
 	defer func() { adjudicateAfter = 3 * time.Minute }()
 	srv := newTestServer(t)

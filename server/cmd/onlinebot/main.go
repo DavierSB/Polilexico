@@ -30,6 +30,7 @@ type options struct {
 	challenge  bool
 	from       string
 	ignore     string
+	adjourn    bool
 }
 
 func main() {
@@ -72,6 +73,7 @@ func parseOptions() options {
 	flag.BoolVar(&o.challenge, "challenge", false, "reta una vez a cada conectado libre")
 	flag.StringVar(&o.from, "from", "", "solo acepta búsquedas de este anfitrión")
 	flag.StringVar(&o.ignore, "ignore", "", "no acepta búsquedas de anfitriones que empiecen así")
+	flag.BoolVar(&o.adjourn, "adjourn", true, "acepta las propuestas de aplazar")
 	flag.Parse()
 	return o
 }

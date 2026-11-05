@@ -84,6 +84,9 @@ func (b *bot) handle(m message) {
 		b.free("sala cerrada: " + m.Reason)
 	case "chat":
 		log.Printf("%s dice: %q", m.Name, m.Text)
+	case "adjournAsk":
+		log.Printf("%s propone aplazar; responde %v", m.Name, b.o.adjourn)
+		b.link.send(message{T: "adjournReply", Accept: b.o.adjourn})
 	case "rejected":
 		b.retry(m.Reason)
 	case "refused", "error":

@@ -46,6 +46,7 @@ type message struct {
 	Invites []seek   `json:"invites,omitempty"`
 	People  []person `json:"people,omitempty"`
 	Country string   `json:"country,omitempty"`
+	Accept  bool     `json:"accept,omitempty"`
 }
 
 type link struct {
