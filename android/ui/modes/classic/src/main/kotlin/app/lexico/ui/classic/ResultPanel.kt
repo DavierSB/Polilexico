@@ -51,7 +51,8 @@ internal fun localVerdict(view: ClassicView, end: GameEnd): String = when (end.w
 private fun <T> List<T>.distinctLast(): List<T> = if (size > 1 && last() == this[lastIndex - 1]) dropLast(1) else this
 
 internal fun resultTitle(view: ClassicView, end: GameEnd): String = when {
-  view.local || view.watching -> localVerdict(view, end) + if (end.byTimeout) " por tiempo" else ""
+  view.watching -> winnerName(view, end)?.let { "$it ganó" } ?: "Empate"
+  view.local -> localVerdict(view, end) + if (end.byTimeout) " por tiempo" else ""
   end.byTimeout -> "Perdiste por tiempo"
   end.winner == Side.ME -> "¡Ganaste!"
   end.winner == Side.OPPONENT -> "Ganó ${view.opponent}"

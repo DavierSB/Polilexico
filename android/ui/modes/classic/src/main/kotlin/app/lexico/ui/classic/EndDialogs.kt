@@ -91,15 +91,22 @@ private fun Verdict(view: ClassicView, end: GameEnd) {
 }
 
 private fun won(view: ClassicView, end: GameEnd): Boolean =
-  if (view.local) end.winner != null else end.winner == Side.ME && !end.byTimeout
+  if (view.local || view.watching) end.winner != null else end.winner == Side.ME && !end.byTimeout
 
-private fun verdictSize(view: ClassicView) = if (view.local) 40.sp else 52.sp
+private fun verdictSize(view: ClassicView) = if (view.local || view.watching) 40.sp else 52.sp
 
 private fun verdictText(view: ClassicView, end: GameEnd): String = when {
+  view.watching -> winnerName(view, end)?.let { "$it ganó" } ?: "Empate"
   view.local -> "¡${localVerdict(view, end)}!".takeIf { end.winner != null } ?: "Empate"
   won(view, end) -> "¡Ganaste!"
   end.byTimeout || end.winner == Side.OPPONENT -> "Perdiste"
   else -> "Empate"
+}
+
+internal fun winnerName(view: ClassicView, end: GameEnd): String? = when (end.winner) {
+  Side.ME -> view.me
+  Side.OPPONENT -> view.opponent
+  null -> null
 }
 
 private fun verdictColor(view: ClassicView, end: GameEnd): Color = when {
