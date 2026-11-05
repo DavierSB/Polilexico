@@ -15,7 +15,6 @@ type bot struct {
 	progress *progress
 	seated   bool
 	played   int
-	mine     int
 	fallback string
 	acted    map[string]bool
 	mySeeks  []seek
@@ -60,6 +59,7 @@ func (b *bot) reader() <-chan message {
 		for {
 			m, err := b.link.read()
 			if err != nil {
+				log.Printf("lectura cortada: %v", err)
 				return
 			}
 			in <- m
@@ -213,7 +213,7 @@ func (b *bot) finish(summary string) {
 
 func (b *bot) free(why string) {
 	log.Print(why)
-	b.seated, b.played, b.mine = false, -1, 0
+	b.seated, b.played, b.progress.mine = false, -1, 0
 	b.acted = map[string]bool{}
 }
 

@@ -18,9 +18,9 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import app.lexico.game.LiveGame
 
 @Composable
-fun PauseWhenHidden(game: LiveGame<*>) {
+fun PauseWhenHidden(game: LiveGame<*>, closeOnLeave: Boolean = true) {
   LifecycleEventEffect(Lifecycle.Event.ON_STOP) { game.pause() }
-  DisposableEffect(game) { onDispose { game.close() } }
+  DisposableEffect(game) { onDispose { if (closeOnLeave) game.close() } }
 }
 
 @Composable

@@ -113,9 +113,9 @@ internal fun SprintRoute(screen: Screen.Sprint, lexico: Lexico, nav: Navigator, 
 @Composable
 internal fun ClassicPlay(
   game: ClassicGame, nav: Navigator, themes: ThemeState, finished: FinishedGames, wifiNotice: String? = null, handOff: Boolean = true,
-  pausable: Boolean = true,
+  pausable: Boolean = true, closeOnLeave: Boolean = true,
 ) {
-  PauseWhenHidden(game)
+  PauseWhenHidden(game, closeOnLeave)
   PlayCues(game) { it.takeIf { cue -> cue != Cue.CELEBRATION } }
   GameTheme(game, themes, if (game.host == null) bot(game.opponent).theme else themes.appTheme)
   val scope = rememberCoroutineScope()

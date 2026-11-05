@@ -238,8 +238,9 @@ private fun ClassicOnline(client: OnlineClient, info: RoomInfo, lexico: Lexico, 
   val ended by client.ended.collectAsState()
   val rivalOnline by client.rivalOnline.collectAsState()
   val watchers by client.watchers.collectAsState()
-  val shown = status ?: ended ?: RIVAL_AWAY.takeUnless { rivalOnline } ?: notice ?: watchingText(watchers)
-  game?.let { ClassicPlay(it, nav, themes, lexico.finishedGames, shown, handOff = false, pausable = false) }
+  val over = game?.state?.collectAsState()?.value?.result != null
+  val shown = status ?: ended ?: RIVAL_AWAY.takeUnless { rivalOnline || over } ?: notice ?: watchingText(watchers)
+  game?.let { ClassicPlay(it, nav, themes, lexico.finishedGames, shown, handOff = false, pausable = false, closeOnLeave = false) }
     ?: WaitingRoomScreen(info.host, ended, { client.leave(); nav.back() }, wifi = false)
 }
 

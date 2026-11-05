@@ -80,6 +80,7 @@ type progress struct {
 	finished int
 	dropped  bool
 	said     int
+	mine     int
 	away     time.Duration
 }
 

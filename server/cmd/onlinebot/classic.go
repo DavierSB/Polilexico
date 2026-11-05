@@ -32,7 +32,7 @@ func (b *bot) react(g *classic.Game, first bool) {
 		return
 	}
 	b.played = g.MoveCount()
-	b.mine++
+	b.progress.mine++
 	b.playLater(b.choose(g.Board(), rackOf(g, first)))
 }
 
@@ -57,7 +57,7 @@ func (b *bot) choose(board, rack string) string {
 	if b.o.style != "mixed" {
 		return best
 	}
-	switch b.mine % 5 {
+	switch b.progress.mine % 5 {
 	case 2:
 		return reversedWord(best)
 	case 4:
@@ -81,9 +81,9 @@ func (b *bot) playLater(in string) {
 
 func (b *bot) dropsAfterThis() bool {
 	if b.o.dropEvery > 0 {
-		return b.mine%b.o.dropEvery == 0
+		return b.progress.mine%b.o.dropEvery == 0
 	}
-	drop := b.o.drop > 0 && b.mine == b.o.drop && !b.progress.dropped
+	drop := b.o.drop > 0 && b.progress.mine == b.o.drop && !b.progress.dropped
 	if drop {
 		b.progress.dropped = true
 	}
