@@ -24,11 +24,22 @@ func (s *spectators) remove(c *client) bool {
 }
 
 func (s *spectators) countFor(seats []*seat) {
-	m := message{T: "watchers", Watchers: len(s.list)}
+	m := message{T: "watchers", Watchers: len(s.list), People: s.people()}
 	for _, seated := range seats {
 		seated.send(m)
 	}
 	s.send(m)
+}
+
+func (s *spectators) people() []person {
+	out := []person{}
+	for _, c := range s.list {
+		p := person{Name: c.player.Name, Country: c.player.Country}
+		if !slices.Contains(out, p) {
+			out = append(out, p)
+		}
+	}
+	return out
 }
 
 func (s *spectators) send(m message) {

@@ -10,7 +10,7 @@ data class RoomInfo(
   val watching: Boolean = false,
 )
 
-data class LiveGame(val id: String, val duplicate: Boolean, val players: List<String>, val countries: List<String>)
+data class LiveGame(val id: String, val duplicate: Boolean, val players: List<String>, val countries: List<String>, val watchers: Int = 0)
 
 data class Seek(
   val id: String, val duplicate: Boolean, val host: String, val country: String, val timeMs: Long, val overtimeMs: Long,
@@ -40,7 +40,7 @@ internal sealed interface OnlineEvent {
   data class Table(val view: String) : OnlineEvent
   data class Rejected(val reason: String) : OnlineEvent
   data class Chat(val from: String, val text: String) : OnlineEvent
-  data class Watchers(val count: Int) : OnlineEvent
+  data class Watchers(val people: List<Person>) : OnlineEvent
   data class Rival(val online: Boolean) : OnlineEvent
   data class Closed(val reason: String) : OnlineEvent
 }
@@ -77,7 +77,7 @@ private fun event(o: JSONObject): OnlineEvent? = when (o.getString("t")) {
   "lobby" -> OnlineEvent.LobbyChanged(
     Lobby(seeks(o.optJSONArray("seeks")), seeks(o.optJSONArray("invites")), people(o.optJSONArray("people")), games(o.optJSONArray("games"))),
   )
-  "watchers" -> OnlineEvent.Watchers(o.optInt("watchers"))
+  "watchers" -> OnlineEvent.Watchers(people(o.optJSONArray("people")))
   "room" -> OnlineEvent.Room(roomInfo(o))
   "state" -> OnlineEvent.State(o.getString("save"), o.optBoolean("first"))
   "table" -> OnlineEvent.Table(o.getString("view"))
@@ -94,7 +94,7 @@ private fun roomInfo(o: JSONObject): RoomInfo = RoomInfo(
 )
 
 private fun games(a: JSONArray?): List<LiveGame> = objects(a).map {
-  LiveGame(it.getString("id"), it.optString("mode") == "duplicate", strings(it.optJSONArray("players")), strings(it.optJSONArray("countries")))
+  LiveGame(it.getString("id"), it.optString("mode") == "duplicate", strings(it.optJSONArray("players")), strings(it.optJSONArray("countries")), it.optInt("watchers"))
 }
 
 private fun seeks(a: JSONArray?): List<Seek> = objects(a).map { s ->

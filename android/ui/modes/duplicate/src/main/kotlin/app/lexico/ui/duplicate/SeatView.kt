@@ -2,6 +2,7 @@ package app.lexico.ui.duplicate
 
 import app.lexico.model.Board
 import app.lexico.model.Placement
+import app.lexico.ui.common.PersonItem
 
 enum class SeatPhase { PLAYING, RESULTS, FINISHED }
 
@@ -26,6 +27,7 @@ data class SeatView(
   val bag: Int,
   val notice: String? = null,
   val status: String? = null,
+  val watchers: List<PersonItem> = emptyList(),
 ) {
   val standings: List<SeatEntry>
     get() = rounds.lastOrNull()?.entries.orEmpty().sortedByDescending { it.total }

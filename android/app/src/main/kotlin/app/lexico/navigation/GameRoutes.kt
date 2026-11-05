@@ -51,6 +51,7 @@ import app.lexico.ui.anagram.AnagramSession
 import app.lexico.ui.board.AppTheme
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.common.LocalWordLookup
+import app.lexico.ui.common.PersonItem
 import app.lexico.ui.classic.ClassicScreen
 import app.lexico.ui.classic.bot
 import app.lexico.ui.duplicate.DuplicateScreen
@@ -113,7 +114,7 @@ internal fun SprintRoute(screen: Screen.Sprint, lexico: Lexico, nav: Navigator, 
 @Composable
 internal fun ClassicPlay(
   game: ClassicGame, nav: Navigator, themes: ThemeState, finished: FinishedGames, wifiNotice: String? = null, handOff: Boolean = true,
-  pausable: Boolean = true, closeOnLeave: Boolean = true,
+  pausable: Boolean = true, closeOnLeave: Boolean = true, watchers: List<PersonItem> = emptyList(),
 ) {
   PauseWhenHidden(game, closeOnLeave)
   PlayCues(game) { it.takeIf { cue -> cue != Cue.CELEBRATION } }
@@ -125,7 +126,7 @@ internal fun ClassicPlay(
   }
   val state by game.state.collectAsState()
   LookupOnlyWhenOver(state.result != null || game.study) {
-    val view = classicView(state, game.opponent, controller.notice, game.host, handOff && game.host != null).copy(status = wifiNotice, pausable = pausable)
+    val view = classicView(state, game.opponent, controller.notice, game.host, handOff && game.host != null).copy(status = wifiNotice, pausable = pausable, watchers = watchers)
     ClassicScreen(view, themes.board, controller) { themes.picking = true }
   }
   exporting?.let { GameExport(it, finished, themes.board) { exporting = null } }

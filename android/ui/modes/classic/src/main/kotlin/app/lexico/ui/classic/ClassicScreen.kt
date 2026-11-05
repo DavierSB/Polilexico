@@ -47,8 +47,9 @@ private fun ClassicLayout(
 private fun TopBar(view: ClassicView, actions: ClassicActions, dialogs: ClassicDialogs, onTheme: (() -> Unit)?) {
   GameBar(
     bag = view.bag, onExit = actions::exit, onMoves = { dialogs.moves = true }, onBag = { dialogs.bag = true },
-    onResign = if (view.end == null) ({ dialogs.resign = true }) else null,
-    onPause = if (view.pausable && view.end == null && view.myClock != null) actions::pause else null, onTheme = onTheme,
+    onResign = if (view.end == null && !view.watching) ({ dialogs.resign = true }) else null,
+    onPause = if (view.pausable && view.end == null && view.myClock != null && !view.watching) actions::pause else null, onTheme = onTheme,
+    watchers = view.watchers,
   )
 }
 
@@ -80,6 +81,7 @@ private fun MyBar(view: ClassicView, c: TilePlacer, style: BoardStyle) {
 
 @Composable
 private fun Controls(view: ClassicView, c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs, onNotice: (String) -> Unit) {
+  if (view.watching) return WatchPanel(view)
   val end = view.end
   if (end != null) return ResultPanel(
     view, end, onAnalyze = actions::analyze, onAnalyzeEndgame = actions::analyzeEndgame, onExport = actions::export, onMenu = actions::exit,

@@ -35,6 +35,7 @@ type liveGame struct {
 	Mode      string   `json:"mode"`
 	Players   []string `json:"players"`
 	Countries []string `json:"countries"`
+	Watchers  int      `json:"watchers,omitempty"`
 }
 
 type person struct {

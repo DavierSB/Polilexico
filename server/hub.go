@@ -1,11 +1,11 @@
 package main
 
 import (
-	"strconv"
 	"context"
 	"crypto/rand"
 	"math/big"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -82,6 +82,13 @@ func (h *hub) handle(ctx context.Context, c *client, m message) {
 		h.startSeek(c, m.Code)
 	case c.room != nil:
 		c.room.handle(c, m)
+		h.changedOn(m)
+	}
+}
+
+func (h *hub) changedOn(m message) {
+	if m.T == "leave" {
+		h.changed()
 	}
 }
 
@@ -189,7 +196,9 @@ func (h *hub) watch(c *client, code string) {
 	h.leaveCurrent(c)
 	if r := h.roomByCode(code); r == nil || !r.watch(c) {
 		c.send(notice("error", "Esa partida ya terminó."))
+		return
 	}
+	h.changed()
 }
 
 func (h *hub) startSeek(c *client, code string) {

@@ -39,7 +39,7 @@ fun SeatScreen(view: SeatView, style: BoardStyle, actions: SeatActions) {
   var bag by remember { mutableStateOf(false) }
   BoardColumn(
     top = {
-      GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = null, onStandings = { chart = true })
+      GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = null, onStandings = { chart = true }, watchers = view.watchers)
     },
     board = { PlacingBoard(c, style, enabled = view.phase == SeatPhase.PLAYING, lookUpWhenIdle = view.phase == SeatPhase.FINISHED) },
     bottom = { SeatBottom(view, c, style, actions, message) { message = it } },

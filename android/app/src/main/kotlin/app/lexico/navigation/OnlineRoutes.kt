@@ -17,8 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import app.lexico.game.Lexico
-import app.lexico.game.modes.classic.ClassicState
-import app.lexico.game.modes.duplicate.table.TablePhase
 import app.lexico.game.modes.duplicate.table.TableState
 import app.lexico.game.storage.Mode
 import app.lexico.menu.Settings
@@ -37,11 +35,7 @@ import app.lexico.online.Proposal
 import app.lexico.online.RoomInfo
 import app.lexico.online.Seek
 import app.lexico.online.shrunkPhoto
-import app.lexico.ui.classic.Clock
 import app.lexico.ui.classic.NewOnlineClassicScreen
-import app.lexico.ui.classic.WatchClassicScreen
-import app.lexico.ui.classic.WatchClassicView
-import app.lexico.ui.classic.WatchSeat
 import app.lexico.ui.common.Disconnected
 import app.lexico.ui.common.AccountInput
 import app.lexico.ui.common.ChatComposer
@@ -71,9 +65,6 @@ import app.lexico.ui.common.WaitingRoomScreen
 import app.lexico.ui.common.flagOf
 import app.lexico.ui.duplicate.NewOnlineDuplicateScreen
 import app.lexico.ui.duplicate.SeatScreen
-import app.lexico.ui.duplicate.Standing
-import app.lexico.ui.duplicate.WatchDuplicateScreen
-import app.lexico.ui.duplicate.WatchDuplicateView
 import kotlinx.coroutines.launch
 
 private const val RIVAL_AWAY = "Tu rival se desconectó. Su reloj sigue corriendo."
@@ -201,7 +192,7 @@ private fun OnlineHub(session: OnlineSession, mode: Mode?, online: Online, lexic
   val seeks = lobby.seeks.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }
   val state = OnlineHubState(
     refused ?: status ?: ended.takeIf { room == null }, room != null && game?.state?.value?.result == null, seeks.map(::seekItem),
-    lobby.people.map { PersonItem(it.name, it.country, it.busy) }, lobby.invites.firstOrNull()?.let(::seekItem),
+    lobby.people.map(::personItem), lobby.invites.firstOrNull()?.let(::seekItem),
     classic = mode != Mode.DUPLICATE, duplicate = mode != Mode.CLASSIC,
     games = lobby.games.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }.map(::gameItem),
   )
@@ -239,8 +230,10 @@ private fun ClassicOnline(client: OnlineClient, info: RoomInfo, lexico: Lexico, 
   val rivalOnline by client.rivalOnline.collectAsState()
   val watchers by client.watchers.collectAsState()
   val over = game?.state?.collectAsState()?.value?.result != null
-  val shown = status ?: ended ?: RIVAL_AWAY.takeUnless { rivalOnline || over } ?: notice ?: watchingText(watchers)
-  game?.let { ClassicPlay(it, nav, themes, lexico.finishedGames, shown, handOff = false, pausable = false, closeOnLeave = false) }
+  val shown = status ?: ended ?: RIVAL_AWAY.takeUnless { rivalOnline || over } ?: notice
+  game?.let {
+    ClassicPlay(it, nav, themes, lexico.finishedGames, shown, handOff = false, pausable = false, closeOnLeave = false, watchers = watchers.map(::personItem))
+  }
     ?: WaitingRoomScreen(info.host, ended, { client.leave(); nav.back() }, wifi = false)
 }
 
@@ -257,65 +250,10 @@ private fun DuplicateOnline(client: OnlineClient, info: RoomInfo, nav: Navigator
   val table = state
   val leave = { client.leave(); nav.back() }
   when {
-    table != null -> SeatScreen(seatView(table, info.me, notice ?: watchingText(watchers), status ?: ended), themes.board, actions)
+    table != null -> SeatScreen(seatView(table, info.me, notice, status ?: ended).copy(watchers = watchers.map(::personItem)), themes.board, actions)
     info.first -> HostLobbyScreen(info.me, info.players, ended, client::start, leave, wifi = false)
     else -> GuestLobbyScreen(info.host, info.players, status ?: ended, info.me, leave)
   }
-}
-
-@Composable
-private fun Watch(client: OnlineClient, info: RoomInfo, nav: Navigator, themes: ThemeState) {
-  val watchers by client.watchers.collectAsState()
-  val leave = { client.leave(); nav.back() }
-  if (info.duplicate) WatchTable(client, watchers, themes, leave) else WatchGame(client, info, watchers, themes, leave)
-}
-
-@Composable
-private fun WatchGame(client: OnlineClient, info: RoomInfo, watchers: Int, themes: ThemeState, leave: () -> Unit) {
-  val game by client.game.collectAsState()
-  val state = game?.state?.collectAsState()?.value ?: return OnlineWaitScreen("Observando", "Conectando…", false, leave)
-  WatchClassicScreen(watchView(state, info.players, watchers), themes.board, leave)
-}
-
-@Composable
-private fun WatchTable(client: OnlineClient, watchers: Int, themes: ThemeState, leave: () -> Unit) {
-  val json by client.table.collectAsState()
-  var table by remember { mutableStateOf<TableState?>(null) }
-  LaunchedEffect(json) { json?.let { table = read(it) } }
-  val shown = table ?: return OnlineWaitScreen("Observando", "Conectando…", false, leave)
-  WatchDuplicateScreen(watchTableView(shown, watchers), themes.board, leave)
-}
-
-private fun watchingText(n: Int): String? = when {
-  n <= 0 -> null
-  n == 1 -> "👁 1 persona observando"
-  else -> "👁 $n personas observando"
-}
-
-private fun watchView(state: ClassicState, players: List<String>, watchers: Int): WatchClassicView {
-  val over = state.result != null
-  val a = WatchSeat(
-    players.getOrElse(0) { "" }, state.myScore, state.clocks?.let { Clock(it.myMs, it.myOvertimeMs) },
-    !over && state.myTurn, if (!over && state.myTurn) state.rack else emptyList(),
-  )
-  val b = WatchSeat(
-    players.getOrElse(1) { "" }, state.opponentScore, state.clocks?.let { Clock(it.opponentMs, it.opponentOvertimeMs) },
-    !over && !state.myTurn, if (!over && !state.myTurn) state.opponentRack else emptyList(),
-  )
-  val last = state.moves.lastOrNull()?.let { "${if (it.byMe) a.name else b.name}: ${it.text} (${it.score})" }
-  return WatchClassicView(state.board, b, a, watchers, last, state.result?.let { finalScore(a, b) })
-}
-
-private fun finalScore(a: WatchSeat, b: WatchSeat): String = when {
-  a.points > b.points -> "Ganó ${a.name}, ${a.points} a ${b.points}"
-  b.points > a.points -> "Ganó ${b.name}, ${b.points} a ${a.points}"
-  else -> "Empate a ${a.points}"
-}
-
-private fun watchTableView(t: TableState, watchers: Int): WatchDuplicateView {
-  val totals = t.rounds.lastOrNull()?.entries.orEmpty().map { Standing(it.name, it.total) }.sortedByDescending { it.total }
-  val round = if (t.phase == TablePhase.PLAYING) t.round else t.rounds.size
-  return WatchDuplicateView(t.board, t.rack, round, t.phase == TablePhase.PLAYING, totals, watchers)
 }
 
 @Composable
@@ -396,9 +334,11 @@ private suspend fun syncBackupOnce(online: Online, settings: Settings) {
 
 private fun gameItem(g: LiveGame): GameItem {
   val names = g.players.zip(g.countries) { name, country -> "$name ${flagOf(country)}" }
-  return if (g.duplicate) GameItem(g.id, names.joinToString(", "), "Duplicada · ${g.players.size} jugadores")
-  else GameItem(g.id, names.joinToString("  vs  "), "Clásica")
+  return if (g.duplicate) GameItem(g.id, names.joinToString(", "), "Duplicada · ${g.players.size} jugadores", g.watchers)
+  else GameItem(g.id, names.joinToString("  vs  "), "Clásica", g.watchers)
 }
+
+internal fun personItem(p: Person): PersonItem = PersonItem(p.name, p.country, p.busy)
 
 private fun seekItem(s: Seek): SeekItem =
   SeekItem(s.id, s.host, s.country, seekDetail(s), s.mine, s.duplicate, s.players, s.to)

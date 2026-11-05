@@ -52,7 +52,7 @@ data class SeekItem(
   val duplicate: Boolean = false, val players: Int = 1, val to: String = "",
 )
 
-data class GameItem(val id: String, val title: String, val detail: String)
+data class GameItem(val id: String, val title: String, val detail: String, val watchers: Int = 0)
 
 data class PersonItem(val name: String, val country: String, val busy: Boolean)
 
@@ -154,6 +154,7 @@ private fun GameList(games: List<GameItem>, onWatch: (String) -> Unit) {
         Text(g.title, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Text(g.detail, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
       }
+      if (g.watchers > 0) Text(watchersLabel(g.watchers), style = MaterialTheme.typography.labelLarge)
       Text("Ver", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
     }
   }
@@ -206,7 +207,7 @@ private fun PeopleList(people: List<PersonItem>, onChallenge: (PersonItem) -> Un
 }
 
 @Composable
-private fun PlayerRow(name: String, country: String, detail: String, mine: Boolean = false, action: @Composable () -> Unit) {
+internal fun PlayerRow(name: String, country: String, detail: String? = null, mine: Boolean = false, action: @Composable () -> Unit) {
   val colors = MaterialTheme.colorScheme
   Row(
     Modifier.fillMaxWidth().background(if (mine) colors.primaryContainer else colors.surfaceVariant, RoundedCornerShape(14.dp))
@@ -216,7 +217,7 @@ private fun PlayerRow(name: String, country: String, detail: String, mine: Boole
     PersonAvatar(name, country)
     Column(Modifier.weight(1f)) {
       Text("$name  ${flagOf(country)}", fontWeight = FontWeight.Bold, maxLines = 1)
-      Text(detail, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+      detail?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1) }
     }
     action()
   }

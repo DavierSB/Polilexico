@@ -2,6 +2,7 @@ package app.lexico.ui.classic
 
 import app.lexico.model.Placement
 import app.lexico.model.Board
+import app.lexico.ui.common.PersonItem
 
 enum class Side { ME, OPPONENT }
 
@@ -67,6 +68,8 @@ data class ClassicView(
   val handOff: Boolean = local,
   val status: String? = null,
   val pausable: Boolean = true,
+  val watching: Boolean = false,
+  val watchers: List<PersonItem> = emptyList(),
 ) {
   val latestScore: Int? get() = moves.lastOrNull { it.type == MoveType.PLACEMENT }?.points
 }

@@ -101,7 +101,7 @@ func (r *classicRoom) ongoing() (liveGame, bool) {
 		return liveGame{}, false
 	}
 	names, countries := seatNames(r.seats)
-	return liveGame{ID: r.code, Mode: modeClassic, Players: names, Countries: countries}, true
+	return liveGame{ID: r.code, Mode: modeClassic, Players: names, Countries: countries, Watchers: len(r.watchers.list)}, true
 }
 
 func (r *classicRoom) watch(c *client) bool {

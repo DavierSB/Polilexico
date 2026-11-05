@@ -52,8 +52,8 @@ class OnlineClient internal constructor(private val online: Online, private val 
   private val _ignoring = MutableStateFlow(false)
   val ignoring: StateFlow<Boolean> = _ignoring.asStateFlow()
 
-  private val _watchers = MutableStateFlow(0)
-  val watchers: StateFlow<Int> = _watchers.asStateFlow()
+  private val _watchers = MutableStateFlow<List<Person>>(emptyList())
+  val watchers: StateFlow<List<Person>> = _watchers.asStateFlow()
 
   private val _unanswered = MutableStateFlow(0)
   val unanswered: StateFlow<Int> = _unanswered.asStateFlow()
@@ -152,7 +152,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
     _inbox.value = emptyList()
     _ignoring.value = false
     _unanswered.value = 0
-    _watchers.value = 0
+    _watchers.value = emptyList()
   }
 
   fun forgetIfFinished() {
@@ -208,7 +208,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
       is OnlineEvent.Rival -> _rivalOnline.value = e.online
       is OnlineEvent.Closed -> _ended.value = e.reason.ifEmpty { "La sala se cerró." }
       is OnlineEvent.Chat -> heard(ChatLine(e.from, e.text))
-      is OnlineEvent.Watchers -> _watchers.value = e.count
+      is OnlineEvent.Watchers -> _watchers.value = e.people
     }
   }
 

@@ -15,18 +15,20 @@ import app.lexico.ui.board.RackTile
 import app.lexico.ui.board.ScrabbleBoard
 import app.lexico.ui.common.BoardColumn
 import app.lexico.ui.common.Header
+import app.lexico.ui.common.PersonItem
+import app.lexico.ui.common.WatchersButton
 
 data class Standing(val name: String, val total: Int)
 
 data class WatchDuplicateView(
-  val board: Board, val rack: List<String>, val round: Int, val playing: Boolean, val standings: List<Standing>, val watchers: Int,
+  val board: Board, val rack: List<String>, val round: Int, val playing: Boolean, val standings: List<Standing>, val watchers: List<PersonItem>,
 )
 
 @Composable
 fun WatchDuplicateScreen(view: WatchDuplicateView, style: BoardStyle, onExit: () -> Unit) {
   BoardColumn(
     top = {
-      Header("Observando · ronda ${view.round}", onExit) { if (view.watchers > 0) Text("👁 ${view.watchers}", fontWeight = FontWeight.Bold) }
+      Header("Observando · ronda ${view.round}", onExit) { WatchersButton(view.watchers) }
       if (view.playing) Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) { view.rack.forEach { RackTile(it, style, 28.dp) } }
     },
     board = { ScrabbleBoard(view.board, style = style) },
