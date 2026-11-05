@@ -3,15 +3,18 @@ package main
 import (
 	"slices"
 	"strings"
+	"time"
 )
 
 const reservedName = "Máster"
 
 type seat struct {
-	player player
-	name   string
-	client *client
-	chat   chatState
+	player        player
+	name          string
+	client        *client
+	chat          chatState
+	awayAt        time.Time
+	leftAfterPlay bool
 }
 
 func (s *seat) send(m message) {

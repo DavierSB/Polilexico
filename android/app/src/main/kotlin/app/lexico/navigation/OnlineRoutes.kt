@@ -38,6 +38,7 @@ import app.lexico.online.shrunkPhoto
 import app.lexico.ui.classic.NewOnlineClassicScreen
 import app.lexico.ui.common.Disconnected
 import app.lexico.ui.common.AccountInput
+import app.lexico.ui.common.AdjournedItem
 import app.lexico.ui.common.ChatComposer
 import app.lexico.ui.common.ChatEntry
 import app.lexico.ui.common.ChatPopup
@@ -197,6 +198,7 @@ private fun OnlineHub(session: OnlineSession, mode: Mode?, online: Online, lexic
     lobby.people.map(::personItem), lobby.invites.firstOrNull()?.let(::seekItem),
     classic = mode != Mode.DUPLICATE, duplicate = mode != Mode.CLASSIC,
     games = lobby.games.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }.map(::gameItem),
+    adjourned = if (mode == Mode.DUPLICATE) emptyList() else lobby.adjourned.map { AdjournedItem(it.id, it.opponent, it.country, it.online) },
   )
   ProvidePhotos(online, lobby) { OnlineHubScreen(profileOf(session), state, actions) }
 }
@@ -220,6 +222,7 @@ private fun hubActions(client: OnlineClient, lobby: Lobby, nav: Navigator): Onli
     decline = { id -> seekOf(id)?.let(client::decline) },
     cancel = { id -> seekOf(id)?.let(client::cancel) }, start = { id -> seekOf(id)?.let(client::startSeek) },
     watch = { id -> lobby.games.find { it.id == id }?.let { client.watch(it); nav.go(Screen.OnlinePlay) } },
+    resumeAdjourned = { id -> lobby.adjourned.find { it.id == id }?.let(client::resume) },
   )
 }
 
@@ -233,8 +236,13 @@ private fun ClassicOnline(client: OnlineClient, info: RoomInfo, lexico: Lexico, 
   val watchers by client.watchers.collectAsState()
   val over = game?.state?.collectAsState()?.value?.result != null
   val shown = status ?: ended ?: RIVAL_AWAY.takeUnless { rivalOnline || over } ?: notice
+  var adjourning by remember { mutableStateOf(false) }
   game?.let {
-    ClassicPlay(it, nav, themes, lexico.finishedGames, shown, handOff = false, pausable = false, closeOnLeave = false, watchers = watchers.map(::personItem))
+    ClassicPlay(
+      it, nav, themes, lexico.finishedGames, shown, handOff = false, pausable = false, closeOnLeave = false,
+      watchers = watchers.map(::personItem), onAdjourn = { adjourning = true },
+    )
+    AdjournDialogs(client, info, over || ended != null, adjourning) { adjourning = false }
   }
     ?: WaitingRoomScreen(info.host, ended, { client.leave(); nav.back() }, wifi = false)
 }
@@ -343,10 +351,11 @@ private fun gameItem(g: LiveGame): GameItem {
 internal fun personItem(p: Person): PersonItem = PersonItem(p.name, p.country, p.busy)
 
 private fun seekItem(s: Seek): SeekItem =
-  SeekItem(s.id, s.host, s.country, seekDetail(s), s.mine, s.duplicate, s.players, s.to)
+  SeekItem(s.id, s.host, s.country, seekDetail(s), s.mine, s.duplicate, s.players, s.to, s.resume)
 
 private fun seekDetail(s: Seek): String =
-  if (s.duplicate) "👥 ${s.players} en la sala · ${Durations.format(s.turnMs)} por ronda"
+  if (s.resume) "Partida aplazada · ${classicTime(s)}"
+  else if (s.duplicate) "👥 ${s.players} en la sala · ${Durations.format(s.turnMs)} por ronda"
   else if (s.mine && s.to.isNotEmpty()) "Reto a ${s.to} · ${classicTime(s)} · ${if (s.single) "Single" else "Void"}"
   else "Clásica · ${classicTime(s)} · ${if (s.single) "Single" else "Void"}"
 

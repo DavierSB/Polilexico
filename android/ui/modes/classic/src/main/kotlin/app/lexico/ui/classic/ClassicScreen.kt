@@ -20,13 +20,13 @@ import app.lexico.ui.common.Pausable
 import app.lexico.ui.common.rememberNotice
 
 @Composable
-fun ClassicScreen(view: ClassicView, style: BoardStyle, actions: ClassicActions, onTheme: (() -> Unit)? = null) {
+fun ClassicScreen(view: ClassicView, style: BoardStyle, actions: ClassicActions, onTheme: (() -> Unit)? = null, onAdjourn: (() -> Unit)? = null) {
   val c = rememberTilePlacer()
   LaunchedEffect(view.board, view.rack) { c.reset(view.board, view.rack) }
   val dialogs = rememberClassicDialogs(view)
   var message by rememberNotice(view.notice)
   Pausable(view.paused, actions::resume.takeIf { view.status == null }, view.status) {
-    HandOff(view) { ClassicLayout(view, c, style, actions, dialogs, message, onTheme) { message = it } }
+    HandOff(view) { ClassicLayout(view, c, style, actions, dialogs, message, onTheme, onAdjourn) { message = it } }
   }
   ClassicDialogsShown(view, c, actions, dialogs)
 }
@@ -34,22 +34,22 @@ fun ClassicScreen(view: ClassicView, style: BoardStyle, actions: ClassicActions,
 @Composable
 private fun ClassicLayout(
   view: ClassicView, c: TilePlacer, style: BoardStyle, actions: ClassicActions, dialogs: ClassicDialogs, message: String?,
-  onTheme: (() -> Unit)?, onNotice: (String) -> Unit,
+  onTheme: (() -> Unit)?, onAdjourn: (() -> Unit)?, onNotice: (String) -> Unit,
 ) {
   BoardColumn(
-    top = { TopBar(view, actions, dialogs, onTheme); OpponentBar(view, style) },
+    top = { TopBar(view, actions, dialogs, onTheme, onAdjourn); OpponentBar(view, style) },
     board = { BoardWithBanner(view, c, style) },
     bottom = { MyBar(view, c, style); view.status?.let { Notice(it, bold = true) }; message?.let { Notice(it) }; Controls(view, c, actions, dialogs, onNotice) },
   )
 }
 
 @Composable
-private fun TopBar(view: ClassicView, actions: ClassicActions, dialogs: ClassicDialogs, onTheme: (() -> Unit)?) {
+private fun TopBar(view: ClassicView, actions: ClassicActions, dialogs: ClassicDialogs, onTheme: (() -> Unit)?, onAdjourn: (() -> Unit)?) {
   GameBar(
     bag = view.bag, onExit = actions::exit, onMoves = { dialogs.moves = true }, onBag = { dialogs.bag = true },
     onResign = if (view.end == null && !view.watching) ({ dialogs.resign = true }) else null,
     onPause = if (view.pausable && view.end == null && view.myClock != null && !view.watching) actions::pause else null, onTheme = onTheme,
-    watchers = view.watchers,
+    watchers = view.watchers, onAdjourn = onAdjourn.takeIf { view.end == null && !view.watching },
   )
 }
 

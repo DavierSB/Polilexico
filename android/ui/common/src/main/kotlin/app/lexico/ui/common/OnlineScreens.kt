@@ -49,8 +49,10 @@ data class StatsSection(val title: String, val rows: List<Pair<String, String>>)
 
 data class SeekItem(
   val id: String, val host: String, val country: String, val detail: String, val mine: Boolean,
-  val duplicate: Boolean = false, val players: Int = 1, val to: String = "",
+  val duplicate: Boolean = false, val players: Int = 1, val to: String = "", val resume: Boolean = false,
 )
+
+data class AdjournedItem(val id: String, val opponent: String, val country: String, val online: Boolean)
 
 data class GameItem(val id: String, val title: String, val detail: String, val watchers: Int = 0)
 
@@ -59,12 +61,14 @@ data class PersonItem(val name: String, val country: String, val busy: Boolean)
 data class OnlineHubState(
   val status: String?, val inRoom: Boolean, val seeks: List<SeekItem>, val people: List<PersonItem>, val invite: SeekItem?,
   val classic: Boolean = true, val duplicate: Boolean = true, val games: List<GameItem> = emptyList(),
+  val adjourned: List<AdjournedItem> = emptyList(),
 )
 
 class OnlineHubActions(
   val back: () -> Unit, val profile: () -> Unit, val resume: () -> Unit, val seekClassic: () -> Unit, val createDuplicate: () -> Unit,
   val accept: (String) -> Unit, val challenge: (PersonItem) -> Unit, val decline: (String) -> Unit,
   val cancel: (String) -> Unit = {}, val start: (String) -> Unit = {}, val watch: (String) -> Unit = {},
+  val resumeAdjourned: (String) -> Unit = {},
 )
 
 @Composable
@@ -75,6 +79,7 @@ fun OnlineHubScreen(profile: OnlineProfile, state: OnlineHubState, actions: Onli
     }
     state.status?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
     if (state.inRoom) Button(onClick = actions.resume, Modifier.fillMaxWidth().height(52.dp)) { Text("Volver a la partida") }
+    if (!state.inRoom) state.adjourned.firstOrNull { it.online }?.let { ResumeBanner(it, actions) }
     val pager = rememberPagerState(if (state.duplicate && !state.classic) HubTab.DUPLICATES.ordinal else 0) { HubTab.entries.size }
     HubTabs(pager, state)
     HorizontalPager(pager, Modifier.weight(1f), verticalAlignment = Alignment.Top) { page -> TabPage { TabContent(HubTab.entries[page], state, actions) } }
@@ -135,7 +140,10 @@ private fun TabPage(content: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 private fun TabContent(tab: HubTab, state: OnlineHubState, actions: OnlineHubActions) = when (tab) {
-  HubTab.CLASSICS -> SeekList(state.seeks.filter { !it.duplicate }, "No hay clásicas ofrecidas.", actions)
+  HubTab.CLASSICS -> {
+    AdjournedList(state.adjourned, actions)
+    SeekList(state.seeks.filter { !it.duplicate }, "No hay clásicas ofrecidas.", actions)
+  }
   HubTab.DUPLICATES -> SeekList(state.seeks.filter { it.duplicate }, "No hay duplicadas ofrecidas.", actions)
   HubTab.PEOPLE -> PeopleList(state.people, actions.challenge)
   HubTab.GAMES -> GameList(state.games, actions.watch)
@@ -223,11 +231,32 @@ internal fun PlayerRow(name: String, country: String, detail: String? = null, mi
   }
 }
 
+private fun inviteTitle(invite: SeekItem): String =
+  if (invite.resume) "${invite.host} ${flagOf(invite.country)} quiere retomar la partida aplazada" else "${invite.host} ${flagOf(invite.country)} te reta"
+
+@Composable
+private fun ResumeBanner(game: AdjournedItem, actions: OnlineHubActions) {
+  PlayerRow(game.opponent, game.country, "En línea: podéis retomar la partida aplazada", mine = true) {
+    Button(onClick = { actions.resumeAdjourned(game.id) }) { Text("Retomar") }
+  }
+}
+
+@Composable
+private fun AdjournedList(games: List<AdjournedItem>, actions: OnlineHubActions) {
+  if (games.isEmpty()) return
+  Text("Partidas aplazadas", style = MaterialTheme.typography.labelLarge)
+  games.forEach { g ->
+    PlayerRow(g.opponent, g.country, if (g.online) "En línea · aplazada" else "Desconectado · aplazada") {
+      Button(onClick = { actions.resumeAdjourned(g.id) }, enabled = g.online) { Text("Retomar") }
+    }
+  }
+}
+
 @Composable
 private fun InviteDialog(invite: SeekItem, actions: OnlineHubActions) {
   AlertDialog(
     onDismissRequest = {}, icon = { PersonAvatar(invite.host, invite.country, size = 56.dp) },
-    title = { Text("${invite.host} ${flagOf(invite.country)} te reta") }, text = { Text(invite.detail) },
+    title = { Text(inviteTitle(invite)) }, text = { Text(invite.detail) },
     confirmButton = { Button(onClick = { actions.accept(invite.id) }) { Text("Aceptar") } },
     dismissButton = { TextButton(onClick = { actions.decline(invite.id) }) { Text("Rechazar") } },
   )

@@ -22,6 +22,7 @@ type seek struct {
 	Untimed    bool   `json:"untimed,omitempty"`
 	Players    int    `json:"players"`
 	Mine       bool   `json:"mine,omitempty"`
+	Resume     bool   `json:"resume,omitempty"`
 	hostID     string
 }
 
@@ -89,6 +90,7 @@ func (h *hub) broadcastLobby() {
 	for _, c := range h.onlineClients() {
 		m := lobbyMessage(listings, people, c.player)
 		m.Games = games
+		m.Adjourned = h.adjournedItems(c.player.ID)
 		c.send(m)
 	}
 }
@@ -96,6 +98,7 @@ func (h *hub) broadcastLobby() {
 func (h *hub) lobbyFor(p player) message {
 	m := lobbyMessage(h.visibleListings(), h.people(), p)
 	m.Games = h.liveGames()
+	m.Adjourned = h.adjournedItems(p.ID)
 	return m
 }
 

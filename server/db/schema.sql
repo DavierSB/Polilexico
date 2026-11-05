@@ -72,3 +72,23 @@ create policy "Resultados públicos" on public.game_players for select using (tr
 grant select on public.player_stats to anon, authenticated;
 grant all on public.profiles, public.games, public.game_players, public.backups, public.photos, public.player_stats to service_role;
 grant usage, select on all sequences in schema public to service_role;
+
+create table public.adjourned_games (
+  id text primary key,
+  player_a uuid not null references public.profiles on delete cascade,
+  player_b uuid not null references public.profiles on delete cascade,
+  name_a text not null,
+  name_b text not null,
+  country_a char(2) not null,
+  country_b char(2) not null,
+  time_ms bigint not null default 0,
+  overtime_ms bigint not null default 0,
+  void boolean not null default false,
+  untimed boolean not null default false,
+  save text not null,
+  created_at timestamptz not null default now()
+);
+
+create index adjourned_games_a on public.adjourned_games (player_a);
+create index adjourned_games_b on public.adjourned_games (player_b);
+alter table public.adjourned_games enable row level security;

@@ -1,5 +1,6 @@
 package app.lexico.online
 
+import android.os.SystemClock
 import app.lexico.game.Lexico
 import app.lexico.game.modes.classic.ClassicGame
 import app.lexico.game.modes.classic.ClassicRemote
@@ -21,6 +22,7 @@ private const val FINISHED_PHASE = "\"Phase\":\"finished\""
 private const val INBOX_SIZE = 10
 private const val UNSENT = "Sin conexión: la jugada no se envió."
 private const val GAME_GONE = "La partida ya no está disponible."
+private const val NOTICE_MS = 5_000L
 
 class OnlineClient internal constructor(private val online: Online, private val lexico: Lexico) : ClassicRemote {
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -58,9 +60,16 @@ class OnlineClient internal constructor(private val online: Online, private val 
   private val _unanswered = MutableStateFlow(0)
   val unanswered: StateFlow<Int> = _unanswered.asStateFlow()
 
+  private val _adjournAsk = MutableStateFlow<String?>(null)
+  val adjournAsk: StateFlow<String?> = _adjournAsk.asStateFlow()
+
+  private val _rivalAwaySince = MutableStateFlow<Long?>(null)
+  val rivalAwaySince: StateFlow<Long?> = _rivalAwaySince.asStateFlow()
+
   private val _rejoined = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
   val rejoined: SharedFlow<Unit> = _rejoined
 
+  private var noticeJob: Job? = null
   private var awaitingRoom = false
   private var awaitingGame = false
 
@@ -110,6 +119,24 @@ class OnlineClient internal constructor(private val online: Online, private val 
     send(roomAction("watch", game.id))
   }
 
+  fun adjourn() {
+    send(signal("adjourn"))
+  }
+
+  fun answerAdjourn(accept: Boolean) {
+    _adjournAsk.value = null
+    send(adjournReply(accept))
+  }
+
+  fun adjudicate() {
+    send(signal("adjudicate"))
+  }
+
+  fun resume(game: AdjournedGame) {
+    forget()
+    send(roomAction("resume", game.id))
+  }
+
   fun start() {
     send(signal("start"))
   }
@@ -119,7 +146,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
   }
 
   fun propose(input: String) {
-    _notice.value = if (send(moveMessage(input))) null else UNSENT
+    if (send(moveMessage(input))) _notice.value = null else flash(UNSENT)
   }
 
   fun say(text: String) {
@@ -149,6 +176,8 @@ class OnlineClient internal constructor(private val online: Online, private val 
     _notice.value = null
     _ended.value = null
     _rivalOnline.value = true
+    _rivalAwaySince.value = null
+    _adjournAsk.value = null
     _inbox.value = emptyList()
     _ignoring.value = false
     _unanswered.value = 0
@@ -199,16 +228,31 @@ class OnlineClient internal constructor(private val online: Online, private val 
     when (e) {
       OnlineEvent.Welcome -> welcomed()
       is OnlineEvent.Refused -> refuse(e.reason)
-      is OnlineEvent.Failed -> if (_room.value == null) _ended.value = e.reason else _notice.value = e.reason
+      is OnlineEvent.Failed -> if (_room.value == null) _ended.value = e.reason else flash(e.reason)
       is OnlineEvent.LobbyChanged -> lobbyChanged(e.lobby)
       is OnlineEvent.Room -> seated(e.info)
       is OnlineEvent.State -> { mirror(e); rejoinIfLive() }
       is OnlineEvent.Table -> { _table.value = e.view; rejoinIfLive() }
-      is OnlineEvent.Rejected -> _notice.value = e.reason
-      is OnlineEvent.Rival -> _rivalOnline.value = e.online
+      is OnlineEvent.Rejected -> flash(e.reason)
+      is OnlineEvent.Rival -> rival(e)
+      is OnlineEvent.AdjournAsk -> _adjournAsk.value = e.name
       is OnlineEvent.Closed -> _ended.value = e.reason.ifEmpty { "La sala se cerró." }
       is OnlineEvent.Chat -> heard(ChatLine(e.from, e.text))
       is OnlineEvent.Watchers -> _watchers.value = e.people
+    }
+  }
+
+  private fun rival(e: OnlineEvent.Rival) {
+    _rivalOnline.value = e.online
+    _rivalAwaySince.value = if (e.online) null else SystemClock.elapsedRealtime() - e.awayMs
+  }
+
+  private fun flash(text: String) {
+    _notice.value = text
+    noticeJob?.cancel()
+    noticeJob = scope.launch {
+      delay(NOTICE_MS)
+      if (_notice.value == text) _notice.value = null
     }
   }
 

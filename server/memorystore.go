@@ -23,11 +23,12 @@ type memoryStore struct {
 	results []result
 	backups map[string]string
 	photos  map[string]photo
+	pending map[string]adjourned
 }
 
 func newMemoryStore() *memoryStore {
 	return &memoryStore{users: map[string]*memoryUser{}, byName: map[string]string{}, access: map[string]string{},
-		refresh: map[string]string{}, backups: map[string]string{}, photos: map[string]photo{}}
+		refresh: map[string]string{}, backups: map[string]string{}, photos: map[string]photo{}, pending: map[string]adjourned{}}
 }
 
 func (s *memoryStore) Name() string { return "sin Supabase: cuentas en memoria" }
@@ -122,4 +123,30 @@ func token() string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	return hex.EncodeToString(b)
+}
+
+func (s *memoryStore) SaveAdjourned(_ context.Context, a adjourned) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.pending[a.ID] = a
+	return nil
+}
+
+func (s *memoryStore) Adjourned(_ context.Context, playerID string) ([]adjourned, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var out []adjourned
+	for _, a := range s.pending {
+		if a.has(playerID) {
+			out = append(out, a)
+		}
+	}
+	return out, nil
+}
+
+func (s *memoryStore) DropAdjourned(_ context.Context, id string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.pending, id)
+	return nil
 }

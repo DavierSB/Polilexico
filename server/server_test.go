@@ -528,3 +528,39 @@ func TestNewConnectionReplacesTheOldOne(t *testing.T) {
 		t.Fatal("sin motivo")
 	}
 }
+
+func TestAdjournByAgreementAndResume(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeClassic, TimeMs: 600_000})
+	beto.send(message{T: "join", Code: ana.mySeeks(1)[0].ID})
+	first := beto.waitFor("state").First
+	ana.send(message{T: "adjourn"})
+	beto.waitFor("adjournAsk")
+	beto.send(message{T: "adjournReply", Accept: true})
+	ana.waitUntil(func(m message) bool { return m.T == "closed" && m.Reason == "Partida aplazada." })
+	saved := beto.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 }).Adjourned[0]
+	beto.send(message{T: "resume", Code: saved.ID})
+	invite := ana.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Invites) == 1 }).Invites[0]
+	if !invite.Resume {
+		t.Fatalf("la invitación no es para retomar: %+v", invite)
+	}
+	ana.send(message{T: "join", Code: invite.ID})
+	if again := beto.waitFor("state"); again.First != first {
+		t.Fatalf("Beto cambió de asiento al retomar: antes %v, ahora %v", first, again.First)
+	}
+}
+
+func TestAdjudicationGoesToTheLeader(t *testing.T) {
+	adjudicateAfter = 0
+	defer func() { adjudicateAfter = 3 * time.Minute }()
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeClassic, TimeMs: 600_000})
+	beto.send(message{T: "join", Code: ana.mySeeks(1)[0].ID})
+	beto.waitFor("state")
+	beto.conn.Close(websocket.StatusNormalClosure, "")
+	ana.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
+	ana.send(message{T: "adjudicate"})
+	ana.waitUntil(func(m message) bool { return m.T == "closed" && strings.HasPrefix(m.Reason, "Partida anulada") })
+}

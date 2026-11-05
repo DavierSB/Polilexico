@@ -15,14 +15,16 @@ data class LiveGame(val id: String, val duplicate: Boolean, val players: List<St
 data class Seek(
   val id: String, val duplicate: Boolean, val host: String, val country: String, val timeMs: Long, val overtimeMs: Long,
   val turnMs: Long, val rounds: Int, val players: Int, val mine: Boolean, val single: Boolean = true, val timed: Boolean = true,
-  val to: String = "",
+  val to: String = "", val resume: Boolean = false,
 )
 
 data class Person(val name: String, val country: String, val busy: Boolean)
 
+data class AdjournedGame(val id: String, val opponent: String, val country: String, val online: Boolean)
+
 data class Lobby(
   val seeks: List<Seek> = emptyList(), val invites: List<Seek> = emptyList(), val people: List<Person> = emptyList(),
-  val games: List<LiveGame> = emptyList(),
+  val games: List<LiveGame> = emptyList(), val adjourned: List<AdjournedGame> = emptyList(),
 )
 
 sealed interface Proposal {
@@ -41,7 +43,8 @@ internal sealed interface OnlineEvent {
   data class Rejected(val reason: String) : OnlineEvent
   data class Chat(val from: String, val text: String) : OnlineEvent
   data class Watchers(val people: List<Person>) : OnlineEvent
-  data class Rival(val online: Boolean) : OnlineEvent
+  data class Rival(val online: Boolean, val awayMs: Long) : OnlineEvent
+  data class AdjournAsk(val name: String) : OnlineEvent
   data class Closed(val reason: String) : OnlineEvent
 }
 
@@ -62,6 +65,8 @@ internal fun signal(type: String): String = message(type).toString()
 
 internal fun ping(): String = signal("ping")
 
+internal fun adjournReply(accept: Boolean): String = message("adjournReply").put("accept", accept).toString()
+
 internal fun event(text: String): OnlineEvent? = runCatching { event(JSONObject(text)) }.getOrNull()
 
 private fun proposal(o: JSONObject, p: Proposal): JSONObject = when (p) {
@@ -75,7 +80,10 @@ private fun event(o: JSONObject): OnlineEvent? = when (o.getString("t")) {
   "refused" -> OnlineEvent.Refused(o.optString("reason"))
   "error" -> OnlineEvent.Failed(o.optString("reason"))
   "lobby" -> OnlineEvent.LobbyChanged(
-    Lobby(seeks(o.optJSONArray("seeks")), seeks(o.optJSONArray("invites")), people(o.optJSONArray("people")), games(o.optJSONArray("games"))),
+    Lobby(
+      seeks(o.optJSONArray("seeks")), seeks(o.optJSONArray("invites")), people(o.optJSONArray("people")), games(o.optJSONArray("games")),
+      adjourned(o.optJSONArray("adjourned")),
+    ),
   )
   "watchers" -> OnlineEvent.Watchers(people(o.optJSONArray("people")))
   "room" -> OnlineEvent.Room(roomInfo(o))
@@ -83,7 +91,8 @@ private fun event(o: JSONObject): OnlineEvent? = when (o.getString("t")) {
   "table" -> OnlineEvent.Table(o.getString("view"))
   "rejected" -> OnlineEvent.Rejected(o.optString("reason"))
   "chat" -> OnlineEvent.Chat(o.optString("name"), o.optString("text"))
-  "rival" -> OnlineEvent.Rival(o.optBoolean("online"))
+  "rival" -> OnlineEvent.Rival(o.optBoolean("online"), o.optLong("awayMs"))
+  "adjournAsk" -> OnlineEvent.AdjournAsk(o.optString("name"))
   "closed" -> OnlineEvent.Closed(o.optString("reason"))
   else -> null
 }
@@ -101,8 +110,12 @@ private fun seeks(a: JSONArray?): List<Seek> = objects(a).map { s ->
   Seek(
     s.getString("id"), s.optString("mode") == "duplicate", s.optString("host"), s.optString("country"), s.optLong("timeMs"),
     s.optLong("overtimeMs"), s.optLong("turnMs"), s.optInt("rounds"), s.optInt("players"), s.optBoolean("mine"),
-    !s.optBoolean("void"), !s.optBoolean("untimed"), s.optString("to"),
+    !s.optBoolean("void"), !s.optBoolean("untimed"), s.optString("to"), s.optBoolean("resume"),
   )
+}
+
+private fun adjourned(a: JSONArray?): List<AdjournedGame> = objects(a).map {
+  AdjournedGame(it.getString("id"), it.optString("opponent"), it.optString("country"), it.optBoolean("online"))
 }
 
 private fun people(a: JSONArray?): List<Person> = objects(a).map { Person(it.optString("name"), it.optString("country"), it.optBoolean("playing")) }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net/url"
 	"time"
 )
 
@@ -54,4 +55,20 @@ func (s *supabaseStore) SaveBackup(ctx context.Context, p player, data string) e
 
 func (s *supabaseStore) Ping(ctx context.Context) error {
 	return s.call(ctx, request{method: "GET", path: "/rest/v1/profiles?select=id&limit=1"}, nil)
+}
+
+func (s *supabaseStore) SaveAdjourned(ctx context.Context, a adjourned) error {
+	return s.call(ctx, request{method: "POST", path: "/rest/v1/adjourned_games", body: a, prefer: "resolution=merge-duplicates"}, nil)
+}
+
+func (s *supabaseStore) Adjourned(ctx context.Context, playerID string) ([]adjourned, error) {
+	since := time.Now().Add(-adjournedTTL).UTC().Format(time.RFC3339)
+	path := "/rest/v1/adjourned_games?select=*&or=(player_a." + eq(playerID) + ",player_b." + eq(playerID) + ")&created_at=gte." + url.QueryEscape(since)
+	var rows []adjourned
+	err := s.call(ctx, request{method: "GET", path: path}, &rows)
+	return rows, err
+}
+
+func (s *supabaseStore) DropAdjourned(ctx context.Context, id string) error {
+	return s.call(ctx, request{method: "DELETE", path: "/rest/v1/adjourned_games?id=" + eq(id)}, nil)
 }

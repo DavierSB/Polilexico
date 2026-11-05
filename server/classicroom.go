@@ -29,6 +29,9 @@ type classicRoom struct {
 	voidMode   bool
 	untimed    bool
 	watchers   spectators
+	hostID     string
+	asker      *seat
+	resumed    *adjourned
 }
 
 type listener func()
@@ -38,7 +41,7 @@ func (l listener) OnChange() { go l() }
 func newClassicRoom(h *hub, code string, host player, m message, invitee *player) *classicRoom {
 	r := &classicRoom{hub: h, code: code, timeMs: clamp(m.TimeMs, 60_000, 90*60_000, 25*60_000),
 		overtimeMs: clamp(m.OvertimeMs, 0, 30*60_000, 10*60_000), seats: []*seat{{player: host, name: host.Name}},
-		voidMode: m.Void, untimed: m.Untimed}
+		voidMode: m.Void, untimed: m.Untimed, hostID: host.ID}
 	if invitee != nil {
 		r.invitee, r.inviteeTo = invitee.ID, invitee.Name
 	}
@@ -78,6 +81,12 @@ func (r *classicRoom) handle(c *client, m message) {
 		relayChat(s, r.seats, m.Text)
 	case "leave":
 		r.leave(s)
+	case "adjourn":
+		r.adjourn(s)
+	case "adjournReply":
+		r.replyAdjourn(s, m.Accept)
+	case "adjudicate":
+		r.adjudicate(s)
 	}
 }
 
@@ -86,6 +95,7 @@ func (r *classicRoom) drop(c *client) {
 	defer r.mu.Unlock()
 	if s := r.seatOf(c.player.ID); s != nil && s.client == c {
 		s.client = nil
+		r.markAway(s)
 		r.sendPresence()
 		return
 	}
@@ -168,7 +178,8 @@ func (r *classicRoom) listing() (listing, bool) {
 	}
 	host := r.seats[0]
 	return listing{seek: seek{ID: r.code, Mode: modeClassic, Host: host.name, Country: host.player.Country, TimeMs: r.timeMs,
-		OvertimeMs: r.overtimeMs, Void: r.voidMode, Untimed: r.untimed, Players: len(r.seats), To: r.inviteeTo, hostID: host.player.ID},
+		OvertimeMs: r.overtimeMs, Void: r.voidMode, Untimed: r.untimed, Players: len(r.seats), To: r.inviteeTo, hostID: host.player.ID,
+		Resume: r.resumed != nil},
 		invitee: r.invitee}, true
 }
 
@@ -183,6 +194,7 @@ func (r *classicRoom) admit(c *client) *seat {
 	}
 	s := &seat{player: c.player, name: displayName(c.player, []string{r.seats[0].name})}
 	r.seats = append(r.seats, s)
+	r.restoreSeats()
 	r.hub.seat(c.player.ID, r)
 	r.start()
 	if r.match != nil {
@@ -192,7 +204,7 @@ func (r *classicRoom) admit(c *client) *seat {
 }
 
 func (r *classicRoom) seatHost() {
-	host := r.seats[0]
+	host := r.seatOf(r.hostID)
 	r.hub.seat(host.player.ID, r)
 	r.hub.matched(host.player.ID, r.code)
 	c := r.hub.clientOf(host.player.ID)
@@ -211,6 +223,7 @@ func (r *classicRoom) attach(s *seat, c *client) {
 		s.client.room = nil
 	}
 	s.client, c.room = c, r
+	s.awayAt = time.Time{}
 	c.send(r.roomMessage(s))
 	if r.match != nil {
 		r.sendState(s)
@@ -220,7 +233,7 @@ func (r *classicRoom) attach(s *seat, c *client) {
 }
 
 func (r *classicRoom) start() {
-	m, err := classic.NewLocalMatch(r.seats[0].name, r.seats[1].name, classic.StarterAny, r.timeMs, r.overtimeMs, !r.voidMode, listener(r.changed))
+	m, err := r.newMatch()
 	if err != nil {
 		r.closeAll("No se pudo empezar la partida.")
 		return
@@ -344,8 +357,8 @@ func (r *classicRoom) sendPresence() {
 	if len(r.seats) < 2 {
 		return
 	}
-	r.seats[0].send(message{T: "rival", Online: r.seats[1].online()})
-	r.seats[1].send(message{T: "rival", Online: r.seats[0].online()})
+	r.seats[0].send(message{T: "rival", Online: r.seats[1].online(), AwayMs: r.awayMs(r.seats[1])})
+	r.seats[1].send(message{T: "rival", Online: r.seats[0].online(), AwayMs: r.awayMs(r.seats[0])})
 }
 
 func (r *classicRoom) roomMessage(s *seat) message {

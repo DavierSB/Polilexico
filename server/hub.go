@@ -29,15 +29,16 @@ type room interface {
 }
 
 type hub struct {
-	mu     sync.Mutex
-	store  store
-	rooms  map[string]room
-	seats  map[string]room
-	online map[string]*client
+	mu        sync.Mutex
+	store     store
+	rooms     map[string]room
+	seats     map[string]room
+	online    map[string]*client
+	adjourned map[string]adjourned
 }
 
 func newHub(st store) *hub {
-	return &hub{store: st, rooms: map[string]room{}, seats: map[string]room{}, online: map[string]*client{}}
+	return &hub{store: st, rooms: map[string]room{}, seats: map[string]room{}, online: map[string]*client{}, adjourned: map[string]adjourned{}}
 }
 
 func (h *hub) serve(w http.ResponseWriter, r *http.Request) {
@@ -78,6 +79,8 @@ func (h *hub) handle(ctx context.Context, c *client, m message) {
 		h.cancel(c, m.Code)
 	case m.T == "watch":
 		h.watch(c, m.Code)
+	case m.T == "resume":
+		h.resume(c, m.Code)
 	case m.T == "start" && m.Code != "":
 		h.startSeek(c, m.Code)
 	case c.room != nil:
@@ -104,6 +107,7 @@ func (h *hub) hello(ctx context.Context, c *client, m message) {
 	}
 	c.player = p
 	h.goOnline(c)
+	go h.loadAdjourned(p.ID)
 	defer h.changed()
 	c.send(message{T: "welcome", Name: p.Name, Country: p.Country})
 	if r := h.roomOf(p.ID); r != nil && !r.finished() {
