@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,7 +40,10 @@ fun ExportingDialog() {
     text = {
       Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
         CircularProgressIndicator(Modifier.size(24.dp))
-        Text("Exportando la partida…")
+        Column {
+          Text("Exportando la partida…")
+          Text("Esto podría tardar un poco.", style = MaterialTheme.typography.bodySmall)
+        }
       }
     },
   )
