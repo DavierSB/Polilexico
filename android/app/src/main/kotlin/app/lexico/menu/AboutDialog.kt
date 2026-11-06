@@ -77,7 +77,7 @@ private fun License(version: String) {
   val uriHandler = LocalUriHandler.current
   Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
     Text(
-      "Versión $version. © 2026 Davier Bello. Poliléxico es software libre: se distribuye bajo la GNU General " +
+      "Versión $version. © 2026 Davier Sánchez Bello. Poliléxico es software libre: se distribuye bajo la GNU General " +
         "Public License, versión 3 o (a tu elección) cualquier versión posterior, con los términos adicionales " +
         "que acompañan al código.",
       style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -101,7 +101,7 @@ private fun AuthorDialog(close: () -> Unit) {
     confirmButton = { TextButton(onClick = close) { Text("Cerrar") } },
     text = {
       Column {
-        Text("Davier Bello")
+        Text("Davier Sánchez Bello")
         Text("daviersanbell@gmail.com", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
     },

@@ -67,5 +67,5 @@ source ../env.sh
 
 ## Licencia
 
-© 2026 Davier Bello. GPL-3.0-or-later, con los [términos adicionales](ADDITIONAL_TERMS.md) que
+© 2026 Davier Sánchez Bello. GPL-3.0-or-later, con los [términos adicionales](ADDITIONAL_TERMS.md) que
 permite su sección 7.
