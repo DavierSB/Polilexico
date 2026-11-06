@@ -55,6 +55,14 @@ func engineBot(botName string, local bool) string {
 }
 
 func LoadMirror(text string, paused bool, l events.Listener) (*Match, error) {
+	return loadMirror(text, paused, l, true)
+}
+
+func LoadWatch(text string, paused bool, l events.Listener) (*Match, error) {
+	return loadMirror(text, paused, l, false)
+}
+
+func loadMirror(text string, paused bool, l events.Listener, keep bool) (*Match, error) {
 	m, err := LoadMatch(text, l)
 	if err != nil {
 		return nil, err
@@ -62,7 +70,9 @@ func LoadMirror(text string, paused bool, l events.Listener) (*Match, error) {
 	m.mu.Lock()
 	m.mirror = true
 	m.mu.Unlock()
-	m.game.keepRecord()
+	if keep {
+		m.game.keepRecord()
+	}
 	if !paused {
 		m.Resume()
 	}

@@ -292,7 +292,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
 
   private suspend fun mirror(state: OnlineEvent.State) {
     val game = _game.value
-    if (game == null) _game.value = lexico.joinOnline(state.save, state.first, this)
+    if (game == null) _game.value = lexico.joinOnline(state.save, state.first, this, _room.value?.watching == true)
     else if (game.state.value.result == null) game.mirror(state.save, false)
   }
 

@@ -23,8 +23,7 @@ import app.lexico.ui.common.BagIcon
 import app.lexico.ui.common.BarIconButton
 import app.lexico.ui.common.BarTextButton
 import app.lexico.ui.common.EfficiencyDialog
-import app.lexico.ui.common.ExportButtons
-import app.lexico.ui.common.ExportKind
+import app.lexico.ui.common.ExportButton
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.LexicoIcons
 import app.lexico.ui.common.SpreadDialog
@@ -33,7 +32,7 @@ import app.lexico.ui.common.ThemeButton
 @Composable
 fun ReviewScreen(
   review: ReviewView, style: BoardStyle, sessions: EndgameSessions?, preEndgames: PreEndgameAnalyses?, atEndgame: Boolean, onBack: () -> Unit,
-  onExport: ((ExportKind) -> Unit)? = null, onTheme: () -> Unit,
+  onExport: (() -> Unit)? = null, onTheme: () -> Unit,
 ) {
   var page by remember { mutableIntStateOf(firstPage(review, atEndgame)) }
   var dialog by remember { mutableStateOf(if (review.turns.isEmpty() || atEndgame) ReviewDialog.NONE else ReviewDialog.OPENING) }
@@ -70,7 +69,7 @@ private fun ReviewActions(bag: Int?, chart: String, onTheme: () -> Unit, open: (
 
 @Composable
 private fun ReviewDialogShown(
-  dialog: ReviewDialog, review: ReviewView, page: Int, go: (Int) -> Unit, onExport: ((ExportKind) -> Unit)?, close: () -> Unit,
+  dialog: ReviewDialog, review: ReviewView, page: Int, go: (Int) -> Unit, onExport: (() -> Unit)?, close: () -> Unit,
 ) {
   when (dialog) {
     ReviewDialog.OPENING -> OpeningChart(review, page, go, onExport, close)
@@ -88,10 +87,10 @@ private fun ChartShown(review: ReviewView, page: Int, go: (Int) -> Unit, close: 
 }
 
 @Composable
-private fun OpeningChart(review: ReviewView, page: Int, go: (Int) -> Unit, onExport: ((ExportKind) -> Unit)?, close: () -> Unit) {
+private fun OpeningChart(review: ReviewView, page: Int, go: (Int) -> Unit, onExport: (() -> Unit)?, close: () -> Unit) {
   val endgame = endgameStart(review).takeIf { review.efficiency == null }
   val choices = endgame?.let { e -> @Composable { ReviewChoices({ go(review.startTurn); close() }, { go(e); close() }) } }
-  val export = onExport?.let { export -> @Composable { ExportButtons { close(); export(it) } } }
+  val export = onExport?.let { export -> @Composable { ExportButton { close(); export() } } }
   if (choices == null && export == null) return ChartShown(review, page, go, close)
   ChartShown(review, page, go, close) { Column(verticalArrangement = Arrangement.spacedBy(8.dp)) { choices?.invoke(); export?.invoke() } }
 }

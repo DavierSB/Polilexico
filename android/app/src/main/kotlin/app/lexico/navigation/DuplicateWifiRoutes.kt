@@ -20,7 +20,6 @@ import app.lexico.modes.duplicate.seatView
 import app.lexico.ui.common.GuestLobbyScreen
 import app.lexico.ui.common.HostLobbyScreen
 import app.lexico.ui.duplicate.SeatActions
-import app.lexico.ui.duplicate.SeatScreen
 import app.lexico.wifi.DuplicateRoom
 import app.lexico.wifi.DuplicateSeat
 import app.lexico.wifi.Room
@@ -66,7 +65,7 @@ private fun HostTable(table: DuplicateTable, me: String, nav: Navigator, themes:
   val actions = remember(table) {
     seatActions(nav, propose = { input -> notice = null; scope.launch { notice = table.propose(me, input) } }) { scope.launch { table.ready(me) } }
   }
-  state?.let { SeatScreen(seatView(it, me, notice), themes.board, actions) }
+  state?.let { ExportableSeat(seatView(it, me, notice), themes.board, actions) }
 }
 
 @Composable
@@ -83,7 +82,7 @@ private fun GuestSeat(name: String, room: Room, nav: Navigator, themes: ThemeSta
   var state by remember { mutableStateOf<TableState?>(null) }
   LaunchedEffect(json) { json?.let { state = read(it) } }
   val actions = remember(seat) { seatActions(nav, propose = seat::propose, ready = seat::ready) }
-  state?.let { SeatScreen(seatView(it, name, notice, status), themes.board, actions) }
+  state?.let { ExportableSeat(seatView(it, name, notice, status), themes.board, actions) }
     ?: GuestLobbyScreen(room.name, players, status, name) { onRefused("") }
 }
 

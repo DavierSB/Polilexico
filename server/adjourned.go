@@ -45,7 +45,8 @@ type adjournedItem struct {
 	Country  string `json:"country"`
 	Online   bool   `json:"online,omitempty"`
 	Busy     bool   `json:"busy,omitempty"`
-	Result   string `json:"result,omitempty"`
+	Result    string `json:"result,omitempty"`
+	Duplicate bool   `json:"duplicate,omitempty"`
 }
 
 func (a adjourned) createdAt() time.Time {
@@ -181,7 +182,8 @@ func (h *hub) adjournedItems(playerID string) []adjournedItem {
 
 func (h *hub) itemFor(a adjourned, playerID string) adjournedItem {
 	id, name, country := a.opponentOf(playerID)
-	item := adjournedItem{ID: a.ID, Opponent: name, Country: country, Online: h.online[id] != nil, Busy: h.seats[id] != nil}
+	item := adjournedItem{ID: a.ID, Opponent: name, Country: country, Online: h.online[id] != nil, Busy: h.seats[id] != nil,
+		Duplicate: a.Mode == modeDuplicate}
 	if !a.pending() {
 		item.Result = a.resultFor(playerID)
 	}

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -17,22 +16,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-enum class ExportKind { GCG, GIF }
-
 @Composable
-fun ExportButtons(onExport: (ExportKind) -> Unit) {
-  Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-    OutlinedButton(onClick = { onExport(ExportKind.GCG) }, Modifier.weight(1f)) { Text("Guardar .gcg") }
-    OutlinedButton(onClick = { onExport(ExportKind.GIF) }, Modifier.weight(1f)) { Text("Guardar .gif") }
-  }
+fun ExportButton(onExport: () -> Unit) {
+  OutlinedButton(onClick = onExport, Modifier.fillMaxWidth()) { Text("Exportar") }
 }
 
 @Composable
-fun ExportDialog(onGcg: () -> Unit, onGif: () -> Unit, onClose: () -> Unit) {
+fun ExportDialog(onJpg: () -> Unit, onGif: () -> Unit, onGcg: () -> Unit, onClose: () -> Unit) {
   AlertDialog(
     onDismissRequest = onClose,
     title = { Text("Exportar partida") },
-    text = { ExportChoices(onGcg, onGif) },
+    text = { ExportChoices(onJpg, onGif, onGcg) },
     confirmButton = { TextButton(onClick = onClose) { Text("Cancelar") } },
   )
 }
@@ -52,10 +46,10 @@ fun ExportingDialog() {
 }
 
 @Composable
-private fun ExportChoices(onGcg: () -> Unit, onGif: () -> Unit) {
+private fun ExportChoices(onJpg: () -> Unit, onGif: () -> Unit, onGcg: () -> Unit) {
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    Text("Elige el formato y luego dónde guardarla.", style = MaterialTheme.typography.bodySmall)
-    Button(onClick = onGcg, Modifier.fillMaxWidth()) { Text("Formato Scrabble (.gcg)") }
+    Button(onClick = onJpg, Modifier.fillMaxWidth()) { Text("Imagen (.jpg)") }
     Button(onClick = onGif, Modifier.fillMaxWidth()) { Text("Animación (.gif)") }
+    OutlinedButton(onClick = onGcg, Modifier.fillMaxWidth()) { Text("Formato Scrabble (.gcg)") }
   }
 }

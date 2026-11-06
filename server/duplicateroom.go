@@ -11,18 +11,22 @@ import (
 const maxDuplicatePlayers = 12
 
 type duplicateRoom struct {
-	mu       sync.Mutex
-	hub      *hub
-	code     string
-	turnMs   int64
-	rounds   int
-	live     bool
-	seats    []*seat
-	table    *duplicate.Table
-	started  time.Time
-	recorded bool
-	timer    *time.Timer
-	watchers spectators
+	mu        sync.Mutex
+	hub       *hub
+	code      string
+	turnMs    int64
+	rounds    int
+	live      bool
+	seats     []*seat
+	table     *duplicate.Table
+	started   time.Time
+	recorded  bool
+	timer     *time.Timer
+	watchers  spectators
+	asker     *seat
+	resumed   *adjourned
+	invitee   string
+	inviteeTo string
 }
 
 func newDuplicateRoom(h *hub, code string, host player, m message) *duplicateRoom {
@@ -65,6 +69,10 @@ func (r *duplicateRoom) handle(c *client, m message) {
 		relayChat(s, r.seats, m.Text)
 	case "leave":
 		r.leave(s)
+	case "adjourn":
+		r.adjourn(s)
+	case "adjournReply":
+		r.replyAdjourn(s, m.Accept)
 	}
 }
 
@@ -73,7 +81,9 @@ func (r *duplicateRoom) drop(c *client) {
 	defer r.mu.Unlock()
 	if s := r.seatOf(c.player.ID); s != nil && s.client == c {
 		s.client = nil
+		s.awayAt = time.Now()
 		r.setPresent(s, false)
+		r.sendPresence()
 		return
 	}
 	if r.watchers.remove(c) {
@@ -112,7 +122,13 @@ func (r *duplicateRoom) sendSpectatorView() {
 	}
 }
 
-func (r *duplicateRoom) decline(*client) {}
+func (r *duplicateRoom) decline(c *client) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if r.resumed != nil && r.table == nil && c.player.ID == r.invitee {
+		r.refuseResume(c.player.Name + " no quiere retomar la partida.")
+	}
+}
 
 func (r *duplicateRoom) cancel(playerID, reason string) {
 	r.mu.Lock()
@@ -168,7 +184,8 @@ func (r *duplicateRoom) listing() (listing, bool) {
 	}
 	host := r.seats[0]
 	return listing{seek: seek{ID: r.code, Mode: modeDuplicate, Host: host.name, Country: host.player.Country, TurnMs: r.turnMs,
-		Rounds: r.rounds, Live: r.live, Players: len(r.seats), hostID: host.player.ID}}, true
+		Rounds: r.rounds, Live: r.live, Players: len(r.seats), hostID: host.player.ID, To: r.inviteeTo, Resume: r.resumed != nil},
+		invitee: r.invitee}, true
 }
 
 func (r *duplicateRoom) admit(c *client) *seat {
@@ -179,10 +196,16 @@ func (r *duplicateRoom) admit(c *client) *seat {
 	case len(r.seats) >= maxDuplicatePlayers:
 		c.send(notice("error", "La sala ya está completa."))
 		return nil
+	case r.invitee != "" && c.player.ID != r.invitee:
+		c.send(notice("error", "Esa partida es para otro jugador."))
+		return nil
 	}
 	s := &seat{player: c.player, name: displayName(c.player, r.names())}
 	r.seats = append(r.seats, s)
 	r.hub.seat(c.player.ID, r)
+	if r.resumed != nil {
+		r.startResumed()
+	}
 	return s
 }
 
@@ -197,8 +220,10 @@ func (r *duplicateRoom) attach(s *seat, c *client) {
 		r.broadcastRoom()
 		return
 	}
+	s.awayAt = time.Time{}
 	r.sendView(s)
 	r.setPresent(s, true)
+	r.sendPresence()
 	s.send(message{T: "watchers", Watchers: len(r.watchers.list)})
 }
 

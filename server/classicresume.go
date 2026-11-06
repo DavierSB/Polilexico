@@ -81,7 +81,11 @@ func (h *hub) openResumed(c *client, a adjourned, rival player) {
 	h.leaveCurrent(c)
 	h.mu.Lock()
 	code := h.freeCode()
-	h.rooms[code] = newResumedRoom(h, code, c.player, a, rival)
+	if a.Mode == modeDuplicate {
+		h.rooms[code] = newResumedDuplicate(h, code, c.player, a, rival)
+	} else {
+		h.rooms[code] = newResumedRoom(h, code, c.player, a, rival)
+	}
 	h.mu.Unlock()
 	h.changed()
 }

@@ -1,6 +1,7 @@
 package app.lexico.games.export
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
@@ -32,10 +33,19 @@ internal class GameGif(context: Context, private val style: BoardStyle) {
     GifEncoder(WIDTH, HEIGHT).write(frames, out)
   }
 
-  private fun pixels(still: Still): IntArray {
+  fun writeJpeg(review: GameReview, out: OutputStream) = writeJpeg(stills(review).last(), out)
+
+  fun writeJpeg(still: Still, out: OutputStream) {
+    image(still).asAndroidBitmap().compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out)
+  }
+
+  private fun pixels(still: Still): IntArray =
+    IntArray(WIDTH * HEIGHT).also { image(still).asAndroidBitmap().getPixels(it, 0, WIDTH, 0, 0, WIDTH, HEIGHT) }
+
+  private fun image(still: Still): ImageBitmap {
     val image = ImageBitmap(WIDTH, HEIGHT)
     CanvasDrawScope().draw(density, LayoutDirection.Ltr, Canvas(image), Size(WIDTH.toFloat(), HEIGHT.toFloat())) { drawStill(still) }
-    return IntArray(WIDTH * HEIGHT).also { image.asAndroidBitmap().getPixels(it, 0, WIDTH, 0, 0, WIDTH, HEIGHT) }
+    return image
   }
 
   private fun DrawScope.drawStill(still: Still) {
@@ -58,5 +68,6 @@ internal class GameGif(context: Context, private val style: BoardStyle) {
     const val CAPTION_PX = 24f
     const val DELAY_CS = 120
     const val LAST_DELAY_CS = 500
+    const val JPEG_QUALITY = 92
   }
 }

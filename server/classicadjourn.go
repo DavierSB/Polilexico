@@ -97,6 +97,9 @@ func (r *classicRoom) rival(s *seat) *seat {
 }
 
 func adjudicateSaved(st store, a adjourned) string {
+	if a.Mode == modeDuplicate {
+		return adjudicateDuplicate(st, a)
+	}
 	if a.Responsible == "" {
 		return outcomeNone
 	}

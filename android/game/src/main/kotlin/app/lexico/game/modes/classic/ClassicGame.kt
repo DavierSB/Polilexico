@@ -31,6 +31,7 @@ class ClassicGame private constructor(
   scope: CoroutineScope,
   val seat: Seat,
   private val remote: ClassicRemote?,
+  private val watching: Boolean = false,
 ) : LiveGame<ClassicState>(id, mode, saves, scope, ClassicReader(match, seat).read()) {
   val opponent: String = match.game().opponent()
 
@@ -50,7 +51,7 @@ class ClassicGame private constructor(
 
   suspend fun mirror(text: String, paused: Boolean) {
     val listener = EngineListener()
-    val fresh = engine { Classic.loadMirror(text, paused, listener) }
+    val fresh = engine { loadMirror(text, paused, watching, listener) }
     val old = match
     match = fresh
     listener.target = listen()
@@ -99,7 +100,11 @@ class ClassicGame private constructor(
 
     suspend fun joinGuest(
       text: String, paused: Boolean, remote: ClassicRemote, id: String, saves: SavedGames, scope: CoroutineScope, seat: Seat = Seat.GUEST,
-    ): ClassicGame = open(id, null, saves, scope, seat, remote) { Classic.loadMirror(text, paused, it) }
+      watching: Boolean = false,
+    ): ClassicGame = open(id, null, saves, scope, seat, remote, watching) { loadMirror(text, paused, watching, it) }
+
+    private fun loadMirror(text: String, paused: Boolean, watching: Boolean, listener: EngineListener): Match =
+      if (watching) Classic.loadWatch(text, paused, listener) else Classic.loadMirror(text, paused, listener)
 
     suspend fun startEndgame(setup: EndgameSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame =
       searchEndgame(setup) { search -> open(id, Mode.ENDGAME, saves, scope) { endgameMatch(search, setup, it) } }
@@ -135,10 +140,10 @@ class ClassicGame private constructor(
 
     private suspend fun open(
       id: String, mode: Mode?, saves: SavedGames, scope: CoroutineScope, seat: Seat = Seat.SHARED, remote: ClassicRemote? = null,
-      create: (EngineListener) -> Match,
+      watching: Boolean = false, create: (EngineListener) -> Match,
     ): ClassicGame {
       val listener = EngineListener()
-      val game = engine { ClassicGame(create(listener), id, mode, saves, scope, seat, remote) }
+      val game = engine { ClassicGame(create(listener), id, mode, saves, scope, seat, remote, watching) }
       listener.target = game.listen()
       listener.onChange()
       return game

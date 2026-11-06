@@ -22,6 +22,7 @@ data class Person(val name: String, val country: String, val busy: Boolean)
 
 data class AdjournedGame(
   val id: String, val opponent: String, val country: String, val online: Boolean, val busy: Boolean = false, val result: String = "",
+  val duplicate: Boolean = false,
 )
 
 data class Lobby(
@@ -119,7 +120,7 @@ private fun seeks(a: JSONArray?): List<Seek> = objects(a).map { s ->
 private fun adjourned(a: JSONArray?): List<AdjournedGame> = objects(a).map {
   AdjournedGame(
     it.getString("id"), it.optString("opponent"), it.optString("country"), it.optBoolean("online"), it.optBoolean("busy"),
-    it.optString("result"),
+    it.optString("result"), it.optBoolean("duplicate"),
   )
 }
 

@@ -9,7 +9,7 @@ import (
 func (h *hub) adjournAll() int {
 	saved := 0
 	for _, r := range h.allRooms() {
-		if cr, ok := r.(*classicRoom); ok && h.saveNow(cr) {
+		if h.saveRoomNow(r) {
 			saved++
 		}
 	}
@@ -26,13 +26,31 @@ func (h *hub) allRooms() []room {
 	return rooms
 }
 
-func (h *hub) saveNow(r *classicRoom) bool {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	if !r.inPlay() {
+func (h *hub) saveRoomNow(r room) bool {
+	switch room := r.(type) {
+	case *classicRoom:
+		room.mu.Lock()
+		defer room.mu.Unlock()
+		if !room.inPlay() || !h.storeNow(room.snapshot(nil)) {
+			return false
+		}
+		room.recorded = true
+		room.closeAll(adjournedReason)
+	case *duplicateRoom:
+		room.mu.Lock()
+		defer room.mu.Unlock()
+		if !room.pair() || !h.storeNow(room.snapshot(nil)) {
+			return false
+		}
+		room.recorded = true
+		room.closeAll(adjournedReason)
+	default:
 		return false
 	}
-	a, ok := r.snapshot(nil)
+	return true
+}
+
+func (h *hub) storeNow(a adjourned, ok bool) bool {
 	if !ok {
 		return false
 	}
@@ -43,7 +61,5 @@ func (h *hub) saveNow(r *classicRoom) bool {
 		log.Printf("aplazar al apagar %s: %v", a.ID, err)
 		return false
 	}
-	r.recorded = true
-	r.closeAll(adjournedReason)
 	return true
 }

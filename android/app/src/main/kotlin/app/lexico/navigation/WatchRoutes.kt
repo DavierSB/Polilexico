@@ -25,7 +25,6 @@ import app.lexico.ui.common.OnlineWaitScreen
 import app.lexico.ui.common.PersonItem
 import app.lexico.modes.duplicate.seatView
 import app.lexico.ui.duplicate.SeatActions
-import app.lexico.ui.duplicate.SeatScreen
 
 @Composable
 internal fun Watch(client: OnlineClient, info: RoomInfo, nav: Navigator, themes: ThemeState) {
@@ -89,7 +88,7 @@ private fun WatchTable(client: OnlineClient, watchers: List<PersonItem>, themes:
   LaunchedEffect(json) { json?.let { table = read(it) } }
   val shown = table ?: return OnlineWaitScreen("Observando", "Conectando…", false, leave)
   val actions = remember(leave) { watchSeatActions(leave) }
-  SeatScreen(seatView(shown, "", null).copy(watching = true, watchers = watchers), themes.board, actions)
+  ExportableSeat(seatView(shown, "", null).copy(watching = true, watchers = watchers), themes.board, actions)
 }
 
 private fun watchSeatActions(leave: () -> Unit): SeatActions = object : SeatActions {

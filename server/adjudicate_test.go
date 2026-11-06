@@ -143,3 +143,47 @@ func engineRack(spaced string) string {
 	}
 	return b.String()
 }
+
+func TestTwoPlayerDuplicateAdjournsAndResumes(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeDuplicate, TurnMs: 60_000})
+	code := ana.mySeeks(1)[0].ID
+	beto.send(message{T: "join", Code: code})
+	beto.waitFor("room")
+	ana.send(message{T: "start", Code: code})
+	beto.waitFor("table")
+	ana.waitFor("table")
+	ana.send(message{T: "adjourn"})
+	beto.waitFor("adjournAsk")
+	beto.send(message{T: "adjournReply", Accept: true})
+	ana.waitUntil(func(m message) bool { return m.T == "closed" && m.Reason == adjournedReason })
+	item := beto.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 }).Adjourned[0]
+	if !item.Duplicate {
+		t.Fatalf("la aplazada no se marca como duplicada: %+v", item)
+	}
+	beto.send(message{T: "resume", Code: item.ID})
+	invite := ana.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Invites) == 1 }).Invites[0]
+	ana.send(message{T: "join", Code: invite.ID})
+	ana.waitFor("table")
+	beto.waitFor("table")
+}
+
+func TestAbsentDuplicatePlayerIsBlamed(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeDuplicate, TurnMs: 60_000})
+	code := ana.mySeeks(1)[0].ID
+	beto.send(message{T: "join", Code: code})
+	beto.waitFor("room")
+	ana.send(message{T: "start", Code: code})
+	beto.waitFor("table")
+	beto.conn.Close(websocket.StatusNormalClosure, "")
+	ana.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
+	adjournAlone(ana)
+	settleAll(srv)
+	item := ana.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 && m.Adjourned[0].Result != "" }).Adjourned[0]
+	if item.Result != "none" {
+		t.Fatalf("a 0-0 debía anularse, salió %q", item.Result)
+	}
+}

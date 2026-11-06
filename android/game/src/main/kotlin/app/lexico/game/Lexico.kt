@@ -78,8 +78,8 @@ class Lexico(private val context: Context) {
   suspend fun joinWifi(text: String, paused: Boolean, remote: ClassicRemote): ClassicGame =
     ClassicGame.joinGuest(text, paused, remote, newId(), savedGames, scope)
 
-  suspend fun joinOnline(text: String, first: Boolean, remote: ClassicRemote): ClassicGame =
-    ClassicGame.joinGuest(text, false, remote, newId(), savedGames, scope, if (first) Seat.HOST else Seat.GUEST)
+  suspend fun joinOnline(text: String, first: Boolean, remote: ClassicRemote, watching: Boolean = false): ClassicGame =
+    ClassicGame.joinGuest(text, false, remote, newId(), savedGames, scope, if (first) Seat.HOST else Seat.GUEST, watching)
 
   suspend fun newEndgame(setup: EndgameSetup): ClassicGame = ClassicGame.startEndgame(setup, newId(), savedGames, scope)
 

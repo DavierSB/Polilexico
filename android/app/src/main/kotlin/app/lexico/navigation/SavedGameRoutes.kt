@@ -8,7 +8,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import app.lexico.game.Lexico
 import app.lexico.games.export.GameExport
-import app.lexico.ui.common.ExportKind
 import app.lexico.game.modes.classic.ClassicGame
 import app.lexico.game.modes.duplicate.DuplicateGame
 import app.lexico.game.storage.Mode
@@ -90,8 +89,8 @@ internal fun ReviewRoute(screen: Screen.Review, lexico: Lexico, nav: Navigator, 
     val preEndgames: PreEndgameAnalyses = remember(view) {
       { i, update -> preEndgameRanking(lexico.finishedGames.preEndgame(screen.path, i), view.turns[i], update) }
     }
-    var exporting by remember { mutableStateOf<ExportKind?>(null) }
-    ReviewScreen(view, themes.board, sessions, preEndgames, screen.atEndgame, nav::back, { exporting = it }) { themes.picking = true }
-    exporting?.let { GameExport(screen.path, lexico.finishedGames, themes.board, it) { exporting = null } }
+    var exporting by remember { mutableStateOf(false) }
+    ReviewScreen(view, themes.board, sessions, preEndgames, screen.atEndgame, nav::back, { exporting = true }) { themes.picking = true }
+    if (exporting) GameExport(screen.path, lexico.finishedGames, themes.board) { exporting = false }
   }
 }

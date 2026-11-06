@@ -3,6 +3,7 @@ package app.lexico.ui.duplicate
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,7 +31,7 @@ import app.lexico.ui.common.rememberNotice
 import kotlinx.coroutines.delay
 
 @Composable
-fun SeatScreen(view: SeatView, style: BoardStyle, actions: SeatActions) {
+fun SeatScreen(view: SeatView, style: BoardStyle, actions: SeatActions, onExport: (() -> Unit)? = null, onAdjourn: (() -> Unit)? = null) {
   val c = rememberTilePlacer(RackRenewal.MASTER_PLAYS)
   LaunchedEffect(view.board, view.rack) { c.reset(view.board, view.rack) }
   var message by rememberNotice(view.notice)
@@ -39,10 +40,12 @@ fun SeatScreen(view: SeatView, style: BoardStyle, actions: SeatActions) {
   var bag by remember { mutableStateOf(false) }
   BoardColumn(
     top = {
-      GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = null, onStandings = { chart = true }, watchers = view.watchers)
+      GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = null, onStandings = { chart = true }, watchers = view.watchers,
+        onAdjourn = onAdjourn.takeIf { view.phase != SeatPhase.FINISHED && !view.watching },
+      )
     },
     board = { PlacingBoard(c, style, enabled = view.phase == SeatPhase.PLAYING && !view.watching, lookUpWhenIdle = view.phase == SeatPhase.FINISHED) },
-    bottom = { SeatBottom(view, c, style, actions, message) { message = it } },
+    bottom = { SeatBottom(view, c, style, actions, message, onExport) { message = it } },
   )
   if (chart) ChartDialog(view) { chart = false }
   if (moves) MovesDialog(movesOf(view), if (view.watching) "Mejor" else "Tú") { moves = false }
@@ -51,12 +54,14 @@ fun SeatScreen(view: SeatView, style: BoardStyle, actions: SeatActions) {
 }
 
 @Composable
-private fun SeatBottom(view: SeatView, c: TilePlacer, style: BoardStyle, actions: SeatActions, message: String?, onNotice: (String) -> Unit) {
+private fun SeatBottom(
+  view: SeatView, c: TilePlacer, style: BoardStyle, actions: SeatActions, message: String?, onExport: (() -> Unit)?, onNotice: (String) -> Unit,
+) {
   view.status?.let { Notice(it, bold = true) }
   when {
     view.phase == SeatPhase.PLAYING && view.watching -> WatchingRound(view, c, style)
     view.phase == SeatPhase.PLAYING -> Playing(view, c, style, actions, message, onNotice)
-    view.phase == SeatPhase.FINISHED -> Finished(view, actions)
+    view.phase == SeatPhase.FINISHED -> Finished(view, actions, onExport)
     view.iAmReady -> WaitingRound(view)
     else -> RoundResults(view, actions)
   }
@@ -97,9 +102,10 @@ private fun WaitingRound(view: SeatView) {
 }
 
 @Composable
-private fun Finished(view: SeatView, actions: SeatActions) {
+private fun Finished(view: SeatView, actions: SeatActions, onExport: (() -> Unit)?) {
   Text("Partida terminada", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
   Table(view)
+  onExport?.let { OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = it) { Text("Exportar") } }
   Button(modifier = Modifier.fillMaxWidth(), onClick = actions::exit) { Text("Salir") }
 }
 

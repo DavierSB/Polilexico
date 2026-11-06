@@ -66,7 +66,6 @@ import app.lexico.ui.common.StatsSection
 import app.lexico.ui.common.WaitingRoomScreen
 import app.lexico.ui.common.flagOf
 import app.lexico.ui.duplicate.NewOnlineDuplicateScreen
-import app.lexico.ui.duplicate.SeatScreen
 import kotlinx.coroutines.launch
 
 private const val RIVAL_AWAY = "Tu rival se desconectó. Su reloj sigue corriendo."
@@ -200,7 +199,8 @@ private fun OnlineHub(session: OnlineSession, mode: Mode?, online: Online, lexic
     lobby.people.map(::personItem), lobby.invites.firstOrNull()?.let(::seekItem),
     classic = mode != Mode.DUPLICATE, duplicate = mode != Mode.CLASSIC,
     games = lobby.games.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }.map(::gameItem),
-    adjourned = if (mode == Mode.DUPLICATE) emptyList() else lobby.adjourned.map { AdjournedItem(it.id, it.opponent, it.country, it.online, it.busy, it.result) },
+    adjourned = lobby.adjourned.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }
+      .map { AdjournedItem(it.id, it.opponent, it.country, it.online, it.busy, it.result, it.duplicate) },
   )
   ProvidePhotos(online, lobby) { OnlineHubScreen(profileOf(session), state, actions) }
 }
@@ -257,13 +257,20 @@ private fun DuplicateOnline(client: OnlineClient, info: RoomInfo, nav: Navigator
   val status by client.status.collectAsState()
   val ended by client.ended.collectAsState()
   val watchers by client.watchers.collectAsState()
+  var adjourning by remember { mutableStateOf(false) }
   var state by remember { mutableStateOf<TableState?>(null) }
   LaunchedEffect(json) { json?.let { state = read(it) } }
   val actions = remember(client) { seatActions(nav, propose = client::propose, ready = client::ready) }
   val table = state
   val leave = { client.leave(); nav.back() }
   when {
-    table != null -> SeatScreen(seatView(table, info.me, notice, status ?: ended).copy(watchers = watchers.map(::personItem)), themes.board, actions)
+    table != null -> {
+      ExportableSeat(
+        seatView(table, info.me, notice, status ?: ended).copy(watchers = watchers.map(::personItem)), themes.board, actions,
+        onAdjourn = { adjourning = true }.takeIf { info.players.size == 2 },
+      )
+      if (info.players.size == 2) AdjournDialogs(client, info, ended != null, adjourning) { adjourning = false }
+    }
     info.first -> HostLobbyScreen(info.me, info.players, ended, client::start, leave, wifi = false)
     else -> GuestLobbyScreen(info.host, info.players, status ?: ended, info.me, leave)
   }
@@ -357,7 +364,8 @@ private fun seekItem(s: Seek): SeekItem =
   SeekItem(s.id, s.host, s.country, seekDetail(s), s.mine, s.duplicate, s.players, s.to, s.resume)
 
 private fun seekDetail(s: Seek): String =
-  if (s.resume) "Partida aplazada · ${classicTime(s)}"
+  if (s.resume && s.duplicate) "Partida aplazada · duplicada"
+  else if (s.resume) "Partida aplazada · ${classicTime(s)}"
   else if (s.duplicate) "👥 ${s.players} en la sala · ${Durations.format(s.turnMs)} por ronda"
   else if (s.mine && s.to.isNotEmpty()) "Reto a ${s.to} · ${classicTime(s)} · ${if (s.single) "Single" else "Void"}"
   else "Clásica · ${classicTime(s)} · ${if (s.single) "Single" else "Void"}"

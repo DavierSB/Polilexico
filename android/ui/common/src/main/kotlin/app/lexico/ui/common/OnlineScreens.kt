@@ -60,6 +60,7 @@ data class SeekItem(
 
 data class AdjournedItem(
   val id: String, val opponent: String, val country: String, val online: Boolean, val busy: Boolean = false, val result: String = "",
+  val duplicate: Boolean = false,
 ) {
   val pending: Boolean get() = result.isEmpty()
   val available: Boolean get() = pending && online && !busy
@@ -157,9 +158,12 @@ private fun TabPage(content: @Composable ColumnScope.() -> Unit) {
 private fun TabContent(tab: HubTab, state: OnlineHubState, actions: OnlineHubActions) = when (tab) {
   HubTab.CLASSICS -> {
     SeekList(state.seeks.filter { !it.duplicate }, "No hay clásicas ofrecidas.", actions)
-    AdjournedList(state.adjourned, actions)
+    AdjournedList(state.adjourned.filter { !it.duplicate }, actions)
   }
-  HubTab.DUPLICATES -> SeekList(state.seeks.filter { it.duplicate }, "No hay duplicadas ofrecidas.", actions)
+  HubTab.DUPLICATES -> {
+    SeekList(state.seeks.filter { it.duplicate }, "No hay duplicadas ofrecidas.", actions)
+    AdjournedList(state.adjourned.filter { it.duplicate }, actions)
+  }
   HubTab.PEOPLE -> PeopleList(state.people, actions.challenge)
   HubTab.GAMES -> GameList(state.games, actions.watch)
 }
