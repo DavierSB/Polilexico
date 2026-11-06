@@ -31,6 +31,8 @@ type options struct {
 	from       string
 	ignore     string
 	adjourn    bool
+	proposeAt  int
+	again      time.Duration
 }
 
 func main() {
@@ -74,6 +76,8 @@ func parseOptions() options {
 	flag.StringVar(&o.from, "from", "", "solo acepta búsquedas de este anfitrión")
 	flag.StringVar(&o.ignore, "ignore", "", "no acepta búsquedas de anfitriones que empiecen así")
 	flag.BoolVar(&o.adjourn, "adjourn", true, "acepta las propuestas de aplazar")
+	flag.IntVar(&o.proposeAt, "propose-at", 0, "propone aplazar al empezar esa ronda o vuelta (0 = nunca)")
+	flag.DurationVar(&o.again, "propose-again", 15*time.Second, "vuelve a proponer aplazar tras este tiempo")
 	flag.Parse()
 	return o
 }
@@ -84,6 +88,7 @@ type progress struct {
 	said     int
 	mine     int
 	away     time.Duration
+	proposed bool
 }
 
 func (p *progress) pause() time.Duration {

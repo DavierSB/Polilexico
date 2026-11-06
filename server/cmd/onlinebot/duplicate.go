@@ -39,6 +39,7 @@ func (b *bot) table(m message) {
 func (b *bot) tableStep(v tableView) {
 	switch {
 	case v.Phase == "playing":
+		b.proposeIfDue(v.Round)
 		b.progress.mine++
 		b.playLater(b.choose(v.Board, v.Rack))
 	case v.Phase == "results" && !v.IAmReady:

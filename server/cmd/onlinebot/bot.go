@@ -221,6 +221,7 @@ func (b *bot) finish(summary string) {
 	}
 	b.link.send(message{T: "leave"})
 	b.progress.finished++
+	b.progress.proposed = false
 	b.free("fin de la partida: " + summary)
 }
 
