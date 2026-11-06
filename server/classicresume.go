@@ -1,13 +1,35 @@
 package main
 
-import "lexico/engine/modes/classic"
+import (
+	"time"
+
+	"lexico/engine/modes/classic"
+)
 
 func newResumedRoom(h *hub, code string, host player, a adjourned, rival player) *classicRoom {
 	m := message{TimeMs: a.TimeMs, OvertimeMs: a.OvertimeMs, Void: a.Void, Untimed: a.Untimed}
 	r := newClassicRoom(h, code, host, m, &rival)
 	r.resumed = &a
 	_, r.seats[0].name, _ = a.opponentOf(rival.ID)
+	r.awaitResume()
 	return r
+}
+
+func (r *classicRoom) awaitResume() {
+	r.timer.Stop()
+	r.timer = time.AfterFunc(resumeTimeout, func() {
+		r.mu.Lock()
+		defer r.mu.Unlock()
+		if r.match == nil {
+			r.refuseResume(r.inviteeTo + " no respondió.")
+		}
+	})
+}
+
+func (r *classicRoom) refuseResume(reason string) {
+	r.hub.blame(r.resumed.ID, r.invitee)
+	r.hub.notify(r.seats[0].player.ID, notice("closed", reason))
+	r.closeAll("")
 }
 
 func (r *classicRoom) newMatch() (*classic.Match, error) {
@@ -46,6 +68,8 @@ func (h *hub) resume(c *client, id string) {
 	switch {
 	case target == nil:
 		c.send(notice("error", "Tu rival no está conectado."))
+	case h.playing(target):
+		c.send(notice("error", target.player.Name+" está jugando otra partida."))
 	case h.canPublish(c) != "":
 		c.send(notice("error", h.canPublish(c)))
 	default:

@@ -23,6 +23,7 @@ private const val INBOX_SIZE = 10
 private const val UNSENT = "Sin conexión: la jugada no se envió."
 private const val GAME_GONE = "La partida ya no está disponible."
 private const val NOTICE_MS = 5_000L
+const val ADJOURNED = "Partida aplazada."
 
 class OnlineClient internal constructor(private val online: Online, private val lexico: Lexico) : ClassicRemote {
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -128,8 +129,8 @@ class OnlineClient internal constructor(private val online: Online, private val 
     send(adjournReply(accept))
   }
 
-  fun adjudicate() {
-    send(signal("adjudicate"))
+  fun seen(game: AdjournedGame) {
+    send(roomAction("seen", game.id))
   }
 
   fun resume(game: AdjournedGame) {
@@ -185,7 +186,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
   }
 
   fun forgetIfFinished() {
-    if (finished() || _ended.value != null) forget()
+    if (_room.value != null && (finished() || _ended.value != null)) forget()
   }
 
   private fun finished(): Boolean =
@@ -236,10 +237,15 @@ class OnlineClient internal constructor(private val online: Online, private val 
       is OnlineEvent.Rejected -> flash(e.reason)
       is OnlineEvent.Rival -> rival(e)
       is OnlineEvent.AdjournAsk -> _adjournAsk.value = e.name
-      is OnlineEvent.Closed -> _ended.value = e.reason.ifEmpty { "La sala se cerró." }
+      is OnlineEvent.Closed -> closed(e.reason.ifEmpty { "La sala se cerró." })
       is OnlineEvent.Chat -> heard(ChatLine(e.from, e.text))
       is OnlineEvent.Watchers -> _watchers.value = e.people
     }
+  }
+
+  private fun closed(reason: String) {
+    if (reason == ADJOURNED) forget()
+    _ended.value = reason
   }
 
   private fun rival(e: OnlineEvent.Rival) {

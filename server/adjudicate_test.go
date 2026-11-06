@@ -16,31 +16,72 @@ type quiet struct{}
 
 func (quiet) OnChange() {}
 
-func TestAdjudicationAwardsTheLeader(t *testing.T) {
-	adjudicateAfter = 0
-	defer func() { adjudicateAfter = 3 * time.Minute }()
+func TestAbsentPlayerLosesWhenTheOtherLeads(t *testing.T) {
 	srv := newTestServer(t)
 	onTurn, waiting, state := startedGame(t, srv)
 	play(t, onTurn, state)
 	waiting.conn.Close(websocket.StatusNormalClosure, "")
 	onTurn.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
-	onTurn.send(message{T: "adjudicate"})
-	onTurn.waitUntil(func(m message) bool { return m.T == "state" && strings.Contains(m.Save, `LostOnTime\":true`) })
+	adjournAlone(onTurn)
+	settleAll(srv)
 	waitStats(t, srv, onTurn.name, onTurn.country, "win")
+	item := onTurn.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 && m.Adjourned[0].Result != "" }).Adjourned[0]
+	if item.Result != "win" {
+		t.Fatalf("resultado %q, quería win", item.Result)
+	}
+	onTurn.send(message{T: "seen", Code: item.ID})
+	onTurn.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 0 })
 }
 
-func TestAdjudicationIgnoresAPlayThenLeave(t *testing.T) {
-	adjudicateAfter = 0
-	defer func() { adjudicateAfter = 3 * time.Minute }()
+func TestAPlayRightBeforeLeavingDoesNotCount(t *testing.T) {
 	srv := newTestServer(t)
 	first, second, state := startedGame(t, srv)
 	play(t, first, state)
 	play(t, second, second.waitFor("state"))
 	second.conn.Close(websocket.StatusNormalClosure, "")
 	first.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
-	first.send(message{T: "adjudicate"})
-	first.waitUntil(func(m message) bool { return m.T == "state" && strings.Contains(m.Save, `LostOnTime\":true`) })
+	adjournAlone(first)
+	settleAll(srv)
 	waitStats(t, srv, first.name, first.country, "win")
+}
+
+func TestRefusingToResumeTakesTheBlame(t *testing.T) {
+	srv := newTestServer(t)
+	onTurn, waiting, state := startedGame(t, srv)
+	play(t, onTurn, state)
+	onTurn.send(message{T: "adjourn"})
+	waiting.waitFor("adjournAsk")
+	waiting.send(message{T: "adjournReply", Accept: true})
+	item := onTurn.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 }).Adjourned[0]
+	onTurn.send(message{T: "resume", Code: item.ID})
+	invite := waiting.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Invites) == 1 }).Invites[0]
+	waiting.send(message{T: "decline", Code: invite.ID})
+	onTurn.waitUntil(func(m message) bool { return m.T == "closed" && strings.Contains(m.Reason, "no quiere retomar") })
+	settleAll(srv)
+	waitStats(t, srv, onTurn.name, onTurn.country, "win")
+}
+
+func TestAgreedAdjournmentIsAnnulledAtExpiry(t *testing.T) {
+	srv := newTestServer(t)
+	a, b, _ := startedGame(t, srv)
+	a.send(message{T: "adjourn"})
+	b.waitFor("adjournAsk")
+	b.send(message{T: "adjournReply", Accept: true})
+	a.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 })
+	settleAll(srv)
+	item := b.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 && m.Adjourned[0].Result != "" }).Adjourned[0]
+	if item.Result != "none" {
+		t.Fatalf("resultado %q, quería none", item.Result)
+	}
+}
+
+func adjournAlone(c *testClient) {
+	c.send(message{T: "adjourn"})
+	c.waitUntil(func(m message) bool { return m.T == "closed" && m.Reason == adjournedReason })
+}
+
+func settleAll(srv *testServer) {
+	srv.hub.sweep(time.Now().Add(adjournedTTL + time.Hour))
 }
 
 func play(t *testing.T, c *testClient, state message) {

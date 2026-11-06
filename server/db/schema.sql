@@ -92,3 +92,10 @@ create table public.adjourned_games (
 create index adjourned_games_a on public.adjourned_games (player_a);
 create index adjourned_games_b on public.adjourned_games (player_b);
 alter table public.adjourned_games enable row level security;
+
+alter table public.adjourned_games add column mode text not null default 'classic';
+alter table public.adjourned_games add column responsible text not null default '';
+alter table public.adjourned_games add column after_play boolean not null default false;
+alter table public.adjourned_games add column outcome text not null default '';
+alter table public.adjourned_games add column seen_a boolean not null default false;
+alter table public.adjourned_games add column seen_b boolean not null default false;

@@ -81,6 +81,8 @@ func (h *hub) handle(ctx context.Context, c *client, m message) {
 		h.watch(c, m.Code)
 	case m.T == "resume":
 		h.resume(c, m.Code)
+	case m.T == "seen":
+		h.markSeen(c, m.Code)
 	case m.T == "start" && m.Code != "":
 		h.startSeek(c, m.Code)
 	case c.room != nil:

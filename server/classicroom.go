@@ -85,8 +85,6 @@ func (r *classicRoom) handle(c *client, m message) {
 		r.adjourn(s)
 	case "adjournReply":
 		r.replyAdjourn(s, m.Accept)
-	case "adjudicate":
-		r.adjudicate(s)
 	}
 }
 
@@ -142,7 +140,11 @@ func (r *classicRoom) sendSpectatorState() {
 func (r *classicRoom) decline(c *client) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if r.match == nil && c.player.ID == r.invitee {
+	switch {
+	case r.match != nil || c.player.ID != r.invitee:
+	case r.resumed != nil:
+		r.refuseResume(c.player.Name + " no quiere retomar la partida.")
+	default:
 		r.hub.notify(r.seats[0].player.ID, notice("closed", c.player.Name+" rechazó el reto."))
 		r.closeAll("")
 	}

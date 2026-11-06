@@ -22,6 +22,7 @@ import app.lexico.game.storage.Mode
 import app.lexico.menu.Settings
 import app.lexico.menu.ThemeState
 import app.lexico.modes.duplicate.seatView
+import app.lexico.online.ADJOURNED
 import app.lexico.online.AccountForm
 import app.lexico.online.LiveGame
 import app.lexico.online.Lobby
@@ -143,6 +144,7 @@ internal fun OnlinePlayRoute(lexico: Lexico, nav: Navigator, themes: ThemeState)
   val ended by client.ended.collectAsState()
   val status by client.status.collectAsState()
   val current = info
+  LaunchedEffect(current, ended) { if (current == null && ended == ADJOURNED) nav.back() }
   when {
     current == null -> OnlineWaitScreen("En línea", ended ?: status ?: "Conectando…", ended != null) { client.forget(); nav.back() }
     current.watching -> Disconnected(status != null && ended == null, nav::home, note = null) {
@@ -198,7 +200,7 @@ private fun OnlineHub(session: OnlineSession, mode: Mode?, online: Online, lexic
     lobby.people.map(::personItem), lobby.invites.firstOrNull()?.let(::seekItem),
     classic = mode != Mode.DUPLICATE, duplicate = mode != Mode.CLASSIC,
     games = lobby.games.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }.map(::gameItem),
-    adjourned = if (mode == Mode.DUPLICATE) emptyList() else lobby.adjourned.map { AdjournedItem(it.id, it.opponent, it.country, it.online) },
+    adjourned = if (mode == Mode.DUPLICATE) emptyList() else lobby.adjourned.map { AdjournedItem(it.id, it.opponent, it.country, it.online, it.busy, it.result) },
   )
   ProvidePhotos(online, lobby) { OnlineHubScreen(profileOf(session), state, actions) }
 }
@@ -223,6 +225,7 @@ private fun hubActions(client: OnlineClient, lobby: Lobby, nav: Navigator): Onli
     cancel = { id -> seekOf(id)?.let(client::cancel) }, start = { id -> seekOf(id)?.let(client::startSeek) },
     watch = { id -> lobby.games.find { it.id == id }?.let { client.watch(it); nav.go(Screen.OnlinePlay) } },
     resumeAdjourned = { id -> lobby.adjourned.find { it.id == id }?.let(client::resume) },
+    seenAdjourned = { id -> lobby.adjourned.find { it.id == id }?.let(client::seen) },
   )
 }
 

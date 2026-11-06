@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"sync"
+	"time"
 )
 
 type memoryUser struct {
@@ -149,4 +150,16 @@ func (s *memoryStore) DropAdjourned(_ context.Context, id string) error {
 	defer s.mu.Unlock()
 	delete(s.pending, id)
 	return nil
+}
+
+func (s *memoryStore) DueAdjourned(_ context.Context, before time.Time) ([]adjourned, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var out []adjourned
+	for _, a := range s.pending {
+		if a.pending() && a.createdAt().Before(before) {
+			out = append(out, a)
+		}
+	}
+	return out, nil
 }

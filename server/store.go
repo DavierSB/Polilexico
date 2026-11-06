@@ -26,6 +26,7 @@ type store interface {
 	SaveAdjourned(ctx context.Context, a adjourned) error
 	Adjourned(ctx context.Context, playerID string) ([]adjourned, error)
 	DropAdjourned(ctx context.Context, id string) error
+	DueAdjourned(ctx context.Context, before time.Time) ([]adjourned, error)
 }
 
 type userError string

@@ -13,14 +13,13 @@ import app.lexico.online.OnlineClient
 import app.lexico.online.RoomInfo
 import app.lexico.ui.common.AdjournAskDialog
 import app.lexico.ui.common.AdjournConfirm
-import app.lexico.ui.common.AdjudicateConfirm
 import app.lexico.ui.common.RivalAwayDialog
 import kotlinx.coroutines.delay
 
 private const val AWAY_MS = 3 * 60_000L
 private const val ASK_AGAIN_MS = 2 * 60_000L
 
-private enum class AwayStep { CHOOSE, ADJOURN, ADJUDICATE }
+private enum class AwayStep { CHOOSE, ADJOURN }
 
 internal fun rivalOf(info: RoomInfo): String = info.players.firstOrNull { it != info.me } ?: "Tu rival"
 
@@ -46,9 +45,8 @@ private fun RivalAwayPrompt(client: OnlineClient, rival: String) {
   }
   val close: () -> Unit = { step = null; waits += 1 }
   when (step) {
-    AwayStep.CHOOSE -> RivalAwayDialog(rival, { step = AwayStep.ADJOURN }, { step = AwayStep.ADJUDICATE }, close)
+    AwayStep.CHOOSE -> RivalAwayDialog(rival, { step = AwayStep.ADJOURN }, close)
     AwayStep.ADJOURN -> AdjournConfirm(rival, rivalOnline = false, onYes = { step = null; client.adjourn() }, onNo = close)
-    AwayStep.ADJUDICATE -> AdjudicateConfirm(onYes = { step = null; client.adjudicate() }, onNo = close)
     null -> Unit
   }
 }

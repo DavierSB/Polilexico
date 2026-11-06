@@ -21,6 +21,7 @@ var engineOnce sync.Once
 type testServer struct {
 	*httptest.Server
 	store *memoryStore
+	hub   *hub
 }
 
 type testClient struct {
@@ -141,9 +142,10 @@ func newTestServer(t *testing.T) *testServer {
 		}
 	})
 	st := newMemoryStore()
-	srv := httptest.NewServer(routes(newHub(st), st))
+	h := newHub(st)
+	srv := httptest.NewServer(routes(h, st))
 	t.Cleanup(srv.Close)
-	return &testServer{srv, st}
+	return &testServer{srv, st, h}
 }
 
 func (s *testServer) player(t *testing.T, name, country string) *testClient {
@@ -551,18 +553,4 @@ func TestAdjournByAgreementAndResume(t *testing.T) {
 	if again := beto.waitFor("state"); again.First != first {
 		t.Fatalf("Beto cambió de asiento al retomar: antes %v, ahora %v", first, again.First)
 	}
-}
-
-func TestAdjudicationAnnulsWhenNotAhead(t *testing.T) {
-	adjudicateAfter = 0
-	defer func() { adjudicateAfter = 3 * time.Minute }()
-	srv := newTestServer(t)
-	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
-	ana.send(message{T: "create", Mode: modeClassic, TimeMs: 600_000})
-	beto.send(message{T: "join", Code: ana.mySeeks(1)[0].ID})
-	beto.waitFor("state")
-	beto.conn.Close(websocket.StatusNormalClosure, "")
-	ana.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
-	ana.send(message{T: "adjudicate"})
-	ana.waitUntil(func(m message) bool { return m.T == "closed" && strings.HasPrefix(m.Reason, "Partida anulada") })
 }

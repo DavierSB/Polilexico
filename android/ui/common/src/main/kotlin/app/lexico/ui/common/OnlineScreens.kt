@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,11 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -52,7 +58,12 @@ data class SeekItem(
   val duplicate: Boolean = false, val players: Int = 1, val to: String = "", val resume: Boolean = false,
 )
 
-data class AdjournedItem(val id: String, val opponent: String, val country: String, val online: Boolean)
+data class AdjournedItem(
+  val id: String, val opponent: String, val country: String, val online: Boolean, val busy: Boolean = false, val result: String = "",
+) {
+  val pending: Boolean get() = result.isEmpty()
+  val available: Boolean get() = pending && online && !busy
+}
 
 data class GameItem(val id: String, val title: String, val detail: String, val watchers: Int = 0)
 
@@ -68,7 +79,7 @@ class OnlineHubActions(
   val back: () -> Unit, val profile: () -> Unit, val resume: () -> Unit, val seekClassic: () -> Unit, val createDuplicate: () -> Unit,
   val accept: (String) -> Unit, val challenge: (PersonItem) -> Unit, val decline: (String) -> Unit,
   val cancel: (String) -> Unit = {}, val start: (String) -> Unit = {}, val watch: (String) -> Unit = {},
-  val resumeAdjourned: (String) -> Unit = {},
+  val resumeAdjourned: (String) -> Unit = {}, val seenAdjourned: (String) -> Unit = {},
 )
 
 @Composable
@@ -79,13 +90,17 @@ fun OnlineHubScreen(profile: OnlineProfile, state: OnlineHubState, actions: Onli
     }
     state.status?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
     if (state.inRoom) Button(onClick = actions.resume, Modifier.fillMaxWidth().height(52.dp)) { Text("Volver a la partida") }
-    if (!state.inRoom) state.adjourned.firstOrNull { it.online }?.let { ResumeBanner(it, actions) }
     val pager = rememberPagerState(if (state.duplicate && !state.classic) HubTab.DUPLICATES.ordinal else 0) { HubTab.entries.size }
     HubTabs(pager, state)
     HorizontalPager(pager, Modifier.weight(1f), verticalAlignment = Alignment.Top) { page -> TabPage { TabContent(HubTab.entries[page], state, actions) } }
     PublishButtons(state, actions)
   }
-  state.invite?.let { InviteDialog(it, actions) }
+  val verdict = state.adjourned.firstOrNull { !it.pending }
+  when {
+    state.invite != null -> InviteDialog(state.invite, actions)
+    verdict != null -> VerdictNotice(verdict.opponent, verdict.country, verdict.result) { actions.seenAdjourned(verdict.id) }
+    else -> ResumeOnEntry(state, actions)
+  }
 }
 
 private enum class HubTab(val label: String) { CLASSICS("Clásicas"), DUPLICATES("Duplicadas"), GAMES("En juego"), PEOPLE("Conectados") }
@@ -141,8 +156,8 @@ private fun TabPage(content: @Composable ColumnScope.() -> Unit) {
 @Composable
 private fun TabContent(tab: HubTab, state: OnlineHubState, actions: OnlineHubActions) = when (tab) {
   HubTab.CLASSICS -> {
-    AdjournedList(state.adjourned, actions)
     SeekList(state.seeks.filter { !it.duplicate }, "No hay clásicas ofrecidas.", actions)
+    AdjournedList(state.adjourned, actions)
   }
   HubTab.DUPLICATES -> SeekList(state.seeks.filter { it.duplicate }, "No hay duplicadas ofrecidas.", actions)
   HubTab.PEOPLE -> PeopleList(state.people, actions.challenge)
@@ -235,21 +250,57 @@ private fun inviteTitle(invite: SeekItem): String =
   if (invite.resume) "${invite.host} ${flagOf(invite.country)} quiere retomar la partida aplazada" else "${invite.host} ${flagOf(invite.country)} te reta"
 
 @Composable
-private fun ResumeBanner(game: AdjournedItem, actions: OnlineHubActions) {
-  PlayerRow(game.opponent, game.country, "En línea: podéis retomar la partida aplazada", mine = true) {
-    Button(onClick = { actions.resumeAdjourned(game.id) }) { Text("Retomar") }
+private fun ResumeOnEntry(state: OnlineHubState, actions: OnlineHubActions) {
+  var asked by remember { mutableStateOf(false) }
+  var open by remember { mutableStateOf(false) }
+  val online = state.adjourned.filter { it.available }
+  LaunchedEffect(online.isNotEmpty(), state.inRoom) {
+    if (online.isNotEmpty() && !state.inRoom && !asked) { asked = true; open = true }
   }
+  if (!open || online.isEmpty()) return
+  val close = { open = false }
+  if (online.size == 1) ResumeOneDialog(online[0], { close(); actions.resumeAdjourned(online[0].id) }, close)
+  else ResumeManyDialog(online, close)
+}
+
+@Composable
+private fun ResumeOneDialog(game: AdjournedItem, onResume: () -> Unit, close: () -> Unit) {
+  AlertDialog(
+    onDismissRequest = close, icon = { PersonAvatar(game.opponent, game.country, size = 56.dp) },
+    title = { Text("${game.opponent} ${flagOf(game.country)}") },
+    text = { Text("${game.opponent}, con quien tienes una partida pendiente, está en línea y puedes retomarla.") },
+    confirmButton = { Button(onClick = onResume) { Text("Retomar") } },
+    dismissButton = { TextButton(onClick = close) { Text("Ahora no") } },
+  )
+}
+
+@Composable
+private fun ResumeManyDialog(games: List<AdjournedItem>, close: () -> Unit) {
+  AlertDialog(
+    onDismissRequest = close,
+    icon = { Row(horizontalArrangement = Arrangement.spacedBy((-10).dp)) { games.take(4).forEach { PersonAvatar(it.opponent, it.country, size = 44.dp) } } },
+    text = { Text("Varios de los jugadores con quienes tienes partidas pendientes están en línea y puedes retomar sus partidas.") },
+    confirmButton = { TextButton(onClick = close) { Text("Entendido") } },
+  )
 }
 
 @Composable
 private fun AdjournedList(games: List<AdjournedItem>, actions: OnlineHubActions) {
-  if (games.isEmpty()) return
+  val pending = games.filter { it.pending }
+  if (pending.isEmpty()) return
+  Spacer(Modifier.height(12.dp))
   Text("Partidas aplazadas", style = MaterialTheme.typography.labelLarge)
-  games.forEach { g ->
-    PlayerRow(g.opponent, g.country, if (g.online) "En línea · aplazada" else "Desconectado · aplazada") {
-      Button(onClick = { actions.resumeAdjourned(g.id) }, enabled = g.online) { Text("Retomar") }
+  pending.forEach { g ->
+    PlayerRow(g.opponent, g.country, adjournedDetail(g)) {
+      Button(onClick = { actions.resumeAdjourned(g.id) }, enabled = g.available) { Text("Retomar") }
     }
   }
+}
+
+private fun adjournedDetail(g: AdjournedItem): String = when {
+  !g.online -> "Desconectado · aplazada"
+  g.busy -> "Jugando otra partida · aplazada"
+  else -> "En línea · aplazada"
 }
 
 @Composable
@@ -287,10 +338,27 @@ internal fun StatsCard(section: StatsSection) {
 }
 
 @Composable
+private fun ClosedScreen(title: String, text: String, onBack: () -> Unit) {
+  Column(Modifier.fillMaxSize()) {
+    Header(title, onBack)
+    Column(
+      Modifier.fillMaxWidth().weight(1f).padding(horizontal = 24.dp),
+      verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically), horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Text(
+        text.removeSuffix("."), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary, textAlign = TextAlign.Center,
+      )
+      Button(onClick = onBack) { Text("Volver al lobby") }
+    }
+  }
+}
+
+@Composable
 fun OnlineWaitScreen(title: String, text: String, failed: Boolean, onBack: () -> Unit) {
+  if (failed) return ClosedScreen(title, text, onBack)
   FitColumn(14.dp) {
     Header(title, onBack)
-    if (failed) return@FitColumn Text(text, color = MaterialTheme.colorScheme.error)
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
       CircularProgressIndicator()
       Text(text)
