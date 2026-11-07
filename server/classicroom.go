@@ -14,24 +14,26 @@ const (
 )
 
 type classicRoom struct {
-	mu         sync.Mutex
-	hub        *hub
-	code       string
-	timeMs     int64
-	overtimeMs int64
-	seats      []*seat
-	match      *classic.Match
-	started    time.Time
-	recorded   bool
-	timer      *time.Timer
-	invitee    string
-	inviteeTo  string
-	voidMode   bool
-	untimed    bool
-	watchers   spectators
-	hostID     string
-	asker      *seat
-	resumed    *adjourned
+	mu          sync.Mutex
+	hub         *hub
+	code        string
+	timeMs      int64
+	overtimeMs  int64
+	seats       []*seat
+	match       *classic.Match
+	started     time.Time
+	recorded    bool
+	timer       *time.Timer
+	invitee     string
+	inviteeTo   string
+	voidMode    bool
+	untimed     bool
+	watchers    spectators
+	hostID      string
+	asker       *seat
+	askTimer    *time.Timer
+	vacantTimer *time.Timer
+	resumed     *adjourned
 }
 
 type listener func()
@@ -92,8 +94,8 @@ func (r *classicRoom) drop(c *client) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if s := r.seatOf(c.player.ID); s != nil && s.client == c {
-		s.client = nil
-		r.markAway(s)
+		s.client, s.awayAt = nil, time.Now()
+		r.awayChanged(s)
 		r.sendPresence()
 		return
 	}
@@ -140,11 +142,7 @@ func (r *classicRoom) sendSpectatorState() {
 func (r *classicRoom) decline(c *client) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	switch {
-	case r.match != nil || c.player.ID != r.invitee:
-	case r.resumed != nil:
-		r.refuseResume(c.player.Name + " no quiere retomar la partida.")
-	default:
+	if r.match == nil && c.player.ID == r.invitee {
 		r.hub.notify(r.seats[0].player.ID, notice("closed", c.player.Name+" rechazó el reto."))
 		r.closeAll("")
 	}
@@ -175,13 +173,12 @@ func (r *classicRoom) finished() bool {
 func (r *classicRoom) listing() (listing, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if r.match != nil {
+	if r.match != nil || len(r.seats) == 2 {
 		return listing{}, false
 	}
 	host := r.seats[0]
 	return listing{seek: seek{ID: r.code, Mode: modeClassic, Host: host.name, Country: host.player.Country, TimeMs: r.timeMs,
-		OvertimeMs: r.overtimeMs, Void: r.voidMode, Untimed: r.untimed, Players: len(r.seats), To: r.inviteeTo, hostID: host.player.ID,
-		Resume: r.resumed != nil},
+		OvertimeMs: r.overtimeMs, Void: r.voidMode, Untimed: r.untimed, Players: len(r.seats), To: r.inviteeTo, hostID: host.player.ID},
 		invitee: r.invitee}, true
 }
 
@@ -196,7 +193,6 @@ func (r *classicRoom) admit(c *client) *seat {
 	}
 	s := &seat{player: c.player, name: displayName(c.player, []string{r.seats[0].name})}
 	r.seats = append(r.seats, s)
-	r.restoreSeats()
 	r.hub.seat(c.player.ID, r)
 	r.start()
 	if r.match != nil {
@@ -229,6 +225,7 @@ func (r *classicRoom) attach(s *seat, c *client) {
 	c.send(r.roomMessage(s))
 	if r.match != nil {
 		r.sendState(s)
+		r.awayChanged(s)
 	}
 	r.sendPresence()
 	s.send(message{T: "watchers", Watchers: len(r.watchers.list)})
@@ -332,6 +329,8 @@ func (r *classicRoom) expireIn(d time.Duration) {
 }
 
 func (r *classicRoom) closeAll(reason string) {
+	stopTimer(r.askTimer)
+	stopTimer(r.vacantTimer)
 	for _, s := range r.seats {
 		if reason != "" {
 			s.send(notice("closed", reason))

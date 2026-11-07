@@ -35,10 +35,11 @@ type hub struct {
 	seats     map[string]room
 	online    map[string]*client
 	adjourned map[string]adjourned
+	missed    map[string]bool
 }
 
 func newHub(st store) *hub {
-	return &hub{store: st, rooms: map[string]room{}, seats: map[string]room{}, online: map[string]*client{}, adjourned: map[string]adjourned{}}
+	return &hub{store: st, rooms: map[string]room{}, seats: map[string]room{}, online: map[string]*client{}, adjourned: map[string]adjourned{}, missed: map[string]bool{}}
 }
 
 func (h *hub) serve(w http.ResponseWriter, r *http.Request) {
@@ -114,6 +115,9 @@ func (h *hub) hello(ctx context.Context, c *client, m message) {
 	go h.loadAdjourned(p.ID)
 	defer h.changed()
 	c.send(message{T: "welcome", Name: p.Name, Country: p.Country})
+	if h.takeMissed(p.ID) {
+		c.send(notice("closed", adjournedReason))
+	}
 	if r := h.roomOf(p.ID); r != nil && !r.finished() {
 		r.enter(c)
 	}
@@ -192,7 +196,11 @@ func (h *hub) cancel(c *client, code string) {
 }
 
 func (h *hub) playing(c *client) bool {
-	r := h.roomOf(c.player.ID)
+	return h.busy(c.player.ID)
+}
+
+func (h *hub) busy(playerID string) bool {
+	r := h.roomOf(playerID)
 	return r != nil && r.active()
 }
 

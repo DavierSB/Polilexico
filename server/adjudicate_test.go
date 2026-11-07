@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 	"testing"
@@ -16,63 +17,159 @@ type quiet struct{}
 
 func (quiet) OnChange() {}
 
-func TestAbsentPlayerLosesWhenTheOtherLeads(t *testing.T) {
+func TestTheOneWhoAsksTakesTheBlame(t *testing.T) {
 	srv := newTestServer(t)
-	onTurn, waiting, state := startedGame(t, srv)
-	play(t, onTurn, state)
-	waiting.conn.Close(websocket.StatusNormalClosure, "")
-	onTurn.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
-	adjournAlone(onTurn)
+	ahead, behind, state := startedGame(t, srv)
+	play(t, ahead, state)
+	agreeToAdjourn(behind, ahead)
 	settleAll(srv)
-	waitStats(t, srv, onTurn.name, onTurn.country, "win")
-	item := onTurn.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 && m.Adjourned[0].Result != "" }).Adjourned[0]
+	waitStats(t, srv, ahead.name, ahead.country, "win")
+	item := ahead.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 && m.Adjourned[0].Result != "" }).Adjourned[0]
 	if item.Result != "win" {
 		t.Fatalf("resultado %q, quería win", item.Result)
 	}
-	onTurn.send(message{T: "seen", Code: item.ID})
-	onTurn.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 0 })
+	ahead.send(message{T: "seen", Code: item.ID})
+	ahead.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 0 })
 }
 
-func TestAPlayRightBeforeLeavingDoesNotCount(t *testing.T) {
+func TestAPlayRightBeforeAskingDoesNotCount(t *testing.T) {
 	srv := newTestServer(t)
 	first, second, state := startedGame(t, srv)
 	play(t, first, state)
-	play(t, second, second.waitFor("state"))
-	second.conn.Close(websocket.StatusNormalClosure, "")
-	first.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
-	adjournAlone(first)
+	play(t, second, second.waitUntil(func(m message) bool { return m.T == "state" && turnIsFirst(t, m.Save) == m.First }))
+	agreeToAdjourn(second, first)
 	settleAll(srv)
 	waitStats(t, srv, first.name, first.country, "win")
 }
 
-func TestRefusingToResumeTakesTheBlame(t *testing.T) {
-	srv := newTestServer(t)
-	onTurn, waiting, state := startedGame(t, srv)
-	play(t, onTurn, state)
-	onTurn.send(message{T: "adjourn"})
-	waiting.waitFor("adjournAsk")
-	waiting.send(message{T: "adjournReply", Accept: true})
-	item := onTurn.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 }).Adjourned[0]
-	onTurn.send(message{T: "resume", Code: item.ID})
-	invite := waiting.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Invites) == 1 }).Invites[0]
-	waiting.send(message{T: "decline", Code: invite.ID})
-	onTurn.waitUntil(func(m message) bool { return m.T == "closed" && strings.Contains(m.Reason, "no quiere retomar") })
-	settleAll(srv)
-	waitStats(t, srv, onTurn.name, onTurn.country, "win")
-}
-
-func TestAgreedAdjournmentIsAnnulledAtExpiry(t *testing.T) {
+func TestAdjournmentWithoutALeadIsAnnulled(t *testing.T) {
 	srv := newTestServer(t)
 	a, b, _ := startedGame(t, srv)
-	a.send(message{T: "adjourn"})
-	b.waitFor("adjournAsk")
-	b.send(message{T: "adjournReply", Accept: true})
-	a.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 })
+	agreeToAdjourn(a, b)
 	settleAll(srv)
 	item := b.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 && m.Adjourned[0].Result != "" }).Adjourned[0]
 	if item.Result != "none" {
 		t.Fatalf("resultado %q, quería none", item.Result)
 	}
+}
+
+func TestAwayRivalAcceptsAfterTheLimit(t *testing.T) {
+	shorten(t, &askAwayLimit, 300*time.Millisecond)
+	srv := newTestServer(t)
+	a, b, _ := startedGame(t, srv)
+	b.conn.Close(websocket.StatusNormalClosure, "")
+	a.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
+	a.send(message{T: "adjourn"})
+	if m := a.waitFor("rejected"); !strings.Contains(m.Reason, "un minuto") {
+		t.Fatalf("aviso inesperado: %q", m.Reason)
+	}
+	a.waitUntil(func(m message) bool { return m.T == "closed" && m.Reason == adjournedReason })
+	again := srv.connect(t, srv.logIn(t, b.name, b.country))
+	again.waitUntil(func(m message) bool { return m.T == "closed" && m.Reason == adjournedReason })
+	if saved := waitAdjourned(t, srv); saved.Responsible != idOf(t, srv, b) {
+		t.Fatalf("responsable %q, quería al desconectado", saved.Responsible)
+	}
+}
+
+func TestReturningRivalSeesThePendingProposal(t *testing.T) {
+	srv := newTestServer(t)
+	a, b, _ := startedGame(t, srv)
+	b.conn.Close(websocket.StatusNormalClosure, "")
+	a.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
+	a.send(message{T: "adjourn"})
+	a.waitFor("rejected")
+	again := srv.connect(t, srv.logIn(t, b.name, b.country))
+	again.waitFor("adjournAsk")
+	again.send(message{T: "adjournReply", Accept: true})
+	a.waitUntil(func(m message) bool { return m.T == "closed" && m.Reason == adjournedReason })
+}
+
+func TestBothAwayAdjournsAgainstTheFirstToLeave(t *testing.T) {
+	shorten(t, &vacantLimit, 300*time.Millisecond)
+	srv := newTestServer(t)
+	a, b, _ := startedGame(t, srv)
+	a.conn.Close(websocket.StatusNormalClosure, "")
+	b.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
+	b.conn.Close(websocket.StatusNormalClosure, "")
+	if saved := waitAdjourned(t, srv); saved.Responsible != idOf(t, srv, a) {
+		t.Fatalf("responsable %q, quería al primero en irse", saved.Responsible)
+	}
+}
+
+func idOf(t *testing.T, srv *testServer, c *testClient) string {
+	p, _ := srv.store.Identify(context.Background(), srv.logIn(t, c.name, c.country).AccessToken)
+	return p.ID
+}
+
+func TestResumeStartsAtOnceWhenBothAreOnline(t *testing.T) {
+	srv := newTestServer(t)
+	a, b, state := startedGame(t, srv)
+	agreeToAdjourn(a, b)
+	item := b.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 }).Adjourned[0]
+	b.send(message{T: "resume", Code: item.ID})
+	if again := a.waitFor("state"); again.First != state.First {
+		t.Fatalf("cambió de asiento al retomar: antes %v, ahora %v", state.First, again.First)
+	}
+	b.waitFor("state")
+}
+
+func TestUntimedResumesWithTheRivalAway(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeClassic, Untimed: true})
+	beto.send(message{T: "join", Code: ana.mySeeks(1)[0].ID})
+	beto.waitFor("state")
+	agreeToAdjourn(ana, beto)
+	beto.conn.Close(websocket.StatusNormalClosure, "")
+	item := ana.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 && !m.Adjourned[0].Online }).Adjourned[0]
+	if !item.Untimed {
+		t.Fatalf("la aplazada no se marca sin tiempo: %+v", item)
+	}
+	ana.send(message{T: "resume", Code: item.ID})
+	ana.waitFor("state")
+	ana.waitUntil(func(m message) bool { return m.T == "rival" && !m.Online })
+	again := srv.connect(t, srv.logIn(t, "Beto", "ES"))
+	again.waitFor("state")
+}
+
+func TestTimedResumeNeedsTheRivalOnline(t *testing.T) {
+	srv := newTestServer(t)
+	a, b, _ := startedGame(t, srv)
+	agreeToAdjourn(a, b)
+	b.conn.Close(websocket.StatusNormalClosure, "")
+	item := a.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Adjourned) == 1 && !m.Adjourned[0].Online }).Adjourned[0]
+	a.send(message{T: "resume", Code: item.ID})
+	if m := a.waitFor("error"); !strings.Contains(m.Reason, "no está conectado") {
+		t.Fatalf("error inesperado: %q", m.Reason)
+	}
+}
+
+func agreeToAdjourn(asker, other *testClient) {
+	asker.send(message{T: "adjourn"})
+	other.waitFor("adjournAsk")
+	other.send(message{T: "adjournReply", Accept: true})
+	asker.waitUntil(func(m message) bool { return m.T == "closed" && m.Reason == adjournedReason })
+}
+
+func shorten(t *testing.T, limit *time.Duration, d time.Duration) {
+	old := *limit
+	*limit = d
+	t.Cleanup(func() { *limit = old })
+}
+
+func waitAdjourned(t *testing.T, srv *testServer) adjourned {
+	t.Helper()
+	for range 50 {
+		srv.hub.mu.Lock()
+		for _, a := range srv.hub.adjourned {
+			srv.hub.mu.Unlock()
+			return a
+		}
+		srv.hub.mu.Unlock()
+		time.Sleep(100 * time.Millisecond)
+	}
+	t.Fatal("no se aplazó la partida")
+	return adjourned{}
 }
 
 func adjournAlone(c *testClient) {
@@ -163,13 +260,12 @@ func TestTwoPlayerDuplicateAdjournsAndResumes(t *testing.T) {
 		t.Fatalf("la aplazada no se marca como duplicada: %+v", item)
 	}
 	beto.send(message{T: "resume", Code: item.ID})
-	invite := ana.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Invites) == 1 }).Invites[0]
-	ana.send(message{T: "join", Code: invite.ID})
 	ana.waitFor("table")
 	beto.waitFor("table")
 }
 
-func TestAbsentDuplicatePlayerIsBlamed(t *testing.T) {
+func TestDuplicateAdjournsWhenTheRivalStaysAway(t *testing.T) {
+	shorten(t, &askAwayLimit, 300*time.Millisecond)
 	srv := newTestServer(t)
 	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
 	ana.send(message{T: "create", Mode: modeDuplicate, TurnMs: 60_000})

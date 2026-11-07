@@ -7,7 +7,7 @@ internal const val ONLINE_PROTOCOL = 4
 
 data class RoomInfo(
   val id: String, val duplicate: Boolean, val me: String, val host: String, val players: List<String>, val first: Boolean,
-  val watching: Boolean = false,
+  val watching: Boolean = false, val timed: Boolean = true,
 )
 
 data class LiveGame(val id: String, val duplicate: Boolean, val players: List<String>, val countries: List<String>, val watchers: Int = 0)
@@ -22,7 +22,7 @@ data class Person(val name: String, val country: String, val busy: Boolean)
 
 data class AdjournedGame(
   val id: String, val opponent: String, val country: String, val online: Boolean, val busy: Boolean = false, val result: String = "",
-  val duplicate: Boolean = false,
+  val duplicate: Boolean = false, val untimed: Boolean = false,
 )
 
 data class Lobby(
@@ -105,7 +105,7 @@ private fun event(o: JSONObject): OnlineEvent? = when (o.getString("t")) {
 
 private fun roomInfo(o: JSONObject): RoomInfo = RoomInfo(
   o.getString("code"), o.optString("mode") == "duplicate", o.optString("name"), o.optString("host"), strings(o.optJSONArray("players")),
-  o.optBoolean("first"), o.optBoolean("watching"),
+  o.optBoolean("first"), o.optBoolean("watching"), !o.optBoolean("untimed"),
 )
 
 private fun games(a: JSONArray?): List<LiveGame> = objects(a).map {
@@ -123,7 +123,7 @@ private fun seeks(a: JSONArray?): List<Seek> = objects(a).map { s ->
 private fun adjourned(a: JSONArray?): List<AdjournedGame> = objects(a).map {
   AdjournedGame(
     it.getString("id"), it.optString("opponent"), it.optString("country"), it.optBoolean("online"), it.optBoolean("busy"),
-    it.optString("result"), it.optBoolean("duplicate"),
+    it.optString("result"), it.optBoolean("duplicate"), it.optBoolean("untimed"),
   )
 }
 

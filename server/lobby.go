@@ -22,7 +22,6 @@ type seek struct {
 	Untimed    bool   `json:"untimed,omitempty"`
 	Players    int    `json:"players"`
 	Mine       bool   `json:"mine,omitempty"`
-	Resume     bool   `json:"resume,omitempty"`
 	hostID     string
 }
 

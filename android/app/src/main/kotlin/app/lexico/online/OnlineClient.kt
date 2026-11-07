@@ -247,7 +247,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
   }
 
   private fun closed(reason: String) {
-    if (reason == ADJOURNED) forget()
+    if (reason == ADJOURNED && !(awaitingRoom && seatedInGame())) forget()
     _ended.value = reason
   }
 
@@ -272,6 +272,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
   }
 
   private fun seated(info: RoomInfo) {
+    if (_room.value?.id != info.id) forget()
     _room.value = info
     awaitingRoom = false
     awaitingGame = !info.watching

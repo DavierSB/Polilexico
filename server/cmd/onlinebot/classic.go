@@ -28,6 +28,7 @@ func (b *bot) react(g *classic.Game, first bool) {
 		b.finish(score(s, first))
 		return
 	}
+	b.proposeIfResumed(g.MoveCount())
 	b.proposeIfDue(g.MoveCount()/2 + 1)
 	if s.HumanToMove != first || g.MoveCount() == b.played {
 		return

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"strings"
+	"sync/atomic"
 	"time"
 )
 
@@ -21,6 +22,9 @@ type bot struct {
 	asked    map[string]time.Time
 	starting map[string]bool
 	fresh    bool
+	awayGen  atomic.Int64
+	seatGen  atomic.Int64
+	resumeOk bool
 }
 
 var challenged = map[string]bool{}
@@ -87,6 +91,8 @@ func (b *bot) handle(m message) {
 	case "adjournAsk":
 		log.Printf("%s propone aplazar; responde %v", m.Name, b.o.adjourn)
 		b.link.send(message{T: "adjournReply", Accept: b.o.adjourn})
+	case "rival":
+		b.rivalPresence(m.Online)
 	case "rejected":
 		b.retry(m.Reason)
 	case "refused", "error":
@@ -227,7 +233,9 @@ func (b *bot) finish(summary string) {
 
 func (b *bot) free(why string) {
 	log.Print(why)
-	b.seated, b.played, b.progress.mine = false, -1, 0
+	b.seated, b.played, b.progress.mine, b.resumeOk = false, -1, 0, false
+	b.awayGen.Add(1)
+	b.seatGen.Add(1)
 	b.acted = map[string]bool{}
 }
 

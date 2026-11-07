@@ -33,6 +33,8 @@ type options struct {
 	adjourn    bool
 	proposeAt  int
 	again      time.Duration
+	awayAfter  time.Duration
+	resumedFor time.Duration
 }
 
 func main() {
@@ -78,6 +80,8 @@ func parseOptions() options {
 	flag.BoolVar(&o.adjourn, "adjourn", true, "acepta las propuestas de aplazar")
 	flag.IntVar(&o.proposeAt, "propose-at", 0, "propone aplazar al empezar esa ronda o vuelta (0 = nunca)")
 	flag.DurationVar(&o.again, "propose-again", 15*time.Second, "vuelve a proponer aplazar tras este tiempo")
+	flag.DurationVar(&o.awayAfter, "adjourn-away", 0, "aplaza si el rival lleva este tiempo desconectado (0 = nunca)")
+	flag.DurationVar(&o.resumedFor, "adjourn-resumed", 0, "en una partida retomada, propone aplazar tras este tiempo (0 = nunca)")
 	flag.Parse()
 	return o
 }

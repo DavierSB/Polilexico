@@ -38,6 +38,8 @@ import app.lexico.online.Seek
 import app.lexico.online.shrunkPhoto
 import app.lexico.ui.classic.NewOnlineClassicScreen
 import app.lexico.ui.common.Disconnected
+import app.lexico.ui.common.AdjournedCover
+import app.lexico.ui.common.CLOCK_RUNS
 import app.lexico.ui.common.AccountInput
 import app.lexico.ui.common.AdjournedItem
 import app.lexico.ui.common.ChatEntry
@@ -68,7 +70,8 @@ import app.lexico.ui.common.flagOf
 import app.lexico.ui.duplicate.NewOnlineDuplicateScreen
 import kotlinx.coroutines.launch
 
-private const val RIVAL_AWAY = "Tu rival se desconectó. Su reloj sigue corriendo."
+private const val RIVAL_AWAY = "Tu rival se desconectó."
+private const val RIVAL_CLOCK = " Su reloj sigue corriendo."
 
 private var backupSynced = false
 
@@ -149,7 +152,11 @@ internal fun OnlinePlayRoute(lexico: Lexico, nav: Navigator, themes: ThemeState)
     current.watching -> Disconnected(status != null && ended == null, nav::home, note = null) {
       ProvidePhotos(rememberOnline(), client.lobby.collectAsState().value) { Watch(client, current, nav, themes) }
     }
-    else -> Disconnected(status != null && ended == null, nav::home) { SeatedGame(client, current, lexico, nav, themes) }
+    else -> AdjournedCover(ended == ADJOURNED, { client.forget(); nav.home() }) {
+      Disconnected(status != null && ended == null, nav::home, CLOCK_RUNS.takeIf { current.timed }) {
+        SeatedGame(client, current, lexico, nav, themes)
+      }
+    }
   }
 }
 
@@ -202,7 +209,7 @@ private fun OnlineHub(session: OnlineSession, mode: Mode?, online: Online, lexic
     classic = mode != Mode.DUPLICATE, duplicate = mode != Mode.CLASSIC,
     games = lobby.games.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }.map(::gameItem),
     adjourned = lobby.adjourned.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }
-      .map { AdjournedItem(it.id, it.opponent, it.country, it.online, it.busy, it.result, it.duplicate) },
+      .map { AdjournedItem(it.id, it.opponent, it.country, it.online, it.busy, it.result, it.duplicate, it.untimed) },
     unread = inbox.size,
   )
   ProvidePhotos(online, lobby) {
@@ -245,7 +252,8 @@ private fun ClassicOnline(client: OnlineClient, info: RoomInfo, lexico: Lexico, 
   val rivalOnline by client.rivalOnline.collectAsState()
   val watchers by client.watchers.collectAsState()
   val over = game?.state?.collectAsState()?.value?.result != null
-  val shown = status ?: ended ?: RIVAL_AWAY.takeUnless { rivalOnline || over } ?: notice
+  val away = if (info.timed) RIVAL_AWAY + RIVAL_CLOCK else RIVAL_AWAY
+  val shown = status ?: ended ?: away.takeUnless { rivalOnline || over } ?: notice
   var adjourning by remember { mutableStateOf(false) }
   game?.let {
     ClassicPlay(

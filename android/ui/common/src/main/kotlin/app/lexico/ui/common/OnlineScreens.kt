@@ -62,10 +62,10 @@ data class SeekItem(
 
 data class AdjournedItem(
   val id: String, val opponent: String, val country: String, val online: Boolean, val busy: Boolean = false, val result: String = "",
-  val duplicate: Boolean = false,
+  val duplicate: Boolean = false, val untimed: Boolean = false,
 ) {
   val pending: Boolean get() = result.isEmpty()
-  val available: Boolean get() = pending && online && !busy
+  val available: Boolean get() = pending && (online || untimed) && !busy
 }
 
 data class GameItem(val id: String, val title: String, val detail: String, val watchers: Int = 0)
@@ -273,7 +273,7 @@ private fun inviteTitle(invite: SeekItem): String =
 private fun ResumeOnEntry(state: OnlineHubState, actions: OnlineHubActions) {
   var asked by remember { mutableStateOf(false) }
   var open by remember { mutableStateOf(false) }
-  val online = state.adjourned.filter { it.available }
+  val online = state.adjourned.filter { it.available && it.online }
   LaunchedEffect(online.isNotEmpty(), state.inRoom) {
     if (online.isNotEmpty() && !state.inRoom && !asked) { asked = true; open = true }
   }

@@ -9,12 +9,11 @@ import (
 )
 
 const (
-	adjournedTTL  = 72 * time.Hour
-	sweepEvery    = 10 * time.Minute
-	resumeTimeout = 2 * time.Minute
-	outcomeA      = "a"
-	outcomeB      = "b"
-	outcomeNone   = "none"
+	adjournedTTL = 72 * time.Hour
+	sweepEvery   = 10 * time.Minute
+	outcomeA     = "a"
+	outcomeB     = "b"
+	outcomeNone  = "none"
 )
 
 type adjourned struct {
@@ -47,6 +46,7 @@ type adjournedItem struct {
 	Busy      bool   `json:"busy,omitempty"`
 	Result    string `json:"result,omitempty"`
 	Duplicate bool   `json:"duplicate,omitempty"`
+	Untimed   bool   `json:"untimed,omitempty"`
 }
 
 func (a adjourned) createdAt() time.Time {
@@ -137,14 +137,22 @@ func (h *hub) forgetAdjourned(id string) {
 	}()
 }
 
-func (h *hub) blame(id, playerID string) {
+func (h *hub) missAdjourned(seats []*seat) {
 	h.mu.Lock()
-	a, ok := h.adjourned[id]
-	h.mu.Unlock()
-	if ok && a.pending() {
-		a.Responsible, a.AfterPlay = playerID, false
-		h.keepAdjourned(a)
+	defer h.mu.Unlock()
+	for _, s := range seats {
+		if !s.online() {
+			h.missed[s.player.ID] = true
+		}
 	}
+}
+
+func (h *hub) takeMissed(playerID string) bool {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	missed := h.missed[playerID]
+	delete(h.missed, playerID)
+	return missed
 }
 
 func (h *hub) markSeen(c *client, id string) {
@@ -183,7 +191,7 @@ func (h *hub) adjournedItems(playerID string) []adjournedItem {
 func (h *hub) itemFor(a adjourned, playerID string) adjournedItem {
 	id, name, country := a.opponentOf(playerID)
 	item := adjournedItem{ID: a.ID, Opponent: name, Country: country, Online: h.online[id] != nil, Busy: h.seats[id] != nil,
-		Duplicate: a.Mode == modeDuplicate}
+		Duplicate: a.Mode == modeDuplicate, Untimed: a.Untimed}
 	if !a.pending() {
 		item.Result = a.resultFor(playerID)
 	}

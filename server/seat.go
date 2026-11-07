@@ -9,12 +9,11 @@ import (
 const reservedName = "Máster"
 
 type seat struct {
-	player        player
-	name          string
-	client        *client
-	chat          chatState
-	awayAt        time.Time
-	leftAfterPlay bool
+	player player
+	name   string
+	client *client
+	chat   chatState
+	awayAt time.Time
 }
 
 func (s *seat) send(m message) {
@@ -25,6 +24,16 @@ func (s *seat) send(m message) {
 
 func (s *seat) online() bool {
 	return s.client != nil
+}
+
+func firstAway(seats []*seat) *seat {
+	var first *seat
+	for _, s := range seats {
+		if first == nil || s.awayAt.Before(first.awayAt) {
+			first = s
+		}
+	}
+	return first
 }
 
 func displayName(p player, taken []string) string {

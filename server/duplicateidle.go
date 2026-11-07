@@ -25,7 +25,7 @@ func (r *duplicateRoom) abandoned() {
 		return
 	}
 	if r.pair() {
-		r.saveAndClose(nil)
+		r.saveAndClose(firstAway(r.seats))
 		return
 	}
 	r.recorded = true

@@ -8,21 +8,47 @@ import (
 	"lexico/engine/modes/classic"
 )
 
+var (
+	askAwayLimit = time.Minute
+	vacantLimit  = 3 * time.Minute
+)
+
 func (r *classicRoom) adjourn(s *seat) {
 	if !r.inPlay() {
 		return
 	}
 	other := r.rival(s)
 	switch {
-	case !other.online():
-		r.saveAndClose(other)
 	case r.asker == other:
-		r.saveAndClose(nil)
+		r.saveAndClose(other)
+	case !other.online() && r.awayMs(other) >= askAwayLimit.Milliseconds():
+		r.saveAndClose(other)
 	default:
-		r.asker = s
-		other.send(message{T: "adjournAsk", Name: s.name})
-		s.send(notice("rejected", "Propuesta enviada a "+other.name+"."))
+		r.ask(s, other)
 	}
+}
+
+func (r *classicRoom) ask(s, other *seat) {
+	r.asker = s
+	other.send(message{T: "adjournAsk", Name: s.name})
+	if other.online() {
+		s.send(notice("rejected", "Propuesta enviada a "+other.name+"."))
+		return
+	}
+	s.send(notice("rejected", "Se aplaza si "+other.name+" no vuelve en un minuto."))
+	r.acceptWhenAway(other)
+}
+
+func (r *classicRoom) acceptWhenAway(other *seat) {
+	stopTimer(r.askTimer)
+	wait := askAwayLimit - time.Duration(r.awayMs(other))*time.Millisecond
+	r.askTimer = time.AfterFunc(wait, func() {
+		r.mu.Lock()
+		defer r.mu.Unlock()
+		if !r.recorded && r.asker == r.rival(other) && !other.online() {
+			r.saveAndClose(other)
+		}
+	})
 }
 
 func (r *classicRoom) replyAdjourn(s *seat, accept bool) {
@@ -31,11 +57,42 @@ func (r *classicRoom) replyAdjourn(s *seat, accept bool) {
 		return
 	}
 	r.asker = nil
+	stopTimer(r.askTimer)
 	if accept {
-		r.saveAndClose(nil)
+		r.saveAndClose(asker)
 		return
 	}
 	asker.send(notice("rejected", s.name+" no quiere aplazar."))
+}
+
+func (r *classicRoom) awayChanged(s *seat) {
+	if s.online() {
+		r.cameBack(s)
+		return
+	}
+	if r.asker == r.rival(s) {
+		r.acceptWhenAway(s)
+	}
+	if r.inPlay() && r.nobodyLeft() {
+		stopTimer(r.vacantTimer)
+		r.vacantTimer = time.AfterFunc(vacantLimit, r.adjournVacant)
+	}
+}
+
+func (r *classicRoom) cameBack(s *seat) {
+	stopTimer(r.vacantTimer)
+	if r.asker == r.rival(s) {
+		stopTimer(r.askTimer)
+		s.send(message{T: "adjournAsk", Name: r.asker.name})
+	}
+}
+
+func (r *classicRoom) adjournVacant() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if !r.recorded && r.inPlay() && r.nobodyLeft() {
+		r.saveAndClose(firstAway(r.seats))
+	}
 }
 
 func (r *classicRoom) saveAndClose(responsible *seat) {
@@ -46,6 +103,7 @@ func (r *classicRoom) saveAndClose(responsible *seat) {
 		return
 	}
 	r.hub.keepAdjourned(a)
+	r.hub.missAdjourned(r.seats)
 	r.recorded = true
 	r.closeAll(adjournedReason)
 }
@@ -59,7 +117,7 @@ func (r *classicRoom) snapshot(responsible *seat) (adjourned, bool) {
 	}
 	a := r.adjournedAs(text)
 	if responsible != nil {
-		a.Responsible, a.AfterPlay = responsible.player.ID, responsible.leftAfterPlay
+		a.Responsible, a.AfterPlay = responsible.player.ID, r.playedLast(responsible)
 	}
 	return a, true
 }
@@ -73,16 +131,18 @@ func (r *classicRoom) adjournedAs(save string) adjourned {
 	}
 }
 
-func (r *classicRoom) markAway(s *seat) {
-	s.awayAt = time.Now()
-	s.leftAfterPlay = r.inPlay() && r.match.Game().Status().HumanToMove != r.first(s)
+func (r *classicRoom) playedLast(s *seat) bool {
+	return r.match.Game().Status().HumanToMove != r.first(s)
 }
 
 func (r *classicRoom) awayMs(s *seat) int64 {
-	if s.online() || s.awayAt.IsZero() {
-		return 0
+	return awayMsOf(s)
+}
+
+func stopTimer(t *time.Timer) {
+	if t != nil {
+		t.Stop()
 	}
-	return time.Since(s.awayAt).Milliseconds()
 }
 
 func (r *classicRoom) inPlay() bool {

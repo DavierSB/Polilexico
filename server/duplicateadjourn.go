@@ -25,15 +25,36 @@ func (r *duplicateRoom) adjourn(s *seat) {
 	}
 	other := r.rival(s)
 	switch {
-	case !other.online():
-		r.saveAndClose(other)
 	case r.asker == other:
-		r.saveAndClose(nil)
+		r.saveAndClose(other)
+	case !other.online() && awayMsOf(other) >= askAwayLimit.Milliseconds():
+		r.saveAndClose(other)
 	default:
-		r.asker = s
-		other.send(message{T: "adjournAsk", Name: s.name})
-		s.send(notice("rejected", "Propuesta enviada a "+other.name+"."))
+		r.ask(s, other)
 	}
+}
+
+func (r *duplicateRoom) ask(s, other *seat) {
+	r.asker = s
+	other.send(message{T: "adjournAsk", Name: s.name})
+	if other.online() {
+		s.send(notice("rejected", "Propuesta enviada a "+other.name+"."))
+		return
+	}
+	s.send(notice("rejected", "Se aplaza si "+other.name+" no vuelve en un minuto."))
+	r.acceptWhenAway(other)
+}
+
+func (r *duplicateRoom) acceptWhenAway(other *seat) {
+	stopTimer(r.askTimer)
+	wait := askAwayLimit - time.Duration(awayMsOf(other))*time.Millisecond
+	r.askTimer = time.AfterFunc(wait, func() {
+		r.mu.Lock()
+		defer r.mu.Unlock()
+		if !r.recorded && r.pair() && r.asker == r.rival(other) && !other.online() {
+			r.saveAndClose(other)
+		}
+	})
 }
 
 func (r *duplicateRoom) replyAdjourn(s *seat, accept bool) {
@@ -42,11 +63,24 @@ func (r *duplicateRoom) replyAdjourn(s *seat, accept bool) {
 		return
 	}
 	r.asker = nil
+	stopTimer(r.askTimer)
 	if accept {
-		r.saveAndClose(nil)
+		r.saveAndClose(asker)
 		return
 	}
 	asker.send(notice("rejected", s.name+" no quiere aplazar."))
+}
+
+func (r *duplicateRoom) awayChanged(s *seat) {
+	if !r.pair() || r.asker != r.rival(s) {
+		return
+	}
+	if !s.online() {
+		r.acceptWhenAway(s)
+		return
+	}
+	stopTimer(r.askTimer)
+	s.send(message{T: "adjournAsk", Name: r.asker.name})
 }
 
 func (r *duplicateRoom) saveAndClose(responsible *seat) {
@@ -57,6 +91,7 @@ func (r *duplicateRoom) saveAndClose(responsible *seat) {
 		return
 	}
 	r.hub.keepAdjourned(a)
+	r.hub.missAdjourned(r.seats)
 	r.recorded = true
 	r.closeAll(adjournedReason)
 }
@@ -128,31 +163,18 @@ func adjudicatedDuplicate(a adjourned, totals map[string]int, firstWins bool) re
 		Settings: map[string]any{"turnMs": a.TimeMs, "rounds": a.OvertimeMs, "live": a.Void}}
 }
 
-func newResumedDuplicate(h *hub, code string, host player, a adjourned, rival player) *duplicateRoom {
+func newResumedDuplicate(h *hub, code string, a adjourned) *duplicateRoom {
 	m := message{TurnMs: a.TimeMs, Rounds: int(a.OvertimeMs), Live: a.Void}
-	r := newDuplicateRoom(h, code, host, m)
-	r.resumed, r.invitee, r.inviteeTo = &a, rival.ID, rival.Name
-	_, r.seats[0].name, _ = a.opponentOf(rival.ID)
-	r.timer.Stop()
-	r.timer = time.AfterFunc(resumeTimeout, func() {
-		r.mu.Lock()
-		defer r.mu.Unlock()
-		if r.table == nil {
-			r.refuseResume(r.inviteeTo + " no respondió.")
-		}
-	})
+	r := newDuplicateRoom(h, code, player{ID: a.PlayerA, Name: a.NameA, Country: a.CountryA}, m)
+	r.resumed = &a
+	r.seats[0].name = a.NameA
+	r.seats = append(r.seats, &seat{player: player{ID: a.PlayerB, Name: a.NameB, Country: a.CountryB}, name: a.NameB})
 	return r
 }
 
-func (r *duplicateRoom) refuseResume(reason string) {
-	r.hub.blame(r.resumed.ID, r.invitee)
-	r.hub.notify(r.seats[0].player.ID, notice("closed", reason))
-	r.closeAll("")
-}
-
-func (r *duplicateRoom) startResumed() {
-	host, guest := r.seats[0], r.seats[1]
-	_, guest.name, _ = r.resumed.opponentOf(host.player.ID)
+func (r *duplicateRoom) resumeWith(clients map[string]*client) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	t, err := duplicate.LoadTable(r.resumed.Save, listener(r.changed))
 	if err != nil {
 		r.closeAll("No se pudo retomar la partida.")
@@ -161,10 +183,19 @@ func (r *duplicateRoom) startResumed() {
 	r.table, r.started = t, time.Now()
 	r.timer.Stop()
 	r.hub.forgetAdjourned(r.resumed.ID)
-	r.hub.seat(host.player.ID, r)
-	r.hub.matched(host.player.ID, r.code)
-	if c := r.hub.clientOf(host.player.ID); c != nil {
-		r.attach(host, c)
+	for _, s := range r.seats {
+		r.seatResumed(s, clients[s.player.ID])
 	}
-	r.hub.changed()
+}
+
+func (r *duplicateRoom) seatResumed(s *seat, c *client) {
+	r.hub.seat(s.player.ID, r)
+	r.hub.matched(s.player.ID, r.code)
+	if c != nil {
+		r.attach(s, c)
+		return
+	}
+	s.awayAt = r.started
+	r.setPresent(s, false)
+	r.watchAbandon()
 }

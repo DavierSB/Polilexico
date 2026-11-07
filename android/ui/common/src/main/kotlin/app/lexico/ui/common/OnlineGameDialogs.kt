@@ -14,11 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 const val ADJUDICATION_RULES =
-  "Una partida aplazada puede retomarse durante 3 días, cuando los dos jugadores estén conectados. " +
-    "Si pasan los 3 días, se adjudica en contra del responsable: al principio, quien se desconectó; después, quien " +
-    "rechazó (o no contestó) por última vez una solicitud para retomarla. Si el otro jugador va por delante, gana; si no, " +
-    "la partida se anula. Si el responsable se desconectó justo después de jugar, esa jugada no cuenta. Una partida aplazada " +
-    "de común acuerdo se anula si nadie rechaza retomarla."
+  "Una partida aplazada puede retomarse durante 3 días, cuando los dos jugadores estén conectados; si es sin tiempo, " +
+    "aunque el rival no lo esté. Si pasan los 3 días, se adjudica en contra del responsable: quien propuso aplazar; si se " +
+    "aplazó porque el rival llevaba más de un minuto desconectado, ese rival; si se aplazó con los dos desconectados, el " +
+    "primero en desconectarse. Si el otro jugador va por delante, gana; si no, la partida se anula. Si el responsable hizo " +
+    "la última jugada, esa jugada no cuenta."
 
 @Composable
 fun AdjournConfirm(rival: String, rivalOnline: Boolean, onYes: () -> Unit, onNo: () -> Unit) = ConfirmDialog(

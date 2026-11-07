@@ -1,35 +1,39 @@
 package main
 
 import (
-	"time"
-
 	"lexico/engine/modes/classic"
 )
 
-func newResumedRoom(h *hub, code string, host player, a adjourned, rival player) *classicRoom {
+type resumable interface {
+	room
+	resumeWith(clients map[string]*client)
+}
+
+func newResumedRoom(h *hub, code string, a adjourned) *classicRoom {
 	m := message{TimeMs: a.TimeMs, OvertimeMs: a.OvertimeMs, Void: a.Void, Untimed: a.Untimed}
-	r := newClassicRoom(h, code, host, m, &rival)
+	r := newClassicRoom(h, code, player{ID: a.PlayerA, Name: a.NameA, Country: a.CountryA}, m, nil)
 	r.resumed = &a
-	_, r.seats[0].name, _ = a.opponentOf(rival.ID)
-	r.awaitResume()
+	r.seats = append(r.seats, &seat{player: player{ID: a.PlayerB, Name: a.NameB, Country: a.CountryB}, name: a.NameB})
 	return r
 }
 
-func (r *classicRoom) awaitResume() {
-	r.timer.Stop()
-	r.timer = time.AfterFunc(resumeTimeout, func() {
-		r.mu.Lock()
-		defer r.mu.Unlock()
-		if r.match == nil {
-			r.refuseResume(r.inviteeTo + " no respondió.")
+func (r *classicRoom) resumeWith(clients map[string]*client) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.start()
+	if r.match == nil {
+		return
+	}
+	for _, s := range r.seats {
+		r.hub.seat(s.player.ID, r)
+		r.hub.matched(s.player.ID, r.code)
+		s.awayAt = r.started
+	}
+	for _, s := range r.seats {
+		if c := clients[s.player.ID]; c != nil {
+			r.attach(s, c)
 		}
-	})
-}
-
-func (r *classicRoom) refuseResume(reason string) {
-	r.hub.blame(r.resumed.ID, r.invitee)
-	r.hub.notify(r.seats[0].player.ID, notice("closed", reason))
-	r.closeAll("")
+	}
 }
 
 func (r *classicRoom) newMatch() (*classic.Match, error) {
@@ -45,47 +49,46 @@ func (r *classicRoom) newMatch() (*classic.Match, error) {
 	return m, nil
 }
 
-func (r *classicRoom) restoreSeats() {
-	a := r.resumed
-	if a == nil || len(r.seats) != 2 {
-		return
-	}
-	host, guest := r.seats[0], r.seats[1]
-	_, guest.name, _ = a.opponentOf(host.player.ID)
-	if host.player.ID == a.PlayerB {
-		r.seats = []*seat{guest, host}
-	}
-}
-
 func (h *hub) resume(c *client, id string) {
 	a, ok := h.findAdjourned(id, c.player.ID)
 	if !ok {
 		c.send(notice("error", "Esa partida aplazada ya no está."))
 		return
 	}
-	rivalID, _, _ := a.opponentOf(c.player.ID)
+	rivalID, rivalName, _ := a.opponentOf(c.player.ID)
 	target := h.clientOf(rivalID)
 	switch {
-	case target == nil:
+	case target == nil && !a.Untimed:
 		c.send(notice("error", "Tu rival no está conectado."))
-	case h.playing(target):
-		c.send(notice("error", target.player.Name+" está jugando otra partida."))
-	case h.canPublish(c) != "":
-		c.send(notice("error", h.canPublish(c)))
+	case h.busy(rivalID):
+		c.send(notice("error", rivalName+" está jugando otra partida."))
+	case h.playing(c):
+		c.send(notice("error", "Termina tu partida antes de retomar otra."))
 	default:
-		h.openResumed(c, a, target.player)
+		h.openResumed(a, c, target)
 	}
 }
 
-func (h *hub) openResumed(c *client, a adjourned, rival player) {
-	h.leaveCurrent(c)
+func (h *hub) openResumed(a adjourned, clients ...*client) {
+	present := map[string]*client{}
+	for _, c := range clients {
+		if c != nil {
+			h.leaveCurrent(c)
+			present[c.player.ID] = c
+		}
+	}
 	h.mu.Lock()
 	code := h.freeCode()
-	if a.Mode == modeDuplicate {
-		h.rooms[code] = newResumedDuplicate(h, code, c.player, a, rival)
-	} else {
-		h.rooms[code] = newResumedRoom(h, code, c.player, a, rival)
-	}
+	r := newResumed(h, code, a)
+	h.rooms[code] = r
 	h.mu.Unlock()
+	r.resumeWith(present)
 	h.changed()
+}
+
+func newResumed(h *hub, code string, a adjourned) resumable {
+	if a.Mode == modeDuplicate {
+		return newResumedDuplicate(h, code, a)
+	}
+	return newResumedRoom(h, code, a)
 }
