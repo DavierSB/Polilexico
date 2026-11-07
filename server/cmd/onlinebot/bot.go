@@ -260,7 +260,7 @@ func (b *bot) challengeFree(people []person) {
 	}
 	for _, p := range people {
 		key := p.Name + "/" + p.Country
-		ignored := b.o.ignore != "" && strings.HasPrefix(p.Name, b.o.ignore)
+		ignored := b.o.ignore != "" && strings.HasPrefix(p.Name, b.o.ignore) || b.o.from != "" && p.Name != b.o.from
 		if !p.Playing && !challenged[key] && !ignored {
 			challenged[key] = true
 			log.Printf("reta a %s (%s)", p.Name, p.Country)

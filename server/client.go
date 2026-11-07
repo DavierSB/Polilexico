@@ -17,12 +17,14 @@ const (
 )
 
 type client struct {
-	conn   *websocket.Conn
-	out    chan message
-	done   chan struct{}
-	once   sync.Once
-	player player
-	room   room
+	conn    *websocket.Conn
+	out     chan message
+	done    chan struct{}
+	once    sync.Once
+	player  player
+	room    room
+	version int
+	tells   chatState
 }
 
 func newClient(conn *websocket.Conn) *client {

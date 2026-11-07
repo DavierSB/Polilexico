@@ -83,6 +83,8 @@ func (h *hub) handle(ctx context.Context, c *client, m message) {
 		h.resume(c, m.Code)
 	case m.T == "seen":
 		h.markSeen(c, m.Code)
+	case m.T == "tell":
+		h.tell(c, m)
 	case m.T == "start" && m.Code != "":
 		h.startSeek(c, m.Code)
 	case c.room != nil:
@@ -98,7 +100,7 @@ func (h *hub) changedOn(m message) {
 }
 
 func (h *hub) hello(ctx context.Context, c *client, m message) {
-	if m.Version != protocolVersion {
+	if m.Version < minProtocol {
 		c.send(notice("refused", "Actualiza Polilexico para jugar en línea."))
 		return
 	}
@@ -107,7 +109,7 @@ func (h *hub) hello(ctx context.Context, c *client, m message) {
 		c.send(notice("refused", asUserError(err, errSession).Error()))
 		return
 	}
-	c.player = p
+	c.player, c.version = p, m.Version
 	h.goOnline(c)
 	go h.loadAdjourned(p.ID)
 	defer h.changed()

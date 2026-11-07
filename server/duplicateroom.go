@@ -27,6 +27,7 @@ type duplicateRoom struct {
 	resumed   *adjourned
 	invitee   string
 	inviteeTo string
+	idle      *time.Timer
 }
 
 func newDuplicateRoom(h *hub, code string, host player, m message) *duplicateRoom {
@@ -84,6 +85,7 @@ func (r *duplicateRoom) drop(c *client) {
 		s.awayAt = time.Now()
 		r.setPresent(s, false)
 		r.sendPresence()
+		r.watchAbandon()
 		return
 	}
 	if r.watchers.remove(c) {
@@ -221,6 +223,7 @@ func (r *duplicateRoom) attach(s *seat, c *client) {
 		return
 	}
 	s.awayAt = time.Time{}
+	r.stopAbandon()
 	r.sendView(s)
 	r.setPresent(s, true)
 	r.sendPresence()
@@ -282,6 +285,7 @@ func (r *duplicateRoom) leave(s *seat) {
 	r.hub.unseat(s.player.ID, r)
 	if r.table != nil {
 		r.setPresent(s, false)
+		r.watchAbandon()
 		return
 	}
 	if s == r.seats[0] {

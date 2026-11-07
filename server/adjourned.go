@@ -40,11 +40,11 @@ type adjourned struct {
 }
 
 type adjournedItem struct {
-	ID       string `json:"id"`
-	Opponent string `json:"opponent"`
-	Country  string `json:"country"`
-	Online   bool   `json:"online,omitempty"`
-	Busy     bool   `json:"busy,omitempty"`
+	ID        string `json:"id"`
+	Opponent  string `json:"opponent"`
+	Country   string `json:"country"`
+	Online    bool   `json:"online,omitempty"`
+	Busy      bool   `json:"busy,omitempty"`
 	Result    string `json:"result,omitempty"`
 	Duplicate bool   `json:"duplicate,omitempty"`
 }

@@ -186,6 +186,11 @@ func (s *testServer) post(t *testing.T, path string, body, out any) int {
 
 func (s *testServer) connect(t *testing.T, sess session) *testClient {
 	t.Helper()
+	return s.connectAs(t, sess, protocolVersion)
+}
+
+func (s *testServer) connectAs(t *testing.T, sess session, version int) *testClient {
+	t.Helper()
 	conn, _, err := websocket.Dial(context.Background(), "ws"+strings.TrimPrefix(s.URL, "http")+"/ws", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -193,7 +198,7 @@ func (s *testServer) connect(t *testing.T, sess session) *testClient {
 	c := &testClient{t: t, conn: conn, in: make(chan message, 256)}
 	go c.read()
 	t.Cleanup(func() { conn.Close(websocket.StatusNormalClosure, "") })
-	c.send(message{T: "hello", Version: protocolVersion, Token: sess.AccessToken})
+	c.send(message{T: "hello", Version: version, Token: sess.AccessToken})
 	c.waitFor("welcome")
 	return c
 }

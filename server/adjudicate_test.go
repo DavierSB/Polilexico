@@ -187,3 +187,22 @@ func TestAbsentDuplicatePlayerIsBlamed(t *testing.T) {
 		t.Fatalf("a 0-0 debía anularse, salió %q", item.Result)
 	}
 }
+
+func TestDuplicateAbandonedByEveryoneCloses(t *testing.T) {
+	abandonAfter = 50 * time.Millisecond
+	defer func() { abandonAfter = 5 * time.Minute }()
+	srv := newTestServer(t)
+	ana, beto, carla := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES"), srv.player(t, "Carla", "MX")
+	ana.send(message{T: "create", Mode: modeDuplicate, TurnMs: 60_000})
+	code := ana.mySeeks(1)[0].ID
+	beto.send(message{T: "join", Code: code})
+	carla.send(message{T: "join", Code: code})
+	carla.waitFor("room")
+	ana.send(message{T: "start", Code: code})
+	carla.waitFor("table")
+	for _, c := range []*testClient{ana, beto, carla} {
+		c.conn.Close(websocket.StatusNormalClosure, "")
+	}
+	spy := srv.player(t, "Dani", "PE")
+	spy.waitUntil(func(m message) bool { return m.T == "lobby" && len(m.Games) == 0 })
+}

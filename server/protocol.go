@@ -1,6 +1,10 @@
 package main
 
-const protocolVersion = 3
+const (
+	protocolVersion = 4
+	minProtocol     = 3
+	tellProtocol    = 4
+)
 
 const (
 	modeClassic   = "classic"
