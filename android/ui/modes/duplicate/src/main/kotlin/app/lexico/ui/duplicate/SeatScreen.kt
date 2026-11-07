@@ -1,7 +1,14 @@
 package app.lexico.ui.duplicate
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -22,7 +29,6 @@ import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.board.rememberTilePlacer
 import app.lexico.ui.common.BagCountDialog
 import app.lexico.ui.common.BoardColumn
-import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.GameBar
 import app.lexico.ui.common.NOT_IN_A_LINE
 import app.lexico.ui.common.Notice
@@ -38,15 +44,23 @@ fun SeatScreen(view: SeatView, style: BoardStyle, actions: SeatActions, onExport
   var chart by remember { mutableStateOf(false) }
   var moves by remember { mutableStateOf(false) }
   var bag by remember { mutableStateOf(false) }
+  val bar: @Composable () -> Unit = {
+    GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = null, onStandings = { chart = true }, watchers = view.watchers,
+      onAdjourn = onAdjourn.takeIf { view.phase != SeatPhase.FINISHED && !view.watching },
+    )
+  }
+  var results by remember { mutableStateOf(false) }
   BoardColumn(
-    top = {
-      GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = null, onStandings = { chart = true }, watchers = view.watchers,
-        onAdjourn = onAdjourn.takeIf { view.phase != SeatPhase.FINISHED && !view.watching },
-      )
-    },
+    top = { bar() },
     board = { PlacingBoard(c, style, enabled = view.phase == SeatPhase.PLAYING && !view.watching, lookUpWhenIdle = view.phase == SeatPhase.FINISHED) },
-    bottom = { SeatBottom(view, c, style, actions, message, onExport) { message = it } },
+    bottom = { SeatBottom(view, c, style, actions, message, onExport, { results = true }) { message = it } },
+    footer = {
+      if (view.phase == SeatPhase.PLAYING && !view.watching) {
+        PlayingButtons(c, onPlay = { c.placement()?.let(actions::propose) ?: run { message = NOT_IN_A_LINE } })
+      }
+    },
   )
+  RoundResultsPopup(view, actions, results) { results = it }
   if (chart) ChartDialog(view) { chart = false }
   if (moves) MovesDialog(movesOf(view), if (view.watching) "Mejor" else "Tú") { moves = false }
   if (bag) BagCountDialog("En la bolsa", view.bag) { bag = false }
@@ -55,15 +69,15 @@ fun SeatScreen(view: SeatView, style: BoardStyle, actions: SeatActions, onExport
 
 @Composable
 private fun SeatBottom(
-  view: SeatView, c: TilePlacer, style: BoardStyle, actions: SeatActions, message: String?, onExport: (() -> Unit)?, onNotice: (String) -> Unit,
+  view: SeatView, c: TilePlacer, style: BoardStyle, actions: SeatActions, message: String?, onExport: (() -> Unit)?, onShowResults: () -> Unit,
+  onNotice: (String) -> Unit,
 ) {
   view.status?.let { Notice(it, bold = true) }
   when {
     view.phase == SeatPhase.PLAYING && view.watching -> WatchingRound(view, c, style)
     view.phase == SeatPhase.PLAYING -> Playing(view, c, style, actions, message, onNotice)
     view.phase == SeatPhase.FINISHED -> Finished(view, actions, onExport)
-    view.iAmReady -> WaitingRound(view)
-    else -> RoundResults(view, actions)
+    else -> RoundEnd(view, actions, onShowResults)
   }
 }
 
@@ -71,14 +85,8 @@ private fun SeatBottom(
 private fun Playing(view: SeatView, c: TilePlacer, style: BoardStyle, actions: SeatActions, message: String?, onNotice: (String) -> Unit) {
   RoundBar(view.round, view.remainingMs?.let { rememberLeft(it) })
   PlacingRack(c, style, enabled = true)
-  Text(view.proposal?.let { "Tu jugada: ${it.text} · ${it.points} pts" } ?: "Aún no has jugado", fontWeight = FontWeight.Bold)
+  ProposalCard(view.proposal)
   message?.let { Notice(it, bold = true) }
-  var pass by remember { mutableStateOf(false) }
-  PlayingButtons(c, onPlay = { c.placement()?.let(actions::propose) ?: onNotice(NOT_IN_A_LINE) }, onPass = { pass = true })
-  if (pass) ConfirmDialog(
-    "¿Pasar el turno?", yes = "Pasar", no = "No",
-    onYes = { pass = false; c.recall(); actions.pass() }, onNo = { pass = false },
-  )
 }
 
 @Composable
@@ -89,17 +97,43 @@ private fun WatchingRound(view: SeatView, c: TilePlacer, style: BoardStyle) {
 }
 
 @Composable
-private fun RoundResults(view: SeatView, actions: SeatActions) {
-  Text("Resultados de la ronda ${view.round}", style = MaterialTheme.typography.titleSmall)
-  Table(view)
-  if (!view.watching) Button(modifier = Modifier.fillMaxWidth(), onClick = actions::ready) { Text("Comenzar nueva ronda") }
+private fun RoundEnd(view: SeatView, actions: SeatActions, onShow: () -> Unit) {
+  Text("Resultados de la ronda ${view.round}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+  OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = onShow) { Text("Ver resultados") }
+  when {
+    view.watching -> Unit
+    view.iAmReady -> Text("Esperando la nueva ronda: ${view.ready} de ${view.waiting} listos", style = MaterialTheme.typography.titleSmall)
+    else -> Button(modifier = Modifier.fillMaxWidth(), onClick = actions::ready) { Text("Comenzar nueva ronda") }
+  }
 }
 
 @Composable
-private fun WaitingRound(view: SeatView) {
-  Text("Esperando la nueva ronda: ${view.ready} de ${view.waiting} listos", style = MaterialTheme.typography.titleSmall)
-  if (view.live) Table(view)
+private fun ResultsDialog(view: SeatView, actions: SeatActions, close: () -> Unit) {
+  val canStart = !view.watching && !view.iAmReady && view.phase == SeatPhase.RESULTS
+  AlertDialog(
+    onDismissRequest = close, title = { Text("Resultados de la ronda ${view.round}") },
+    text = { if (view.watching) LeaderboardTable(view, maxHeight = DIALOG_HEIGHT) else StandingsTable(view, Modifier.heightIn(max = DIALOG_HEIGHT.dp)) },
+    confirmButton = {
+      if (canStart) Button(onClick = { close(); actions.ready() }) { Text("Comenzar nueva ronda") }
+      else TextButton(onClick = close) { Text("Cerrar") }
+    },
+    dismissButton = { if (canStart) TextButton(onClick = close) { Text("Cerrar") } },
+  )
 }
+
+@Composable
+private fun RoundResultsPopup(view: SeatView, actions: SeatActions, open: Boolean, setOpen: (Boolean) -> Unit) {
+  var shown by remember { mutableStateOf(0) }
+  LaunchedEffect(view.phase, view.round) {
+    if (view.phase == SeatPhase.RESULTS && view.round != shown) {
+      shown = view.round
+      setOpen(true)
+    }
+  }
+  if (open && view.phase == SeatPhase.RESULTS) ResultsDialog(view, actions) { setOpen(false) }
+}
+
+private const val DIALOG_HEIGHT = 460
 
 @Composable
 private fun Finished(view: SeatView, actions: SeatActions, onExport: (() -> Unit)?) {

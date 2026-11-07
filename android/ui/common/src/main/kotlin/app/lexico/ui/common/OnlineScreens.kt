@@ -25,6 +25,8 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Badge
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -73,7 +75,7 @@ data class PersonItem(val name: String, val country: String, val busy: Boolean)
 data class OnlineHubState(
   val status: String?, val inRoom: Boolean, val seeks: List<SeekItem>, val people: List<PersonItem>, val invite: SeekItem?,
   val classic: Boolean = true, val duplicate: Boolean = true, val games: List<GameItem> = emptyList(),
-  val adjourned: List<AdjournedItem> = emptyList(),
+  val adjourned: List<AdjournedItem> = emptyList(), val unread: Int = 0,
 )
 
 class OnlineHubActions(
@@ -81,13 +83,17 @@ class OnlineHubActions(
   val accept: (String) -> Unit, val challenge: (PersonItem) -> Unit, val decline: (String) -> Unit,
   val cancel: (String) -> Unit = {}, val start: (String) -> Unit = {}, val watch: (String) -> Unit = {},
   val resumeAdjourned: (String) -> Unit = {}, val seenAdjourned: (String) -> Unit = {},
+  val messages: () -> Unit = {}, val write: (PersonItem) -> Unit = {},
 )
 
 @Composable
 fun OnlineHubScreen(profile: OnlineProfile, state: OnlineHubState, actions: OnlineHubActions) {
   Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     CompositionLocalProvider(LocalHomeButton provides null) {
-      Header("En línea", actions.back) { HubProfile(profile, actions.profile) }
+      Header("En línea", actions.back) {
+        MessagesButton(state.unread, actions.messages)
+        HubProfile(profile, actions.profile)
+      }
     }
     state.status?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
     if (state.inRoom) Button(onClick = actions.resume, Modifier.fillMaxWidth().height(52.dp)) { Text("Volver a la partida") }
@@ -164,7 +170,7 @@ private fun TabContent(tab: HubTab, state: OnlineHubState, actions: OnlineHubAct
     SeekList(state.seeks.filter { it.duplicate }, "No hay duplicadas ofrecidas.", actions)
     AdjournedList(state.adjourned.filter { it.duplicate }, actions)
   }
-  HubTab.PEOPLE -> PeopleList(state.people, actions.challenge)
+  HubTab.PEOPLE -> PeopleList(state.people, actions.challenge, actions.write)
   HubTab.GAMES -> GameList(state.games, actions.watch)
 }
 
@@ -224,20 +230,30 @@ private fun SeekActions(s: SeekItem, actions: OnlineHubActions) {
 }
 
 @Composable
-private fun PeopleList(people: List<PersonItem>, onChallenge: (PersonItem) -> Unit) {
+private fun PeopleList(people: List<PersonItem>, onChallenge: (PersonItem) -> Unit, onWrite: (PersonItem) -> Unit) {
   if (people.isEmpty()) EmptyState("👥", "No hay nadie más conectado.")
   people.forEach { p ->
     PlayerRow(p.name, p.country, if (p.busy) "Ocupado" else "Disponible") {
+      ChatIconButton("Escribir a ${p.name}") { onWrite(p) }
       OutlinedButton(onClick = { onChallenge(p) }, enabled = !p.busy) { Text("Retar") }
     }
   }
 }
 
 @Composable
-internal fun PlayerRow(name: String, country: String, detail: String? = null, mine: Boolean = false, action: @Composable () -> Unit) {
+private fun MessagesButton(unread: Int, onClick: () -> Unit) {
+  BadgedBox(badge = { if (unread > 0) Badge { Text("$unread") } }) { ChatIconButton("Mensajes", onClick) }
+}
+
+@Composable
+internal fun PlayerRow(
+  name: String, country: String, detail: String? = null, mine: Boolean = false, onClick: (() -> Unit)? = null, action: @Composable () -> Unit,
+) {
   val colors = MaterialTheme.colorScheme
+  val shape = RoundedCornerShape(14.dp)
   Row(
-    Modifier.fillMaxWidth().background(if (mine) colors.primaryContainer else colors.surfaceVariant, RoundedCornerShape(14.dp))
+    Modifier.fillMaxWidth().clip(shape).then(onClick?.let { Modifier.clickable(onClick = it) } ?: Modifier)
+      .background(if (mine) colors.primaryContainer else colors.surfaceVariant, shape)
       .padding(horizontal = 10.dp, vertical = 8.dp),
     horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically,
   ) {

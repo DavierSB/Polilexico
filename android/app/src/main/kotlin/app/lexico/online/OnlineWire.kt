@@ -3,7 +3,7 @@ package app.lexico.online
 import org.json.JSONArray
 import org.json.JSONObject
 
-internal const val ONLINE_PROTOCOL = 3
+internal const val ONLINE_PROTOCOL = 4
 
 data class RoomInfo(
   val id: String, val duplicate: Boolean, val me: String, val host: String, val players: List<String>, val first: Boolean,
@@ -48,6 +48,7 @@ internal sealed interface OnlineEvent {
   data class Watchers(val people: List<Person>) : OnlineEvent
   data class Rival(val online: Boolean, val awayMs: Long) : OnlineEvent
   data class AdjournAsk(val name: String) : OnlineEvent
+  data class Tell(val name: String, val country: String, val text: String) : OnlineEvent
   data class Closed(val reason: String) : OnlineEvent
 }
 
@@ -62,7 +63,8 @@ internal fun roomAction(type: String, id: String): String = message(type).put("c
 
 internal fun moveMessage(input: String): String = message("move").put("input", input).toString()
 
-internal fun chatMessage(text: String): String = message("chat").put("text", text).toString()
+internal fun tellMessage(name: String, country: String, text: String): String =
+  message("tell").put("name", name).put("country", country).put("text", text).toString()
 
 internal fun signal(type: String): String = message(type).toString()
 
@@ -94,6 +96,7 @@ private fun event(o: JSONObject): OnlineEvent? = when (o.getString("t")) {
   "table" -> OnlineEvent.Table(o.getString("view"))
   "rejected" -> OnlineEvent.Rejected(o.optString("reason"))
   "chat" -> OnlineEvent.Chat(o.optString("name"), o.optString("text"))
+  "tell" -> OnlineEvent.Tell(o.optString("name"), o.optString("country"), o.optString("text"))
   "rival" -> OnlineEvent.Rival(o.optBoolean("online"), o.optLong("awayMs"))
   "adjournAsk" -> OnlineEvent.AdjournAsk(o.optString("name"))
   "closed" -> OnlineEvent.Closed(o.optString("reason"))

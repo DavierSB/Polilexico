@@ -78,7 +78,7 @@ private fun ClockAndRack(round: Int, remainingMs: Long?, c: TilePlacer, style: B
 private fun PhaseButtons(view: DuplicateView, c: TilePlacer, actions: DuplicateActions, dialogs: DuplicateDialogs, onNotice: (String) -> Unit) {
   when (val phase = view.phase) {
     is Phase.Playing -> PlayingButtons(
-      c, onPlay = { c.placement()?.let(actions::propose) ?: onNotice(NOT_IN_A_LINE) }, onPass = { dialogs.pass = true },
+      c, onPlay = { c.placement()?.let(actions::propose) ?: onNotice(NOT_IN_A_LINE) },
     )
     is Phase.Confirming -> ConfirmingButtons(phase, actions::cancel)
     Phase.Finished -> EndButtons(onAnalyze = actions::analyze, onMenu = actions::exit, onExport = actions::export, words = playedWords(view))

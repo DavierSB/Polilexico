@@ -40,9 +40,9 @@ import app.lexico.ui.classic.NewOnlineClassicScreen
 import app.lexico.ui.common.Disconnected
 import app.lexico.ui.common.AccountInput
 import app.lexico.ui.common.AdjournedItem
-import app.lexico.ui.common.ChatComposer
 import app.lexico.ui.common.ChatEntry
-import app.lexico.ui.common.ChatPopup
+import app.lexico.ui.common.ContactGroup
+import app.lexico.ui.common.ChatContact
 import app.lexico.ui.common.Durations
 import app.lexico.ui.common.GameItem
 import app.lexico.ui.common.GuestLobbyScreen
@@ -192,7 +192,9 @@ private fun OnlineHub(session: OnlineSession, mode: Mode?, online: Online, lexic
   val refused by client.refused.collectAsState()
   val ended by client.ended.collectAsState()
   JumpWhenSeated(room?.id) { nav.go(Screen.OnlinePlay) }
-  val actions = hubActions(client, lobby, nav)
+  val composer = remember { Composer() }
+  val inbox by client.inbox.collectAsState()
+  val actions = hubActions(client, lobby, nav, composer)
   val seeks = lobby.seeks.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }
   val state = OnlineHubState(
     refused ?: status ?: ended.takeIf { room == null }, room != null && game?.state?.value?.result == null, seeks.map(::seekItem),
@@ -201,8 +203,12 @@ private fun OnlineHub(session: OnlineSession, mode: Mode?, online: Online, lexic
     games = lobby.games.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }.map(::gameItem),
     adjourned = lobby.adjourned.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }
       .map { AdjournedItem(it.id, it.opponent, it.country, it.online, it.busy, it.result, it.duplicate) },
+    unread = inbox.size,
   )
-  ProvidePhotos(online, lobby) { OnlineHubScreen(profileOf(session), state, actions) }
+  ProvidePhotos(online, lobby) {
+    OnlineHubScreen(profileOf(session), state, actions)
+    if (room == null) MessageDialogs(client, contacts(lobby, emptyList(), emptyList()), null, composer)
+  }
 }
 
 @Composable
@@ -214,7 +220,7 @@ private fun JumpWhenSeated(roomId: String?, jump: () -> Unit) {
   }
 }
 
-private fun hubActions(client: OnlineClient, lobby: Lobby, nav: Navigator): OnlineHubActions {
+private fun hubActions(client: OnlineClient, lobby: Lobby, nav: Navigator, composer: Composer): OnlineHubActions {
   val seekOf = { id: String -> (lobby.seeks + lobby.invites).find { it.id == id } }
   return OnlineHubActions(
     back = nav::back, profile = { nav.go(Screen.OnlineProfile) }, resume = { nav.go(Screen.OnlinePlay) },
@@ -226,6 +232,7 @@ private fun hubActions(client: OnlineClient, lobby: Lobby, nav: Navigator): Onli
     watch = { id -> lobby.games.find { it.id == id }?.let { client.watch(it); nav.go(Screen.OnlinePlay) } },
     resumeAdjourned = { id -> lobby.adjourned.find { it.id == id }?.let(client::resume) },
     seenAdjourned = { id -> lobby.adjourned.find { it.id == id }?.let(client::seen) },
+    messages = { composer.write() }, write = { p -> composer.write(ChatContact(p.name, p.country, ContactGroup.OTHERS)) },
   )
 }
 
@@ -243,7 +250,7 @@ private fun ClassicOnline(client: OnlineClient, info: RoomInfo, lexico: Lexico, 
   game?.let {
     ClassicPlay(
       it, nav, themes, lexico.finishedGames, shown, handOff = false, pausable = false, closeOnLeave = false,
-      watchers = watchers.map(::personItem), onAdjourn = { adjourning = true },
+      watchers = watchers.map(::personItem), onAdjourn = { adjourning = true }, online = true,
     )
     AdjournDialogs(client, info, over || ended != null, adjourning) { adjourning = false }
   }
@@ -278,19 +285,16 @@ private fun DuplicateOnline(client: OnlineClient, info: RoomInfo, nav: Navigator
 
 @Composable
 private fun WithChat(client: OnlineClient, info: RoomInfo, content: @Composable () -> Unit) {
-  var composing by remember { mutableStateOf(false) }
-  val inbox by client.inbox.collectAsState()
-  val ignoring by client.ignoring.collectAsState()
-  val unanswered by client.unanswered.collectAsState()
-  val entry = remember { ChatEntry { composing = true } }
+  val composer = remember { Composer() }
+  val lobby by client.lobby.collectAsState()
+  val watchers by client.watchers.collectAsState()
+  val rivals = info.players.filter { it != info.me }
+  val list = contacts(lobby, rivals, watchers)
+  val fallback = remember(info.id, list.isEmpty()) { list.filter { it.group == ContactGroup.RIVALS }.randomOrNull() }
+  val entry = remember { ChatEntry { composer.write() } }
   CompositionLocalProvider(LocalChat provides entry, content = content)
-  if (!composing) ChatPopup(inbox, client::closeChat) { client.ignore(true) }
-  if (composing) ChatComposer(chatTarget(info), unanswered >= CHAT_UNANSWERED, ignoring, client::say, { client.ignore(false) }) { composing = false }
+  MessageDialogs(client, list, fallback, composer)
 }
-
-private fun chatTarget(info: RoomInfo): String = info.players.filter { it != info.me }.singleOrNull() ?: "la mesa"
-
-private const val CHAT_UNANSWERED = 3
 
 private class PhotoActions(val change: () -> Unit, val remove: () -> Unit)
 

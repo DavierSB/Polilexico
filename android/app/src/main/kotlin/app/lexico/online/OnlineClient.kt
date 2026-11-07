@@ -58,8 +58,8 @@ class OnlineClient internal constructor(private val online: Online, private val 
   private val _watchers = MutableStateFlow<List<Person>>(emptyList())
   val watchers: StateFlow<List<Person>> = _watchers.asStateFlow()
 
-  private val _unanswered = MutableStateFlow(0)
-  val unanswered: StateFlow<Int> = _unanswered.asStateFlow()
+  private val _lastTo = MutableStateFlow<Person?>(null)
+  val lastTo: StateFlow<Person?> = _lastTo.asStateFlow()
 
   private val _adjournAsk = MutableStateFlow<String?>(null)
   val adjournAsk: StateFlow<String?> = _adjournAsk.asStateFlow()
@@ -150,9 +150,14 @@ class OnlineClient internal constructor(private val online: Online, private val 
     if (send(moveMessage(input))) _notice.value = null else flash(UNSENT)
   }
 
-  fun say(text: String) {
-    _unanswered.value++
-    send(chatMessage(text))
+  fun tell(to: Person, text: String) {
+    _lastTo.value = to
+    send(tellMessage(to.name, to.country, text))
+  }
+
+  fun ignorePerson(name: String, country: String) {
+    online.store.ignored = online.store.ignored + personKey(name, country)
+    _inbox.value = _inbox.value.filterNot { it.from == name && it.country == country }
   }
 
   fun closeChat() {
@@ -179,9 +184,6 @@ class OnlineClient internal constructor(private val online: Online, private val 
     _rivalOnline.value = true
     _rivalAwaySince.value = null
     _adjournAsk.value = null
-    _inbox.value = emptyList()
-    _ignoring.value = false
-    _unanswered.value = 0
     _watchers.value = emptyList()
   }
 
@@ -239,6 +241,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
       is OnlineEvent.AdjournAsk -> _adjournAsk.value = e.name
       is OnlineEvent.Closed -> closed(e.reason.ifEmpty { "La sala se cerró." })
       is OnlineEvent.Chat -> heard(ChatLine(e.from, e.text))
+      is OnlineEvent.Tell -> if (personKey(e.name, e.country) !in online.store.ignored) heard(ChatLine(e.name, e.text, e.country))
       is OnlineEvent.Watchers -> _watchers.value = e.people
     }
   }
@@ -285,8 +288,9 @@ class OnlineClient internal constructor(private val online: Online, private val 
     awaitingGame = false
   }
 
+  private fun personKey(name: String, country: String): String = name.lowercase() + "|" + country
+
   private fun heard(line: ChatLine) {
-    _unanswered.value = 0
     if (!_ignoring.value) _inbox.value = (_inbox.value + line).takeLast(INBOX_SIZE)
   }
 

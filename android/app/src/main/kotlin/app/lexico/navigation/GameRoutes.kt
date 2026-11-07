@@ -44,6 +44,7 @@ import app.lexico.modes.sprint.solvedAnswer
 import app.lexico.modes.sprint.sprintView
 import app.lexico.modes.sprint.toSetup
 import app.lexico.sound.CelebrateRecord
+import app.lexico.sound.ClassicOnlineCues
 import app.lexico.sound.PlayCues
 import app.lexico.sound.recordBroken
 import app.lexico.ui.anagram.AnagramScreen
@@ -115,9 +116,10 @@ internal fun SprintRoute(screen: Screen.Sprint, lexico: Lexico, nav: Navigator, 
 internal fun ClassicPlay(
   game: ClassicGame, nav: Navigator, themes: ThemeState, finished: FinishedGames, wifiNotice: String? = null, handOff: Boolean = true,
   pausable: Boolean = true, closeOnLeave: Boolean = true, watchers: List<PersonItem> = emptyList(), onAdjourn: (() -> Unit)? = null,
+  online: Boolean = false,
 ) {
   PauseWhenHidden(game, closeOnLeave)
-  PlayCues(game) { it.takeIf { cue -> cue != Cue.CELEBRATION } }
+  if (online) ClassicOnlineCues(game.state.collectAsState().value) else PlayCues(game) { it.takeIf { cue -> cue != Cue.CELEBRATION } }
   GameTheme(game, themes, if (game.host == null) bot(game.opponent).theme else themes.appTheme)
   val scope = rememberCoroutineScope()
   var exporting by remember { mutableStateOf<String?>(null) }

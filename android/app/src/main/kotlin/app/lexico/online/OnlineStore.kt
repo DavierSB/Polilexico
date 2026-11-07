@@ -12,6 +12,10 @@ class OnlineStore(context: Context) {
 
   val server: String = DEFAULT_SERVER
 
+  var ignored: Set<String>
+    get() = prefs.getStringSet(IGNORED, null).orEmpty()
+    set(value) = prefs.edit { putStringSet(IGNORED, value) }
+
   fun session(): OnlineSession? {
     val access = prefs.getString(ACCESS, null) ?: return null
     val refresh = prefs.getString(REFRESH, null) ?: return null
@@ -28,6 +32,7 @@ class OnlineStore(context: Context) {
   }
 
   private companion object {
+    const val IGNORED = "ignored"
     const val ACCESS = "access"
     const val REFRESH = "refresh"
     const val EXPIRES = "expires"

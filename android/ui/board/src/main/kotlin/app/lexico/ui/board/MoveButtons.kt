@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.lexico.ui.common.CHAT_GLYPH
 import app.lexico.ui.common.Compact
 import app.lexico.ui.common.LocalChat
 
@@ -33,7 +34,7 @@ fun MoveButtons(c: TilePlacer, playEnabled: Boolean, onPlay: () -> Unit, small: 
 @Composable
 private fun ChatButton(onOpen: () -> Unit) {
   OutlinedButton(onClick = onOpen, modifier = Modifier.width(48.dp).height(36.dp), contentPadding = Compact) {
-    Text("💬", fontSize = 16.sp)
+    Text(CHAT_GLYPH, fontSize = 16.sp)
   }
 }
 

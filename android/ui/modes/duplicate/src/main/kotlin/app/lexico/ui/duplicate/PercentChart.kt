@@ -44,7 +44,6 @@ private fun ChartAndStandings(view: SeatView) {
     if (view.rounds.isEmpty()) Text("Aún no ha terminado ninguna ronda.")
     else if (view.watching) ColoredChart(percents(view))
     else PercentChart(percents(view), view.me)
-    if (view.watching) LeaderboardTable(view, maxHeight = 200) else StandingsTable(view, maxHeight = 200)
   }
 }
 

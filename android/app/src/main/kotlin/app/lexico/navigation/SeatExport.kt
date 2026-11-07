@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import app.lexico.games.export.BoardExport
+import app.lexico.sound.SeatCues
 import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.duplicate.SeatActions
 import app.lexico.ui.duplicate.SeatScreen
@@ -18,6 +19,7 @@ private const val SHOWN_PLACES = 3
 internal fun ExportableSeat(view: SeatView, style: BoardStyle, actions: SeatActions, onAdjourn: (() -> Unit)? = null) {
   var exporting by remember { mutableStateOf(false) }
   SeatScreen(view, style, actions, { exporting = true }, onAdjourn)
+  SeatCues(view)
   if (exporting) BoardExport(view.board, exportTitle(view), exportCaption(view), style) { exporting = false }
 }
 

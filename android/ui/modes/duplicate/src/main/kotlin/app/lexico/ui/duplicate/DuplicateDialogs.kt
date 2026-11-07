@@ -10,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.common.BagDialog
-import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.ResignDialog
 
 @Composable
@@ -30,13 +29,11 @@ internal class DuplicateDialogs {
   var moves by mutableStateOf(false)
   var bag by mutableStateOf(false)
   var resign by mutableStateOf(false)
-  var pass by mutableStateOf(false)
   var round: Round? by mutableStateOf(null)
   var end by mutableStateOf(false)
   var invalids by mutableStateOf(false)
 
   fun announce(view: DuplicateView, seen: Int) {
-    pass = false
     if (view.phase == Phase.Finished) finish(view)
     else if (view.rounds.size > seen) round = view.rounds.last()
   }
@@ -59,14 +56,4 @@ internal fun DuplicateDialogsShown(view: DuplicateView, c: TilePlacer, actions: 
   if (dialogs.moves) MovesDialog(view.rounds) { dialogs.moves = false }
   if (dialogs.bag) BagDialog("Quedan en la bolsa", view.bag) { dialogs.bag = false }
   if (dialogs.resign) ResignDialog(onResign = actions::resign, onContinue = { dialogs.resign = false })
-  if (dialogs.pass && view.phase is Phase.Playing) PassDialog(c, actions, dialogs)
-}
-
-@Composable
-private fun PassDialog(c: TilePlacer, actions: DuplicateActions, dialogs: DuplicateDialogs) {
-  ConfirmDialog(
-    "¿Seguro que quieres pasar?", yes = "Pasar", no = "No",
-    onYes = { dialogs.pass = false; c.recall(); actions.pass() },
-    onNo = { dialogs.pass = false },
-  )
 }
