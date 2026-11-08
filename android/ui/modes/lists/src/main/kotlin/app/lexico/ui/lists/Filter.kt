@@ -14,6 +14,8 @@ data class Filter(
   val vowels: Int? = null,
   val consonants: Int? = null,
   val simpleOnly: Boolean = false,
+  val start: String = "",
+  val end: String = "",
 ) {
   private val need: Map<Char, Int> = contains.groupingBy { it }.eachCount()
 
@@ -24,13 +26,15 @@ data class Filter(
 
   private fun shortest(family: Family): Int = family.words.minOf { it.length } - if (family.verbal && !family.isWord) 1 else 0
 
-  private fun shapeMatches(word: String): Boolean = positionsMatch(word) && countsMatch(word) && lettersMatch(word)
+  private fun shapeMatches(word: String): Boolean = affixesMatch(word) && positionsMatch(word) && countsMatch(word) && lettersMatch(word)
 
   private fun kindMatches(family: Family): Boolean = when (kind) {
     Kind.ALL -> true
     Kind.VERBAL -> family.verbal
     Kind.NON_VERBAL -> family.nonVerbal
   }
+
+  private fun affixesMatch(word: String): Boolean = word.startsWith(start) && word.endsWith(end)
 
   private fun positionsMatch(word: String): Boolean =
     fixed.all { (i, c) -> word.getOrNull(i) == c } && fixedEnd.all { (i, c) -> word.getOrNull(word.length - 1 - i) == c }

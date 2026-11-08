@@ -21,6 +21,7 @@ MAX_TILES = 9
 ROLES = ["masculino", "femenino", "masculino_plural", "femenino_plural"]
 TRAITS = {"intransitive_verbs": "i", "impersonal_verbs": "m", "unipersonal_verbs": "u", "defective_verbs": "d",
           "different_participle_verbs": "p"}
+OBSOLETE_TRAIT = "x"
 ROLE_CODES = {"masculino": "m", "femenino": "f", "masculino_plural": "mp", "femenino_plural": "fp"}
 HALF_DIGRAPH = re.compile(r"(C)h|(L)l|(R)r")
 COMMON = 90
@@ -36,7 +37,10 @@ def main():
     write("similar.tsv", similar_lines(families, verb_forms()))
     common = common_words()
     study = [f for f in families if common.get(f["words"][0], 0) < COMMON]
-    write("default_lists.tsv", default_lines(study, top_lines(study, word_stats(), verb_forms())) + themed_lines(study))
+    obsolete = [f for f in study if f.get("obsolete")]
+    study = [f for f in study if not f.get("obsolete")]
+    write("default_lists.tsv", default_lines(study, top_lines(study, word_stats(), verb_forms()), obsolete) +
+          themed_lines(study))
 
 
 def key(word):
@@ -84,21 +88,26 @@ def verb_traits():
 def verb_families():
     paradigm = family_points("verbal")
     traits = verb_traits()
-    df = pd.read_parquet(FAMILIES / "familias_verbales.parquet", columns=["word", "jefe"])
-    members = defaultdict(list)
-    for word, head in zip(df.word, df.jefe):
-        members[key(head)].append(key(word))
-    grouped = {w for ws in members.values() for w in ws}
+    df = pd.read_parquet(FAMILIES / "familias_verbales.parquet", columns=["word", "jefe", "desuso"])
+    members, obsolete = defaultdict(list), defaultdict(list)
+    for word, head, old in zip(df.word, df.jefe, df.desuso):
+        (obsolete if old else members)[key(head)].append(key(word))
+    grouped = {w for ws in list(members.values()) + list(obsolete.values()) for w in ws}
     for verb in paradigm.keys() - grouped:
         members[verb].append(verb)
-    return [verb_family(head, words, paradigm, traits) for head, words in members.items() if verb_fits(head)]
+    out = [verb_family(min(ws, key=lambda w: (len(w), w)) if head not in ws else head, ws, paradigm, traits)
+           for head, ws in members.items()]
+    out += [verb_family(min(ws, key=lambda w: (len(w), w)), ws, paradigm, traits, obsolete=True)
+            for ws in obsolete.values()]
+    return [f for f in out if verb_fits(f["words"][0])]
 
 
-def verb_family(head, words, paradigm, traits):
+def verb_family(head, words, paradigm, traits, obsolete=False):
     words = [head] + sorted({w for w in words if w != head and verb_fits(w)}, key=lambda w: (len(w), w))
     total = sum(paradigm.get(w, 0) for w in words)
-    code = " ".join(f"{w}:{traits[w]}" for w in words if traits.get(w))
-    return {"verbal": True, "points": total, "code": code, "words": words}
+    marks = {w: traits.get(w, "") + (OBSOLETE_TRAIT if obsolete else "") for w in words}
+    code = " ".join(f"{w}:{m}" for w, m in marks.items() if m)
+    return {"verbal": True, "points": total, "code": code, "words": words, "obsolete": obsolete}
 
 
 def noun_families(points):

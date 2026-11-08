@@ -114,7 +114,7 @@
 6ludir 6nucir
 3ox 3oxea 3oxee 3oxeo 7oye 7ove 7oque
 
-1bezar 7vejar 8vetar 8vedar 8rezar 8velar
+1bezar 7vejar 8rezar 8vetar 8vedar 8velar
 5tañar 7taLer
 4Lotrar 7Corar 8dorar 8morar 8rorar
 3jeto 3jeta 8set
@@ -257,6 +257,7 @@
 5exiliar 5axilar
 5auLo 5eLe 5aiLo 7eRo 7eCo 7evo
 5bagar 6botar 6togar 6rogar 6logar 6bolar 6bosar
+4brezar 4frezar 5rizar 5raizar 5rozar 5razar
 4tensar 4tersar 5tusar 5tasar 6cesar 6tetar 6besar 6pesar
 4polder 5podar 6poner 6poden 8joder 8poquer
 1hojear 2ojar 5ajear 7oxear 8orear 8osear 8otear 8olear
@@ -539,13 +540,12 @@
 7zuño 7Cuzo 7Cufo 7Cuyo 7CuRo 7CuLo 7CuCo
 6cargar 6lardar 6tardar 6bardar 6guardar 6candar 6cardal
 
-5fer 5far 5fuer 5fuir 6fiat
+5fer 5far 5fuir 5fuer 6fiat
 5heRa 5hieRa 5hoRa 7huya 7zuRa 7huLa 7CuRa 7huCa
 6causear
 3boja 3boje 3bojo 7box 7boy
 4fleCar 5luCar 6teCar 6meCar 6peCar 6leCal
 4litar 5lastar 6distar 6mistar 6pistar
-4brezar 4frezar 5rizar 5raizar 5rozar 5razar
 5gastar 5guastar 8justar
 5sentir 6dentar 6tentar 6mentar 6rentar 6sestar
 5manar 5minar 5menor 6melar 6penar 6merar 6cenar 6mesar
@@ -643,7 +643,7 @@
 5rugir 8reñir
 
 5Cazar 7Cufar 7CuCar 7CuRar 7zuzar
-5colar 5cular 5caler 5calor 6catar 6capar 6salar 6cagar
+5colar 5caler 5cular 5calor 6catar 6capar 6salar 6cagar
 4placer 6nacer 6pater 8hacer 8yacer 8jacer 8facer
 5oi
 
@@ -693,7 +693,7 @@
 5enejar 7enoyar
 5ciar 6zas 7Lar 7far 8dar 8lar 8car 8bar
 4edrar 5orar 5airar 5arar 6eral 6eguar
-6tancar 6mancar 6bancal 6rancar 6bascar
+6tancar 6mancar 6rancar 6bancal 6bascar
 6asocial
 5ceRo 5cieRo 5zuRo 5ciRo 7hoRo 7foRo 7joRo 7CoRo
 6adorar 6adosar 6atobar 6alobar 6abobar 6adonar
@@ -1002,7 +1002,7 @@
 
 4morfar 6bofar 7moCar 7mojar 7moLar
 6ajizal 7aRizar 8atizar 8alizar
-2raicear 5rizar 5rezar 5rozar 5razar
+2raicear 5rezar 5rizar 5rozar 5razar
 5actor 6actual
 5undular
 5manar 5menar 5miniar 6binar 6migar 6mirar 6mimar 6misar
@@ -1023,7 +1023,7 @@
 6deRocar 8denotar 8deRoCar
 4adrar 5orar 5airar 5erar 6asar 6aguar 6amar 6atar
 4tiLar 5traiLar 5truLar 6griLar 6briLar
-2bastear 5bostar 5bastir 6pastar 6gastar 6lastar 6guastar 6bascar
+2bastear 5bastir 5bostar 6pastar 6gastar 6lastar 6guastar 6bascar
 2costear 4cotar 4constar 5quistar 6contar 6cortar 6coscar 6tostar
 4logar 5legrar
 3Cau 3Cao 3Cai 5Ce 5Cia 5Cie 5Cio 5Co
@@ -1161,6 +1161,7 @@
 6deducir 6reducir
 4artizar 5atezar 6alizar 8ajizar 8atinar 8aRizar 8atibar 8atipar
 2raizar 5racear 5rocear 6maicear
+8emir
 6embozar 6escozar 6estozar
 3bloca 3bloco 6blog 6cloc
 
@@ -1273,7 +1274,6 @@
 5escañar 6encoñar 7escoLar 7escozar 8escodar 8escolar 8escotar 8escobar
 3ah 5ahe 5aho 7aLi 7aji 7aqui 7aCi
 3ecu 5eco
-8emir
 5escalar 5escoliar 5esquilar 6encolar 6escodar 6escotar 6escobar 6escorar
 4destaLar 6retaLar
 
@@ -1305,7 +1305,7 @@
 3axila 5ixil 5axial 6axis 7añil
 3fe 4fleo 4freo 5fue 5fui 5fia 5fie 5fio
 6bloc
-8aherir 8aferir
+8aferir 8aherir
 1hayo 3ay 5oyo 5ayau 5ayua
 5ensugar 6ensopar 6ensotar 8ensoñar 8enfogar
 4vedar 5vender 6ventar 6vengar 6vendal
@@ -1436,6 +1436,7 @@
 5xis 7Cies 7fies 7jies 8lies 8cies 8guies 8ries
 5parear 5pairear 6putear 8zurear
 4raCar 5ronCar 6manCar 6lanCar 8rancar
+4trancar 4tacar 5tincar 6bancar 6tascar 6mancar 6tangar 6rancar
 6cotizar
 1volear 2bolar 5balear 6colear 6solear 6botear 6lolear 6bocear
 5lider 5ludiar 6lisiar
@@ -1446,7 +1447,6 @@
 3bita 3bite 3bito 6bis
 5tundir 5tandear 5tendear
 1abitar 5habituar 6habitat
-4trancar 4tacar 5tincar 6bancar 6tascar 6mancar 6tangar 6rancar
 2ronquear 4troncar 5rancar 6roscar 6rondar 6roncal
 5acatar 5acotar 5aquietar 5acoitar 6aguitar
 4huerco 5hico 5huaco 6huelo 6huego 6huero 6hueso
@@ -1578,7 +1578,6 @@
 2tacar 4tasquear 4traquear 5tiquear 6laquear 6paquear 6maquear 6baquear
 
 5resumir
-
 5CaRo 5CoRo 5CuRe 5CuRi 5CuRia
 6numeral
 5ahitar 5ahotar 8aguatar
@@ -1785,7 +1784,7 @@
 5estordir
 5enserir 6ingerir 8injerir 8inferir 8inquerir
 4preño 5puño 5piño 5peña 5paño
-5amanar 5amuinar 5amainar 6asonar 6abonar 6amolar 6amonal 6adonar
+5amanar 5amuinar 5amainar 6asonar 6abonar 6amolar 6adonar 6amonal
 5Cimar 6Capar 6Calar 6Camal 6Caguar
 6faltar 6faldar 6falcar 6farsar 7valsar
 5nuño 6ciño 6diño 6tiño 6riño 6guiño 6liño 6piño
@@ -1947,7 +1946,7 @@
 
 5retazar 6rebozar 6remozar 7retoñar 8retocar 8retomar 8retobar
 4tincar 5trancar 5troncar 5truncar 6brincar 6triscar
-5avenir 6averar 6avelar 7ajenar 8avezar 8arenar 8apenar
+5avenir 6avelar 6averar 7ajenar 8avezar 8arenar 8apenar
 3jet 5joto 5jato 5jeito 5jauto 5jeta
 4le 4pe 5plie 6ble 6pre
 5escolar 5esquilar 5escaliar 6encalar 6escamar 6escapar 6espalar 6escarar
@@ -2039,7 +2038,7 @@
 5gaRo 5goRa 5guaRo 5guiRo 6toRo 6coRo 6boRo 6roRo
 6declamar
 6cueLo 6rueLo 8hueLo 8fueLo 8luego
-1halagar 4alargar 4aplagar 5aligar 5alegar 5aulagar 5aliagar 5alugar
+1halagar 4alargar 4aplagar 5aligar 5alegar 5aulagar 5alogar 5aliagar
 6curtir 6surgir 6surdir 6surcir
 6gibe 6pide 6pile 6pite 6pire 6pipe 6libe 6pise
 
@@ -2548,7 +2547,7 @@
 
 6obispal
 5engaRar 5enguRar 8engomar 8engorar 8engolar 8enfoRar
-2Canquear 6Cantar 6Cangar 6Cascar 8bancar 8tancar 8mancar 8Cancay
+2Canquear 6Cantar 6Cangar 6Cascar 8bancar 8tancar 8mancar 8rancar
 3puma 4plum 5pom 6pub 6pus 6put 6bum 6pun
 
 
@@ -3287,7 +3286,7 @@
 6raedizo
 6sonrodar 8sonrojar
 6lancear 8Cancear
-5avaluar 5ovalar 5avilar 5avaliar 5avelar
+5avaluar 5ovalar 5avelar 5avilar 5avaliar
 
 4afocar 6aforcar 7aRoscar 8amoscar
 
@@ -3386,7 +3385,7 @@
 
 3puf 5piafo 6bufo 6tufo 6rufo
 5melar 5molar 5mular 5malar 5muelar
-5fiar 5far 5fuer 5fuir 6fes
+5fiar 5far 5fuir 5fuer 6fes
 5carabear
 8hadiz 8habiz 8cafiz
 1rais 3raiza 3raizo 6maiz 8raid 8rail 8rain
@@ -4027,7 +4026,7 @@
 5osado 6osuno 8ojudo
 8aboLonar
 5talad 5taled 6salud
-5atroCar 8afreCar 8atreguar 8atregar
+5atroCar 8afreCar 8atregar 8atreguar
 5saxo 7saqueo 8saneo 8saleo 8faxeo 8sapeo 8sabeo
 8taraceo
 
@@ -5022,7 +5021,7 @@
 1seLar 5zaLar 5zuLar 6meLar 6ceLas
 4fango 5fugo 5figo 5fuego 6fado 6fabo 6fato 6falo
 5aranero
-4aprestar 5apastar 5apostar 6atestar 6asestar 6agestar 6apesgar 6apertar
+4aprestar 5apastar 5apostar 6atestar 6asestar 6apesgar 6agestar 6apertar
 5airan 5airen 5oron 5aron
 4mongo 5mugo 5migo 5mego 5meigo 5mago
 5bruña 5braña 6preña 6greña 7breza 7breCa 7breva
@@ -5139,6 +5138,7 @@
 3mus 4mulso 5maso 5meso 5miso 5mueso
 5garcia 6marzo 6sarzo 8garpo 8garlo 8garbo 8zarzo
 
+3faro 3fara 5fiar 5fer 5fuir 5fuer
 
 1bulto 5vuelto 6vulgo 8multo 8culto
 5adicto
@@ -5316,7 +5316,6 @@
 
 
 1espero 5hesperia 5hesperio 7vespero
-3faro 3fara 5fiar 5fer 5fuer 5fuir
 6guzga
 6himpo
 
@@ -5540,6 +5539,7 @@
 
 
 3pina 3pino 4plin 5pon 5puan 5puen 5pian 5pien
+5toLir 5taLer 8toser 8toner
 
 4cloquero 4croquero 5coqueria 5cuaquero 5cuquero
 
@@ -5639,6 +5639,7 @@
 1yanta 5Lanto 6Lanca 7Canta 8canta 8ganta 8danta 8tanta
 5aulico 6eolito
 3bon 5bino 5bueno 6sono 6bogo 6boto 6dono 6tono
+6halar 6hadas 6habar 8haLar 8haCar 8nadar 8havar 8radar
 
 
 5acucio 5acaece
@@ -5805,7 +5806,6 @@
 7feRetear
 5mena 5mene 5meno
 5biotico 6getico 6retico 6belico 6besico 6setico
-7endereCar
 8invernar 8infernar
 
 5desamorar
@@ -6286,7 +6286,7 @@
 5lerense 8harense
 4embazar 8embramar 8embragar
 6tiple 6niple
-6aparentar
+4aplacentar 6aparentar
 6figurar
 4combo 4cobro 5cubo 5cabo 5coba
 5jerga 5juerga 8gorga 8torga 8morga
@@ -6295,6 +6295,7 @@
 5corita
 6enyertar
 5arieto 6aceito 8afeito
+6osificar
 
 
 6aRebatar
@@ -6925,6 +6926,7 @@
 6adulete 8azulete
 6habiLo 7hatijo 7zatiLo 8gatiLo
 5gaRado 5gaRido 6taRudo 6gaRulo 7gaLudo
+4desliñar 8delirar
 5tocineria 6bocinero 6cocinero
 3jabona 3jabone 3jabono 5jubon 6jalon 6japon 6jamon
 5tajo 5tejo 5tijo 6cojo 6bojo 6mojo 6rojo
@@ -7061,7 +7063,6 @@
 6pistero
 5leCazo
 4decurso 6depuso 6desuso 6recuso
-5toLir 5taLer 8toser 8toner
 5despajar 5despejar 5despiojar 8deshojar 8desposar
 
 7navajo 7navazo
@@ -7781,6 +7782,7 @@
 8cegajear
 6escamado 6escalado 6escapado 6estacado 6escarado
 5aceCan 5aceCen 6aceCos
+4fluir 4fruir 5fiar 5fer 5far 5fuer
 
 3buena 3bueno 5ben 5bon 5bien
 6auLaste
@@ -7831,13 +7833,13 @@
 3cañaro 3cañari 5cuñar 5quiñar 6bañar 6dañar 6lañar 6tañar
 5obice
 
+5buLir 5boLar 6toLir 6moLir
 
 5modero 5madero
 4baña 4raña 5bruña 5breña 7brava 7braza
 5agrumar 6agradar 8agravar 8agrazar
 5bisoña 5bisoño
 5temido 5timido 6sumido 6tupido 8tuLido 8humido
-6halar 6hadas 6habar 8haLar 8haCar 8nadar 8havar 8radar
 
 4apastar
 5decania 6decapo 6degano 6secano 6mecano
@@ -7898,6 +7900,7 @@
 
 
 5zoqueta 7ceReta
+5ahitar 5ahuatar 6ahogar 6ahotas 7aRotar 7azotar 7ajotar
 5fome 8comi 8romi
 5centeLa 5centoLo 5centaLa 8centona 8centola
 
@@ -7925,6 +7928,7 @@
 3laderos
 8disidir
 5bipeda 5bipedo 5bipode
+
 
 5cadiLo 5caudiLo 6rodiLo 6cotiLo 8codigo 8coRiLo 8coCiLo
 5aCineria 7añinero
@@ -8975,7 +8979,6 @@
 5cadoce 6carozo 8caRozo
 
 6tetrico
-7enfotar 8ensotar 8enmotar
 
 6temedor 8tejedor
 5tendal 6tended 6tender 6tendes 6lendel
@@ -9011,6 +9014,7 @@
 
 8motejo 8hoLejo 8moLedo 8moLero
 
+3facera 3facero 6faces 7hacer 7yacer 7jacer
 
 4decimetro 6decidero
 4runo 6brumo 6brugo 6pruno 6bruto
@@ -9415,7 +9419,6 @@
 6alcedos
 
 4spot 8short
-5desliar 5desleir
 6riñoso 8tiloso 8tiposo
 
 
@@ -9548,7 +9551,7 @@
 
 
 
-5tuLir 5toLer 6moLir 6boLir
+5tuLir 5toLer 6boLir 6moLir
 
 5buna 5bienio 6punio 6bucio 6burio
 3cuarzos
@@ -9711,7 +9714,7 @@
 5seLar 5saLar 5soLar 6piLar 6tiLar 6guiLar 6siLas 6miLar
 
 5amerizar 6amacizar 7amariLar 8amarinar
-5muLir 5moLar 6toLir 6boLir 8morir
+5muLir 5moLar 6boLir 6toLir 8morir
 
 5hornero 8carnero
 4casino
@@ -9909,6 +9912,7 @@
 5galeoto 5galeota
 5cencera 5zonceria 8roncera
 
+5puñir 6cuñar 6ruñar 6puñal 7puLar 7pujar 7puyar
 5sentador 6sentidos
 8enmaderar
 
@@ -10025,7 +10029,7 @@
 4corita 6clorica
 4domen 5dolman 6colmen
 
-1rasado 4trazado 4brazado 5rizado 5rezado 5raizado 5rozado
+1rasado 4trazado 4brazado 5rezado 5rizado 5raizado 5rozado
 8lacetano
 5enrona 6encuna 6enruga 6enrula
 6engaritar
@@ -10048,7 +10052,6 @@
 
 5reidero 5ruedero 5redero 5rodero 8huidero
 5pela 5pele 5pelo 5puli 5pelu 5poli 5pali
-5buLir 5boLar 6toLir 6moLir
 5sayaleria 8sabalero
 7cartuCo
 5membrar 6cimbrar 6timbrar 6mimbral
@@ -10428,7 +10431,6 @@
 6cantu
 5aneldo
 4desmurar
-5puñir 6cuñar 6ruñar 6puñal 7puLar 7pujar 7puyar
 5ardiendo
 5quemon 5quimon 5camion 6cagon 6calon 6cason 6canon 6capon
 6asertos
@@ -10859,7 +10861,7 @@
 
 1epazote
 1cigoto
-
+1barahustar
 
 
 5serio 5sirio
@@ -10874,7 +10876,6 @@
 3teLiz 6meLiza 6peLiza 7teRiza 8teLina
 6Cofes
 4ametrico 5amarico 6amerito 6acerico 8amerizo
-6osificar
 8dezmero
 5camela 5camele 5camelo 5camelia 6carelio
 
@@ -11097,6 +11098,7 @@
 
 
 
+8nublar
 
 3baula 5bel 5bol 6paul 8jaul 8Caul 8faul
 
@@ -11682,7 +11684,7 @@
 5briLe 5broLe 6traiLe
 5helero 5hulero 5hilera 6higuero 7Cilero
 
-5imprimar 5emprimir 5impremir
+5imprimar 5impremir 5emprimir
 5atardecia 5atardecio
 3tic 4tinco 5toco 5tauco 5tiqui 5tuco 5tique 5tueco
 6bandir
@@ -11693,8 +11695,8 @@
 
 5cauCero 5coCero 7cuevero 8cuerero
 
-1cayos 3caLosa 3caLoso 5caLais 5caLas 5caLeis 5caLes 5cueLos
 8delatar
+1cayos 3caLosa 3caLoso 5caLais 5caLas 5caLeis 5caLes 5cueLos
 7agracejo 8agracero
 5asira 5asire 5aserio
 5cubiLa 5cabiLo 6culiLo 7cubijo 8cubilo 8cubico 8cubito 8cuCiLo
@@ -12067,6 +12069,7 @@
 6tribular
 5sago 5saga 6ragu
 3galantea 3galantee 3galanteo 6garante 6balante 6talante
+3calera 3calero 5calar 5calor 6caber 6calen 6cales
 3Can 5Cino 5Cono 5Cane 5Cana
 5tesoreria 6tesonero
 
@@ -12394,8 +12397,8 @@
 3latos 4flatoso 5lutoso 6lanoso 6lamoso 6matoso 6patoso
 
 3cacana 4cascan 4calcan 4cancan 5cocan 5cucan
-4desliñar 8delirar
 
+4adornar 5adunar 5aduanar 6asonar 6abonar 6adorar 6adosar 6adobar
 4marero 4madero 6matrero
 5cañuteria 8canutero
 
@@ -12839,12 +12842,11 @@
 6clausurar
 
 5mapa 6mano 6capo 6mato 6maso 6papo 6tapo 6rapo
-8nublar
 
 6nutriz
 5zurce
-3botina 5botan 5boten 5boton 5batin
 1mezclar
+3botina 5botan 5boten 5boton 5batin
 
 5coco 5cuco 5queco 5cueco 5cuico 5caco 5caico
 6guRuña 7cuRuCa 8cuRuca
@@ -13010,6 +13012,7 @@
 5noneco 5neneque
 6higroma
 5corteza 7cortejo 8cortero
+4trancar 4ranclar 5roncar 5rancor 6bancar 6rascar 6tancar 6mancar
 4cueco 5cuenca 6cuento 6cuesco
 5hilaCo 7hilaza 8hilaba 8hilada 8hilara
 
@@ -13106,17 +13109,17 @@
 4granula 6ranura 6canula 6rabula
 6empatizar 6empanizar 6empapizar 8empalicar
 5ilogico 6agogico
-5dorico 6danico 6barico
 5yogur 6yodar 6yogas 7hogar 8bogar 8togar 8rogar 8logar
+5dorico 6danico 6barico
 6arborecer
 
 3adicion 5adicione 5adiciono 8aficiona
 5cardones 6cardares 6cardases 6sardanes 6cardales
 
 4befe
+5desgatar 6descotar 6desgomar 6desmotar 8desgoRar
 5canape
 5zurujano
-5desgatar 6descotar 6desgomar 6desmotar 8desgoRar
 
 3veLos 8vegoso 8venoso
 5pintar 6pinton 6tintor 6pintos
@@ -13393,7 +13396,7 @@
 
 5acuestas 5acuestes 5aquestos 6apuestos
 
-5escomer 5escomar
+2escomar 5escomer
 4pece 6peste 8pesque
 7atañia 7atavia 7atajia 8ataria 8ataguia
 5baRueco
@@ -13701,7 +13704,7 @@
 5puyais 5puyas 5puyeis 5puyes 5poyos 5payos
 6abatanar 6abaratar
 5quis 5quias 5quios 5cus 5cas 5cuis 5cois 5cais
-5ajar 5ijar 6ojal 7ovar 7oLar
+2ojear 5ajar 5ijar 6ojal 7ovar 7oLar
 5doñigal 5doñeguil
 5aviado 5avado 5ovido 6avino 6aviso
 4logo 5luengo 5longui 6pongo 6congo 6bongo 6mongo 6tongo
@@ -13713,7 +13716,6 @@
 5lejana 5lejano 8ledania 8letania
 5teRina 8taRiza 8tabina 8tapina 8tarina
 5oraje 8erare 8erase
-6desdorar
 5conduelo 6condigo 6cordilo 8condiCo 8condijo
 
 
@@ -13828,7 +13830,6 @@
 3cor 3corio 5curi 5coro 5cari 5corua 5cora 5cauri
 1brandy 6blandi
 5quilato 5calate 6calado 6catato 6malato 6carato 6calamo 6calabo
-8deRanCar
 
 5espadan 5espaden 5espadon
 
@@ -13864,8 +13865,8 @@
 5mantica 6mantesa 6mantera 8manteña
 6dermico 6permito 6persico 6termico 6permiso
 5cefalo
-5togue 5tegue 6ligue 6sigue 6tire 6migue 6time 6tibe
 5ver 8leer 8peer 8seer
+5togue 5tegue 6ligue 6sigue 6tire 6migue 6time 6tibe
 
 
 3Cop 3Copea 3Copee 3Copeo 5Cape 5Cupe 5Cepe 5Copa
@@ -13992,6 +13993,7 @@
 8mostrado 8postrado 8rostrado
 3caLa 5caLe 5caLo 7caRao 8calao 8camao 8cacao 8carao
 8drenare 8drenase
+7afuciar 8acuciar 8aluciar 8aguciar
 8levadero
 6duraste
 
@@ -14052,6 +14054,7 @@
 6cordal 6gordas 8gorjal
 8bajelero
 1cebo 5sobo 5subo 5sebe 5seibo 5suabo
+6dotrinas
 6escañero 7estafero 7estajero 7estaquero 8estadero
 5estancia 6estarza 8estanca
 4tumba 5tubo 5toba 5taba 6tuna 6tupa 6tusa 6suba
@@ -14125,7 +14128,6 @@
 5venal 6vital 6vinar 6viral 7quinal 7final
 
 
-
 6galibado 6galicano
 7foRaje 8foLare 8foLase 8fogaje
 4ronzo 4brozo 4bonzo 5bronce 6tronzo
@@ -14138,7 +14140,6 @@
 6lerdon 6cerdos 6perdon 8cerCon 8verdon
 3conjuez
 
-3facera 3facero 6faces 7hacer 7yacer 7jacer
 4culebro 5colero 5calero 6dulero 6rulero 6bulero 6mulero 6cunero
 
 5montoso
@@ -14196,12 +14197,13 @@
 
 3Cave 5Civea 5Cava 5Cavo 7Lavea
 6enmudecer 6enrudecer
-5zumo 5zomo 6ciego 6cieno 6cielo
 
+5zumo 5zomo 6ciego 6cieno 6cielo
 6aspiLero 6artiLero
 5guadual 6guacal 6guaral
 3polio 5puli 5polo 5peli 5pali
 5amigote
+6caloñas 8caRoñar
 1velico 5bulico 6betico 6celico 6melico 6besico
 
 6mofeta 6bofena 7boqueta 8boceta 8bogueta 8Cofeta 8boneta 8boleta
@@ -14496,6 +14498,7 @@
 
 1cayapo 6caLado
 5beninas 5beninos 8beRines 8bejines
+6ensalzar 7encalvar 8encalmar 8encalcar
 
 5contil 5cantel 5cantal 5quintil 6candil 6canguil
 
@@ -14628,7 +14631,6 @@
 5sotar
 6martaje 6barcaje 8marcare 8marcase
 4cascalote 5cacalota 6camalote 6guacalote 8caCalote
-6dotrinas
 5betico 6bionico 6biotipo
 6castizo 7gastivo
 8trucare 8trucase
@@ -14974,11 +14976,13 @@
 4acato 5acantio 6aguanto 6amanto 6abanto
 5vinatico
 1pesuña 5peceña
+5yantar 6yuntas 7juntar 8puntar
 
 5agarico
 8aurigero
 3desiguala 3desiguale 3desigualo
 4Cambra 5Cimba 5Cumba 5Comba 6Campa
+
 4concerto 4concreto 4concento 5concito 6concedo
 6anquera 6arqueta 7anfeta 7anCeta
 3caler 4cablero 5colero 5culero 5caluro 5caleria
@@ -15043,7 +15047,6 @@
 
 
 
-7enfadar 8encadar
 5cojan 5cojin 5cajon 5cujon 5quijon
 4garles 5goles 5gules 5galas 5galos 5galios 5galuas
 5hoLin 8guiLin
@@ -15146,6 +15149,7 @@
 5maqueto 6maculo 6macuco 8zacuto 8yacuto
 
 7alforza 8alcorza 8almorza 8algorza
+6consejas
 4carnero 5canoro 5cunero 6lanero 6guanero 6caneco 6camero 6carero
 5tacones
 5coquina 5cocono 6boquino 6coquito 7coCino
@@ -15206,7 +15210,6 @@
 
 8viñatero 8pilatero 8pinatero
 5sextiLo 8sextina
-6consejas
 6babelico
 6espirital
 
@@ -15440,10 +15443,10 @@
 6adjetival
 8elidir 8eligir
 
+4segundar 6segurar
 
 4dope 6drogue
 3juicios
-4segundar 6segurar
 
 5hacina 8habana 8hazaña 8mazana
 4calculo 6maculo 6baculo 6capulo 8jaculo
@@ -15477,8 +15480,8 @@
 5sueldas 5sueldes 5saldos 6gueldos 6sueltos
 5topetado 6copetudo
 6desflecar
-4listel 6clister 6cristel
 
+4listel 6clister 6cristel
 5foque 5fique 7jaique 8caique
 5bocaza 5bocaci 6bolazo 7bocaCo 8bocado 8bojazo 8boCazo
 5faCado 7jaCudo 8caCudo
@@ -16035,8 +16038,8 @@
 6relaje 6celaje 6pesaje 8pelare 8pelase 8helaje 8peRaje 8velaje
 5yures 5yiras 6yutas 6yucas 7juras 7zuras 7Curas 7huras
 5corcel 6carmel 6cancel 6cartel
-8aligero
 
+8aligero
 
 6altanero 6algarero 8alfarero
 
@@ -16058,7 +16061,6 @@
 6fiados 7viador 8miador 8guiador 8piador
 5pejin 7piCin 8pilin
 5catetas 5catetos 5catetes 8caReteos 8caCeteos
-4fulgir 4fungir 8mugir 8rugir
 
 4Ciclero 5Colero 6Cileno 6Cinero 7hilero
 5zamaRon 6cigaRon
@@ -16091,8 +16093,8 @@
 5Cicota 5Caqueta 6Calota 6Cacona 8cacota 8Cayota 8pacota
 
 
-5atal 6amol 8avol
 
+5atal 6amol 8avol
 4troco 4rosco 4ronco 4proco 4croco
 6calente 6cadente 8cayente
 
@@ -16220,10 +16222,10 @@
 3virola 3virolo 5viril 5viral 6viron
 
 4clistel 6listen 6listes 6lintel
+6soletas 8solevar 8solejar
 3rayos 8ramoso 8raboso 8raposo
 8piante 8liante
 
-7afuciar 8acuciar 8aluciar 8aguciar
 4flaco 6franco 8blanco 8planco
 5heRero 7zoRero 8hocero 8goRero 8poRero 8toRero 8boRero
 6titerero
@@ -16716,9 +16718,9 @@
 6inmoble 6ignoble
 
 6salido 6sabido 6lapido 6tapido 6sapino 6rapido 6sapito
+6tresnal 6tresnas
 
 5punible 6posible
-6tresnal 6tresnas
 1Cinaste
 5rocino
 5drogota 6drogaba 6drogada 6drogara
@@ -16930,6 +16932,7 @@
 4tabucos 5trabucais 5trabucas 5trabuqueis 5trabuques
 
 4condena 5codeina 5cadena 5codina 6codera 6rodena
+4sonsacar 8sosañar
 3codin 5caudina 5codeina 5codena 6copina 6cocina 6colina
 6acme 6acle 6acre
 7caReto 7caveto 8cateto 8careto 8caseto
@@ -16987,9 +16990,9 @@
 5buRero 5baRero 6boRego 6goRero 6poRero 6toRero
 6copan 6molan 6sopan 6topan 6dopan 6moran 6mocan 6popan
 4jugar 5joglar
+
 1valon 5balan 5balen 5bulon 5bailon 5bolon 5balin
 4redito 6crepito
-
 1risos 3rizosa 3rizoso 5riceis 5rices 5rizais 5rizas 5rezos
 4rumo 5gromo 5gramo 6brumo 6grupo
 
@@ -17181,7 +17184,7 @@
 1surdir 6zurcir
 5talionada 6taponada 8jalonada 8taConada
 
-4racor 5rencor 5rancar
+4racor 5rancar 5rencor
 1anegada 7fanegada
 3bla 4bao 5ble
 4pereta 6pedrera
@@ -17393,8 +17396,8 @@
 5prensar
 6faceria 8faLecia
 6gatuno
-5adornais 5adornas 5adorneis 5adornes
 5recudir 5recodar 6recodin
+5adornais 5adornas 5adorneis 5adornes
 6mogoles 6totoles
 
 3extasia 3extasie 3extasio
@@ -17697,7 +17700,7 @@
 4sopete
 5jalonais 5jalonas 5jaloneis 5jalones
 5boRada 5baRada 6tuRada 6cuRada 7buCada
-6lisonjas
+2lisonjear 6lisonjas
 
 5cenceRa 7cenceño 8cencero
 6sonaste 6donante 6tonante
@@ -17734,7 +17737,6 @@
 5tejedora 5tejedera 5tejeduria
 5mozuelo 5macelo 7majuelo 7maCuelo
 5casero 5queseria 7yesero 8resero 8mesero 8pesero
-4sonsacar 8sosañar
 8cebiCero
 5miton 5motin 5mitan
 8santuRon
@@ -17923,7 +17925,7 @@
 
 7gastizo
 5pañuelo 5piñuela 6liñuelo
-
+2baCiLerear
 5sequedal 6secadas 6secaral 8secaRal
 5acidulais 5acidulas 5aciduleis 5acidules
 1veloz 5velais 5velas 5veleis 5veles 5vilos 5velis 5vuelos
@@ -17934,10 +17936,10 @@
 4pliego 5ligo 5lego 5logo 5luego 5lago
 3laringe 8faringeo
 
+
 8arCivo
 7ceRajon 8ceRaron
 6durativo
-
 5goruLo 5garuLo 6turuLo 8zuruLo
 3vafos 8vadoso
 1soLa 3soy 5suya 5saya 6roya 6boya 6poya 6goya
@@ -17965,6 +17967,7 @@
 8tabico 8tanico
 5cubera 5cubero 6tuberia 8cuqueria
 4ringa 5ringle 6cingla 6singla 8jingla 8Cingla
+
 5serenais 5serenas 5sereneis 5serenes 5seranos 5serenis 5serenies
 
 5estroma 8estruja
@@ -18052,6 +18055,7 @@
 
 5contable
 5cundidor
+4batir 5bastar
 8aRayan
 8reguilete
 
@@ -18172,8 +18176,8 @@
 5comedian 5comodon 6comelon 6comedor 8comezon
 5negais 5negas 5negueis 8nevus
 6esmera 6escena 8esquena
-5colimote
 6escofias 8escoriar 8escoliar
+5colimote
 
 5langor 5longar 6longos
 5silvoso
@@ -18183,7 +18187,6 @@
 5saja 6coja 6boja 6moja 6goja 6roja
 
 6santeño 8sangueso
-5taLecer 5tuLecer 6boLecer
 5Cacota 5Caquete 7vaqueta 7jaqueta 7Caveta
 6carado 6carato 6carabo 6caramo 8carajo 8caraCo
 
@@ -18299,9 +18302,9 @@
 6carlismo 8Cartismo
 6cauces
 
+5exordir
 6actitud
 5ajustan 5ajusten
-5exordir
 5veRoja 7heRojo 8ceRojo
 
 5mesquino 6mosquito
@@ -18475,7 +18478,6 @@
 4guelte 6peltre
 
 
-
 5calero 5coluro 5calura 8caluyo
 5gramal 6gracil 6gratil
 
@@ -18572,6 +18574,7 @@
 4jinestada
 
 
+6temblar 6sembrar
 6conoidal
 5grosedad
 5caCetona 8caCetiza
@@ -18846,8 +18849,8 @@
 5doble 6table 6cable 6bable 6mable 6sable
 6radiaste
 5relojeria
-1cavio 4cambio 4cabrio 5cabe 5cabia 5cabo
 4descender 6depender 8defender 8dehender
+1cavio 4cambio 4cabrio 5cabe 5cabia 5cabo
 3sulfure 5sulfura 5sulfuro
 
 4plaston
@@ -18930,6 +18933,7 @@
 5lagunerio
 6nudista 6sudista
 
+2estoquear 5estucar 5estacar 6escocar 8estovar 8estofar 8estozar
 3angora 8anCor
 5boleteria 6soletero 6bonetero 6coletero 6toletero
 6lustrad 6lustran 6lustrar 6lustras
@@ -19140,8 +19144,8 @@
 
 1montuvio
 4laceria 5lanzaria 5lancera 5lancero 5lenceria
-5cabezota
 4encintar 5incitar 5encetar 6encimar 6encinar
+5cabezota
 5longura 5longueria 8longueza 8lonCera
 6añinos 8aticos
 1grandes 3grandeza
@@ -19360,10 +19364,10 @@
 6jicaro 8bibaro
 3procera 3procero
 
+5aviar
 
 5sobajo 5sobijo 6solejo
 6literero
-5aviar
 
 8pebeta 8peLeja 8peseta 8pereta
 5iras 5ireis 5irias 5ores 5aires 5eres 5ares 5iris
@@ -19635,8 +19639,8 @@
 5cuRada 6maRada 6baRada 6paRada 6naRada 6caRaca 6guaRada
 1bitor 5vitar 6vigor 6vitos 6visor
 5mapa 6copa 6mola 6sopa 6topa 6dopa 6mora 6moca
-4coCero 5canCero 6colCero 6corCero 6ronCero
 
+4coCero 5canCero 6colCero 6corCero 6ronCero
 5tofus 5tifas 5tifos 8tisus
 5pañera 5peñera 6muñera 6ruñera 6puñeta
 8aRetin
@@ -19896,8 +19900,8 @@
 6Cimango 6Cilanco
 
 4atina 6arcina 6artiga 6artica 6actina
-5cabezos 5cabezas
 6desbuLar 8despumar
+5cabezos 5cabezas
 1cesada 5sisada 5sesuda 6sedada 6secada 6tesada 6segada 6besada
 
 7varazo 7zarazo 8tarazo 8sarazo 8jarano 8jaRazo
@@ -19968,8 +19972,8 @@
 8tazaba 8tazada 8tazara 8tacaña 8tamaña 8hazaña 8fazaña
 4mata 5multa 6salta 6balta 6calta 6palta 6manta 6marta
 5estopon
-4enlato 5eleto 6epato
 5encestar 6intestar 8inhestar 8infestar
+4enlato 5eleto 6epato
 5gavota 5gavieta 5gaviota 6naveta 6gavera
 8acompasar
 8albarejo
@@ -19995,7 +19999,6 @@
 
 4pagros 4pargos 5pagais 5pagas 5pagueis 5pagues 5pegos 5paguas
 
-5soletar 6sonetear 6toletear 6sopetear 6boletear 6sobetear
 6tortedad
 5isofago
 7veredero
@@ -20063,7 +20066,6 @@
 
 8septeto
 7mazorca 7maLorca
-4fluir 4fruir 5fiar 5fer 5far 5fuer
 
 5brisara 5brisera 6grisura
 
@@ -20179,8 +20181,8 @@
 3peala 3peale 3pealo 5pal 5paul 5piel 5pial
 
 4copa 4compra 5campa 5cumpa 5compi
-1cesion 5cicion 8ceRion 8cequion
 8juzgar
+1cesion 5cicion 8ceRion 8cequion
 6soletero 6boletero 6coletero 6topetero
 5anatomia
 4trocea 5trocla
@@ -20275,8 +20277,8 @@
 4cuados 5cuadrais 5cuadras 5cuadreis 5cuadres
 5jadiar 6judias 8ludiar
 6encarecer 6enralecer
-6cosible
 4descoRer 6recoRer
+6cosible
 
 
 5ripicola
@@ -20303,6 +20305,7 @@
 6bañados 6lañador 6dañador 8balador 8babador
 5maulero 5mielero 5mulero 5molero 5malero
 
+5rugar 5regar 5rogar 6raigan 6raigas 6raigal
 1vastedad
 6guanaca 6guataca 6guarana 6guaragua 8guayaca 8guaraya 8guaraCa 8guajaca
 
@@ -20441,8 +20444,8 @@
 5culiCe 5caliCe 6boliCe 8coligue 8colige 8colime
 
 5ergonomia
-6actuad 6actuan 6actuar 6actuas
 5acaLar 5acoLar 6aqueLas 7aquejar 8ameLar 8apeLar 8aquedar 8aquerar
+6actuad 6actuan 6actuar 6actuas
 4curcos 4cuscos 5cucais 5cucas 5cuqueis 5cuques 5quecos 5cucus
 
 6corvad 6corvan 6corvar 6corvas 8cordal 8cornal
@@ -20452,9 +20455,9 @@
 5tunaria 5teneria 5tunera 5tunero 6tuberia
 
 
+1aRear 7haCear 7jaRear 7faRear 8gaRear 8hatear 8maRear 8baRear
 1alhajues 5alajus 8alagues
 
-1aRear 7haCear 7jaRear 7faRear 8gaRear 8hatear 8maRear 8baRear
 4Cupa 5Campa 5Cumpe 5Compa 6Cumba 6Cuspa
 1ahijada 5ajada 5ijada 8airada
 5aliñar 6adueñar
@@ -20540,7 +20543,6 @@
 5paulatino 6paladino
 
 
-
 4averia
 
 5catado 5cotado 5quitado 5quietado 5coitado
@@ -20601,8 +20603,8 @@
 5coRugo 6coRoido
 
 5caliCe 6caraCe 7calaje 8calare 8calase 8calate
-
 4pudrir 5pedir 5pudor 6ludir 6pulir 6punir 6pudin
+
 6tonsilas
 1esfoLar 8esfogar 8esfolar 8esfotar
 6ojivas
@@ -20694,13 +20696,12 @@
 1busero 4brucero 6lucero 6bulero 8buRero 8buhero 8Cucero
 6puntuoso
 4vidria 5vide 5vida 6vicia 6vigia
-
 6ceboLas 6reboLar
 6hablaste
 8piLaje 8miLaje 8visaje 8viraje
 
-8Cancad 8Cancan 8Cancar 8Cancas
 5diseñar 5desuñar 6reseñar 7deseLar 7deseCar
+8Cancad 8Cancan 8Cancar 8Cancas
 5cayaris 7cañaries 8cataries
 4rece 4rele 5reclui 6regle 6recte 6regule 6reble 6tecle
 6salicos
@@ -20995,6 +20996,7 @@
 
 6robapelo
 5tandas 6bandeos 6pandeos 6tanteos
+8pulgar
 1corbato 6corvado 8cordato
 
 
@@ -21052,7 +21054,7 @@
 5embaidos 5embudais 5embudas 5embudeis 5embudes
 
 
-5Cutar 5Citar 6Corar 6Cocar 6Cotas
+2Cotear 5Cutar 5Citar 6Corar 6Cocar 6Cotas
 
 4bolon 5burlon 5birlon 6morlon 6bordon
 5ovular 6uvulas 8ulular
@@ -21397,9 +21399,9 @@
 3fumosa 3fumoso 5fuimos 5fumais 5fumas 5fumeis 5fumes 5fiamos
 6quemados 8remador
 5lonCera 8longueria
+6joder 8loguer
 4entornos 5entonais 5entonas 5entoneis 5entones
 6gordos 6gorgor
-6joder 8loguer
 3carbonosa 3carbonoso 5carbonais 5carbonas 5carboneis 5carbones
 
 
@@ -21407,9 +21409,9 @@
 4sobrio 5sombra 5sombre 5sombro 5sembrio
 
 3ladiLosa 3ladiLoso 4ladriLos 5ladiLais 5ladiLas 5ladiLeis 5ladiLes
+
 1serio 5cero 5cera 5cirio 6cedio 6cesio
 5encelaja 5encelajo 8encelare 8encelase
-
 
 
 
@@ -21543,7 +21545,6 @@
 3aguay 7aguazo 7aguaCo 8aguado 8aguato 8azuayo
 4aladrar 5aleudar 6alabar 6alagar 6aguadar 6aladas 6alatar 6alamar
 
-5estucar 5estacar 6escocar 8estovar 8estofar 8estozar
 4violento 5violeta 6violero
 5limeta 5lomita 6someta 6cometa 6lomera 6loneta 6loseta
 3bloca 5bloco 5bloque
@@ -21634,8 +21635,8 @@
 4gaznaste 6gaznare 6gaznase
 5adelfo
 
-6coccineo
 5inculpar 8exculpar
+6coccineo
 5legador 6ligados 6limador
 4potaje 6pontaje 6postaje 8portare 8portase
 5ruado 5roido 5rodo 5ruedo 5redo 5reido 5raido 5rudo
@@ -21681,8 +21682,8 @@
 6igualo
 
 
-
 6designar
+
 5raspaje 8raspado 8raspano
 5soquete 5sacate 6socape 6somate 8socave 8socaRe
 6CicaRos 8CiCaRon
@@ -21824,8 +21825,8 @@
 
 6macetazo 8jaretazo 8varetazo 8maCetazo
 4servicia
-
 6catedras 6catedral
+
 6colgados
 5ardedora
 7muLir 7muñir 8mugir 8musir
@@ -21989,10 +21990,9 @@
 6bodegos
 
 
-
 3condira 3condire 5cundir 5condor
+
 8cacarico
-6caloñas 8caRoñar
 8cenojil 8senojil
 5liban 5liben 6ligon 6gibon 6lidon 6linon 6liron 6limon
 5meCazo 5moCazo 6caCazo 7maRazo 7mazazo
@@ -22071,7 +22071,6 @@
 5camareria 6camacero 6camalero
 4baldreses 5baldases 5baldoses
 
-6ensalzar 7encalvar 8encalmar 8encalcar
 5barbado 8barbuLo
 
 5melino 5mileno 6melero 8heleno
@@ -22127,8 +22126,8 @@
 
 3boletin 5boletine 5boletino
 
-4catabro 4cantaro
 4desmugrar
+4catabro 4cantaro
 
 6paciente 8haciente 8yaciente
 5peLeteria 8peletero 8pebetero 8pesetero 8peLejero 8peretero
@@ -22137,8 +22136,8 @@
 
 1temazcal
 5quiCe 5queCua 5caCua 8quinua
-
 5pulir 5polar 6polis 6polin
+
 5porqueria 6morquero 8portero
 
 6bayonesa
@@ -22258,10 +22257,10 @@
 5caimital
 6cotoRos
 5cenzaya
+7solevar 8soletar
 5encoraje 8ancorare 8ancorase
 
 8buleria 8CuReria 8Cuferia 8CuCeria
-6cosificar
 5bahaismo
 5cordal 5cardial 6cardad 6cardan 6cardar 6cardas 6cabdal 6capdal
 
@@ -22450,6 +22449,7 @@
 
 5Cinais 5Cinas 5Cineis 5Cines 5Conos
 5andancio 5andancia
+5taLecer 5toLecer
 
 5literal
 6trilero 6trimero 6tripero 8trigueño
@@ -22544,7 +22544,6 @@
 
 6tajaste 6bajante 8talante
 5anoto 5anito 6ateto 6anego 6aceto 6abeto 6aleto
-
 4listonero 5latonero 6lidonero 6lironero 6limonero
 
 7laxista 8lamista
@@ -22581,6 +22580,7 @@
 5cantico 8cuantizo
 3modos 5miedoso 6lodoso 6mocoso 6moroso 6motoso 6moloso
 
+
 8macegual
 
 5platican 5platiquen
@@ -22590,7 +22590,6 @@
 
 
 4facturar
-5taLecer 5toLecer
 6verano 8degano 8megano 8legano
 5cutreria
 4brancal 4blancal 6bancad 6bancan 6bancar 6bancas 6barcal
@@ -22671,14 +22670,15 @@
 5astiLa
 4lie 4pie 5ple
 5espesara
-4bolado 8boyardo
 6destiñan 6destiñas 6desliñar 6desniñar 8destilar 8destinar
+4bolado 8boyardo
 5resueLas 5resueLes 5reseLos 5resaLos 6desueLos
 3seran 5sereno 6serado 6secano 8seRano 8verano
 5cocalero 6cocotero 8coyolero
 6opinados
 
 7horqueta 8porqueta
+6agregar 8atreCar
 
 
 
@@ -22771,9 +22771,9 @@
 3cuartana 5curtan 5cortan 5cuarten 5cuarton
 
 1pelasga
+2sermonear
 3catana 4cantan 5caten 5cotan 5quietan 5quitan 5coitan 5cation
 5ceptis 6cebties
-
 5trismo
 6anteteCo
 3baldon 5baldone 5baldono 6baldosa
@@ -22894,10 +22894,9 @@
 4pradial 5radal 6radiad 6radian 6radiar 6radias 6racial 6ramial
 5moldar 6melgar
 1cision 5cecion 6cipion
-6CicoRo 7Cipojo 8Cipolo 8pipoRo
 5asotilar
+6CicoRo 7Cipojo 8Cipolo 8pipoRo
 6canaliLo 6capadiLo
-5transar
 5troquelo
 5mojador 6majados 6rajador 6tajador 6sajador
 5camina 5camine 5camino
@@ -22965,8 +22964,8 @@
 
 
 
-5cabiLero 5cabaLeria 7cabañero 8cazaLero 8cabalero 8cabaLejo
 
+5cabiLero 5cabaLeria 7cabañero 8cazaLero 8cabalero 8cabaLejo
 5empora 5empore 5emporo
 6hinojad 6hinojan 6hinojar 6hinojas
 4ranCo 5trinCo 5tronCo 5tranCa 7tranzo
@@ -23040,7 +23039,6 @@
 6leCoso 8meloso
 5pielga 6mielgo 6bielgo 8piezgo
 4brumo 4grumo 5rumia 5rumie 5rumio 5remo 5rimo 5romo
-6temblar 6sembrar
 1aguai 3aguaya 3aguayo 8aguad 8aguan 8aguar 8aguas
 3verdina 3verdino 5verdon
 1alelies 5alhelis 5alholies
@@ -23105,8 +23103,8 @@
 5nocir 6lucir
 4cubista
 5garuLo 7garufa
-5cururu 6curubo
 4fincar 4fricar 5fucar 6filar 6finar
+5cururu 6curubo
 5bantus 6cantues
 
 5destiñais 5destiñas 5destiñes 6pestiños 8destinos
@@ -23320,6 +23318,7 @@
 
 4ano 6asgo 6aspo 6asco 6alno
 4sismico 6sinico 6mimico 8siLico 8siquico 8fimico 8quimico
+5feriar 7herir
 4abano 5albino 6altano 8albazo
 5falico 6fobico 6fonico 8colico
 
@@ -23435,7 +23434,7 @@
 8tacuaco
 3afecciona 3afeccione 3afecciono
 6sandias 6candial 6sandiar
-
+4apalambrar
 5butrino 5buitrino
 6ciguate 6cirate
 8corcoven
@@ -23517,12 +23516,12 @@
 6pintojo
 
 
+5seLar 5saLar 5siLar 6roLar 6boLar 6coLar 6moLar 6soLas
 5alocan 5aloquen 6adoquin
 6avenidos
 3cuartela 3cuartele 3cuartelo 5cartel 5cuartil 5cuartal
 
 5melais 5melas 5meleis 5mieles 5moles 5mueles 5maules 5miles
-5seLar 5saLar 5siLar 6roLar 6boLar 6coLar 6moLar 6soLas
 6patacon 6paragon 8paRagon
 5dereCizo
 4frange
@@ -23656,12 +23655,12 @@
 5deRubias 5deRubies
 5igualan 5igualen
 5manueLa 5moniLa 6laniLa 6caniLa 6raniLa 6paniLa 6maliLa 6masiLa
+6vecindad
 5Ciamos 5Ciemos 5Camais 5Camas 5Cameis 5Cames 5Cimos
 
 8narizon
 3olivos
 5pelon 5pilon 5palon 6bailon 6nailon 6guailon
-6vecindad
 
 6brutas 6brumal 8frutal
 4cemente
@@ -23799,8 +23798,8 @@
 
 
 
-4potable
 
+4potable
 
 8sabuloso
 5sona 5sone 5sono 6solio 6nonio 6sodio 6socio
@@ -24174,9 +24173,9 @@
 5salguero 6salsera 6salmera 6saltera 6sarguera 6galguera
 5Coriceria
 5rodaje 8rodaba 8rodada 8rodara
+
 6cribados
 5dosel 6diesen 6dieses
-
 5gripal 6crupal 6grupas
 6silbaste
 3tarquina 4taquin 6barquin
@@ -24256,8 +24255,8 @@
 5enfusar
 6mistos 8fistol
 4pimpon 5pipan 5pipen 5pipian 5pipien 5pepon 5papon
-6adamaste 6amamante
 8descoLar 8desfogar
+6adamaste 6amamante
 
 6jamura 8tamuga 8samuga
 6ofenda
@@ -24285,7 +24284,6 @@
 6brincar 6blindar
 7cazaRa 8cazaba 8cazada 8cazara 8cabaLa 8cazata 8caraLa 8canaLa
 
-3calera 3calero 5calar 5calor 6caber 6calen 6cales
 
 5peRera 5peRero 5peRerio 5poReria 6seReria 6deReria 6teReria 6ceReria
 
@@ -24331,9 +24329,9 @@
 6gañivete 8canivete
 6mayal 6sayas 6bayal 8hayal 8sasal
 4aga 5algo 6asga 6alta 6alma 6alba 6alna 6alca
-3amola 3amole 3amolo 5amel 6atol 6amor 6amos
-5calar 5color 5caler 6calon 6palor 6calos
 
+3amola 3amole 3amolo 5amel 6atol 6amor 6amos
+5calar 5caler 5color 6calon 6palor 6calos
 
 6imanen
 4recension 4precesion 5recesan 5recesen 6decesion 6secesion
@@ -24444,7 +24442,6 @@
 5piroxena 8pirogeno
 3raspan 6raspado 8raspajo
 5ventaLa 7ventaje 8ventare 8ventase
-6toLecer
 8diabliLo
 5iride
 
@@ -24526,9 +24523,9 @@
 6picaCo
 4lonCa 4lorCa 5leCa 5luCa 5loCe 5laCa 5lauCa
 4marjoleta 5majoleto
+8entibiar
 6duracion 6turacion
 5doñegal 5doñaguil
-8entibiar
 3espaldero 3espaldera 5espaldar
 6seLadura 8meladura 8mesadura
 
@@ -24638,8 +24635,8 @@
 6gaviota
 5apeLados 5apeLidais 5apeLidas 5apeLideis 5apeLides
 8conejiLo
-3reacciona 3reaccione 3reacciono 5reccion
 5ser 5sur 5sor 6leer 6peer
+3reacciona 3reaccione 3reacciono 5reccion
 
 
 
@@ -24676,8 +24673,8 @@
 
 5tabican 5tabiquen 5tabacon 6talicon
 5ternero 5torneria 6cornero 6bornero 6tortero
-5cuiLais 5cuiLas 5cuiLeis 5cuiLes 5cueLos 5caLos
 5desmoñar 6descañar 6desmañas 7desmaLar 7desmayar
+5cuiLais 5cuiLas 5cuiLeis 5cuiLes 5cueLos 5caLos
 8fanatizo
 5humeral 8tumoral
 5restañais 5restañas 5restañeis 5restañes 6rescaños 6cestaños
@@ -24706,10 +24703,10 @@
 
 3dios 5desa 6liosa
 5turania 5tirana 5tirano 6tiraria
+6entercar
 6ablentar 6absentas
 
 4coquero 4roquero 6cloquero
-6entercar
 3teRaplena 3teRaplene 3teRapleno
 4ama 6asga 6aspa 6arma 6alma 6asna 6asca 6asta
 5acratico 6acrilico
@@ -24718,6 +24715,7 @@
 4macuca 8mazurca
 5paloteos 5pelotos 5pelotes 5pelotas
 5ateRajar 6abaRajar 8atalajar 8atasajar 8ataRagar
+4pegar 6pescar 6nesgar 6sesgar 6pesgas 6pelgar
 3palenquea 3palenquee 3palenqueo 8palense 8palente
 5alopecia
 3trinCe 5trinCa 5trinCo 5tranCea
@@ -24859,8 +24857,8 @@
 5mus 5mes 5mias 5mies 5mis 5muis 5mues 5mas
 
 5hetera
-6boRicas
 5coludir
+6boRicas
 
 3veRugos
 6ventaje 8vendare 8vendase 8rendaje
@@ -25027,6 +25025,7 @@
 
 4ajeo 7anqueo
 6gaRoCo 6caRoCo 8baRoco 8baRoso
+5despegar 6despasar 6desbagar 6despapar 6desparar
 5espirita 5espirite 5espirito
 5minando 5miniando
 4paton 4plaston 5pastan 5pasten 5pastun 5poston 5piston
@@ -25237,8 +25236,8 @@
 6frison 6frisos 8crisol 8frijol
 6canistro
 6rebotica
-3cocos 6rocoso 6coposo 6mocoso 6cocono 6coloso
 6expirar 8empilar
+3cocos 6rocoso 6coposo 6mocoso 6cocono 6coloso
 5piltra 8filtro 8quiltro
 
 5coronal
@@ -25447,7 +25446,6 @@
 5panique 5peneque 6menique 6tenique
 4mulo 5maslo 6musgo 6musco
 3perCona 3perCone 3perCono 5perCan 5perCen 5parCon
-
 4atracador 6atacados 6asacador 6atalador 8atajador
 5baila 5baile 5bailo 5belio 5bailia
 5salubre 5salabre
@@ -25504,7 +25502,6 @@
 7argaya 8argana
 4alabe 6alargue 6alarme 6alarde 8azarbe
 1basar 5buzar 5bezar 6tazar 6lazar 6cazar 6mazar 6bazas
-5despegar 6despasar 6desbagar 6despapar 6desparar
 5humanais 5humanas 5humaneis 5humanes 6humamos 6hulanos
 6canduCa 7carduza
 
@@ -25562,8 +25559,8 @@
 5camuza 6cabaza 6capaza 8cañaza 8caCaza 8caRaza 8camada 8camagua
 5sabores 6laboreos
 
-4aflatar 5alotar 6acatar 6alabar 6alagar 6aguatar 6aladar 6alamar
 6broslas
+4aflatar 5alotar 6acatar 6alabar 6alagar 6aguatar 6aladar 6alamar
 
 8guairuro
 
@@ -25651,7 +25648,6 @@
 5muñera 5muñira 5muiñeira
 5sedadera 5sudadero
 5zoolatria
-6contrais
 4trapazo 5tapizo 5tipazo 6tarazo 6tacazo 6capazo
 
 6armeros
@@ -25715,6 +25711,7 @@
 5misivo 6pasivo 8masico 8masilo
 
 
+4deparar 5disparar 5desperar 6destarar 6despasar 6despapar 6descarar 6despagar
 5dominais 5dominas 5domineis 5domines 5dominios
 5cariña 6maraña 6calaña 6cabaña 6baraña
 3filosa 3filoso 5filais 5filas 5fileis 5files 5filias 5filies
@@ -25736,6 +25733,7 @@
 4uce 5orce 5arce 6unce 6urde 6urge 6urbe
 3contrae 4conta 5contre 6costra
 5hormazo 6hornaza
+
 5perno 5perna 6cernio 6perdio 8hernio
 4pete 4preste 5peiste 5puaste 5paste 5piaste 5piste 5pesto
 5piCan 5piCen 5piCon 5peCin 6piCis 6biCin
@@ -25813,8 +25811,8 @@
 5botrino 5buitrino
 5tepaCe
 
-5arandino
 6retardar
+5arandino
 
 5heladizo 7hiladiLo
 
@@ -25971,9 +25969,9 @@
 6favorido
 6mudable
 7tapuja 8tapuda 8tayuya
+4delirar
 6nudismo
 5cablera 5cablero 5cableria
-4delirar
 8pauliLa
 6curtidos 6surtidor
 
@@ -26000,11 +25998,11 @@
 5floran 5floren 5florin
 
 5guarumo 6guarapo 8guarayo 8guaraCo
+2albañar 5albañir
 4are 5ocre 6abre 6adre 6acme 6acle 6acne 6agre
-5albañar 5albañir
 6catavino 8pataguino
-8clavito
 
+8clavito
 6nucleico
 5tangano
 8bujier
@@ -26021,6 +26019,7 @@
 6cerdamen
 4patines 5pastunes 5pastones 5postines 6mastines 6pastises
 5juntara 5juntera 8puntura 8juntuCa
+3creyera 3creyere 8crecer
 5frica 5frico 5frique
 5caReta 8caruata
 7vatidico
@@ -26058,8 +26057,8 @@
 5naranjo
 5napa 6guipa 6pipa 6tipa 6lipa 6nigua
 4pasta 4lasta 4plata 5plaste 5plastia
-
 6destocar 6descocar 6desbocar 6desmotar 6desmogar
+
 
 
 4flanera 5fainera 6facera 6faneca 6farera 6fanega
@@ -26092,7 +26091,6 @@
 5cusita 5caseta 6casida 6camita 6catita 6casina 6masita
 7miquero 8miguero 8quijero 8misero 8minero
 5criada 5creida 5cruda 6criba 6crina 6brida 6grida 6crica
-8acalorar
 5forman 5formen 5firmon 6formol 6forlon
 6cigaRos 6cimaRon
 
@@ -26258,7 +26256,6 @@
 5paRada 5peReda 5poRada 6ceRada 6seRada
 6titanico 8tiranizo
 5moRaLa 5moRiLo 6goRiLa 6poRiLa 7moRiña
-5malcriar
 
 5cuculis
 6layador 6mayador 6rayador 8pagador 8pasador 8parador
@@ -26383,9 +26380,9 @@
 
 5diasporo
 
+5apresar 5opresor
 5quis 5quias 5quios 5cus 5cas 5cuis 5cues 5cois
 7yeismo 7queismo 8deismo 8leismo 8teismo 8seismo
-5apresar 5opresor
 8amanita
 
 1agraces 4arases 5agriases 5agrises 6agrades 6adrases 6atrases 6abrases
@@ -26520,6 +26517,7 @@
 6discante 6distaste
 5escolais 5escolas 5escoleis 5escolias 5escolies 5escalios
 5caCulero 6caCurera
+8acibarar
 5entundar 6estandar
 3uretera
 8muestro 8nuestro
@@ -26732,7 +26730,6 @@
 
 
 
-
 6malayo 6balayo 7galaCo 8galano 8galapo
 4una 5alna 6urna
 6copazo 6colazo 8coLazo 8coñazo
@@ -26758,8 +26755,8 @@
 
 5pinoCo 5panuCo 8panoso
 
-6alubiar
 5entender
+6alubiar
 6soRabar 8socapar 8solapar
 
 
@@ -26806,9 +26803,9 @@
 6rosera 6loseta 6ropeta 8roqueta 8rojeta
 5latis 5litais 5litas 5liteis 5lites 5lituos 5litios
 5certera 5certero 6cerneria 6cesteria 8verteria
+7enhenar 8ensenar
 5aRemueco 5aRumaco
 4cogio 4congrio 8confio
-7enhenar 8ensenar
 4meda 5manda 5monda 5muenda 6penda 6menta 6renda 6mengua
 5regadia
 1baida 5veda 5viuda 5vida 5viada
@@ -26860,16 +26857,16 @@
 5bulines 5bolines 5balones 6balices 6balites 6bacines 6barines 6batines
 5canero 6culero 6cubero 6tunero 8cuyero 8cuquero
 5silgada 6saltada 6saldada 6nalgada 6sargada
-4aricado 6africano
 1engerir 5injerir 8enserir
+4aricado 6africano
 7maraquero
 8Camiza
 6gatiLa 6nadiLa 6patiLa 7nativa
 4paca 5penca 5panque 5panco 6banca 6tanca 6manca 6panda
 5bambonear 6bambalear
 3zafir 5cefiro 5zafero 5zafira
-6cavados 6lavador 7caLador 7cazador 7caCador
 
+6cavados 6lavador 7caLador 7cazador 7caCador
 6gastados 6pastador
 6maridad 6maridan 6maridar 6maridas 6marital
 5taponeria 6talonero 8tahonero
@@ -27086,14 +27083,14 @@
 6francote 8frangoLe
 
 5disimular
+5nucir
 5aduccion
 1viraro 6bigaro 6bibaro
 3lamentosa 3lamentoso 5lamentais 5lamentas 5lamenteis 5lamentes
-5nucir
 5fosara 5fosare 5fosario 8foLaria 8foRaria 8losaria 8rosaria 8posaria
 
-5calanes
 7rafezar
+5calanes
 
 
 4rapante 6raspaste 6rampante
@@ -27127,6 +27124,7 @@
 6cebadas 6cebadad 6cebadan 6cebadar
 6bufanda 7buharda 7buzarda 7bujarda 8busarda
 5gomena
+5laminar 5liminar
 6cacabo 6camaro 6cataro 8cañaro 8jacaro 8cacaRo
 4rutero 5fritero 5fruteria
 5gamiLon 6gameLos 6cameLon
@@ -27217,15 +27215,16 @@
 6labrador 8lazrador
 5gamonito
 5atoba 8otoña
+4despedrar 5desparar 6despegar 6despenar 6descerar 6despepar 6despesar
 6arlequin 6arnequin
 3cordobana 6cordobas
-4despedrar 5desparar 6despegar 6despenar 6descerar 6despepar 6despesar
 
 6citologo 6litologo 6micologo
 4regajo 8fregado
 5maniato 5manato 5manito 6magueto 6manero
 5raptar 5ruptor 6captor 6raptos
 
+5avalar 5avilar 6avenar 6averar 8avezar 8apelar 8amelar 8alelar
 5caCaron 5cauCaron 6duCaron 6luCaron 7cuñaron 7cuRaron
 5empapuciar 5empapizar 7empapujar
 5maser
@@ -27335,8 +27334,8 @@
 
 6camuza 8gamuna 8gazuza
 5maneja 6canija 7maniLa 8manida 8manira 8manigua 8manita 8manila
-
 5enfieRar 8enfocar 8engoRar 8enfotar 8enfogar
+
 6habitad 6habitan 6habitar 6habitas
 
 
@@ -27380,12 +27379,11 @@
 5matad 5mutad 5metad 5mitad
 4mambla 5mambi 5mambo 6lamba 6gamba 6pamba 6camba 6tamba
 
-4caRaco 5caRasca 8CaRasco
 5menazar 6menuzas
+4caRaco 5caRasca 8CaRasco
 8aRibare 8aRibase
 
 
-4deparar 5disparar 5desperar 6destarar 6despasar 6despapar 6descarar 6despagar
 5coñazo 5cañazo 8quiñado
 7califera
 5cosquiLa 5casquiLo 5quisquiLa 6basquiLa 8castiLa 8CasquiLa
@@ -27488,7 +27486,6 @@
 
 7anjova
 
-
 5gazapos 5gazapas
 6balastro
 
@@ -27534,14 +27531,15 @@
 1incito 4insisto 8invito
 7rampojo
 
-6ligaren 6ligasen 6libamen 6linamen 8vigamen
 
+6ligaren 6ligasen 6libamen 6linamen 8vigamen
 5valuador
 5aheCais 5aheCas 5aheCeis 5aheCes 7afeCos 7aReCos
 
 
 5merito 5morato 6corito 6torito 6monito
 6falquia 8fascia
+5premiar
 5infartais 5infartas 5infarteis 5infartes
 5maxima 5maximo
 5maquilan 5maquilen
@@ -27574,9 +27572,9 @@
 
 
 5arimaspe
+5embutir 5embotir
 5cambron
 
-5embutir 5embotir
 6punzaste
 8coracina 8coralina
 6semigola
@@ -27686,7 +27684,7 @@
 1huizaCe 3huisaCea 3huisaCee 3huisaCeo
 
 5polvora 5polvero 5polverio 8volvera
-
+7desafuciar
 5Cirula 8piruli
 5excretar 6excretos
 
@@ -27787,8 +27785,8 @@
 3cambar 5cambero 5cambara 6cambado 6gambaro
 6goteros
 5indicais 5indicas 5indiqueis 5indiques 6indigos 6indinos
-8bacisco
 4burlar 5balar 5bailar 5bolar 6rular 6dular 6gular 6mular
+8bacisco
 
 5regador 6rogados 6rocador 6bogador 6robador 6rodador
 1cirio 5serio 5saurio 5sira 5siro
@@ -28050,8 +28048,8 @@
 
 
 
-6palmazo 8calmado
 
+6palmazo 8calmado
 5nitraria
 
 4alegon 4aleron 5alegran 5alegren
@@ -28181,7 +28179,6 @@
 6Cucano 7jucaro 8bucaro
 
 4tauco 4rauco 5troco 5trueco 5truco
-6envegar 6enverar 6envesar 8encelar 8enmelar 8entelar
 4caRanza 5caRoza 5caRiza 5caRazo 6taRaza
 3capaRos 6cataRosa
 5viese 5visa 5vuesa 5vosa 5vasa
@@ -28396,9 +28393,9 @@
 5quitaipon 6quitaron
 6trabados 6tramador 6tratador 6tragador 6grabador
 4resfalosa
+5caRozar
 5abonador 8aLanador 8afanador
 
-5caRozar
 6caniqui 6guaniqui
 4risco 4pisco 6trisco 6brisco
 
@@ -28444,9 +28441,9 @@
 5costa 5cuesta 5quista 5casta 7yeista 7feista
 6gaRobear 6gaRonear 8gaRoCear
 
+
 5baRenes 5boRones 7boLenes
 5garbiLo 6barbuLo 8harbuLo
-
 5mistar 5mester 5master 6misten 6mistes
 6pecinas 8vecinal
 
@@ -28496,9 +28493,8 @@
 
 4guaCe 5guinCe 8guante
 6candorga
-5atregar
-4ceso 5craso 5cresa 6cremo 6credo 6preso
 6esencias 6esencial
+4ceso 5craso 5cresa 6cremo 6credo 6preso
 8mangla 8Canfla
 5coheCais 5coheCas 5coheCeis 5coheCes 7coReCos
 
@@ -28662,8 +28658,8 @@
 5azaroLa 8azaroso
 4putal 5puntel 5puntual 6puntad 6puntan 6puntar 6puntas
 4salon 6tablon
-
 7defender 8depender 8decender
+
 4propon 4rompon 5repon 6copon 6roson 6sopon 6topon
 5hijaputa
 4encavar 7encalzar 8encalmar 8encalcar
@@ -28745,9 +28741,9 @@
 
 4Cirlaba 4Ciflaba 5Calaba 6Cinaba 6Citaba 6Cimaba
 
+5enfurtir
 8aRumare 8aRumase
 4aboLon 5albeLon 6arboLon 8albogon
-5enfurtir
 8explique
 
 1cieRos 5sieRas 5sieRes 5saRos 8hieRos 8siesos 8fieRos
@@ -28806,8 +28802,8 @@
 5tesalia 5tesalio 6tesado 6desalo 6tepalo
 5goma 5gumia 6comia 6momia
 5mesiLa 5masiLa
-1esbaron 5esvaran 5esvaren
 6latinar
+1esbaron 5esvaran 5esvaren
 6infarte
 8polifono
 5alegra 5alegre 5alegro 6aletria
@@ -28839,8 +28835,8 @@
 
 6cutusa
 1zenda 4seda 5sonda 5suinda 6penda 6senta 6renda 6menda
-5cambute 6calbote
 6lentecer
+5cambute 6calbote
 8mozarabe
 6monolito 8fotolito
 8esmera 8estera 8espera
@@ -28864,10 +28860,10 @@
 6antuvios
 6tumbados 6turbador 8zumbador
 5venadero
+5misturar 6mesturas
 5cortases 5cortesias 8cortejes
 6fudre 8nutre 8cutre
 4lanceros 4placeros 5lacerais 5laceras 5lacereis 5laceres 5luceros 5loceros
-5misturar 6mesturas
 1sinsonte 5senzonte
 5alcazar 7aljezar
 5junciana 6menciana
@@ -28898,8 +28894,8 @@
 5melanita
 
 
-
 4deRoCar 5deRanCar
+
 5leismo 5luismo 5loismo
 6lentos 6rentos
 
@@ -29138,6 +29134,7 @@
 5cuba 5cauba 5coba 6ruaba 6puaba 6cuada 6cuata 6suaba
 5viñadora 5viñadero 6viñatera
 5yurumo 8curuma
+1despezar 4despresar 5despasar 5desposar 6despegar 6despenar 6despepar 6desperar
 4carecer
 1despezar 4despresar 5despasar 5desposar 6despegar 6despenar 6despepar 6desperar
 
@@ -29147,9 +29144,9 @@
 5sedienta 5sediento 5sedante 5sedente 6semiente
 8sangriza
 5turba
+4recurar 6rencuras
 5diploidia
 7paRiLero 8paliLero
-4recurar 6rencuras
 6temere 6terete 8tejere 8tereque
 6timones
 6vadeados 6vareador
@@ -29172,7 +29169,6 @@
 5entrados
 6costal 6portal 6postas 6postar 8hostal
 
-
 1meznada 4menada
 6suarismo
 4tones 5tornais 5tornas 5torneis 5turnes 5ternes 5tornos
@@ -29193,7 +29189,6 @@
 5pedidora 6pedicura 6pelidura
 
 6animados 8aRimador
-
 6tolondro 6molondro
 3gramos 4ramoso 5grimoso 5grumoso 6gradoso 6granoso 6grasoso
 5padrejon
@@ -29327,9 +29322,9 @@
 
 5urutaus
 
+6segudar 6seguras
 6guindad 6guindan 6guindar 6guindas
 5osifraga
-6segudar 6seguras
 6pataRa 8panada 8panama
 
 
@@ -29579,7 +29574,6 @@
 
 5cricris
 6grandon
-5yantar 6yuntas 7juntar 8puntar
 6pilonga
 1bataola 7bataLola 7batayola
 
@@ -29706,16 +29700,17 @@
 
 5temporil 6temporas
 5gabaRo 6tabaRa 6gamaRa 6cabaRa 7gabaCa
+8ladrar 8lacrar 8labrar
 8abarcon
 5coscaRon 8cascaron
-8ladrar 8lacrar 8labrar
 5misil 6misad 6misan 6misar 6misas 6sisal 6minal
 8Cinacate
 6canson 6santon 6sansos
 
 
-5aRojais 5aRojas 5aRojeis 5aRojes 7añojos 7aRoyos
+
 7alheñar
+5aRojais 5aRojas 5aRojeis 5aRojes 7añojos 7aRoyos
 
 
 5elamis 5elemies
@@ -29731,17 +29726,17 @@
 5aRancan 5aRanquen 8aRanCon
 6hontanas 6hontanal 7fontanar
 3nevosa 3nevoso 5nevais 5nevas 5neveis 5nuevos 5nevus
-
 4enmendar
+
 5orado 5airado 5erado 5arado 6iguado
 5pataje
 
 6caliente 6sapiente 8valiente
 3canciLera 5canceLer 8CanciLer
 5misquito 5mosquita 6mosquino
+6estrazas 8estragar
 6Curupo 7yurumo
 
-6estrazas 8estragar
 4comprenda 5comprada 6compresa 6comprera
 5datara 5datera 6satura 6natura 8Catura
 5birlador 6burlados
@@ -29809,8 +29804,8 @@
 8plantare 8plantase
 4caCista 5caCito 5caCeta 6caCila 6caCina
 5entroncar 8entrenzar
-1azaro 3asar 5asara 5asare 5asaria 5asuro
 6pescudas
+1azaro 3asar 5asara 5asare 5asaria 5asuro
 
 
 6tobosa
@@ -29847,9 +29842,9 @@
 8Cipriota
 4cavero 5claveria
 
+
 5Capineria 6Cacinero
 4boto 6bordo 6porto 6corto
-
 5paColi
 
 6tamiza 6rabiza 7ramiLa 8Camiza 8ramina 8ramila
@@ -29898,8 +29893,8 @@
 
 
 
-6Cagual 7jaguar 7yaguar 8Cahuar
 8atascar
+6Cagual 7jaguar 7yaguar 8Cahuar
 5Cambera 8rumbera
 
 
@@ -30002,8 +29997,8 @@
 6martin 6mastil
 6graveza 8bravera
 5sabiola 5sabila 6gabela 8sajela
-
 5enartar 8enervar
+
 6ojalados
 3Capel 5Capelo 5Capola 6Camela 6Canela 6Capeca 6Capeta 6Capera
 5Cupeta 5Capata 6Capeca 6Capela 6Capera
@@ -30134,9 +30129,9 @@
 5novelan 5novelen 6novelos
 5cata 5cota 5quieta 5quita 5coita 5cuta 5cauta 5cuata
 4plantiLa 4patiLa 5platiLo 6planiLa 7platija
+6enjumar 6enjutar 6enjugar 8endurar 8enturar
 5amaRaco
 3coladora 4corlador 5calador 6colados 6cocador 6solador 6copador 6dolador
-6enjumar 6enjutar 6enjugar 8endurar 8enturar
 5copuCa 5capaCa 5capoCa 5capuCo 6caluCa 6camuCa 6casuCa
 6amolo 6asomo 6alomo 6amono 6aromo 6atomo
 
@@ -30257,11 +30252,11 @@
 5saber 5sabir 6labor 6tabor 6babor
 4comba 4cobra 4cobla 5cobo 5cuba 5cauba 5cuaba
 
-4apegar 6apestar
 5gorgona 6gorgoteo 6gorgoreo
 5yuquera 5yuquero
 7melarquia
 5ustaga
+6monedas
 
 3pelosa 3peloso 4peplos 5pelais 5pelas 5peleis 5peles 5pelus
 6desame 6pesare 6pesase 6pename 8pesaje
@@ -30336,9 +30331,9 @@
 5caniLa 6cabaLa 6caraLa 8canaca 8cazaLa 8canana
 5finiera 5finira 5finara 6figura 6fisura
 5ponia 5punia 5piona
+7empujar 7empuñar 7empuRar 7empuCar 8empurar 8emputar
 6arcados 6armador
 
-7empujar 7empuñar 7empuRar 7empuCar 8empurar 8emputar
 6espinoCo
 6Capisca 8capista 8papista 8rapista
 8alaraca 8asaraca
@@ -30350,7 +30345,6 @@
 5punceis 5punces 5punzais 5punzas 6punzon
 6caRilana 7cavilada 8caRizada 8caRiLada
 4mudaria 5mandaria 5mondaria 8fundaria
-
 5nervio
 4norma 5nome 5neuma 5nomo 5nema
 
@@ -30395,7 +30389,6 @@
 
 1vagase 3bagas 5bogase 5bagasa 6cagase 6pagase 6balase 6bagare
 3bambuco 6bambus
-5defiar 7deRuir
 5pencais 5pencas 5penqueis 5penques 5pancos
 
 6colmenar
@@ -30417,7 +30410,6 @@
 6gaRotal 6gaRobas 8gaRofal
 
 5tile 5tilo 5tila 6tibia 6tiria
-
 6capotado 6caponado
 5espiro 5espero 5espora 6esposo 6escoro 6emporo
 8formare 8formase
@@ -30436,9 +30428,9 @@
 5aldaba
 
 
+2maestrear 5mostrar 6maestras 6maestral
 3espolina 3espoline 3espolino 5espolian 5espolien 5espolon
 
-5mostrar 6maestras 6maestral
 4bizna 5brozna
 5indina 5endina 5andina 6ontina
 4tapa 5tulpa 6palpa 6talma 6salpa
@@ -30453,8 +30445,8 @@
 3trigono 5tragon 6tripon 6trigos 6triton
 6garbula
 5jaropa 6jarana 6jacapa 6jalapa 7Carapa
-5abordais 5abordas 5abordeis 5abordes 6abortos
 5acivilar 8acemilar
+5abordais 5abordas 5abordeis 5abordes 6abortos
 6capotiLo
 4catapun 6cataplum
 5encarais 5encaras 5encareis 5encares 5encueros
@@ -30525,11 +30517,10 @@
 
 6gabinete
 8fasquia
-6gasificar
+6sabuRas 6sabuRal 6samuRar
 
 8guajibo 8guajiro
 5mases 5meses 5miases 5mises 5muses 5mieses
-6sabuRas 6sabuRal 6samuRar
 6salamis
 5tarificar 6purificar
 5trujaman 7truCiman
@@ -30702,6 +30693,7 @@
 
 
 
+4doblar 5doler 5dular 5dolor 6colar 6solar 6donar 6dorar
 6abusados 6acusador 6atusador
 6lenitivo
 5misara 5misare 5misaria
@@ -30709,7 +30701,6 @@
 
 5goRiLa 5gueRiLo 5guaRiLa 6ceRiLa 6peRiLa
 5pealara 5pailera 5pilera 5palera 5polera
-
 4cabios 5cambias 5cambies 5cambos 5cambas
 5topete 5tapate 6talete
 
@@ -30839,8 +30830,8 @@
 
 6reologia 6neologia 6geologia
 5trafulca 6trifurca 8trisulca
-
 6embizcar
+
 
 5insumais 5insumas 5insumes 5insumias 5insumis
 6canadiLo 6tapadiLo
@@ -30949,15 +30940,14 @@
 6canarios
 
 
-4laston 4plastron 4paston 4platon 6planton
 
+4laston 4plastron 4paston 4platon 6planton
 
 
 8blasfema
 5petiza 6matiza 6paliza 7patiLa 8patina 8pajiza 8paRiza
 1zapote 6capote 6guapote
 5sangra 5sangre 5sangro
-6ayustar 7ajuntar 7aCuntar 8apuntar 8asuntar
 5geminais 5geminas 5gemineis 5gemines 5geminis
 5moneciLo 6monaguiLo
 6Cistoso 6Cisposo
@@ -31076,10 +31066,10 @@
 6panadizo
 5urdiembre
 5nagua 6cigua 6tigua 6pigua 6sigua 6rigua
+6rosigar
 4abetal
 3felposa 3felposo 5felpais 5felpas 5felpeis 5felpes
 
-6rosigar
 5cajera 5quijero 5cojera 8dijera 8quimera 8tijera
 1riza 4frisa 4trisa 4brisa 4grisa 4prisa
 
@@ -31232,6 +31222,7 @@
 4sangro 4sago 5singo 6salgo 6mango 6tango 6dango 6guango
 5decencia 6dolencia
 8martaja 8marfaga
+
 5Cismera 5Cismero 5Cismeria 6Cisperio
 
 
@@ -31310,13 +31301,13 @@
 
 
 4baca 5barco 5barquia 6banca 6barda 6marca 6barba 6basca
-5purificar 6panificar 6rarificar 6pacificar 6tarificar
+5purificar 6rarificar 6panificar 6pacificar 6tarificar
 1basado 4valsado 5visado 6vagado 6vacado 6varado
 
 
+6copetear 8coRetear 8coquetear
 5cauliculo
 5compongo
-6copetear 8coRetear 8coquetear
 6lacrimar 6lagrimal
 
 5aReboceis 5aReboces 5aRebozais 5aRebozas
@@ -31498,18 +31489,17 @@
 3aficion 5aficione 5aficiono 8adiciona
 
 5violera 5velera 6visera 7Cilera 7hilera 7filera
+5remanar
 5bigudis
 6jaguas 7Caguar 7yaguar
 7morcajo 8morcado
 6pitoRo 8CipoRo
-5remanar
 
 5marañan 5marañen 6garañon 8maraton
 6berengo 6terenco
 
 5dezmaria 5dezmera 5dezmero
 4faces 5fascias 6falces
-5feriar 7herir
 5heCiceis 5heCices 5heCizais 5heCizas
 5marabus
 6coRonCo 8moRongo 8moronCo
@@ -31531,8 +31521,8 @@
 5arbitrais 5arbitras 5arbitreis 5arbitres 5arbitrios
 4cate 4castre 5cutre 6cabre 8cafre
 5yagruma
+2otear 5atar 6orar 6osar 6opar
 5Cingais 5Cingas 5Cingueis 5Cingues 5Cungos 5Congos 5Cangos 5Cinguas
-5atar 6orar 6osar 6opar 8ovar 8oLar 8ojar
 3simbolo
 5acroteria
 5alafa 8alacia 8alalia 8alaria
@@ -31551,8 +31541,8 @@
 5potito 6patino 6palito 6pasito 8pañito
 5pedrero 5pedrera 5pedreria
 7romaniza 8romanica 8romanina
-6moruro 8borujo
 5afeminar
+6moruro 8borujo
 5mengajo 7mangazo 8mangado
 5turon 5tiron 6tolon 6tocon 6moron 6tomon 6toros 6topon
 
@@ -31636,7 +31626,7 @@
 6nicotico
 3tapona 3tapone 3tapono 4tampon 5tapan 5tapen 5tapian 5tapien
 6canicula 6panicula
-5Cancar 6Casquear 6Carquear 7zanquear 8manquear 8Cancear
+2Cancar 6Casquear 6Carquear 7zanquear 8manquear 8Cancear
 
 5nevaria 5nevera 5nevero 6reveria
 5ayunais 5ayunas 5ayuneis 5ayunes 7ajunos
@@ -31715,8 +31705,9 @@
 4soplos 5solais 5solas 5soleis 5soles 5solias 5silos 5suelos
 
 
-5acampais 5acampas 5acampeis 5acampes
+5fistular 6fistolas
 6bandejas
+5acampais 5acampas 5acampeis 5acampes
 5gula 5guila 5gala 5gola 6guaca 6guara 6guapa 6guata
 5amada 6imana 6iguada 6irada 8izada 8ijada
 
@@ -31806,8 +31797,8 @@
 5muerto 5murta 5muerte 5marta 6muerda 6tuerta 6puerta
 6polipero
 
-3colaciona 3colacione 3colaciono 8coLacion
 6horadar
+3colaciona 3colacione 3colaciono 8coLacion
 5casuCo 6caluCa 6camuCa 6capuCa 7casuLa
 
 
@@ -32029,7 +32020,6 @@
 6pamela
 6augustas
 5combases
-
 5macaba
 6cojinete 8molinete
 6rocoso 6tococo 6rocolo 6rocoto
@@ -32074,8 +32064,8 @@
 5morito 6morado 6mogato 6morago 6borato
 5sapaLo 6capiLo 6sariLo 8saRiLo 8sapido 8sapino 8sapito
 
-4bastero 5bateria 5botero 6guatero 6datero 6gatero 6latero 6patero
 5forzar 6fornir
+4bastero 5bateria 5botero 6guatero 6datero 6gatero 6latero 6patero
 5fiestan 6fustas 6fustal 7justan 8gustan 8rustan
 
 5lijadura 6rijadora 8limadora 8ligadora 8fijadora
@@ -32095,11 +32085,11 @@
 5mirada 6miniada
 4payos 5playais 5playas 5playeis 5playes
 8tritio
+
 5moridera 6morigero 8moriLero
-
 5granula 5granule 5granulo
-
 6escaecer
+
 4rimus 5primais 5primas 5primeis 5primes 5primos
 
 1aguazal 5aguasol 6aguanal 6aguacal
@@ -32231,7 +32221,6 @@
 5trajinais 5trajinas 5trajineis 5trajines 5trajanos
 
 
-5ahitar 5ahuatar 6ahogar 6ahotas 7aRotar 7azotar 7ajotar
 4cusube 5cusumbo
 
 6encaniLa
@@ -32263,8 +32252,8 @@
 
 8soplaron
 
-
 5enfiestar 5infestar 7enhestar 8entestar 8encestar
+
 5espejais 5espejas 5espejeis 5espejes 5espejos
 5intuir
 3caCu 5caCa 5caCe 5caCo 5queCua 5quiCua
@@ -32296,8 +32285,8 @@
 6baRiLero 7pajiLero 8paliLero
 5litargia
 
-6miliario
 5embotar 5embutir 5embatir
+6miliario
 5licuados 5liquidais 5liquidas 5liquideis 5liquides
 3pater 4paltero 4partero 4pastero 4platero
 
@@ -32306,8 +32295,8 @@
 
 4piLaste 5poLastre
 5galota 6calata 6galana 6gabata 6malata 6garata 6balata
-5centeLan 5centeLen 6denteLon
 5muflir
+5centeLan 5centeLen 6denteLon
 1berones 5veranes 5varones 5virones 6velones 6vetones
 5arica 5areca 6acoca 6aboca 6aloca 6aroma 6apoca
 
@@ -32402,9 +32391,9 @@
 8sofista
 5filatera 7hilatura
 8ratania
+6inferir
 5bejerano
 6filiad 6filian 6filiar 6filias
-6inferir
 5argano
 4corvada 5cavada 6novada 7coLada 8colada 8copada 8cocada 8cotada
 5peniano 6benino 6menino 6pepino 8pejino 8venino
@@ -32420,15 +32409,15 @@
 5glucina
 3muguet 8juguete
 5pelada 5pilada 5pialada 5palada 5polada
-6amaRados 6agaRador 8amatador 8amasador
 5estripar 8estrujar
+6amaRados 6agaRador 8amatador 8amasador
 3movidos
 
 
 
 
+2voltejear
 5lilili
-
 
 3pean 5pena 5puna 5peina 5pina 5piona 5pana 5paina
 5amar 5amir 6ador 6amol 6amos
@@ -32505,7 +32494,6 @@
 4normada 5nomade 6notada 6domada 6tomada 6pomada 6nonada 6nogada
 6acabable
 5donde 5dende 5duenda 5duendo
-5fistular 6fistolas
 
 4riego 4griesgo 5rasgo
 5betaRaga
@@ -32535,6 +32523,7 @@
 4cardiLar 6ladiLar
 5guardan 5guarden 5guardon 5guardian
 6pasanza
+5optar 6aptas 6altar
 1ahuRagado
 
 
@@ -32548,8 +32537,8 @@
 6memorias
 5pongais 5pongas 5pingos 6congos 6bongos 6longos 6mongos 6tongos
 
-5cardizal 6carduzad 6carduzan 6carduzar 6carduzas
 
+5cardizal 6carduzad 6carduzan 6carduzar 6carduzas
 
 
 4tuecos 5truecas 5trueques 5traucos 5tricos 5trucos 5trocos
@@ -32628,9 +32617,9 @@
 5paletazo 5pelotazo
 3vacaciona 3vacacione 3vacaciono 5vocacion
 4moquita 5mosqueta 5misquita 5mosquito 6mosquina
+5corlear 6cablear 6cartear 6carnear 8Carlear
 8alboLon
 6cambuLos 8zambuLon
-5corlear 6cablear 6cartear 6carnear 8Carlear
 5refocilo
 
 5venino 6venero 6veneto
@@ -32675,10 +32664,10 @@
 8naRador 8hadador
 
 5gaLaria 5goLeria 5gaLera 5gaLero 5guLeria
+4molar 5mueblar 6doblar 6poblar 6roblar
 5CafaLan 5CafaLen 6CafaLos 8Cafaron
 
 
-4molar 5mueblar 6doblar 6poblar 6roblar
 5penerar
 5arelo 5ariolo 6apilo 6arico 6asilo 6acilo 6arido
 3guanina 6guarin
@@ -32692,8 +32681,8 @@
 3mujerona 7muLeron 7muñeron
 6hervidos 8servidor
 5peleCais 5peleCas 5peleCeis 5peleCes 8pelemos 8heleCos 8peleros
-5embojo 5embijo 6empajo 7embaRo 7embazo 7embaCo
 5fiestear 8testear 8restear 8gestear 8sestear
+5embojo 5embijo 6empajo 7embaRo 7embazo 7embaCo
 
 3moretea 3moretee 3moreteo 6motete 6mocete 6corete 6torete
 
@@ -32729,7 +32718,7 @@
 5dialaga 6malaga 8halaga
 5pinzada 5punzada 5panzuda 6lanzada 6danzada
 7enojar
-4atar 5altor 6altas 6algar 6albar 6aptar
+4atar 5altor 6altas 6aptar 6algar 6albar
 6capaCero
 3nancea 3nancee 3nanceo 4nace 6lance 6dance
 4cita 4crista 5cesta 6lista 6cinta 6cisca 6dista 6mista
@@ -32746,8 +32735,8 @@
 6pedigris
 4tratada 6traslada
 3valor 5valuara 5valiera 5valore 5valoro 5valoria
-4carpaCo 5carpinCo 6cardanCo
 4corear 8conrear 8cobrear
+4carpaCo 5carpinCo 6cardanCo
 
 6tragable 8trazable
 5viñatero
@@ -32781,8 +32770,8 @@
 3labora 3labore 3laboro 6sabor 6tabor 6babor
 5yaceis 5yaces 5yacias 7vacios 8dacios 8lacios 8macios 8sacios
 3leCin 5leCona 5leCino 6reCina 6leCiga 6peCina
+2anclar
 
-5anclar
 5atracan 5atraquen 6atracos
 6mareados 6maceador 6maleador 6careador 8vareador
 
@@ -32857,6 +32846,7 @@
 6botead 6botean 6botear 6boteas 6boreal
 
 4lentificar 5lotificar 6lenificar
+5afer 7aRiar 7aviar 8aliar 8adiar 8abiar
 
 5majarete
 
@@ -32890,8 +32880,8 @@
 
 6oximoros
 6enteCar 6enleCar 6endeCar 8enmelar
-8xocoyote
 8volver
+8xocoyote
 
 
 6penaCo 8cenado
@@ -32923,7 +32913,7 @@
 5vinica 6vainita 8vainiLa
 6desenconar 8desencovar
 4prenombre
-5cualificar 5quilificar 6salificar
+5quilificar 5cualificar 6salificar
 5desvais 5desvias 5desvies 8deslios
 6comarcad 6comarcan 6comarcar 6comarcas
 4freniLo
@@ -32969,8 +32959,8 @@
 
 6policias
 5libraria 5librera 5librero
-5finable 6fisible
 5inquirir 7injerir 7inferir 8inserir 8ingerir
+5finable 6fisible
 3penen 6pepene 6perene 8peneque
 5cuentista 6dantista
 8coyotera
@@ -33114,6 +33104,7 @@
 5nepales 5nepalis
 3tenacea 3tenacee 3tenaceo 5tenaza 6renace 6tenate
 
+5cabaLar 6cameLar 6tabeLar 6capeLar 8cabecar
 3conveni 5convenia 8congenio
 
 4oprobias
@@ -33196,9 +33187,9 @@
 4rancor 6racos
 1moscoRa
 
+
 4frisan 5fosan 5faisan 5fision 6filan 6finan
 8jalonado 8balonazo 8talonazo
-
 4mate 5muerte 5marta 6parte 6marce 6margue 6maste 6guarte
 5paparote 6capirote 8papiLote
 5vidrieria
@@ -33294,7 +33285,6 @@
 5papalote
 5maRada 5moRuda 5miRada 6toRada 6boRada 6goRada 6poRada
 5sidrera 5sidrero
-
 4colear 4cocear 6corlear 6coplear 6cocleas
 4rision 5presion
 6siembre
@@ -33314,9 +33304,9 @@
 3iran 3irania 3iranio 8iraqui
 4brodio 5roda 5rode 5rodo 5radio
 6letrista
+4copar 5culpar 6colgar 6colmar 6colpas
 4anulos 5anublais 5anublas 5anubleis 5anubles
 6arbitrad 6arbitran 6arbitrar 6arbitras
-4copar 5culpar 6colgar 6colmar 6colpas
 5solapais 5solapas 5solapeis 5solapes 6solados 6solamos 6solanos 6sopapos
 
 1servo 4sebo 5sorbo 5serbia 5serbio 5serba
@@ -33521,7 +33511,6 @@
 6aldaba 6algara 8alzaba 8alfaba 8aljaba
 4estroma 5estima 5estema 6escoma 6estopa 6estola 6estora
 5sacadora 5sacadera 6saladura 8saLadura 8saCadura 8sajadura
-5cabaLar 6cameLar 6tabeLar 6capeLar 8cabecar
 5florais 5floras 5floreis 5flores
 
 3visiona 3visione 3visiono 5visan 5visen 5vison
@@ -33551,7 +33540,7 @@
 
 5tesais 5tesas 5teseis 5teses 5tasis 5tisis 5tesos
 5ganada 6sonada 6donada 6tonada 6nonada 6monada
-7descafilar
+7descafilar 8descaRiLar
 5reCinais 5reCinas 5reCineis 5reCines 6leCinos
 
 5Cimais 5Cimas 5Cimeis 5Cimes 5Cimus 5Cimos
@@ -33711,8 +33700,8 @@
 5labranza
 5palpito
 
-5mocovis
 7pinzar 7pinCar 8pintar 8pingar
+5mocovis
 4tabina 8trajina 8trabiLa
 4blandir 6bandin 6gandir
 8volites
@@ -33766,7 +33755,6 @@
 
 4prosigo 5resigo 6tosigo 8rosiLo
 5malojo 5meloja 8malosa 8maloca
-5acibarar
 6cuCugo 8cusuco
 
 6deismo 6leismo 6seismo 8yeismo 8feismo 8queismo
@@ -33811,8 +33799,8 @@
 5tener 5toner
 
 
-
 4gormar 5gomer 6domar 6tomar 6gomal 6gomas 6pomar
+
 
 
 4raglan 6ranclan
@@ -34089,8 +34077,8 @@
 8demaRare 8demaRase
 6quirina 6quinina 8litina
 1cisca 6risca 6disca 6pisca 8Cisca 8ñisca 8jisca 8quisca
-5falsais 5falsas 5falseis 5falses 5falsias 5falsos
 5repudrir
+5falsais 5falsas 5falseis 5falses 5falsias 5falsos
 6masilica
 
 5decenario
@@ -34150,8 +34138,8 @@
 6sabanera 6rabanera 8habanera 8tabaRera 8tabaquera
 5torionda
 8virosis
-5danzaran 5danzaren 5danzarian 5danzaron
 6fablas 7hablar 8tablar 8pablar
+5danzaran 5danzaren 5danzarian 5danzaron
 5lapaCa 6capaCo
 5levitan 5leviten 5levitin
 5mauLais 5mauLas 5mauLeis 5mauLes 5miLos 5muLos 5maiLos 5maLos
@@ -34231,8 +34219,8 @@
 5moblaje 8mueblare 8mueblase
 5germana 5germano 5germanio
 5pavona 5paviana 6pavada 7payana 8pagana 8pacana
-5brumara 5brumare 5brumaria
 6enemigas
+5brumara 5brumare 5brumaria
 6moLizno
 6morenal 6moreras
 4saten 5surten 6salten 6parten 8harten
@@ -34265,8 +34253,8 @@
 4roncon 5troncan 5tronquen 5trancon 6troncos
 
 6galbula
-3puentea 3puentee 3puenteo 5punte 5pinte 5piante
 7tropezar
+3puentea 3puentee 3puenteo 5punte 5pinte 5piante
 8coReton
 
 4guatero 5guanteria
@@ -34297,10 +34285,10 @@
 8patinado
 3beCamel 8besamela
 5miradora 5moradura
+4repetir 6resentir
 5asesinais 5asesinas 5asesineis 5asesines
 
 5mutante
-4repetir 6resentir
 6vecinas 8pecinal
 7vasadura 8rasadura 8pasadura
 3coacciona 3coaccione 3coacciono 5coccion
@@ -34321,8 +34309,8 @@
 5sombrajo 8sombrare 8sombrase
 4loquera 4boquera 5blocara 6cloquera 8bloguera
 5poligalia 6poligama
-
 4camiar
+
 5espumais 5espumas 5espumeis 5espumes
 
 5valuaria 5valora 5valore 5valoro 7faloria
@@ -34363,7 +34351,6 @@
 4potador 6portados 6cortador
 4monotrema
 
-6parificar 6ramificar 6ratificar 6tarificar
 4pestos 4restos 5prestais 5prestas 5presteis 5prestes
 5rasguñais 5rasguñas 5rasguñeis 5rasguñes 6rascuños
 3casimir
@@ -34385,8 +34372,8 @@
 1hibrides 8hibriden
 5tupir 5tapar 5tapiar 6tapin 6tapis
 3tarina 5taran 5taren 6tapin 6guarin 6talin
-3andana 4adan 5anden 5andon 6ardan 6andad 6andar 6andas
 5gobernar
+3andana 4adan 5anden 5andon 6ardan 6andad 6andar 6andas
 4aspo 6astro
 5canular 6camelar 6panelar 6canelas 8Canelar
 5caCila 5caCuela 6paCola 8caCoRa 8carola
@@ -34422,8 +34409,8 @@
 
 5sarama
 
+2batuquear 8bazucar
 
-8bazucar
 5mimbrado 5membrudo 6sembrado
 
 6cimental
@@ -34609,8 +34596,8 @@
 3socaRen 5socaRona 5socaRina
 5rebeco 6reseca 6rebela
 
-4encarte
 
+4encarte
 5perene 5perine 6perore 6perote
 6ergio
 8migaron
@@ -34645,7 +34632,6 @@
 
 
 5pepeno 6repino 6penino 6pepito 8pejino
-7rehacer 8renacer 8repacer
 5retajais 5retajas 5retajeis 5retajes 5retejos
 4tranca 4trasca 4taca 5troca 5trueca 5truca 5traque 5troica
 6gravaren 6gravasen
@@ -34739,8 +34725,8 @@
 
 
 5carcavo 7carcaza 7carcaCa 8carcasa
-6batiran
 5divisar 6revisar 6devisas
+6batiran
 
 5acobijais 5acobijas 5acobijeis 5acobijes
 6nilotico 6sicotico
@@ -34754,14 +34740,13 @@
 6misticos
 
 
-
 5trozar
+
 5bigornio
 4balaste 4balante 5balite 5balote 5balata
 5despues
 5traceis 5traces 5trazais 5trazas 5tracias 5tracios 5trozos
 3albañila 5albañal 6albañis 6albañir
-8anublar
 
 3pulsatila
 5resoplais 5resoplas 5resopleis 5resoples
@@ -34842,12 +34827,11 @@
 7empapuzar
 5tencion 6mincion
 3gris 4risa 5gruesa 5grisu 5grosa 5grasa
-6soletas 8solevar 8solejar
 8juntura
 4pensaria 5posaria 5pasaria 5pesara 5pesare 5pausaria 5pisaria 5pesario
 5tintar 6pintor 6tintos
-5cerate 6ciguate 6cimate 8quirate
 6estribar 6estripar 6entricar 8estriLar
+5cerate 6ciguate 6cimate 8quirate
 4tapo 4rapo 5trepo 5trape 5tropo 5trapio 5trapa
 
 4triperia 6piperia 8tiñeria
@@ -34916,8 +34900,8 @@
 6conjugad 6conjugan 6conjugar 6conjugas 7conyugal
 
 
-3amancayo 3amancaya
 6canforas
+3amancayo 3amancaya
 5yambos 5yambus 8bambues
 
 5aRuLador 6aRoLados 7aRojador 8acoLador 8aRogador 8amoLador 8aRobador
@@ -34947,10 +34931,10 @@
 
 6zumacad 6zumacan 6zumacar 6zumacas
 4empenta 6emprenta
+6hazañas
 6atonas 6amonal 6agonal 6atonar 8atoCal
 3cambaro 3cambara 5combar 5cambiar 5cambur
 
-6hazañas
 
 6marmol
 5aRufada 5aRufado 6aRufaria
@@ -35032,11 +35016,11 @@
 
 6marciano
 6cubista 6turista
+6nutrir 6pudrir
 
 5buboso 6raboso 8baRoso
 4cadiLar
 5desgaRais 5desgaRas 5desgaReis 5desgaRes 6desgaRon 6desbaRos
-6nutrir 6pudrir
 6tabanazo
 7barquiLa 8barbiLa
 
@@ -35054,6 +35038,7 @@
 6cañizas 6cañizal
 5minaria 5minora 5minore 5minoro 5miniaria 5menoria 5mineria
 3perol 5perolo 5parola 6perora 6perota
+5afiuciar 7ahuciar 8acuciar 8aluciar 8aguciar
 6albarino 8albariño 8albariLo 8albarizo
 6copinos
 4tropero 5trampero
@@ -35082,7 +35067,7 @@
 5polona 6colaina
 7neguiLon
 5fundiria 5fundaria
-5apaRar 5apeRar 6amoRar 7apoyar 7apozar 7apoCar
+2apoRear 5apaRar 5apeRar 6amoRar 7apoyar 7apozar 7apoCar
 7manzanos
 5macuaCes 8maquetes
 3Cagual 5Cagualo 8baguala
@@ -35235,7 +35220,6 @@
 4nubazon 8nublaron
 3suspirosa 3suspiroso 5suspirais 5suspiras 5suspireis 5suspires
 5amanita 6atonita 6amonica 6amodita
-8acibarar
 4apegar 4alegar 5aplagar
 4rozador 5bruzador 6brozados 7broLador
 4rompon 5trompan 5trompen 6trombon 6trompos
@@ -35282,7 +35266,6 @@
 6filautia
 5purgar 6portar
 6bagarino
-5afiuciar 7ahuciar 8acuciar 8aluciar 8aguciar
 4cebero 6certero 6cerbelo 6berbero 8verbero 8yerbero 8herbero
 5duelas 5dueles 5dolos 6duetos 6muelos 6suelos
 4grafos 5gafais 5gafas 5gafeis 5gafes 5gofos
@@ -35320,7 +35303,6 @@
 
 5manais 5manas 5maneis 5manes 5manias 5manis 5monos 5manus
 6regatonear
-5optar 6aptas 6altar
 
 5mesmo 5mismo 6taoismo
 5posadero 5pasadero 5pisadera 6picadero
@@ -35340,7 +35322,6 @@
 5paridora 5paradera 6guaridera
 4alfama 6alfarda 7alharma
 6destaponar 6destaconar 8destaConar
-
 
 
 5cazuRa 5quizaRa 5cazaRo 7cazaLa 7caCaRa
@@ -35380,8 +35361,8 @@
 6guaperia 8guaReria
 4jugaria 5juglara 5jugleria
 4maca 4mala
-7conjugal
 4deponer 5disponer
+7conjugal
 
 
 4alazos 5aplaceis 5aplaces 5aplacias 5aplazais 5aplazas
@@ -35408,6 +35389,7 @@
 5Cirote
 3montantea 3montantee 3montanteo 6montaste 6contante
 5nutacion 5notacion 6datacion 6matacion 8naRacion
+6espalmar
 4vibrador 6virados 8tirador 8viñador 8mirador 8girador
 
 5manduRia 6bandaRia 8mandaria
@@ -35430,7 +35412,6 @@
 3farol 5farala 6farota 7Carola 8carola 8parola 8marola
 4mamita 5marmota 8marCita
 6disfagia
-7aferir 8aterir
 6aleznas
 1cilicio 5silice
 4palmeta
@@ -35502,7 +35483,6 @@
 4modos 5mondais 5mondas 5mondeis 5mondes 5mundos 5mandos
 5Capera 6Colera 8CoRera 8copera 8ropera 8sopera 8topera 8CoCera
 5arvejona
-6monedas
 
 
 
@@ -35523,9 +35503,9 @@
 5matadora 6catadura 6patadura 8majadura
 4reservar
 3mor 4monra 5mera 5muera 5mura 5more 5moro 5mori
+4fucar 6funcar 6fuscas 8buscar
 5aguzar 6acuciar 6agucias 6aluciar 8ahuciar 8afuciar
 6alcamar 8alhamar 8alfamar
-4fucar 6funcar 6fuscas 8buscar
 7gaLofero 7gaRoCero 8gaRotero 8gaRobero 8gaRonero
 
 5opositar 6opositos
@@ -35534,10 +35514,10 @@
 
 8margaron 8fargaLon
 8baciniLa
+5rebatir 5rebotar 5rebitar 6recatar 6rebatan 6rebatas 6rematar 6rebasar
 
 6marañad 6marañan 6marañar 6marañas
 
-5rebatir 5rebotar 5rebitar 6recatar 6rebatan 6rebatas 6rematar 6rebasar
 5volantin
 5cesante
 3gargol
@@ -35550,7 +35530,6 @@
 4enCaCar 5enCinCar 8ensanCar 8enganCar 8enlanCar
 5cameLais 5cameLas 5cameLeis 5cameLes 6gameLos 6cabeLos 6cameLon
 5albañar 6albañis 6albañil
-5atreguar 6agregar 8atreCar
 
 4zafero
 5tornaria 5tornera 5tornero 6torceria 6torteria
@@ -35571,7 +35550,6 @@
 5contil 5cantil 5quintal 6quintin
 5trafagais 5trafagas 5trafagueis 5trafagues 6trafagon
 1hurta 4uta 5arta 6urda 6unta 6urca 6urna
-
 3vinos 5venoso 8pinoso
 4afocar 6afoscar 7ahorcar 8amorcar 8aporcar
 5aruñais 5aruñas 5aruñeis 5aruñes 5araños
@@ -35640,9 +35618,9 @@
 
 
 6tragazon 6grabazon 8trabaron
+6folgas 7holgar 8colgar
 5Cocoya 8pocoyo 8Cocolo 8Cocoso
 3ceceosa 3ceceoso 5zaceos 5cecias 6cereos
-6folgas 7holgar 8colgar
 4forista 5floresta
 
 6recocida
@@ -35679,11 +35657,11 @@
 5aRijan 5aRojan 8aRaigan
 5ciegas 5ciegues 6ciemos 6diegos 6cienos 6cielos 6liegos 6niegos
 6pizaRas
+
 8azulare 8azulase
-
 5roblado 5robleda 6robredo
+2lastrar 6rastrear
 
-5lastrar 6rastrear
 4mabis 5mambos 5mambas 5mambies 6bambis
 
 5quejara 5cuajara 6pujara 6lujara 7cuñara 7cuRara 7cuCara
@@ -35759,9 +35737,9 @@
 
 5maciLo
 5mugreria
+6mohatras
 5embroLan 5embroLen 6embroLos
 
-6mohatras
 7folganza
 5ignava 5ignavo
 
@@ -35825,8 +35803,8 @@
 4lera 6legra 6letra
 5entina 6ontica 6ondina
 5tapadora 5tapadero 5tapadura 8tajadera
-5instituir
 4prender 5rendir 5rendar 6tender 6pender 6renden 6rendes
+5instituir
 1faLanca
 3perineo 5perene 5perone 6perite 6perime
 5torno 5turno 5terno 6cierno
@@ -35863,9 +35841,9 @@
 5precisais 5precisas 5preciseis 5precises 5preciosos
 
 6tocinera 8topiquera
+6encantar 6espantar
 4amansador 6amasados 6amatador 8aRasador 8amaRador
 
-6encantar 6espantar
 5picoton
 5rifadora
 
@@ -35874,8 +35852,8 @@
 5desCorCar
 7liquidez
 5terso 5tarso 5torso
-4concolon
 5deRonCar 8deRancar
+4concolon
 3garmas
 5rebotada 5rabiatada
 
@@ -35885,7 +35863,6 @@
 5baRada 5baRida
 
 5calidad 6dualidad
-6espalmar
 6lambuza
 
 3para 5pare 5paro 5pari 5paria 5pario
@@ -36017,8 +35994,8 @@
 7malheCo
 5salomo
 
-5alambar 6atambor
 1sobrasar 8sobradar
+5alambar 6atambor
 5apaCuRan 5apaCuRen
 1asaros 3azarosa 3azaroso 5azarais 5azaras 5azareis 5azares 5azoros
 5cerciora 5zarcera 6cernera 6cercena 6cencera 6certera 6bercera 6cerceta
@@ -36041,8 +36018,8 @@
 5forista
 5lidera 5ladera 6modera 6sodera 6codera 6todera 6lotera 6locera
 5prosea 5presa 5preso 5presi 6prepea
-5mamelon 6mamaron 6matalon
 6surcar
+5mamelon 6mamaron 6matalon
 3bombon 5bembona
 5talonera 6salinera 6balinera
 
@@ -36092,8 +36069,8 @@
 
 8poCotal
 3tapena 5tupen 5topen 5tapan 5tapian 5tapien 5tapon 5tapin
-
 6bandir
+
 7buharda 7bufarda 7buzarda 8busarda
 6Capeados 8capeador
 
@@ -36186,6 +36163,7 @@
 
 
 
+4lograr 4longar 5ligar 5legar 5loguer 5lugar 5lagar
 5afluente
 5pena 5puna 5peina 5pina 5piona 5pana
 
@@ -36200,8 +36178,8 @@
 
 5portiLa 6tortiLo 8portico
 4tiquis 4trinquis 5triques 5tricos 8tripis 8friquis
-4baltos 4bastos 5batais 5batas 5bates 5batias 5batis 5batuas
 6captivas
+4baltos 4bastos 5batais 5batas 5bates 5batias 5batis 5batuas
 4clavando 4lavado 5levando 5lavanda 6cavando 6lavanco
 1cerval 1serbal 5servil 6servar
 
@@ -36233,8 +36211,8 @@
 4mueblar 5melar 5molar 5maular 5mular 5malar
 5puCas 5puCos 5piCis 5puCes 6cuCis
 
-6ataRaje 6abaRaje 8amaRare 8amaRase 8amaraje
 5gaznar 6tiznar 6guizgar
+6ataRaje 6abaRaje 8amaRare 8amaRase 8amaraje
 6triunfad 6triunfan 6triunfar 6triunfas
 6carola 6manola 6marota 6parola 6mamola 6maroma
 5estiliano
@@ -36260,10 +36238,10 @@
 5espiCan 5espiCen 8espigon
 
 5marfaga
+4difamar 5disfumar 5desfamar
 
 4alote 5arlota
 3cavilosa 3caviloso 5cavilais 5cavilas 5cavileis 5caviles
-4difamar 5disfumar 5desfamar
 4gama 5gorma 6garpa 6garla 6gamma 6garba 6tarma
 
 
@@ -36313,7 +36291,6 @@
 4alcanzar 5alquezar 5alcacer 7alcafar 8alcamar
 5nariguda
 5peladora 5peladura 5peladero 8heladera
-5afuciar
 5monogamia
 4tempranos 5tempanais 5tempanas 5tempaneis 5tempanes 5timpanos
 5desacoLar
@@ -36353,8 +36330,8 @@
 5estregan 5estreguen 5estragon 8estreLon 8estreCon
 7jaRetera 7Caquetera 8caRetera
 
-4lisos 5clisais 5clisas 5cliseis 5clises
 1lazar 5losar 5laser 6rasar 6masar 6pasar 6casar 6basar
+4lisos 5clisais 5clisas 5cliseis 5clises
 7neguijon
 
 5solfas 8soldeos
@@ -36419,10 +36396,10 @@
 8vareton
 
 4mata 5muerta 5murta 5marte 6parta 6marca 6marga 6malta
-5mazuelo 6macero
 4redar 4prendar 6predas 6pregar 6presar
-5psis 5psies 6proas
 5remirar 5rumorar 6redorar 6demorar 6memorar 6remolar 6remoras
+5mazuelo 6macero
+5psis 5psies 6proas
 
 
 7hanegada
@@ -36474,13 +36451,12 @@
 4togase
 6cambiza
 5sorba 5serbia 5serbio 5serbo 6serna 6serpa
-
 5estreLar 6entriLar 8estribar 8estripar 8estricar
+
 6socolo 6sonoro 8socoRo
+6revender
 5empalar
 6melonas 8melojar
-4pegar 6pescar 6nesgar 6sesgar 6pesgas 6pelgar
-6revender
 
 5Caparon 5Capiaron 5Caperon 5Cipiron 8capiron
 
@@ -36501,15 +36477,15 @@
 
 
 4enCinCar 5enCuCar 5enCaCar 7enCivar 8enCinar 8enCicar 8enCilar 8enCipar
-5aligar 5alegar 5alagar 5alugar 5alogar
+5aligar 5alegar 5alagar 5alogar 5alugar
 
 6manCados 6marCador 8mandador
 5maracaya 7maracuCa
 3perCon 5perCone 5perCono 8persona 8perdona
 5tupitaina
+4malherir 8zaherir
 
 5balais 5balas 5baleis 5bales 5bulos 5bolos
-4malherir 8zaherir
 
 3panacea 6panare 8panaCe
 4mora 6monta 6monda 6monga 8honra 8monja
@@ -36535,9 +36511,9 @@
 6cupulino
 5osara 5osero 5oseria 6olera 6opera 6orera 6oseta
 5pavorde
+5menuzar 6menazas
 3jubilosa 3jubiloso 5jubilais 5jubilas 5jubileis 5jubiles
 6macadan
-5menuzar 6menazas
 
 
 4Cilis 5Ciflais 5Ciflas 5Cifleis 5Cifles 5Ciflos
@@ -36553,9 +36529,9 @@
 5rebita 5rabiata 5rabieta 6rabida 6gabita 6ranita 6rabica 6rapita
 5enfinta 5infanta
 
+
 5copilar 5capolar 6papilar 8cavilar
 5espumaje 8espumado
-
 7sobrehaz
 6fermios
 3Cingan 5Cingona 6Cingaba 6Cingada 6Cingara 6Cintana
@@ -36622,16 +36598,15 @@
 4caroCar
 6cabalar
 1gavina 5guabina 6sabina 6gabita 6nabina 6tabina 6cabina
+5masar 5mesar 5misar 5musir 6mudar 6tusar 6mutar 6mugar
 5añores 5añires 6añades 6añales 6añases
 5justais 5justas 5justeis 5justes 6juntos
 5lampan 5lampen 5limpion 6lambion 6campion
 3mimos 5mamoso 6limoso
-5masar 5mesar 5misar 5musir 6mudar 6tusar 6mutar 6mugar
 8olivino
 5barquiLo 6basquiLa 6marquiLa 7barCiLa 8barbiLa
 1cavia 4cabria 4cambia 5cabe 5cabo 5cabio
 6caCimbos
-4confluir 5confiar 5confer
 
 8vomitiva
 5carniola
@@ -36718,6 +36693,7 @@
 5tamugas 6tamaras 8tamañas 8taRagas
 5vergoña 8vergueta
 3patrona 3patrono 4paton 4paron 6padron 6matron 6natron
+7halagar 8balagar
 5Cozpais 5Cozpas 5Cozpeis 5Cozpes 6Coznos 6Cozpon
 
 
@@ -36841,7 +36817,6 @@
 4tumbeis 5tubos 5tubas 6tuneis 6tuseis
 6jaciLa 8daguiLa
 5entro 6astro
-5premiar
 3salesa 4sables 5sueles 5salais 5salas 5saleis 5salias 5salis
 5sisal 5sosal 6nasal 6casal 6basal
 5viLorin 6veLoris
@@ -36955,9 +36930,9 @@
 
 7alfaraz
 6milibar
+8Cuflar
 4mirabas 4miraras
 5peCais 5peCas 5peCeis 5peCes 5puCos 5paCos 5piCos 5poCos
-8Cuflar
 5sancion 6puncion 6succion 8funcion
 
 5caluma 5calima 6saloma 6calosa 6paloma
@@ -36979,8 +36954,8 @@
 
 8ceRojiLo
 
-5aljarfa
 5gradar 6gripar 6gritar 6gridas 6cridar
+5aljarfa
 5encasquetar
 8capulin
 6parte 6parle 6guarne 6parpe 6carne 6parce
@@ -37007,10 +36982,10 @@
 5solevo 5salivo 5solivia 5solivie 5solivio
 5aRopara 5aRopiera 6aRocera 6aRobera
 4sacia 5sarzo 5sarza 6marcia 6garcia 6barcia
+6plomar 6clorar 8florar
 
 5cobijan 5cobijen 6sobijon 6cobijos
 5aferente 5oferente
-6plomar 6clorar 8florar
 
 4revera 5bravera 6prevera 8breguera
 
@@ -37035,7 +37010,6 @@
 7cataluja
 5vejara 5viajera 5viejera 6vejeta 7veLera
 4bines 6bistes 6cisnes
-
 8notacion 8nodacion
 
 5repunte 5repinte 6repense 6retente 6recente 6regente 6relente 6nepente
@@ -37074,13 +37048,13 @@
 5capiLejo 8capiLera 8capiLeta
 5potajeria
 3rand 4granda 4rada 5rinda 5ronda 5renda 5rienda
-
+1zurcir 6surgir 6surdir 6surtir
 6enforcar 7enhornar 8entornar 8encornar
 
 
 
 
-1zurcir 6surgir 6surdir 6surtir
+
 8tronCado
 
 
@@ -37146,8 +37120,8 @@
 5pamplina 6ramplona
 5piojeria 5pijerio 5pajeria 7piqueria 7piLeria
 6tabalada
-1caricias
 7Camuscar
+1caricias
 6picoteos 6risoteos
 
 4pintora 5pitara 5pitera 6citora 8pitoRa
@@ -37405,8 +37379,8 @@
 3toros 6moroso 6poroso 6toboso 8Loroso
 3maCon 5maCuna 5maCina 6taCona 6gaCona 6paCona 6maCota
 6entrepelar
-
 5aguar 5iguar
+
 3gambuj 6cambujo
 5guangoCe 5gangoCo
 3motos 4montoso 5matoso 6modoso 6botoso 6gotoso 6mocoso 6moroso
@@ -37433,8 +37407,8 @@
 4taco 5tarquia 5terco 5turco 5torco 5tarca
 
 
-6espantar 6espartal 8esparvar
 4pegar 4regar 6plegar 6bregar 6predar 6presar
+6espantar 6espartal 8esparvar
 5referias 5referis
 6tocoloro
 6macrura
@@ -37470,9 +37444,9 @@
 5picais 5picas 5piqueis 5piques 5picus 5picos 5pacues
 5supera 5sopera 6rapera 6papera 6salera 6tapera
 8jarope
+5tractor
 5esparvar 6esparven 6esparves 6esparvel
 6tarascan
-5tractor
 
 
 
@@ -37508,7 +37482,7 @@
 3almibar 5almibare 5almibaro 8almijara
 5fregata
 
-4aperar 8aRedrar
+2apedrear 4aperar 8aRedrar
 5sobarba 6sobarco
 6tetaren 6tetasen
 
@@ -37552,17 +37526,17 @@
 3matosa 3matoso 4mastos 4mantos 5matais 5matas 5mateis 5mates
 
 1raLadura 6gayadura 7rajadura 8rasadura 8rapadura
-6bazucas 8batucar
+8perorar
+2bazuquear 6bazucas 8batucar
 5locucion 8vocacion
 5moriego 5morugo 5moraga 6morado 6morato 6monago
-8perorar
 6coralina 8moraliza
 8anionica
 5botifaRa
 4piscola 5picuala 5picolo 6picona 6picosa 6pidola 6picota
 
-4amuRase 6abuRarse
 
+4amuRase 6abuRarse
 5empeRais 5empeRas 5empeReis 5empeRes 7empeños
 8Ciricana
 5bizaRa 5bizaRo
@@ -37605,9 +37579,9 @@
 
 
 6granola 6gramosa
+5armar
 1ajigolon
 5butron
-5armar
 3pesquisa 3pesquise 3pesquiso 5pescais 5pescas 5pesqueis 5pesques
 7jolgorio
 5parejera
@@ -37619,7 +37593,7 @@
 4potista
 
 5sosiegas 5sosiegues 8soRiegos
-8desajuntar
+8desajuntar 8desayuntar
 
 5cainismo 8cinismo
 5vades 5vados 5videos 6vareos 7jadeos
@@ -37642,13 +37616,12 @@
 5suiriri
 5safismo 5sofismo
 4trepase
+5minorar 6memorar 8mejorar
 
 3cardona 5cardan 5carden 5cordon 6carlon 6carcon 6sardon 6lardon
 3estudios
-5minorar 6memorar 8mejorar
 4alquila
 4rescindir
-8despear
 
 5momeria 6modero 6somero 6gomero 6molero 6romero 6motero 6mocero
 
@@ -37671,8 +37644,8 @@
 
 8zapatito
 
-8calvitar
 5elegir 5elijar 6elidir 6erigir 8exigir 8elixir
+8calvitar
 3guarani 3guarana 5guiaran 5guaren 5guarian 5guarin
 6quejigal
 
@@ -37683,8 +37656,8 @@
 
 3funciona 3funcione 3funciono 8puncion 8suncion
 5guruLada
-5Capero 6Capico 8papiro
 6funestas
+5Capero 6Capico 8papiro
 4jumase
 
 
@@ -37732,7 +37705,6 @@
 3manguala 5mangal
 5bembo 5bombo
 
-5monedar
 5campeña 5compaña 5campiña 8campaba 8campara 8campana 8Campaña
 5marfega 8martaga
 5aflatar 5aflautar 6afretar
@@ -37870,10 +37842,10 @@
 4bucos 4bruscos 5buscais 5buscas 5busqueis 5busques
 5engorar 6enterar 6encerar 6engueran 6engueras 6enserar
 
+6enfriar 8estriar
 8baRiLar 8bacilar
 6caCican 6guaCiman
 4comigo 6condigo 6consigo 6conmino 6contigo
-6enfriar 8estriar
 5sentiras 5sentireis 5sentirias 5sentares
 4Cigua 5Cinga 5Cingo 5Cingue 5Cangua
 
@@ -37881,8 +37853,8 @@
 
 
 4amar 6aspar 6armar 6asmas 6ascar
-8cuRiculo
 8vaLadar
+8cuRiculo
 3molinetea 3molinetee 3molineteo 8mojinete
 5Cismaria 5Cismera 5Cismero 5Cismerio
 6alces 6aspes 6arpes 8alfes
@@ -37970,7 +37942,6 @@
 4azarase
 
 
-5exprimir
 
 
 6corvejon 7corveños 8corvemos 8cornejos 8cortejos
@@ -38007,7 +37978,7 @@
 
 5baratera 6garatura
 4trigla 5traiga 5traga 5trigo 6trisa 6trina 6tripa
-5clorar 5claror 6clamar 6claras 8clavar
+2clarear 5clorar 5claror 6clamar 6claras
 6mantiLos 8CantiLon
 5sabaniLa 6sabidiLa
 6desenlodar
@@ -38017,7 +37988,6 @@
 6navajos
 4remotos 5remostais 5remostas 5remosteis 5remostes
 5bailaran 5bailaren 5bailarian 5bailaron
-4batir 5bastar
 4lobriga
 5taCadora 6caCadura 6saCadura 7taLadura 7tajadura
 
@@ -38047,8 +38017,8 @@
 
 
 3molos 5mauloso 5meloso 5maloso 6doloso 6modoso 6mocoso 6moroso
-
 5madurar 5moderar 6macerar 6maderas
+
 6mielitis
 3tapin 5tapona 5topina 5tapena 6tapida 6rapina 6sapina 6tabina
 3pompos
@@ -38066,16 +38036,15 @@
 1vacara 4bancara 5becara 5baquira 6sacara 6balara 6bagara 6basara
 8cogombro
 
-5catabas
 5invernar 6envergar
 5escosar 5esquisar 6escurar 6escudar 6escusas
+5catabas
 4neblies 5nebis 5nabies
 
 5viaticais 5viaticas 5viatiqueis 5viatiques 8ciaticos
 5rabiara 5ribera 6cabera 6rapera 6ramera 6rasera 6ratera 6babera
 6lapiLa 6capiLa 6tabiLa 6papiLa 6taniLa
 5abuRar 5abeRar 6agaRar 6apaRar 6acaRar 6amaRar
-8apacer
 5gatiLais 5gatiLas 5gatiLeis 5gatiLes 6galiLos
 5mandinga 5mindanga 6candanga 6manganga
 3version 5versione 5versiono
@@ -38129,12 +38098,13 @@
 4rigidez
 1esperido 5hesperide 6hesperico
 
+4manjolar
 5coironal 5coronel 6coronad 6coronan 6coronar 6coronas 6cogonal
 4renos 4fresnos 5frenais 5frenas 5freneis 5frenes
 
 6crolista
-
 4enfocar 6enfoscar 6enfornar 7enhorcar 8entorcar
+
 8salvaria
 3mariona 5maron 6mariol
 5portais 5portas 5porteis 5portes 6sorteos
@@ -38175,9 +38145,10 @@
 6despaliLar
 3albañil
 
+6aversas
+4disminuir
 
 5alijais 5alijas 5alijeis 5alijes 6arijos
-4disminuir
 6filodio
 8saltable
 6moteja 7moleña 8molera 8moLeja 8moleta
@@ -38213,9 +38184,9 @@
 5sombraje 8sombrado
 8acamaba 8acamada 8acamara
 
+5prior 6crear 6brear 6preas
 
 3latosa 3latoso 4flatos 4platos 4lastos
-5prior 6crear 6brear 6preas
 4cremora 5remira 5rumora 5remara 5remera
 6numeran 8buLeran
 6pluvias 8fluvial
@@ -38234,8 +38205,8 @@
 5calamoRo 7calamoCa 8calahoRa
 6cataCin 6mapaCin 6macaCin
 5balsamo
-6mayoral 6mayoras
 6ondras
+2mayorear 6mayoral 6mayoras
 
 3sales 6salega 6galesa 6calesa 6saleta 6salera 6salema
 5despataRar 8despaCuRar
@@ -38293,7 +38264,7 @@
 
 1retraer
 
-6descasuLar
+5descapiLar 6descasuLar
 5Ciscada 5Cascada 8buscada
 
 5barbuLon
@@ -38406,7 +38377,6 @@
 4cereria 5cetrera 5cetrero
 8cantear 8tantear 8mantear 8guantear
 3despeCosa 3despeCoso 5despeCais 5despeCas 5despeCeis 5despeCes 5despaCos
-4retocar 5retrucar 6retronar
 
 6bolada 8bolaCa
 8cimbria
@@ -38424,7 +38394,7 @@
 6vinicola
 
 5radones 6radiares 6radiases 6badianes 6radiales 6guadianes
-7descabeLar
+7descabeLar 7descabeñar
 5barberol
 6divismo 8cinismo 8vivismo
 6patatas 6palatal 6patatar
@@ -38445,7 +38415,7 @@
 3gavilana 6cavilan 8gaviLan
 1despeza 4despresa 4despensa 5despasa 5desposa
 7hazaleja
-1rasar 4trazar 5rizar 5rezar 5raizar 5rozar
+1rasar 2racear 4trazar 5rezar 5rizar 5raizar 5rozar
 5agaRais 5agaRas 5agaReis 5agaRes 6agaRon 6amaRos
 6propon 6probon 6troton 6broton 6croton
 
@@ -38461,7 +38431,7 @@
 5modelais 5modelas 5modeleis 5modeles 5modulos
 4roseos 5prosas 6proteos
 5resecado 6desequido 8reseguido
-7descabezar
+7descabezar 7descabeñar
 
 5ponCazo 6cinCazo 8pinCado
 6dopaje 6rodaje 6rotaje
@@ -38500,10 +38470,10 @@
 6mermados 6mercador
 3tercera 3tercero 5torcer 5terciar
 6descocotar 8descogoLar
+7rahezar
 8azufrar
 
 6gradado 6tramado 6granado 6grapado 6bramado 6gratado 6grabado
-7rahezar
 5agriara 5agriera 6agrupa 6agruma
 1zalema 5saloma 6salega 6saleta 6salera 6salesa
 4transgredir
@@ -38513,10 +38483,10 @@
 8camaRoya
 4pateria 5partiria 5partera 5partero 5porteria
 6desperezar
+8propagar
 6alcabuz 6arcaduz
 8edilicio
 
-8propagar
 6guaranga
 5profana 5profane 5profano
 5barbara 5barbare 5barbaria 5barbaro
@@ -38527,8 +38497,8 @@
 5papero 5paparo 8Capiro
 
 3tabla 5table 5tablo
-8monologo
 
+8monologo
 7artiLara 8artigara
 4empenta 5imprenta 6emprenda 6empresta 6emplenta
 5librais 5libras 5libreis 5libres 5labros
@@ -38756,10 +38726,10 @@
 5aeronata
 
 6pasabola
-
+5carpentear
+5servir 6serval
 
 4sacros 4sancos 5sacais 5sacas 5saqueis 5saques 5suecos 5sucos
-5servir 6serval
 3maCin 5maCuna 5miCina 5maCona 6maCica 6caCina 6maCigua
 5desCarCar 8descorCar
 8idiotizo
@@ -38776,14 +38746,13 @@
 5puerperio
 6tirana 6tisana 8tizana
 
+5cautivar 6cativas
 
 6arvejas 6arvejal
-5cautivar 6cativas
 3metan 6mecano 6megano 6medano 6tetano
 
 3jabalon 5jabalone 5jabalono 5jabalina 5jabaluna
 3tarazan 6tarazaba 6tarazada 6tarazara 7tarafana
-6aversas
 8cañaRoya
 3mejan 6lejana 6tejana 6mejala 8mecana 8mesana
 
@@ -38819,7 +38788,6 @@
 
 
 6maRaba 6maRada 6maRara 6maRana 6taRaga
-5apremiar
 5coCiniLa 7cojiniLo 8coCinito 8cominiLo
 6oceanicas
 5quepais 5quepas 5copies 5quepis 6quemies
@@ -38860,7 +38828,6 @@
 5Compipe
 5gareta 8gaLete 8gafete
 7desenteRar 7desentejar
-7halagar 8balagar
 4alcanzaba
 5boRaCero 5boRaCeria
 6mojaba 6mojada 6mojara 8mojaRa
@@ -38876,7 +38843,7 @@
 
 5yuyera 5yuyero
 5plumon 5plumin
-4tascar 4tancar 5tocar 5taucar 6sacar 6tarar 6tapar 6lacar
+2taquear 4tascar 4tancar 5tocar 5taucar
 
 4tramperia 5triperia 5trapera 5trapero 6traceria
 
@@ -38886,8 +38853,8 @@
 
 5socolar
 5travista 6provista
-4Cufais 5Ciflais 5Caflais 5Cuflas
 5alanzar 6alianzas 8afianzar
+4Cufais 5Ciflais 5Caflais 5Cuflas
 5burilado 5burelado
 5mistan 5misten 8quistion 8mixtion
 1gayadura 5guiLadura 6saLadura 6taLadura 6raLadura
@@ -38905,8 +38872,8 @@
 
 
 8murares 8murases 8murales
-5burato 5barato 6morato 8Corato
 
+5burato 5barato 6morato 8Corato
 6platanar
 3xilofon
 3arce 6alcea 6ardea 8arquea
@@ -38960,6 +38927,7 @@
 4mambies 5mabis 6rabies 6magies 6manies 6nabies 6tabies 6malies
 
 5orifice 5orificio
+
 5envian 5envien 6envios
 6guisquis
 1liquides 7lividez 8liquiden
@@ -38994,6 +38962,7 @@
 4mamosa 5muermosa 6margosa 6marmota 8marCosa
 5piCanga 6maCanga 7pañanga 8patanga
 3ramon 4bramona 5ramina 6ratona 6mamona 6ramosa 6rabona
+5dulzorar 6dulzuras
 8apisonado 8apitonado 8aRiñonado
 5lapsas 5lapsos
 5curuca 5caraca 6curaba 6curada 6curara
@@ -39032,9 +39001,9 @@
 3primer 4rimero 5primeria 6trimero 8primevo
 4tropero 5topera 6topeto 6tolero 6todero 6copero 6ropero 6torero
 5tupa 5topa 5tapa 5tipa 6taima 6taita 6taiga 6taina
+4redar 6medrar
 5barbuLan 5barbuLen 5barbiLon
 
-4redar 6medrar
 5cebara 5cebero 5cibera 6cedera 6debera 6bebera 6ceguera 6cerera
 5sonsa 5sanso 6cansa 6gansa 6mansa 6salsa 6santa 6nansa
 7zambuque
@@ -39049,7 +39018,8 @@
 4ventera 8ventreCa
 
 8Lamarada
-
+6engordecer
+6partir 6marcir
 5agavanza
 6disilabo
 4rastras
@@ -39164,7 +39134,6 @@
 5macetudo 8maCeteado
 
 
-5dulzorar 6dulzuras
 5loretano
 6pugnaste
 
@@ -39238,7 +39207,7 @@
 
 5tentaran 5tintaran 6cantaran 6tancaran 6tangaran
 5mocara 5macara 5mucura 6mudara 6mutara 6cucara 6mugara 6murara
-5turificar 6parificar 6rarificar
+5turificar 6rarificar 6parificar
 8motolito
 5frataCais 5frataCas 5frataCeis 5frataCes
 
@@ -39302,7 +39271,6 @@
 5retrasais 5retrasas 5retraseis 5retrases 6retratos
 8maracaya
 
-5defuir
 7descaCaRar
 6alfiles 6alfiler
 3atarazana 5ataracen 6atarazad 6atarazar 6atarazas
@@ -39314,7 +39282,6 @@
 6asediaste
 5polimita 5polimatia
 4taca 5tarquia 5terca 5turca 5tarco 5torca 5tuerca
-8modificar 8molificar 8momificar
 
 
 5emulais 5emulas 5emuleis 5emules
@@ -39372,17 +39339,15 @@
 5historico
 5siriris 5suiriries
 5versais 5versas 5verseis 5verses 5versus
-5afer 7aRiar 7aviar 8aliar 8adiar 8abiar
-5demision 8division
 4grabar 6ganar 6nabar 6gaban 8gaRar 8gaLar 8gafar 8gayar
 4nacer
+5demision 8division
 7jusbarba
 
 
 1voleos 5boles 5bolas 5bolos 5bolis 5baleos
 3mangana 5manguen 5mingan 5mangon 6mandan 6mancan 6mangad 6mangar
 5opacais 5opacas 5opaqueis 5opaques 6opados 6opamos 6opalos
-
 
 
 7desenCilar
@@ -39504,7 +39469,6 @@
 
 3argentos
 
-5apuñar
 
 4brebajos 5rebajais 5rebajas 5rebajeis 5rebajes 5rebojos 5rebujos
 1apipizca
@@ -39543,8 +39507,8 @@
 5guiara 5guara 5guairo 5guera 5guira 5gura 5gara
 
 5definir
-1jasaran 7jaRaran 7Cazaran 8jalaran 8tazaran 8lazaran 8cazaran 8jamaran
 
+1jasaran 7jaRaran 7Cazaran 8jalaran 8tazaran 8lazaran 8cazaran 8jamaran
 5rota 5reta 5rita 5rata 5ruta 5rauta
 
 6CapaRos 8Caparon 8capaRon
@@ -39604,9 +39568,9 @@
 4mateos 5mantes 5mantos 5mantas 5mantis
 6viajaba 6viajada 6viajara
 
+
 5balar 5bailar 5bular 5bolar
 5malamba
-
 5septupla 5septuplo 8sextuple
 
 3alala 5alalo 5alalia
@@ -39639,7 +39603,6 @@
 5trate 5trote 5triate 8traiLe
 
 
-
 4saltan 5saten 5satin 6catan 6datan 6batan 6sacan 6matan
 
 4baRease
@@ -39647,10 +39610,10 @@
 1tarace 3taras 5tirase 5tarasi 5tarasa
 4toscos 4torcos 4trocos 5tocais 5tocas 5toqueis 5toques 5toquis
 
+4lambiscar
 5Capopote
 6desurdido 6resurtido
 5frenton
-4lambiscar
 6concadenar
 
 5propia 5propio
@@ -39681,19 +39644,18 @@
 
 
 
+6seisavas
 5albarizo 6algarazo
 5rolais 5rolas 5roleis 5roles 5ralos 5rulos
-6seisavas
 4campeos 5capais 5capas 5capeis 5capes 5capis 5capios 5capias
-6despartir
 4mabies 5mambis 5mambos 5mambas 6cambies
 
 
 
 
+8balconear
 
 4cavos 5clavais 5clavas 5claveis 5claves
-8balconear
 5manolo 6manido 6masilo 6manito 8maquilo
 5siembras 5siembres 6miembros
 
@@ -39816,7 +39778,7 @@
 5tremais 5tremas 5tremeis 5tremes 5tremias 5tremos
 6vaginas
 4mancerina 6cacerina 8jacerina
-8excarcelar
+6encarcerar 8excarcelar
 4bumbulin
 
 6velatorio 8senatorio 8vejatorio
@@ -39856,12 +39818,12 @@
 5genitora
 3peCin 6reCina 6leCina 7pejina 7peRina
 
-8neurotizo
 
+8neurotizo
 5talais 5talas 5taleis 5tales 5tilos 5talios
 8cociniLa
 5palanquear
-1hatear 4altear 5otear 5atar 6asear 6alear 6apear 6ateas
+1hatear 2atar 4altear 5otear 6asear 6alear 6apear 6ateas
 5guisais 5guisas 5guiseis 5guises 5guasos
 5plomar
 8agripada 8agrisada
@@ -39889,11 +39851,11 @@
 8viviente
 
 
-
+6entortijar
+5impartir
 1desabido 6deshabito
 5galerin 6saleron 6galeros 8gañeron
 5gargaro 5guarguero 5guerguero 6carguero 6garcero 6larguero 6garlero 6sarguero
-5impartir
 
 4piteo 5potreo 5petreo 8vitreo
 
@@ -39917,8 +39879,8 @@
 6cazadores
 5pirueta 5pirita 5parata 6piraba 6pirada 6pirara 6piragua
 6desalentar 6desatentar
-6prelucio
 5tarar 5tirar 6tunar 6curar 6tusar 6durar 6murar 6tular
+6prelucio
 
 6canguil
 6carapaCo
@@ -39953,8 +39915,8 @@
 
 4alota 5arlote
 5guirila
-
 4emperCar 5empuCar 5empiCar 5empaCar 7empeLar 7empezar 7empeñar 7empeRar
+
 5figureria
 5soLoceis 5soLoces 5soLozais 5soLozas
 5cebadaria 5cebadero 5cebadera
@@ -39971,7 +39933,6 @@
 
 6bajamar
 5tesonera 5tesonero 6tesoreria
-4trancar 4ranclar 5roncar 5rancor 6bancar 6rascar 6tancar 6mancar
 5manera 5minera 5moneria 6molera 6modera 6motera 6moneda 6monema
 
 
@@ -40023,7 +39984,7 @@
 5espian 5espien 5espin
 4incaustos 5incautais 5incautas 5incauteis 5incautes 5inquietos
 5papona
-
+6desboronar
 5aCuCan 5aCuCen
 5docientas 5ducientos
 
@@ -40036,8 +39997,8 @@
 
 1vacilar 1basilar 5bacelar 8baciLar
 6sabanazo
+2mazonear 6sazonar 6razonar
 5fileli 8lilili
-6sazonar 6razonar
 5motivais 5motivas 5motiveis 5motives 8votivos
 
 3comisiona 3comisione 3comisiono 5comisan 5comisen
@@ -40068,7 +40029,6 @@
 
 5tiñera 5tiñere 5tañeria 6niñeria 8tiperia
 
-4adornar 5adunar 5aduanar 6asonar 6abonar 6adorar 6adosar 6adobar
 3espumajea 3espumajee 3espumajeo 5espumajo 8espumare 8espumase
 5pantalon
 4tene 5torne 5turne 5terno 5terna
@@ -40117,6 +40077,7 @@
 3rustican 6rusticado
 5gazapa
 
+
 5atufais 5atufas 5atufeis 5atufes 8aRufos
 6glamoroso
 5corcovais 5corcovas 5corcoveis 5corcoves
@@ -40128,13 +40089,13 @@
 5descueLas 5descueLes
 
 
-
 5envidiar 6invidias 8insidiar
+
 5jipias 5jipies 5jipis 5jipas 6jimios
 
 
 4pluteos 4punteos 5putas 5putos 5pateos
-
+5alebrastar
 
 
 4acromatizar
@@ -40170,7 +40131,7 @@
 
 6enlucidos
 5tururus 6cururues
-
+6entretomar
 5arambol
 5desayunais 5desayunas 5desayuneis 5desayunes
 5optamos 5optemos 5optimais 5optimas 5optimeis 5optimes
@@ -40190,7 +40151,7 @@
 5quecos 5cuecos 5cuicos 5cacos 5cauques 5cuacos 5caucaus 5cucos
 5diabatico
 
-4costreñir
+4costreñir 5constriñir
 5popases 6sopeses 6popeles
 8triponas
 
@@ -40212,8 +40173,8 @@
 
 5almozaLa 8almuzala
 
-
 4aplacer 8afacer
+
 
 
 5municion 8movicion
@@ -40280,7 +40241,7 @@
 4agra 6angla
 8quejiLoso
 4toca 5terca 5turca 5torco 5tarca 5tuerca
-
+6latrocinar
 8desadornar
 5espacioso
 4papos 5palpais 5palpas 5palpeis 5palpes 5pulpos 5palpis
@@ -40310,8 +40271,8 @@
 
 
 
-5adonios
 
+5adonios
 
 5atardece
 
@@ -40325,12 +40286,11 @@
 3roCosa 3roCoso 4broCos 5roCais 5roCas 5roCeis 5roCes 5ruCos
 6escarioso
 5gaRoCan 5gaRoCen
-4desatrancar 4desatacar 6desatascar 8desaRancar
+4soltar 5sotuer 5sitar 6sonar 6solar 6notar 6cotar 6botar
+2frailear 5freilar
 8tamariz 8Cafariz
 
-5freilar
 6odiosidad
-4soltar 5sotuer 5sitar 6sonar 6solar 6notar 6cotar 6botar
 5valuares 5valieres 5valores 5valares 6vateres
 
 
@@ -40406,8 +40366,8 @@
 5invitais 5invitas 5inviteis 5invites 6invidos
 
 
-5datais 5datas 5dateis 5dates 5datos
 6hereticas 6heretical
+5datais 5datas 5dateis 5dates 5datos
 3bisbisa 3bisbise 3bisbiso 4bibis
 6zangaRos 6zancaRon
 6albana 6albada 6albaca
@@ -40431,15 +40391,14 @@
 
 5troca 5trueca 5truca 5traca 5triaca
 8enhastiLar 8encasquiLar
+2amalar 6amanear 6abalear 6apalear
 
-5amalar 6amanear 6abalear 6apalear
 6grasiento
 1sonCiCe 8conCiCe
 
 5trinCara 5trinCero
 3Cascosa 3Cascoso 4Cacos 5Cascais 5Cascas 5Casqueis 5Casques 5Cuscos
 6almagrad 6almagran 6almagrar 6almagras
-5captar 6coartar
 6mantelado
 3Cisposa 3Cisposo 5Cispais 5Cispas 5Cispeis 5Cispes
 
@@ -40457,7 +40416,6 @@
 5pizzeria
 5balumbo
 6candelera
-
 
 
 
@@ -40505,9 +40463,9 @@
 
 
 4metalizar
+4marginar 6marinar 6paginar 8maquinar
 6almaizar
 
-4marginar 6marinar 6paginar 8maquinar
 
 
 
@@ -40541,11 +40499,11 @@
 
 5fiscala
 5grifaria 8griteria
+5martajar 6mortajas
 
 
 5canelazo
 8injurioso
-5martajar 6mortajas
 
 
 
@@ -40565,7 +40523,6 @@
 8racionado
 1zunzapote 5sonzapote
 8encabriLar
-4enfriar 7enviar 8enriar
 5tirais 5tiras 5tireis 5tires 5tueros 5teros 5tirias 5tirios
 8sornaguear
 
@@ -40592,9 +40549,9 @@
 5decisora
 8electrizo
 5almoRaja 7almaRaza
+5rehenCir
 6elogiados
 5genciana
-5rehenCir
 
 4bombera 5bebera 5boberia 5babera 6bocera 6bolera 6lobera 6tobera
 4latia 5lutria 6patria 8Catria
@@ -40663,11 +40620,11 @@
 5monfis 6confies
 3selecciona 3seleccione 3selecciono
 
+5aguar 5eguar 6igual
 5alborece 6arborecio
 
 
 6deliraste
-5aguar 5eguar 6igual
 4pecan 5pircan 6cercan 6pencan 6pescan 6perlan 6mercan 6percal
 
 
@@ -40706,16 +40663,16 @@
 
 
 4canmiar 6cariar 6camias 8caviar
+6galibar 6galimas
 6montadero
 
 6forzados 7forjador 8formador
-6galibar 6galimas
 4enamoriscar
+
 
 3bromosa 3bromoso 4romos 5bromais 5bromas 5bromeis 5bromes 5brumos
 8cañamar
 5fluxible
-
 5tiangues
 
 5cimbrais 5cimbras 5cimbreis 5cimbres 5cimbrias 5cimbrios 5cimbros
@@ -40733,8 +40690,8 @@
 
 5binaba 6manaba 6sanaba 6balaba 6bagaba 6basaba 6ganaba 6guanaba
 5quintiLo 8tintiLa
-5Coraban 6Capaban 6Calaban 6Camaban 7varaban
 
+5Coraban 6Capaban 6Calaban 6Camaban 7varaban
 5pautais 5pautas 5pauteis 5pautes 5putos 5patos 5potos 5pitos
 4tamos 4ramos 5tramais 5tramas 5trameis 5trames 5triamos 5triemos
 6almaRaza
@@ -40751,7 +40708,7 @@
 6huaralino
 5recebais 5recebas 5recebeis 5recebes 5recibos
 4recrien 4precien 5recen 5rezan 5rocien 5rezon
-
+5descaudiLar 6descapiLar 8descaRiLar
 
 
 3orientan 6orientado
@@ -40847,6 +40804,7 @@
 
 4conteras 8contreCas
 3costosa 3costoso 4costros 4cotos 5costais 5costas 5costeis 5castos
+3afogara 3afogare 3afogaro 6afosar 6afocar 6aforar
 3Curumbela
 8academizo
 
@@ -40897,8 +40855,8 @@
 
 4madruga 5moruga 6taruga 8maLuga 8maruja
 
-
 5descolar 5descular 6desquitar 6resquilar 7deshilar 7desfilar
+
 7papahigo
 
 4trascuRir
@@ -41005,9 +40963,9 @@
 
 5protesis
 3vidriosa 3vidrioso 4virios 5vidrias 5vidries 5vidros
+6mediar
 5enviar 5invar
 4paCos 5parCais 5parCas 5parCeis 5parCes 5parCis
-6mediar
 
 
 
@@ -41045,18 +41003,18 @@
 
 3perdidos
 5secutora
-3cordojos
 8encanutar
+3cordojos
 
 
 5impela 5empala 6impaga
 4pena 5pernio 5pierna 5perno 6perla 6serna 6persa 6perta
 4encatusar
 
+6profesar 6profetas 6profetal
 8amolotado
 
 
-6profesar 6profetas 6profetal
 
 
 5aporetico
@@ -41259,8 +41217,8 @@
 
 
 
-6asesinado
 6enterciar
+6asesinado
 
 4destetar 4detentar 6desdentar 6destensar 8desventar
 6escalados 6encalador 8escavador
@@ -41273,8 +41231,8 @@
 5parones
 3verdinos 6verminoso
 6sardinera
+2bastar 4batear 5bostear 5bastir 6pastear
 6asentados 6alentador 8aventador
-4batear 5bastar 5bostear 5bastir 6pastear
 5fleteado 5flautado
 5buros 5buris 5burios 5buras 5baries
 4deRapado
@@ -41299,17 +41257,17 @@
 6proceroso
 
 
+6emanar 6enaguar 6enanas 8enaRar
 4arabe 6atable 6amable 8afable
 6combazo 7bombaCo
-6emanar 6enaguar 6enanas 8enaRar
 8monicion
 6peliculas 6pedicular
 6holandesa
+5guitar 6guaitas
 6Ciquitin 6Ciquirin 8Cipilin
 
 
 5folias 5folies 6focios 6fonios 6folion
-5guitar 6guaitas
 
 5pirata 6paraba 6parada 6parara 6parama 6pacata 6barata 6garata
 3tarin 5taurina 6marina 6narina 6tarima 6tabina 6tapina 6tarida
@@ -41328,7 +41286,7 @@
 6aguosidad
 
 8merendiLa
-
+1hervorizar
 6afectados
 4risos 5frisais 5frisas 5friseis 5frises 5frisias 5frisios 5fresos
 5aRitranca
@@ -41340,10 +41298,11 @@
 6reumatico
 
 5tracatear
+3curiara 5curar 5cariar 6curial 6curias
+5frailar 6freilas
 4aflatar 5afeitar 6afamar 6afanar 7aCatar 7avatar
 
 6cuadernas
-5frailar 6freilas
 5boticario
 
 
@@ -41360,14 +41319,12 @@
 1caseos 4calceos 5caces 5caceis 5cazais 5cazas 5cazos
 1valaca 6balaba 6balada 6balara 6calaca 6balata 6baraca
 
-5donar 6monear 8doñear
 5escarpan 5escarpen 5escarpin 5escorpion
 
 4sobrina 5sobona 5sabina 6bobina 6lobina
 8descogotar
 5adjetivais 5adjetivas 5adjetiveis 5adjetives
 
-7aherir 8aterir
 4acamar 6altamar 8alcazar 8alhamar 8alcafar 8alfamar
 5expeditais 5expeditas 5expediteis 5expedites 6expedidos 6expedimos
 6formados 8gormador 8forjador 8forzador
@@ -41412,7 +41369,6 @@
 
 
 
-
 6peloteria
 3CinCan 6CinCado 8Cintano
 5atorais 5atoras 5atoreis 5atores 6atoron 6atomos 6atonos 6adoros
@@ -41422,6 +41378,7 @@
 5nabas 5nabos 5nabis 5nebies 6rabies 6mabies 6tabies
 3primera 3primero 5primar 5primor 6primen 6primes
 
+1rebinar 5revenar 6revisar 6revirar 6revidar
 6acuminoso
 5arganas 5arguinas 8argueñas
 6bordonero
@@ -41430,7 +41387,6 @@
 8memeces
 6pedriscas
 
-1rebinar 5revenar 6revisar 6revirar 6revidar
 
 5adulterais 5adulteras 5adultereis 5adulteres
 
@@ -41440,11 +41396,11 @@
 8peliRojo 8petiRojo
 
 
-6descoronar
+6descoronar 6desboronar
 
 
-5caminero
 5furtar 6fardar 6faltar 6farsar 7hartar
+5caminero
 5ferocidad 7veracidad
 
 6meteorico 8meteorizo
@@ -41454,8 +41410,8 @@
 
 
 
-1haCises 6aCines 6aCigues 7avises 8aCives 8anises 8aCiques 8alises
 6ajenas 7avenar 8arenar 8apenar
+1haCises 6aCines 6aCigues 7avises 8aCives 8anises 8aCiques 8alises
 
 
 
@@ -41471,7 +41427,6 @@
 4bambera 5bebera 5babero 5bobera 6bacera 6cabera 6batera 6rabera
 4descendida 6dependida 8defendida
 
-5desparar
 
 
 5revuelas 5revueles 8recuelos
@@ -41567,9 +41522,9 @@
 
 6tamalera 6rabalera
 
+2basquear 5buscar 6cascar 6bancar 6bastar 6tascar 6rascar 6lascar
 5Cangaran 5Cangaren 5Cangarian 5Cangaron
 8anarquizo
-5buscar 6cascar 6bancar 6bastar 6tascar 6rascar 6lascar 6mascar
 8huamuCil
 
 
@@ -41584,7 +41539,7 @@
 
 
 
-5aligar 5alegar 5alagar 5aliagar 5alogar
+5aligar 5alegar 5alagar 5alogar 5aliagar
 4bocinero
 
 
@@ -41626,11 +41581,11 @@
 5piparia 5pipiaria 5pipera 5pipero 6tiperia
 
 
+8enardecer
 
 5azagan 5azaguen 5azagon 6azacuan
 
 
-8enardecer
 6igualados
 5mimador 6mamados 6matador 8majador 8mayador 8Lamador
 6sesentavo
@@ -41656,8 +41611,8 @@
 5timais 5timas 5timeis 5times 5tumos 5tamos 5tomos
 8tiracueLo
 4rescribir 5proscribir
-
 6amparar
+
 8carpetazo
 6decagonas
 5desacotais 5desacotas 5desacoteis 5desacotes 5desacatos
@@ -41718,8 +41673,8 @@
 2comiscar 4comiquear
 
 5betunero
+2cotar 4clotear 4costear 5catear 5cuotear 5cuitear 5caitear
 5almendrais 5almendras 5almendreis 5almendres 6almendron
-4clotear 4costear 5catear 5cotar 5cuotear 5cuitear 5caitear
 
 5manzanil 6manzanas 6manzanar
 5peruetano
@@ -41751,11 +41706,11 @@
 
 5tarantula 6tarantera
 
+4pesar 4prensar 6presas 6predar 6pregar
 
 
 6excusados
 5ludir 5lidiar 6ludian 6ludias 8judiar
-4pesar 4prensar 6presas 6predar 6pregar
 6cabalista 8cabaLista
 5cascaria 5casquera 5casquero
 4sata 5surta 6salta 6parta 6sarda 6santa 6marta 6carta
@@ -41770,9 +41725,9 @@
 6reducidos
 6sahumados
 4renunciar 5pronunciar
+5levar 5lavar 6lievas
 5afinais 5afinas 5afineis 5afines 5afonos 5afanos
 
-5levar 5lavar 6lievas
 
 
 
@@ -41839,7 +41794,6 @@
 
 5Capais 5Capas 5Capeis 5Capes 5Capias 5Capies 5Capos
 6aRendados
-8desatacar
 5luces 5lucias 5lucis 5licios 5lacios
 5medicais 5medicas 5mediqueis 5mediques 5modicos
 
@@ -41859,7 +41813,7 @@
 
 
 
-7entrapazar
+6estrapajar 7entrapazar
 4ascosos 5acosais 5acosas 5acoseis 5acoses 5acuosos 5aquesos 5acasos
 5anatomico
 
@@ -41884,7 +41838,6 @@
 8dialogizo
 
 6sensorias 6tensorial
-
 
 6sagacidad
 6centonada 8festonada
@@ -41974,7 +41927,7 @@
 5tonelera 5tonelero
 
 4afamar 4alamar 6aflatar 6aflacar 8aclamar
-
+5alcahuetar
 1hamagos 4amargos 5amagais 5amagas 5amagueis 5amagues 5amigos
 6diseñados 8disecador
 
@@ -42082,13 +42035,13 @@
 
 
 
+
 5apurais 5apuras 5apureis 5apures 5aperos
 
 6comerciad 6comercian 6comerciar 6comercias
 
 6diatopico
 5indirecta 5indirecto
-
 5membriLa
 6remordido
 
@@ -42117,8 +42070,8 @@
 5ritmais 5ritmas 5ritmeis 5ritmes
 
 7cenceRada 7cenceñada
-4CoCero 8corCero
 
+4CoCero 8corCero
 4empistolar 6epistolas
 8idealizad 8iRealidad
 
@@ -42156,11 +42109,11 @@
 6retrocedo
 5talentoso
 
+8profanar
 
 6diegetico
 
 5fotofobia
-8profanar
 
 
 
@@ -42296,25 +42249,25 @@
 
 5desmerecer
 
+5rescatar 6desquitar 6resquilar
 
 5bergamota 5bergamoto
 
 
 
-5rescatar 6desquitar 6resquilar
 
 
 
 
 6salentino 6palestino 8valentino
 
-
+5pitar 5petar 5pautar 5potar 6poetas
 4acrecer
+
 6cuajilote
 7entrañado 8entrabado 8entramado 8entrapado
 
 4pelagico
-5pitar 5petar 5pautar 5potar 6poetas
 
 6sardinero 8jardinero
 5titas 5titos 5titis 5toties 6tibies 6sities
@@ -42465,9 +42418,10 @@
 6sudada 6curada 6murada 6sumada 8jurada
 5tentadora 6dentadura 6testadura
 
+4robar 4rorar 6cobrar 6sobrar 6roblar 6robras
+
 
 5divisan 5divisen 8dimision
-
 
 
 
@@ -42476,12 +42430,11 @@
 
 
 4postrero 4potero 6pobrero
-4robar 4rorar 6cobrar 6sobrar 6roblar 6robras
 
 5griLara 5gruLera 5griLero 6griLeta 6triLera
+8demostrar
 
 4cagadero 5cargadera
-8demostrar
 
 
 
@@ -42579,11 +42532,11 @@
 5refractais 5refractas 5refracteis 5refractes 6refractor
 8fonometro
 
+5esleir
 4atablar 6atacar 6amalar 6atapar 8atajar 8aRalar 8avalar
 5diciembre
 
 
-5esleir
 
 
 5barbara 5barbare 5barbaro 5barbarie 5barberia
@@ -42740,6 +42693,7 @@
 5tendalero
 
 
+6pasturas
 8abacalero
 4clareos 4cabreos 5carias 5caries 5cares 5caras 5caros 5caris
 7heReruelo
@@ -42751,10 +42705,10 @@
 
 5centonada 8centenaza
 3moler 5molere 5moleria 5moliera 5molara 5maulera 5mielera 5mulera
+6desabonar 6desadorar 6desatorar 6desamorar 8desaboLar 8desaforar
 6acercados 6acertador
 
 
-6desabonar 6desadorar 6desatorar 6desamorar 8desaboLar 8desaforar
 6desdiento 6desmiento 8desviento
 5gandolero
 6potenciad 6potencian 6potenciar 6potencias
@@ -42830,10 +42784,10 @@
 8tortiLero
 5isocrona 5isocrono
 
+2cuitear 5catar 5cotar 5quitar 5quietar 5coitar
 4CiCero 5CanCero 8Cinguero 8guinCero
 
 5canaliceis 5canalices 5canalizais 5canalizas 7canaliLos
-5catar 5cotar 5quitar 5quietar 5coitar
 4damaceno
 7defeccion 8deteccion
 5entrepiso 8entrepaño
@@ -42846,8 +42800,8 @@
 3polucion 5polucione 5poluciono 6soluciona
 
 
-8ananas
 7aplazar 8aplacar 8aplanar 8aplagar
+8ananas
 4careos 5cabras 5cabreis 5cabrias 5cabrios 5cabros
 
 
@@ -42974,13 +42928,13 @@
 
 
 1descangaLar
+5parar 5pairar 5pirar
 
 8carnifique
 
 5detorsion
 8eternizad
 8humanizad
-5parar 5pairar 5pirar
 5perus 5peris 5peros 5peras 5pirues
 5salmonido
 5amargara 5amarguera
@@ -43020,8 +42974,8 @@
 4calofriar
 
 
-6coloraste
 
+6coloraste
 
 
 5minutara 5minutare 5minutaria
@@ -43058,12 +43012,12 @@
 3faralao 5farola 6faragua 8faraLa
 
 
+6fardar 6falsar 6farsas 6fartar
 
 
 
 6distendio
 5estirajan 5estirajen 8estiraron
-6fardar 6falsar 6farsas 6fartar
 8hibernizo
 
 5campanula
@@ -43119,7 +43073,7 @@
 5silvatico 5salvatico
 5gaRapato
 6despaliLar
-
+5gualardonar
 5prescribir
 
 
@@ -43150,11 +43104,11 @@
 
 6metatera
 
+
 5afilais 5afilas 5afileis 5afiles 5afilias 5afilies
 
 6aveLanedo
 1develador 6debelados
-
 8sijismo
 5glicosido
 
@@ -43203,10 +43157,10 @@
 
 
 
+6cuaresmas 6cuaresmal
 5califero 5quilifero
 6colonense
 8cordelero
-6cuaresmas 6cuaresmal
 
 
 
@@ -43257,11 +43211,11 @@
 
 4soltera 4sortera 6solera 6sodera 6soguera 6lotera 6somera 6notera
 
+6carterear
 
 
 8boReguero
 5bumbulin
-6carterear
 5consuelas 5consueles 6consuetos
 6gradar 6tramar 6granar 6grapar 6bramar 6gratar 6grabar 6gramal
 6incurable
@@ -43294,6 +43248,7 @@
 4espadiLa
 3solucion 5solucione 5soluciono 6poluciona
 6sintetizar
+5testar 5tostar 6bastar 6tascar 6pastar 6gastar 6lastar 6guastar
 6toRentoso
 
 5estriando
@@ -43302,7 +43257,6 @@
 5pretextais 5pretextas 5pretexteis 5pretextes
 
 6simulados
-5testar 5tostar 6bastar 6tascar 6pastar 6gastar 6lastar 6guastar
 5socoRiste
 6acontecer
 8braceador
@@ -43325,8 +43279,8 @@
 
 
 6cenaduria
-5abonar 5abuenar 6amanar 6apanar 6aganar
 4cablear 4cabrear 5caber 6catear 6capear 6cacear 6rabear 6carear
+5abonar 5abuenar 6amanar 6apanar 6aganar
 8entrepaso
 8grasiento
 
@@ -43373,10 +43327,10 @@
 4tonos 5tronais 5tronas 5troneis 5tronios 5trenos 5truenos 5trinos
 
 
+5avaluar 5avalar
 6aReglados
 
 
-5avaluar 5avalar
 
 
 
@@ -43451,10 +43405,10 @@
 5colicuara 7coliLera 8coCiquera
 
 5manguerear
+6desbardar
 
 5cobertero
 
-6desbardar
 8difidente
 
 6emocionad 6emocionan 6emocionar 6emocionas
@@ -43463,10 +43417,10 @@
 6musicaste
 3venturos
 6desmantecar
+8entaLecer
 6admirados
 
 4despedrado 5desparado 6despegado 6despenado 6descerado 6despepado
-8entaLecer
 6excelente
 
 3marisque 5marisca 5marisco
@@ -43549,6 +43503,7 @@
 
 
 
+
 6gladiator
 5misturero
 
@@ -43557,8 +43512,8 @@
 6soldadura
 
 6trasbordar
-8anualizad
 5atardecer
+8anualizad
 5desaqueLar 6desatoLar 6desaboLar 8desaRoLar 8desacotar
 
 
@@ -43603,12 +43558,12 @@
 
 
 
+2gravar 6bravear 7grajear 8granear
 8añacalero
 
 5campuruso
 7caRiceras 8cañiLeras
 7gaviLo 8gatiLo 8galiLo 8gaLito 8gaLino
-5gravar 6bravear 7grajear 8granear
 8guanareño
 5mordiscais 5mordiscas 5mordisqueis 5mordisques
 
@@ -43632,7 +43587,7 @@
 6turolense
 8zarzagan
 8guarapeta
-4descostar
+4descostar 6desrostrar
 
 
 5aruspice
@@ -43745,8 +43700,9 @@
 5estuCaria
 5ojaladora 5ojaladera
 5zoquetuda
-6acertaste
 
+4secretar
+6acertaste
 
 5agaRadera 6amaRadero
 3concesiona 3concesione 3concesiono 5concision 8confesion
@@ -43758,7 +43714,6 @@
 
 3resabios
 
-4secretar
 4tatos 4trastos 4ratos 5tratais 5tratas 5trateis 5trates
 
 
@@ -43781,6 +43736,7 @@
 
 
 
+5silgar 6salgan 6salgas 6saltar 6saldar 6nalgar 6salmar
 
 5deshebiLe 8deshabite
 6enrobinar
@@ -43888,7 +43844,6 @@
 5coloraste 5colorista
 4encadase 6encanarse 8encaLarse 8encavarse
 5obsequias 5obsequies
-6pasturas
 5solicitad
 
 
@@ -43981,10 +43936,10 @@
 5fonologia 8senologia
 
 
+6entosigar
 8alcaduz 8alcabuz
 
 6compraste
-6entosigar
 8enfuñarse
 5pendonas 5pendones
 
@@ -44004,7 +43959,7 @@
 
 5carola 6corona 8coroLa 8coroza 8coroCa
 
-
+2ambicionear
 
 
 5invidioso
@@ -44033,10 +43988,10 @@
 
 
 8enlentecer 8endentecer
-
-
-
 6desplatar 8desplayar 8desplazar
+
+
+
 
 
 
@@ -44114,9 +44069,9 @@
 6narcotica 8narcotiza
 1suiza 5zaza
 
+4atrapar 5atipar 6atacar 6atalar 8atajar 8aRapar
 8camelador
 6acrecente
-4atrapar 5atipar 6atacar 6atalar 8atajar 8aRapar
 5cenhegis
 5custodias 5custodies
 6debilitad
@@ -44150,6 +44105,7 @@
 
 4lambucear
 
+5pesar 5pesor
 
 
 
@@ -44158,7 +44114,6 @@
 5enervador 6inervados
 
 5palitoque
-5pesar 5pesor
 5respaldais 5respaldas 5respaldeis 5respaldes 6rescaldos
 3respetos
 
@@ -44205,8 +44160,8 @@
 5ganadera 5ganadero 6panaderia
 8mampata 8mampara
 
-3concoide
 
+3concoide
 
 6fildeados
 
@@ -44273,7 +44228,7 @@
 
 5fraile
 6jeremiaca
-
+6espolvorar
 
 5androgeno
 
@@ -44348,7 +44303,6 @@
 
 
 8vivificar
-5avalar 5avilar 6avenar 6averar 8avezar 8apelar 8amelar 8alelar
 5cantonero
 5costiLaje 6pastiLaje
 
@@ -44392,13 +44346,13 @@
 
 5prenunciar
 
+
 5afirolado 7aCarolado
 
 6piLuLo
 
 5antropico 8entropiLo
 8hospedare 8hospedase
-
 
 
 
@@ -44606,9 +44560,9 @@
 5aRebolara
 5trimielga
 
+5disfrazar
 
 5caries 5cores 5coris 5curies 5coros 5quiries 5coruas 5corios
-5disfrazar
 5tertulias 5tertulies
 5quejadera 5cuajadura
 
@@ -44640,8 +44594,8 @@
 
 
 
-
 4acertar 5aceitar 5azotar 6acedar 6atetar 6acerar 6acepar 6acetas
+
 8arenacion
 5aplacable
 8ajamiento
@@ -44669,6 +44623,7 @@
 3CinCon 4CiCona 5CinCana 6CinCosa 8Cingona
 5colocase 6colocaria
 8culebriLa
+
 6aRiscados
 1auRagado
 
@@ -44677,7 +44632,6 @@
 6embaRados 7embajador 7embazador 8embalador
 
 6raramente
-
 
 5aljecero
 
@@ -44733,6 +44687,7 @@
 
 
 
+
 5CuCeria 5CiCero 5CoCero 7CuRero 7Cufero
 
 
@@ -44745,14 +44700,13 @@
 
 6superados
 
-
 3eclosion 5eclosione 5eclosiono
 5gaLetera 5gaLetero
 
 
+5fartar 7hurtar
 3animosa 3animoso 5unimos 5animais 5animas 5animeis 5animes
 6cortadiLo 6tostadiLo
-5fartar 7hurtar
 5majadero
 
 5podricion
@@ -44860,10 +44814,10 @@
 
 7deshilaCar
 
+4atronar 5atinar 6asonar 6abonar 6atorar 6atobar 6amonar 6adonar
 
 
 8aromatizo
-4atronar 5atinar 6asonar 6abonar 6atorar 6atobar 6amonar 6atonas
 
 5cundiamor
 
@@ -44887,12 +44841,12 @@
 5zoolatra
 
 
+
 8antiparas 8antipapas
 
 
 
 5burbujas
-
 5desmanCais 5desmanCas 5desmanCeis 5desmanCes
 6entrepito
 
@@ -44997,8 +44951,9 @@
 
 6mangonera
 5tembliquear 8tembletear
-6baratas 8barajar
+2baratear 6baratas 8barajar
 
+6mencionar
 
 5didelfos
 8enCiCado
@@ -45014,7 +44969,6 @@
 
 
 
-6mencionar
 
 8vermicida
 
@@ -45060,7 +45014,7 @@
 
 
 5ventrisca
-
+4emprestiLar
 5verduguear
 5Cumbimba
 
@@ -45124,11 +45078,11 @@
 
 6borcelana
 4contraminar
+4constreñir 5costriñir
 
 
 
 5bosquejais 5bosquejas 5bosquejeis 5bosquejes
-4constreñir 5costriñir
 
 5diptongais 5diptongas 5diptongueis 5diptongues
 5fosfato
@@ -45164,15 +45118,15 @@
 3municion 5municione 5municiono
 5empapuzar
 
-5aCuCado 5aCeCado 7aCivado 8aCicado 8aCinado 8abiCado 8aCiguado 8aCiCaRo
 
+
+5aCuCado 5aCeCado 7aCivado 8aCicado 8aCinado 8abiCado 8aCiguado 8aCiCaRo
 
 
 
 5centeLais 5centeLas 5centeLeis 5centeLes
 
 6cuticulas 8cuRicular
-
 
 
 1extravase 8entrabase 8extrañase
@@ -45245,11 +45199,11 @@
 
 
 
+7desayudar 8desanudar
 5adaptador 6adoptados
 
 8ateRizare 8ateRizase
 
-7desayudar 8desanudar
 6egipciano
 5manganas 5mangoneos
 
@@ -45374,7 +45328,7 @@
 
 5setenara 5setenare 5setenario 6serenaria
 6sobrecara 8sobrecaña
-
+6retorcijar
 
 
 
@@ -45496,8 +45450,8 @@
 5zamacuca
 4repantingar 8repanCigar
 
-6colectivo 8coRectivo
 
+6colectivo 8coRectivo
 
 
 6ensacados 8ensayador
@@ -45524,13 +45478,13 @@
 
 3tremolin 4remolina 6trepolina
 
+
 4agotador 6agostados 6apostador
 6ambiciono
 
 6abajadero
 
 5aveLanado 5aveLaneda 6aveLanero
-
 
 
 
@@ -45583,8 +45537,8 @@
 
 5zalamera 5zalamero
 
-5CiCaRo
 6antepagar
+5CiCaRo
 5barbuLado
 
 
@@ -45636,7 +45590,7 @@
 
 6posologia
 5porquera 5porquero 8porteria
-
+1veneficiar
 
 
 6timbalero
@@ -45769,6 +45723,7 @@
 5preceptor
 
 
+5mimbrar 6sembrar 6nembrar 6lembrar
 6algaRobas
 
 
@@ -45783,7 +45738,6 @@
 
 
 5masicoral
-5mimbrar 6sembrar 6nembrar 6lembrar
 5memoroso
 
 8percusion
@@ -45816,8 +45770,8 @@
 
 
 
-8activismo
 
+8activismo
 
 5desconCan 5desconCen 8desconton
 
@@ -45883,7 +45837,6 @@
 6portamira
 
 3acabose 5acabais 5acabas 5acabeis 5acabes
-5afistular
 
 6dominaste
 
@@ -45907,7 +45860,6 @@
 5corneador 6carneados
 
 5consolado 6consumado
-5disturbar 6desturcar
 
 
 6espigados 6espirador
@@ -46087,10 +46039,10 @@
 
 
 
+
 6cuartanas
 5deciembre
 4diluente
-
 
 
 6mitigados
@@ -46146,10 +46098,10 @@
 
 
 
+5oscurecer
 
 8cufico
 5encrespais 5encrespas 5encrespeis 5encrespes
-5oscurecer
 5gaRaseis 5gaRases 5gaRasis
 
 
@@ -46198,10 +46150,10 @@
 
 4epistolar
 
-8CinCoso
 
-4bocadiLo
 6claustras 6claustral
+8CinCoso
+4bocadiLo
 5desbroceis 5desbroces 5desbrozais 5desbrozas 6destrozos
 
 6disectivo
@@ -46358,12 +46310,12 @@
 5ponderada
 5solombra
 
+6desfiuzas
 
 
 6cambiaste
 6carlancos
 
-6desfiuzas
 
 8tuyuyo
 5margesis
@@ -46377,7 +46329,6 @@
 
 
 
-
 8cacahuate
 6esquinero
 
@@ -46387,7 +46338,7 @@
 
 5relataria 5relatora
 
-
+6apalambrar
 
 
 4aCuCase 8aCularse
@@ -46482,11 +46433,11 @@
 
 
 
+
 6altamente
 5brujidor
 5durazniLa
 6egipciaco
-
 
 
 5pudridero
@@ -46545,9 +46496,9 @@
 5concorda 5concorde 5concordo
 
 
+6calamoRas 8calamonar
 4antojase
 
-6calamoRas 8calamonar
 8costalado
 
 4endeñase
@@ -46569,6 +46520,7 @@
 
 
 
+2tempestear 6tempestad
 5acres
 
 8barajador
@@ -46587,7 +46539,6 @@
 6biruegano
 6patinados 6satinador
 
-6tempestad
 4trasgos 5tragais 5tragas 5tragueis 5tragues 5trigos
 8Cirimia
 5aRobadora 8aRojadera
@@ -46686,6 +46637,7 @@
 
 5mojadora 5majadera 5mojadura
 
+6tormentas
 
 6anidacion
 4apostate 6apostaste
@@ -46715,7 +46667,6 @@
 
 
 6tempestar
-6tormentas
 8venatorio 8velatorio
 8vienense
 
@@ -46728,13 +46679,13 @@
 5fisiatra
 
 
+8empericar
 6actuarian 6actuarias
 6alarmados 6alargador
 5casilicio
 5compactais 5compactas 5compacteis 5compactes
 6coseCados 8coheCador
 5desyerbais 5desyerbas 5desyerbeis 5desyerbes
-8empericar
 6entredijo 6entremijo
 
 6limitados 6licitador
@@ -46832,7 +46783,7 @@
 
 
 5refinaria
-6entreverar
+5entrevenir 6entreverar
 
 6arborecer
 6alcandias
@@ -46863,8 +46814,9 @@
 5ventaniLo
 
 
-4CiCunte
 
+6memorizar 6tesorizar
+4CiCunte
 5balbuces 5balbucias 5balbucis
 
 
@@ -46887,7 +46839,6 @@
 
 
 
-6memorizar 6tesorizar
 
 
 
@@ -46907,9 +46858,9 @@
 
 
 
+6hemencias
 8envergado 8enversado
 5oscuridad
-6hemencias
 5naranjiLa
 5pastoras 5pastores 5pastorias 6castoreos
 
@@ -46926,11 +46877,12 @@
 
 6desencarnar
 
+7conferir
+
 5oposicion
 5bengalis 5bengalas
 5casteLero 6pastiLero 8castiLejo
 8conectivo 8colectivo
-7conferir
 6cuanticas 8cuantizas
 4espatico
 
@@ -46966,15 +46918,15 @@
 
 5propenda
 3purin 6purica 6durina 8puquina
+4amantar 5amateur 6acatar 6amanar 6amasar 6amagar 6amalar 6amarar
+7enhastiar
 
 
 5almotazan 5almutacen 8almohacen
 4aparcero
 6albinismo
-4amantar 5amateur 6acatar 6amanar 6amasar 6amagar 6amalar 6amarar
 5campuroso
 5conservo
-7enhastiar
 5fabulara 5fabulare 5fabularia
 
 
@@ -46991,8 +46943,9 @@
 5valerana
 
 5embaRilar
-
 6amorcar
+
+
 
 4armadijo
 5ostrifero
@@ -47027,18 +46980,17 @@
 
 
 
-
 5estribara 5estribero 8estriñera
 5frambueso
 
 5panetera 5panetero 6paleteria
 5soLastre
+5destirpar 6destorgar 6destormar
+5entumecer
 6ambulaste
 
 5escondido
 5concilias 5concilies
-5destirpar 6destorgar 6destormar
-5entumecer
 
 5inciensas 5incienses 5enciensos 5incensos
 
@@ -47056,7 +47008,6 @@
 
 8temblequear
 
-6antepasar
 
 6barandas
 
@@ -47103,13 +47054,13 @@
 8versaliLa
 
 
+5escarpar 6escarpias
 6apilar 6aguitar 6abitar 6agitar 6apipar
 5apartador 6aportados 6aporcador 6apostador
 
 3castañetea 3castañetee 3castañeteo
 1sementero
 5empezase 6empeciere
-5escarpar 6escarpias
 
 
 
@@ -47132,13 +47083,13 @@
 
 
 
+4departir 6desparcir
 
 
 
 5carnazon
 
 
-4departir 6desparcir
 6dominicas
 
 
@@ -47150,7 +47101,6 @@
 5marbeLis
 
 
-4revesar 6reversas
 6salacidad
 6segmentad 6segmentan 6segmentar 6segmentas
 5tanguero
@@ -47189,12 +47139,12 @@
 8fonticulo
 1orzais 4osais 6ornais 6orlais
 
-6partir 6marcir
 5responsais 5responsas 5responseis 5responses
 
 
 8huyuyo
 6desleCugar
+
 
 
 5bastitano
@@ -47207,7 +47157,6 @@
 
 6puramente 8juramente
 4egarense
-
 
 
 8hibernico
@@ -47302,6 +47251,7 @@
 5peLetera 5peLetero 8peleteria 8peLejeria
 
 5enclaustrar
+
 6entrecomo 8entrecojo
 
 
@@ -47405,6 +47355,7 @@
 6globalizar
 
 
+
 6alfalfad 6alfalfan 6alfalfar 6alfalfas
 
 8apocopado
@@ -47415,7 +47366,6 @@
 4centrico 6centrismo
 
 5cuarenton
-
 
 
 
@@ -47439,7 +47389,6 @@
 
 
 
-4alongar 5aligar 5alegar 5alagar 5aloguer 5aliagar 5alugar
 6aquilonal
 4coleador 5corlador 6corleados 6copleador 6corneador
 4delacion
@@ -47459,10 +47408,11 @@
 
 5palabrota
 
+6adicionar 8aficionar
+5emprimar 5imprimir 8exprimir
 1abrazador 6abrasados
 5abudabis
 
-6adicionar 8aficionar
 
 
 
@@ -47472,7 +47422,6 @@
 5delatable
 5dispersais 5dispersas 5disperseis 5disperses 6dispersor
 
-5emprimar 5imprimir 8exprimir
 
 5espolazo
 6estribote
@@ -47515,13 +47464,13 @@
 
 5sicopata
 
+6emprentar
 8parloteos
 
 6aprobaste
 8brasilero
 
 
-6emprentar
 5guadameci
 
 
@@ -47603,11 +47552,11 @@
 
 3trabe 4rabea 4tabea 5traba 5trabo
 4vesicula 5versiculo
+
 4Cicanero
 
 
 5alcorceis 5alcorces 5alcorzais 5alcorzas 5alcorcis
-
 
 
 
@@ -47649,11 +47598,11 @@
 4minorita 5minerista 5menorista
 
 
+
 4CiCiltote
 8almagreño
 3alquitrana 3alquitrane 3alquitrano
 8hacinador
-
 
 5espaRagais 5espaRagas 5espaRagueis 5espaRagues 6espaRagon
 
@@ -47672,13 +47621,13 @@
 5putañero
 
 1circonita
-
 6abandonar
+
+
 
 
 6aperitivo
 5bergamote 5bergamota
-
 
 
 4embiCase 6empiCarse
@@ -47711,11 +47660,11 @@
 
 5plegaria
 5fraccionar
+4depender 4desprender 6descender
 
 5auspicias 5auspicies
 5quisticos 5causticais 5causticas 5caustiqueis 5caustiques
 
-4depender 4desprender 6descender
 5delatador 6dilatados
 
 5figuranta 6figuraste
@@ -47996,8 +47945,8 @@
 
 
 6sanamunda
+2aguijonear
 4CiCis 5CisCas 6CisCil
-
 5almiranta
 
 
@@ -48024,11 +47973,11 @@
 5robladera 6dobladura
 
 
+4recentar
 
 6amanar 6apanar 6abanar 8agaRar 8aLanar 8agaCar 8agaLar 8afanar
 5albardera
 5cambiara 5cambiare
-4recentar
 5dilatable
 5disturba 5disturbe 5disturbo
 
@@ -48073,7 +48022,7 @@
 6estampida 8estampiLa
 
 
-
+7barahustar
 
 
 
@@ -48113,7 +48062,6 @@
 
 6corderiLo
 
-6despalmar
 3disecciona 3diseccione 3disecciono 6dileccion 6direccion 6biseccion
 5inervador 6enervados
 
@@ -48246,6 +48194,7 @@
 5vertedera
 
 5topara 5topero 5tapera 6topeta 6tosera 6tolera 6todera 6copera
+2sestear 6testar 6sentar 6restar 6gestar 6sesgar
 
 
 8afinacion
@@ -48263,7 +48212,6 @@
 4dragues 4rasgues 4tragues 4fragues 5ruegues 5rugues 5riegues 5ragus
 5ratas 5ratos 5ratios 6dateos 6bateos 6gateos 6cateos 6rameos
 5remplaceis 5remplaces 5remplazais 5remplazas
-6testar 6sentar 6restar 6gestar 6sesgar
 8urbanizad
 3vivaquea 3vivaquee 3vivaqueo 8vivare 8vivase
 5cascaRona
@@ -48328,7 +48276,6 @@
 
 5ajenjo 5ajonje
 4banquero
-5encabuLar 5encabaLar 7encabezar
 5fantasias
 
 
@@ -48391,11 +48338,11 @@
 
 
 
+
 8aRoyadero
 
 5cortador 6coartados
 5concomais 5concomas 5concomeis 5concomes 5concomias
-
 
 6entredijo 6entresijo 8entremiso
 
@@ -48438,10 +48385,11 @@
 
 
 
+5aparar
+6trompiLas 8trompicar
 6Ciquilin 6Ciquitin
 8Cismoteos
 5almanaca
-5aparar
 
 
 5argamasan 5argamasen
@@ -48459,7 +48407,6 @@
 
 3promociona 3promocione 3promociono 5premocion
 4queque 8cerque 8merque 8perque
-6trompiLas 8trompicar
 
 7agaRadera
 
@@ -48469,7 +48416,6 @@
 
 
 5encarajinar
-5amoCiguar
 
 4constate 6constaste
 6dibujados
@@ -48488,9 +48434,9 @@
 5quilatara 7filatera
 4mitificar 8mixtificar
 
-
-
 4fraccionar 8paccionar
+
+
 
 8heReruelo
 
@@ -48529,7 +48475,7 @@
 
 
 
-
+5encarcerar
 
 4amasador 6amansados
 8apretaron
@@ -48567,6 +48513,7 @@
 
 
 
+5consagrar 5consuegrar
 5CiCero 8CiCaRo
 
 
@@ -48574,7 +48521,6 @@
 6alargados 6alarmador
 5bambucos 8zambuques 8Cambuques
 
-5consagrar 5consuegrar
 6disyuntos
 5entuertas 5entuertes
 
@@ -48586,6 +48532,7 @@
 
 
 
+5tesaurizar 6temorizar
 
 
 5Lanamente
@@ -48608,7 +48555,6 @@
 
 
 
-5tesaurizar 6temorizar
 5CocaRera 5CocaRero
 
 5drogaria 5droguera 5droguero
@@ -48628,6 +48574,7 @@
 
 4trasferir
 
+5desfondar
 4CalCal 6CaCas 7CaRal 7Caval 8Camal 8Cacal 8Cagual 8Caral
 8CangaRas 8manCaRas 8CanCadas
 8arbitrare 8arbitrase
@@ -48638,7 +48585,6 @@
 6clonacion 8floracion
 
 7convector
-5desfondar
 
 6dimanaste
 6embutidos
@@ -48680,6 +48626,7 @@
 
 
 
+
 6apresados 6apretador
 6azuzados 8aguzador
 5caRiques 5caRiquis 8caniquies
@@ -48701,7 +48648,6 @@
 6meteretes
 
 5pingorota
-5rugar 5regar 5rogar 6raigan 6raigas 6raigal
 
 5reensayais 5reensayas 5reensayeis 5reensayes
 
@@ -48799,8 +48745,8 @@
 
 
 
-5apretujan 5apretujen
 4devolver
+5apretujan 5apretujen
 
 
 5saetais 5saetas 5saeteis 5saetes 5sities 5saetis 5saetias
@@ -48845,6 +48791,8 @@
 
 
 
+
+6barzonear
 4CiCas 5CisCis 6CinCas 6CibCas 8Cistas 8Ciscas 8Cismas 8Cispas
 4apocador 6aporcados 6aportador 8ahorcador
 6tonicidad 6comicidad
@@ -48852,7 +48800,6 @@
 
 
 5fisgonas 5fisgones
-6barzonear
 4lambucio
 
 
@@ -48876,6 +48823,8 @@
 
 
 
+4empentar 6emprestar 6emprentas 6emprensar
+
 
 6aculturad 6aculturan 6aculturar 6aculturas
 
@@ -48891,7 +48840,6 @@
 
 8coyundado
 
-4empentar 6emprestar 6emprentas 6emprensar
 
 6esperando 8esperanzo
 5esquicias 5esquicies
@@ -48906,7 +48854,6 @@
 
 5maritatas 6caritates 6maritales
 7marmolejo
-
 
 6nulamente 6mudamente 6rudamente
 
@@ -48929,6 +48876,7 @@
 6sobrepasa
 5tamalera 5tamalero
 
+2postear 4potar 4postrar 5pastar 5pistar 5postor 5poster
 5campesino
 
 
@@ -48937,7 +48885,6 @@
 
 6moleculas
 
-4potar 4postrar 5pastar 5pistar 5postor 5poster
 
 5colgadera 6colmadura 8colCadura
 8tipologia
@@ -48973,7 +48920,6 @@
 
 
 5homicida
-5imprimir
 5invernazo
 6madurados
 5manganesa
@@ -49036,6 +48982,7 @@
 
 
 
+4rasguear 4traguear 6trastear
 
 
 5aRemangais 5aRemangas 5aRemangueis 5aRemangues
@@ -49044,7 +48991,6 @@
 
 6apagadizo
 5almotacen 8almohazan 8almotazaf
-
 
 
 
@@ -49085,7 +49031,6 @@
 4restante 6prestaste
 5pretonico
 4bresquemos 5risquemos 5rosquemos 5rasquemos 5resquemais 5resquemas 5resquemeis 5resquemes
-4rasguear 4traguear 6trastear
 5turibulais 5turibulas 5turibuleis 5turibules
 8sectorial
 
@@ -49237,6 +49182,8 @@
 
 
 6somormujar
+6refeccionar
+
 
 6CupaCup
 
@@ -49254,7 +49201,6 @@
 
 5cantoneos
 5devocion
-
 1embazarse 4embasase
 4emputase 5empotarse 8empuyarse 8empuRarse
 4enancase
@@ -49348,10 +49294,10 @@
 
 
 
+5apoliLar
 4ajonjero 5aljonjera
 
 
-5apoliLar
 
 
 
@@ -49414,13 +49360,14 @@
 
 
 
-5agaRoCar
-5apulgarar
-
+2agaRoCar
+6desencamar 8desencaLar 8desencajar
 6cangrenas 6gangrenar
+
+4constriñir 5costreñir
+5apulgarar
 3cantaran 5canterano
 5columpias 5columpies 6columbios
-5costreñir
 
 
 
@@ -49557,10 +49504,12 @@
 
 
 
+
+5acodiciar
+5despertar 6dispersar
 5CuCito 6CiCilo 7Ciquito 8Cinito 8biCito
 
 
-5acodiciar
 
 
 
@@ -49575,7 +49524,6 @@
 
 5contender
 
-5despertar 6dispersar
 
 
 
@@ -49590,7 +49538,6 @@
 
 
 5gorgorita
-
 
 7infidente 8incidente
 
@@ -49666,6 +49613,9 @@
 
 
 
+5endulzurar
+
+4prescribir 6describir
 
 8afrancado
 
@@ -49726,7 +49676,6 @@
 
 
 
-4prescribir 6describir
 
 
 5sonrosais 5sonrosas 5sonroseis 5sonroses
@@ -49778,8 +49727,9 @@
 8hermanecer
 
 
+4alcarCofar 6alcaCofas 6alcaCofal
 
-6alcaCofas 6alcaCofal
+4alcarCofar 6alcaCofas 6alcaCofal
 
 
 
@@ -49821,11 +49771,12 @@
 
 
 4trascender
+
+5destripar 6destrocar 6destronar 8destrozar
 1abrasador 6abrazados
 6abrigados
 4acocarse
 5adragante 6atraganto
-
 5almotacen
 
 6acogotado 6amolotado
@@ -49840,7 +49791,6 @@
 
 6contratar 6contrapas 8contraLar
 
-5destripar 6destrocar 6destronar 8destrozar
 4encanase 6encadarse 8encaLarse 8encavarse
 6espaRaman
 5atrofico 8eutrofizo
@@ -49959,15 +49909,16 @@
 
 
 
-
 8desinfectar
 
 
 
 8vinificar
-
-
 7ahervorar
+
+
+5destorpar
+
 
 
 
@@ -49992,8 +49943,6 @@
 6ciclonico
 
 6colusorio
-
-5destorpar
 5dirigista 6dirimiste
 
 4enlomase
@@ -50093,6 +50042,10 @@
 
 
 
+6contraLas 8contratar 8contrapar
+
+5principiar 6principal
+6soberbias
 
 7almohatre
 
@@ -50102,7 +50055,6 @@
 5codicilo
 8condicion
 5consultar 6consultos
-6contraLas 8contratar 8contrapar
 5corolario
 
 
@@ -50111,7 +50063,6 @@
 
 
 7halagueño 8falaguero 8malagueño
-
 
 4graduado 5gradando
 
@@ -50133,7 +50084,6 @@
 
 
 
-5principiar 6principal
 
 8Casponazo
 
@@ -50143,7 +50093,6 @@
 
 1rustiques 8rustiquen
 
-6soberbias
 1zoltanies 4sotanies 5soltanis
 8taquiLado
 6toleraste
@@ -50173,6 +50122,7 @@
 
 
 
+
 7almoradux
 
 
@@ -50180,7 +50130,6 @@
 
 
 4reciente
-
 6empujados 7empuñador
 
 8incurioso
@@ -50204,6 +50153,8 @@
 
 8enclaustrar
 
+6acontecer
+
 6abrumados
 
 
@@ -50211,7 +50162,6 @@
 5entropico
 5aplicador 6aplacados 6aplanador
 5acorarse
-6acontecer
 
 
 
@@ -50315,19 +50265,19 @@
 5piCanguear
 
 
+7confortar
+4florecer
 
 
 5babilona
 
 
 
-7confortar
 
 
 5esperador 5aspirador 6espirados 6espigador
 
 6flotacion 8cloracion
-4florecer
 
 
 
@@ -50369,7 +50319,7 @@
 
 6petrificar
 
-5calificar 5quilificar
+5quilificar 5calificar
 
 
 5colibris
@@ -50418,12 +50368,15 @@
 
 
 
+7carcajear
+6ensordecer
+
+
 
 
 
 
 4carbunco
-7carcajear
 8cobradero
 5cognacion
 
@@ -50534,6 +50487,7 @@
 
 
 
+6patrocinar
 
 6anglofobo
 
@@ -50602,11 +50556,11 @@
 
 
 
+
 6analogico
 
 6carbonico 8carbonizo 8carboxilo
 5cloritico
-
 8cordelado
 
 6dirimible
@@ -50688,6 +50642,7 @@
 
 
 
+
 5CantiLis
 
 5alberCiga
@@ -50704,7 +50659,6 @@
 
 
 6pipirines
-
 
 4portear 4pontear 4plotear 4postear 4potrear
 4represor
@@ -50783,6 +50737,7 @@
 
 
 
+
 5triLadora 5triLadura
 8aCalay
 5compadran 5compadren 6compatron
@@ -50793,10 +50748,11 @@
 
 
 
+4desjaRetar
+
 
 6paquetazo 6raquetazo
 8bonetero 8boletero 8zoquetero
-4desjaRetar
 5desvayas 7desvahais 8desvarais 8desmayais
 6exultaste
 6facilitad
@@ -50842,6 +50798,7 @@
 4rematica
 4puCinela
 4trasteRar
+2baCiLerar
 6cimbaliLo
 
 
@@ -50859,6 +50816,8 @@
 
 
 
+4apacentar
+
 6aRumbados
 
 
@@ -50869,7 +50828,6 @@
 
 6pivotaste
 8rimbombo
-
 6sembrados
 6pentaculo
 
@@ -50922,6 +50880,7 @@
 
 
 
+6deprehender
 
 
 
@@ -50989,8 +50948,8 @@
 3pequeñez
 6desengrasar 6desengrapar
 
-6abrevados
 8agermanar
+6abrevados
 6disonaste
 6navegados
 
@@ -51017,8 +50976,8 @@
 
 5paCaCa 7piRaCa 8piCaba 8piCara 8piCagua 8piCana
 5quintaria 5canteria 5quintero 8cinteria
-6basilicas
 
+6basilicas
 6evaluados
 6ismaelita
 
@@ -51101,6 +51060,7 @@
 6cuaresmas 6cuaresmar
 6cumplidos
 4banqueta 5blancota 5blanquete 6blanquera
+6encantaran 6encantaras
 5especulais 5especulas 5especuleis 5especules
 5impasible 6impagable 6imparable
 6sableados
@@ -51124,8 +51084,7 @@
 
 
 
-
-
+2alcahuetar
 
 
 
@@ -51160,7 +51119,7 @@
 
 
 
-
+8conficionar
 
 
 
@@ -51205,14 +51164,14 @@
 
 
 
-
+4diciplinar
 
 
 
 
 6embarnecer
 
-
+6esblandecer
 
 
 
@@ -51253,8 +51212,6 @@
 
 
 
-
-6estatificar
 6estadificar
 
 
@@ -51264,7 +51221,7 @@
 
 
 
-
+7hervorizar
 
 8mortificar
 4fosforescer
@@ -51274,7 +51231,7 @@
 
 
 
-
+6gargalizar
 4guadrapear
 
 
@@ -51286,13 +51243,12 @@
 
 
 
+5enficionar
 
 
 
 
-
-
-
+8interserir
 
 
 
@@ -51329,7 +51285,6 @@
 
 
 
-
 5pasterizar
 
 
@@ -51352,11 +51307,8 @@
 
 
 
-5calificar 5cualificar 6quimificar
-6quilificar
 
-
-
+5refeccionar
 
 
 4repanCigar 8repantingar
@@ -51424,6 +51376,182 @@
 
 
 
+
+
+
+
+7desahijar 8desafinar 8desafilar
+6sobresanar
+
+
+6entrecomar
+
+6reprehender
+
+8desaceitar
+6trasfretar
+
+5presuponer
+4empestiLar
+
+8destroncar
+
+6repercutir
+
+
+
+5desgradar
+
+4determinar
+6amantiLar
+
+
+
+2engramar
+
+
+
+
+6atribular
+2baladrar
+
+2murmurar 8murmujear
+5afofar 6afufas 7aRufar 8atufar 8afumar 8amufar
+
+
+2ambicionar
+6retortijar
+
+
+
+
+
+
+
+
+2alcahuetear 5alcahotar
+4alcaCofar
+5alebrestar
+6alhombras 7alfombrar
+5amuCiguar
+8amontazgar
+
+4apalabrar 5apelambrar 6acalambrar
+6apaciguar
+
+5apercibir
+
+
+
+
+6avaricias 8acariciar
+1baraustar 7barajustar
+
+2bazucar 8batuquear
+
+
+
+5caramuLar 6caramiLas
+5carpintear
+
+
+8condicionar
+4costringir
+4costriñir 5constreñir
+
+4constringir
+8derelinquir
+
+4demostrar
+
+8deRelinquir
+5desafiuciar
+
+
+6descoronar 6desbotonar 6desmoronar
+8descaRilar 8descadiLar 8descapiLar
+7descabezar 7descabeLar
+5descapuLar 6descadiLar 8descaRiLar
+5descadiLar
+
+
+
+6descostrar
+4disciplinar
+
+
+
+
+
+
+
+
+8encaRilar 8encaliLar 8encaniLar 8encasiLar 8encapiLar
+
+5incarcerar 6encancerar 6encarcelar
+
+
+
+5inficionar
+
+
+
+
+8enmohecer 8enmoLecer
+
+
+6ensortijar
+
+
+
+
+
+
+6emblandecer
+
+
+
+
+2espolvorear 6empolvorar
+
+
+
+6entrapajar
+
+
+6gargarizar
+5galardonar
+
+1herborizar 7fervorizar
+6impropias
+
+
+8interferir
+
+
+
+
+6martirial
+
+
+
+
+
+
+4remitir
+
+
+6quebrazas 7quebrajar
+5refaccionar 6defeccionar
+
+
+
+
+5sustituir
+
+
+1beneficiar
+7zuRar 7zuLar 7Cuzar 8buzar
 
 
 8Cacarero
@@ -51504,7 +51632,6 @@
 
 
 
-
 4aRemueco
 7aRimadizo
 5aRomadizo 7aRimadiLo
@@ -51514,10 +51641,8 @@
 5abandonais 5abandonas 5abandoneis 5abandones
 8abanicado
 
-
 7aboRajado
 6abordados
-
 
 
 4abrumase 8abruzarse
@@ -51540,7 +51665,6 @@
 
 4afreCase
 
-5afofar 6afufas 7aRufar 8atufar 8afumar 8amufar
 
 
 
@@ -51576,7 +51700,6 @@
 6alcaCofas 6alcaCofar
 
 3alcuzcuz
-
 1alfalfes 8alfalfen
 8alfanjazo
 8alfanjado
@@ -51585,7 +51708,6 @@
 1alfonsigo 4alfocigo
 6alfonsigo
 7alforjon
-6alhombras 7alfombrar
 
 
 4ajonjoli
@@ -51594,8 +51716,6 @@
 5almogavar
 5alcorque 8alterque 8alberque
 6actividad
-6amantiLar
-
 8amargaron
 6amartiLo
 
@@ -51605,7 +51725,6 @@
 5amebiosis
 5amarizaje 8amerizare 8amerizase
 
-5amuCiguar
 5amodoRado
 
 
@@ -51627,8 +51746,6 @@
 4asimismo 5ensimismo 5ansimesmo
 
 
-
-
 5antipoda 5antipodia 6antipolio
 6antipodio
 
@@ -51636,8 +51753,6 @@
 4atojaban 6antojaran
 4atojando 4antojado
 4aoviLase
-6apaciguar
-5apercibir
 
 4apacible 5aplazable
 5aplacible 8aplacable
@@ -51646,8 +51761,6 @@
 
 
 6aprobados
-
-
 
 6arCivados
 
@@ -51661,17 +51774,14 @@
 5asceterio
 4aseriase
 
-
 8aspirador
 
 8aRabalero
 6atisbados
 
-6atribular
 6augurados
 5autobomba
 
-6avaricias 8acariciar
 4aveLanaste 6aveLanare 6aveLanase
 8apicultor
 6avivados 8avisador
@@ -51686,7 +51796,6 @@
 6baRetinas
 5bagdadis
 
-5baladrar
 4baladran 5balandron 6calandran 6balandras
 8balcanizo
 
@@ -51701,7 +51810,6 @@
 
 
 
-5bazucar 8batuquear
 
 
 5bejuquiLa
@@ -51846,7 +51954,6 @@
 3condiciona 3condicione 3condiciono 5condicen 8conficion
 
 5conflictua 5conflictue 5conflictuo
-
 8contuerzo
 5confesion 8concusion 8contusion
 
@@ -51888,19 +51995,13 @@
 
 6cundiamos
 
-7desahijar 8desafinar 8desafilar
-6desatacar
-
 5desfalcais 5desfalcas 5desfalqueis 5desfalques
 
 8despapare 8despapase
 
-8desraizar
-
 
 
 8disidente
-
 5difuminais 5difuminas 5difumineis 5difumines
 
 
@@ -51927,7 +52028,6 @@
 
 5imanacion
 
-
 5embaraceis 5embaraces 5embarazais 5embarazas
 1embasarse 4embazase
 5embalador 6embolados 6embotador
@@ -51939,7 +52039,6 @@
 5empapuzar 6empatizar 6empalizar 6empanizar
 4empeRase 5empoRarse 5empuRarse 8empedarse 8empeparse
 4empedase 6empeparse 8empeRarse
-
 4empepase 5empiparse 6empedarse 8empeRarse
 4empiCase 6embiCarse 8empicarse 8empiparse
 4empicase 5empacarse 6empiparse 8empiCarse
@@ -51951,24 +52050,19 @@
 4enCiCase 7enCivarse
 4enColase 5enCularse
 4enCulase 5enColarse
-8encaRilar 8encaliLar 8encaniLar 8encasiLar 8encapiLar
 6escofinar 7encoCinar
 
 4encoñase
 4endamase
 6endodermo
 
-
-
 4engoRase
 5engaRonar
-5engramar
 5engranuje 8engranare 8engranase
 4enjetase
 4enjumase
 4enmaLase 6encaLarse 8enmararse 8enmatarse
 4enmatase 6enmararse 8enmaLarse
-8enmohecer 8enmoLecer
 4enmonase
 4enrocase
 
@@ -52023,7 +52117,6 @@
 
 
 5fastidias 5fastidies 6fastigios
-
 
 
 
@@ -52220,7 +52313,6 @@
 3impresiona 3impresione 3impresiono
 
 
-6impropias
 4impropio
 6improviso
 
@@ -52379,7 +52471,6 @@
 5mormotear
 8martiLero
 
-6martirial
 5moscabado
 
 5masecoral
@@ -52449,7 +52540,6 @@
 
 5muestras 5muestres
 8municion
-5murmurar 8murmujear
 5musequis
 
 
@@ -52493,7 +52583,6 @@
 
 
 5orbitara 5orbitare
-
 
 
 
@@ -52562,11 +52651,9 @@
 
 
 5perpetuas 5perpetues
-
 8personare 8personase
 
 5pertreCais 5pertreCas 5pertreCeis 5pertreCes 5portreCos
-
 
 
 
@@ -52622,7 +52709,6 @@
 
 
 
-4remitir
 4predador 5prendedor 6prendados 6prensador
 4repasado 5propasado 6preparado
 4prepease
@@ -52637,7 +52723,6 @@
 8prioradgo
 7privatizo
 5profesan 5profesen 5profusion 8procesion
-
 
 5prelusion 8profusion
 8provision
@@ -52672,7 +52757,6 @@
 
 5quiCuismo
 
-6quebrazas 7quebrajar
 8quebraron
 
 4quequier
@@ -52710,7 +52794,6 @@
 
 6renitente 6repitente
 
-
 6separable
 6repasados 6reparador
 
@@ -52719,7 +52802,6 @@
 6depresivo 6regresivo
 5repropias 5repropies
 
-6retemblar 6resembrar
 8revistero
 
 
@@ -52785,9 +52867,6 @@
 
 
 1zompopo 6rompopo
-
-5sustituir
-
 
 
 
@@ -52883,7 +52962,6 @@
 
 
 5usufructua 5usufructue 5usufructuo
-
 6valvas 8calvar 8salvar 8ralvar 8valsar 8malvar
 5vaporara 5vaporare 5vaporaria
 
@@ -52983,7 +53061,6 @@
 8zuRiagado
 7CuRibuRi
 1sunzapote 5zonzapote
-7zuRar 7zuLar 7Cuzar 8buzar
 1suzon 5zuizon 7zuLon 7zuRon 7Cuzon
 4ñampease
 8paCaCa 8CaCara

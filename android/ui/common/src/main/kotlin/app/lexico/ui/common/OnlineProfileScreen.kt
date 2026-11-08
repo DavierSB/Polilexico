@@ -61,8 +61,8 @@ private fun ProfileView(data: ProfileData, actions: ProfileActions, onEdit: () -
   var leaving by remember { mutableStateOf(false) }
   DataCard(data)
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    OutlinedButton(onClick = actions.stats, Modifier.weight(1f)) { Text("Estadísticas") }
-    Button(onClick = onEdit, Modifier.weight(1f)) { Text("Editar") }
+    OutlinedButton(onClick = actions.stats, Modifier.weight(1f)) { ButtonText("Estadísticas") }
+    Button(onClick = onEdit, Modifier.weight(1f)) { ButtonText("Editar") }
   }
   TextButton(onClick = { leaving = true }, Modifier.fillMaxWidth()) { Text("Cerrar sesión") }
   if (leaving) LogOutDialog({ leaving = false; actions.logOut() }) { leaving = false }
@@ -118,9 +118,9 @@ private fun PhotoButtons(hasPhoto: Boolean, actions: ProfileActions) {
 @Composable
 private fun SaveButtons(busy: Boolean, valid: Boolean, onCancel: () -> Unit, onSave: () -> Unit) {
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-    OutlinedButton(onClick = onCancel, Modifier.weight(1f)) { Text("Cancelar") }
+    OutlinedButton(onClick = onCancel, Modifier.weight(1f)) { ButtonText("Cancelar") }
     Button(onClick = onSave, Modifier.weight(1f), enabled = valid && !busy) {
-      if (busy) CircularProgressIndicator(strokeWidth = 2.dp) else Text("Guardar")
+      if (busy) CircularProgressIndicator(strokeWidth = 2.dp) else ButtonText("Guardar")
     }
   }
 }

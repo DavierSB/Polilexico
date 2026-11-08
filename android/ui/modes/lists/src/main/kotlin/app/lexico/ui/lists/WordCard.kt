@@ -3,6 +3,7 @@ package app.lexico.ui.lists
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,7 +33,7 @@ fun ColumnScope.WordCard(unit: Family, lexicon: Lexicon, onOpen: (String) -> Uni
       Chips(*(listOf(kindText(unit)) + unit.traits(unit.head).map { it.label }).toTypedArray())
       MeaningLine(unit.head, lexicon)
       Details(unit, lexicon) { onOpen(WORD_KEY + it) }
-      WordGroup("Similares", lexicon.similar(unit).map { it.word }) { word -> lexicon.familyOf(word)?.let { onOpen(it.key) } }
+      WordGroup("Similares", lexicon.similar(unit).map { it.word }, lexicon) { word -> lexicon.familyOf(word)?.let { onOpen(it.key) } }
     }
   }
 }
@@ -60,27 +61,37 @@ private fun HeadWord(key: String) {
 @Composable
 private fun Details(unit: Family, lexicon: Lexicon, onWord: (String) -> Unit) {
   when {
-    unit.isWord -> lexicon.owners(unit).forEach { WordGroup("Familia de ${WordKeys.upper(it.head)}", it.words, onWord) }
-    unit.verbal -> WordGroup("Familia", unit.words.drop(1), onWord)
-    else -> WordGroup("Familia", unit.words, onWord)
+    unit.isWord -> lexicon.owners(unit).forEach { WordGroup("Familia de ${WordKeys.upper(it.head)}", it.words, lexicon, onWord) }
+    unit.verbal -> WordGroup("Familia", unit.words.drop(1), lexicon, onWord)
+    else -> WordGroup("Familia", unit.words, lexicon, onWord)
   }
 }
 
 @Composable
-private fun WordGroup(title: String, words: List<String>, onWord: (String) -> Unit) {
+private fun WordGroup(title: String, words: List<String>, lexicon: Lexicon, onWord: (String) -> Unit) {
   if (words.isEmpty()) return
   Column(Modifier.fillMaxWidth(), Arrangement.spacedBy(6.dp), Alignment.CenterHorizontally) {
     Label(title, Modifier.padding(top = 8.dp))
-    words.forEach { WordLine(it, onWord) }
+    AlignedWords(words, lexicon, onWord)
   }
 }
 
 @Composable
-private fun WordLine(word: String, onWord: (String) -> Unit) {
-  Text(
-    WordKeys.upper(word), Modifier.clip(RoundedCornerShape(8.dp)).clickable { onWord(word) }.padding(horizontal = 10.dp),
-    fontSize = 26.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 1.sp,
-  )
+private fun AlignedWords(words: List<String>, lexicon: Lexicon, onWord: (String) -> Unit) {
+  Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    words.forEach { WordLine(it, lexicon.tag(it), onWord) }
+  }
+}
+
+@Composable
+private fun WordLine(word: String, tag: String?, onWord: (String) -> Unit) {
+  Row(
+    Modifier.clip(RoundedCornerShape(8.dp)).clickable { onWord(word) }.padding(horizontal = 10.dp),
+    Arrangement.spacedBy(8.dp), Alignment.CenterVertically,
+  ) {
+    Text(WordKeys.upper(word), fontSize = 26.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 1.sp)
+    tag?.let { Text("($it)", fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+  }
 }
 
 internal fun kindText(unit: Family): String = when {

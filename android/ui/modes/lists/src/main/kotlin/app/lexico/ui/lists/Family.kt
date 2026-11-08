@@ -29,12 +29,13 @@ class Family(
   }
 }
 
-enum class VerbTrait(val code: Char, val label: String) {
-  INTRANSITIVE('i', "Intransitivo"),
+enum class VerbTrait(val code: Char, val label: String, val tag: String? = null) {
+  INTRANSITIVE('i', "Intransitivo", "intr."),
   IMPERSONAL('m', "Impersonal"),
   UNIPERSONAL('u', "Unipersonal"),
   DEFECTIVE('d', "Defectivo"),
   PARTICIPLE('p', "Participio irregular"),
+  OBSOLETE('x', "Desuso", "desus."),
 }
 
 enum class Likeness(val code: Char) {

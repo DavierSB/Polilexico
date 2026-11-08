@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.Header
+import app.lexico.ui.common.ButtonText
 
 @Composable
 fun ListScreen(list: WordList, onBack: () -> Unit, onStudy: () -> Unit, onTest: () -> Unit, onDelete: () -> Unit) {
@@ -61,7 +62,7 @@ fun FilterSummary(lines: List<String>) {
 @Composable
 private fun Actions(onStudy: () -> Unit, onTest: () -> Unit) {
   Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(10.dp)) {
-    Button(onClick = onStudy, Modifier.weight(1f)) { Text("Estudiar") }
-    Button(onClick = onTest, Modifier.weight(1f)) { Text("Evaluar") }
+    Button(onClick = onStudy, Modifier.weight(1f)) { ButtonText("Estudiar") }
+    Button(onClick = onTest, Modifier.weight(1f)) { ButtonText("Evaluar") }
   }
 }

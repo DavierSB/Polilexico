@@ -12,10 +12,15 @@ data class FilterSpec(
   val consonants: Int? = null,
   val simpleOnly: Boolean = false,
   val words: Boolean = false,
+  val start: String = "",
+  val end: String = "",
 ) {
   fun filter(): Filter = Filter(
     minLength, maxLength, WordKeys.parse(contains), fixed.slots(), fixedEnd.slots(), kind, vowels, consonants, simpleOnly,
+    WordKeys.parse(start), WordKeys.parse(end),
   )
+
+  fun matchesWord(key: String): Boolean = filter().copy(minLength = 0, maxLength = Int.MAX_VALUE).matches(key)
 
   val isEmpty: Boolean get() = filter() == Filter()
 
@@ -28,6 +33,7 @@ data class FilterSpec(
   fun encode(): String = listOf(
     minLength, maxLength, contains.clean(), fixed.clean(), fixedEnd.clean(), kind.name, order.name,
     vowels ?: "", consonants ?: "", if (simpleOnly) "s" else "", if (words) "p" else "f",
+    start.clean(), end.clean(),
   ).joinToString(SEPARATOR)
 
   private fun String.slots(): Map<Int, Char> =
@@ -36,16 +42,17 @@ data class FilterSpec(
   companion object {
     const val FREE = '.'
     private const val SEPARATOR = "|"
-    private const val FIELDS = 11
+    private val FIELDS = setOf(11, 13)
 
     fun decode(text: String): FilterSpec? {
-      val c = text.split(SEPARATOR).takeIf { it.size == FIELDS } ?: return null
+      val c = text.split(SEPARATOR).takeIf { it.size in FIELDS } ?: return null
       return runCatching { fromFields(c) }.getOrNull()
     }
 
     private fun fromFields(c: List<String>): FilterSpec = FilterSpec(
       c[0].toInt(), c[1].toInt(), c[2], c[3], c[4], Kind.valueOf(c[5]), Order.valueOf(c[6]),
       c[7].toIntOrNull(), c[8].toIntOrNull(), c[9] == "s", c[10] == "p",
+      c.getOrElse(11) { "" }, c.getOrElse(12) { "" },
     )
 
     private fun String.clean(): String = filter { it != '|' && it != '\t' && it != '\n' }

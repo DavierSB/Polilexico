@@ -38,6 +38,7 @@ import app.lexico.ui.board.RackTile
 import app.lexico.ui.recall.AnswerBoard
 import app.lexico.ui.recall.HIT
 import app.lexico.ui.recall.TileLine
+import app.lexico.ui.common.ButtonText
 
 @Composable
 internal fun ColumnScope.Solving(session: TestSession, stage: TestStage.Solving, style: BoardStyle) {
@@ -126,8 +127,8 @@ private fun SolvingButtons(session: TestSession, attempt: Attempt) {
   Column(Modifier.fillMaxWidth().padding(bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     Button(onClick = { send(session, attempt) }, Modifier.fillMaxWidth().height(52.dp), enabled = attempt.answer.isComplete) { Text("Enviar", fontSize = 17.sp) }
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-      FilledTonalButton(onClick = { attempt.change(attempt.answer.reset()) }, Modifier.weight(1f).height(48.dp)) { Text("Recoger", fontSize = 16.sp) }
-      OutlinedButton(onClick = session::pass, Modifier.weight(1f).height(48.dp)) { Text("Ver respuestas", fontSize = 16.sp) }
+      FilledTonalButton(onClick = { attempt.change(attempt.answer.reset()) }, Modifier.weight(1f).height(48.dp)) { ButtonText("Recoger", fontSize = 16.sp) }
+      OutlinedButton(onClick = session::pass, Modifier.weight(1f).height(48.dp)) { ButtonText("Ver respuestas", fontSize = 16.sp) }
     }
   }
 }

@@ -45,10 +45,12 @@ fun FilterEditorDialog(type: FilterType, spec: FilterSpec, onApply: (FilterSpec)
 @Composable
 private fun FilterEditor(type: FilterType, spec: FilterSpec, onSpec: (FilterSpec) -> Unit) {
   when (type) {
-    FilterType.KIND -> Choices(listOf("Verbos", "No verbos"), spec.kind.ordinal - 1) { onSpec(spec.copy(kind = Kind.entries[it + 1])) }
+    FilterType.KIND -> Choices(listOf("Familias verbales", "Familias no verbales"), spec.kind.ordinal - 1) { onSpec(spec.copy(kind = Kind.entries[it + 1])) }
     FilterType.LENGTH -> LengthSteppers(spec, onSpec)
     FilterType.COUNTS -> CountSteppers(spec, onSpec)
     FilterType.CONTAINS -> LettersField(spec, onSpec)
+    FilterType.START -> AffixField(spec.start, "p. ej. des") { onSpec(spec.copy(start = it)) }
+    FilterType.END -> AffixField(spec.end, "p. ej. ción") { onSpec(spec.copy(end = it)) }
     FilterType.FIXED -> Positions(spec, fromEnd = false, onSpec)
     FilterType.FIXED_END -> Positions(spec, fromEnd = true, onSpec)
   }
@@ -97,6 +99,16 @@ private fun LettersField(spec: FilterSpec, onSpec: (FilterSpec) -> Unit) {
   if (tiles.isNotEmpty()) Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { tiles.forEach { MiniTile(it) } }
   Text("«aa» exige dos A.", color = MaterialTheme.colorScheme.onSurfaceVariant)
   SimpleRest(spec.simpleOnly) { onSpec(spec.copy(simpleOnly = it)) }
+}
+
+@Composable
+private fun AffixField(text: String, example: String, onText: (String) -> Unit) {
+  OutlinedTextField(
+    value = text, onValueChange = onText, modifier = Modifier.fillMaxWidth(), singleLine = true,
+    placeholder = { Text(example) }, keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
+  )
+  val tiles = WordKeys.parse(text)
+  if (tiles.isNotEmpty()) Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) { tiles.forEach { MiniTile(it) } }
 }
 
 @Composable

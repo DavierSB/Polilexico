@@ -42,6 +42,7 @@ import app.lexico.ui.common.BarIconButton
 import app.lexico.ui.common.LexicoIcons
 import kotlinx.coroutines.delay
 import kotlin.math.abs
+import app.lexico.ui.common.ButtonText
 
 private const val STEP_MS = 1_400L
 private val FRAME = 12.dp
@@ -108,7 +109,7 @@ private fun PlanBoard(step: StepView, style: BoardStyle) {
 private fun PlanControls(step: Int, count: Int, playing: Boolean, go: (Int) -> Unit, toggle: () -> Unit) {
   Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(4.dp), Alignment.CenterVertically) {
     OutlinedButton(onClick = { go(step - 1) }, enabled = step > 0) { Text("‹") }
-    TextButton(onClick = toggle, Modifier.weight(1f)) { Text(if (playing) "Pausa" else "Reproducir") }
+    TextButton(onClick = toggle, Modifier.weight(1f)) { ButtonText(if (playing) "Pausa" else "Reproducir") }
     OutlinedButton(onClick = { go(step + 1) }, enabled = step < count - 1) { Text("›") }
   }
 }

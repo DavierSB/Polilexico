@@ -18,6 +18,7 @@ ORDER = ["wikt_es", "drae1914", "wikt_en"]
 SOURCES = {"wikt_es": "w", "drae1914": "d", "wikt_en": "e"}
 CATEGORIES = {"sustantivo": "s", "adjetivo": "a", "verbo": "v", "otra": "o", "adverbio": "r"}
 DIRECT = "0,0"
+DIRECT_RELATION = ("directa", "", "")
 MAX_SENSES = 3
 SAME_SENSE = 0.8
 SAME_ENGLISH_SENSE = 0.6
@@ -32,7 +33,7 @@ FILTERS = [{"id": lzma.FILTER_LZMA2, "preset": 9 | lzma.PRESET_EXTREME, "lc": 4,
 
 def main():
     words = pd.read_csv(SOURCE / "palabras.tsv", sep="\t", keep_default_na=False)
-    relations = {}
+    relations = {DIRECT_RELATION: 0}
     write("words.xz", word_lines(words, relations))
     write("relations.xz", ["\t".join(r) for r in relations])
     write("senses.xz", sense_lines(chosen_senses(set(words.lemma_key))))

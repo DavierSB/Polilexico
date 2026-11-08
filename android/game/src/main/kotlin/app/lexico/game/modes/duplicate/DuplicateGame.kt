@@ -26,8 +26,6 @@ class DuplicateGame private constructor(
 
   suspend fun propose(placement: Placement): String? = act { match.propose(placement.toString()) }
 
-  suspend fun pass(): String? = act { match.propose("pasar") }
-
   suspend fun cancel(): String? = act { match.cancel() }
 
   override fun read(): DuplicateState = DuplicateReader(match).read()

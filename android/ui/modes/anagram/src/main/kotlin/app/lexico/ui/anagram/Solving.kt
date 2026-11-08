@@ -40,6 +40,7 @@ import app.lexico.ui.recall.AnswerBoard
 import app.lexico.ui.recall.EmptySlot
 import app.lexico.ui.recall.HIT
 import app.lexico.ui.recall.TileLine
+import app.lexico.ui.common.ButtonText
 
 @Composable
 internal fun ColumnScope.Solving(session: AnagramSession, stage: Stage.Solving, style: BoardStyle) {
@@ -126,10 +127,10 @@ private fun SolvingButtons(session: AnagramSession, attempt: Attempt) {
   var giveUp by remember { mutableStateOf(false) }
   Row(Modifier.fillMaxWidth().padding(bottom = 8.dp), Arrangement.spacedBy(6.dp)) {
     Button(onClick = { send(session, attempt) }, Modifier.weight(1f), contentPadding = Compact, enabled = attempt.answer.isComplete) {
-      Text("Enviar")
+      ButtonText("Enviar")
     }
-    FilledTonalButton(onClick = { attempt.change(attempt.answer.reset()) }, Modifier.weight(1f), contentPadding = Compact) { Text("Recoger") }
-    OutlinedButton(onClick = { giveUp = true }, Modifier.weight(1f), contentPadding = Compact) { Text("Rendirse") }
+    FilledTonalButton(onClick = { attempt.change(attempt.answer.reset()) }, Modifier.weight(1f), contentPadding = Compact) { ButtonText("Recoger") }
+    OutlinedButton(onClick = { giveUp = true }, Modifier.weight(1f), contentPadding = Compact) { ButtonText("Rendirse") }
   }
   if (giveUp) ConfirmDialog(
     "¿Rendirse? Pierdes una vida.", yes = "Rendirse", no = "Seguir",

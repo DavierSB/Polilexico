@@ -54,8 +54,8 @@ fun ResultCard(label: String, value: String, caption: String, chips: List<Result
 @Composable
 fun ResultButtons(primary: String, onPrimary: () -> Unit, secondary: String, onSecondary: () -> Unit) {
   Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-    Button(onClick = onPrimary, Modifier.weight(1f).height(46.dp)) { Text(primary, fontWeight = FontWeight.Bold) }
-    OutlinedButton(onClick = onSecondary, Modifier.weight(1f).height(46.dp)) { Text(secondary, fontWeight = FontWeight.Bold) }
+    Button(onClick = onPrimary, Modifier.weight(1f).height(46.dp)) { ButtonText(primary, fontWeight = FontWeight.Bold) }
+    OutlinedButton(onClick = onSecondary, Modifier.weight(1f).height(46.dp)) { ButtonText(secondary, fontWeight = FontWeight.Bold) }
   }
 }
 

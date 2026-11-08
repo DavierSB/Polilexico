@@ -45,7 +45,6 @@ data class DuplicateView(
 interface DuplicateActions {
   fun showRack()
   fun propose(placement: Placement)
-  fun pass()
   fun cancel()
   fun resign()
   fun exit()

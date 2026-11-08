@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import app.lexico.ui.common.CHAT_GLYPH
 import app.lexico.ui.common.Compact
 import app.lexico.ui.common.LocalChat
+import app.lexico.ui.common.ButtonText
 
 @Composable
 fun MoveButtons(c: TilePlacer, playEnabled: Boolean, onPlay: () -> Unit, small: @Composable RowScope.() -> Unit) {
@@ -41,7 +42,7 @@ private fun ChatButton(onOpen: () -> Unit) {
 @Composable
 fun RowScope.SmallButton(text: String, enabled: Boolean = true, onClick: () -> Unit) {
   OutlinedButton(onClick = onClick, modifier = Modifier.weight(1f).height(36.dp), enabled = enabled, contentPadding = Compact) {
-    Text(text, fontSize = 14.sp)
+    ButtonText(text, fontSize = 14.sp)
   }
 }
 

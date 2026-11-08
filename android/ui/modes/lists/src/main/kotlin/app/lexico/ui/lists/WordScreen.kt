@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.LexicoIcons
+import app.lexico.ui.common.ButtonText
 
 @Composable
 fun WordScreen(entry: String, lexicon: Lexicon, onBack: () -> Unit, onOpen: (String) -> Unit) {
@@ -58,10 +59,10 @@ private fun WordActions(lexicon: Lexicon, onOpen: (String) -> Unit) {
   Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
     OutlinedButton(onClick = { searching = true }, Modifier.weight(1f).height(48.dp)) {
       Icon(LexicoIcons.Lookup, null, Modifier.size(18.dp))
-      Text("Buscar palabra", Modifier.padding(start = 6.dp), fontWeight = FontWeight.Bold)
+      ButtonText("Buscar palabra", Modifier.padding(start = 6.dp), fontWeight = FontWeight.Bold)
     }
     Button(onClick = { onOpen(lexicon.words.random().key) }, Modifier.weight(1f).height(48.dp)) {
-      Text("Palabra al azar", fontWeight = FontWeight.Bold)
+      ButtonText("Palabra al azar", fontWeight = FontWeight.Bold)
     }
   }
   if (searching) SearchDialog({ searching = false }) { searching = false; onOpen(it) }

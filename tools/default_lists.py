@@ -3,6 +3,7 @@ from collections import defaultdict
 SHORT = "Palabras Cortas"
 VERBS = "Verbos"
 NOUNS = "NoVerbos"
+OBSOLETE = "Desuso"
 COMPLEX = "bCfghjLmñpqRvxyz"
 SPLITTING = COMPLEX + "lu"
 DOUBLE = "bcdfghijlmnñpqtuvxyzCLR"
@@ -18,8 +19,9 @@ SHORT_LISTS = [("Dos letras", 2), ("Tres letras", 3)]
 LENGTHS = [("4, 5 y 6 letras", range(4, 7)), ("7 y 8 letras", range(7, 9)), ("9 y 10 letras", range(9, 11))]
 
 
-def default_lines(families, tops):
-    return (short_lines(families) + tops + kind_lines(families, verbal=True) + kind_lines(families, verbal=False) +
+def default_lines(families, tops, obsolete=()):
+    return (short_lines(families) + tops + kind_lines(families, verbal=True) +
+            kind_lines(list(obsolete), verbal=True, root=[VERBS, OBSOLETE], keep_short=True) + kind_lines(families, verbal=False) +
             ending_lines(families))
 
 
@@ -50,9 +52,9 @@ def ending_group(path, letters, members):
     return leaf_lines(path, name, filters, [note], members)
 
 
-def kind_lines(families, verbal):
-    root = [VERBS if verbal else NOUNS]
-    short = {id(f) for f in families if any(len(w) <= 3 for w in f["words"])}
+def kind_lines(families, verbal, root=None, keep_short=False):
+    root = root or [VERBS if verbal else NOUNS]
+    short = set() if keep_short else {id(f) for f in families if any(len(w) <= 3 for w in f["words"])}
     own = [f for f in families if f["verbal"] == verbal and (measured(f) >= 4 or id(f) not in short)]
     return [l for i, (name, sizes) in enumerate(LENGTHS)
             for l in length_lines(root + [name], verbal, name, [f for f in own if measured(f) in sizes or (i == 0 and measured(f) < 4)])]
@@ -137,7 +139,7 @@ def main_lines(context, main, by_second):
 def leaf_lines(path, name, filters, notes, members):
     if not members:
         return []
-    chunks = parts_of(sorted(members, key=lambda f: -f["points"]))
+    chunks = parts_of(sorted(members, key=lambda f: (-f["points"], f["words"][0])))
     if len(chunks) == 1:
         return [line(path, name, filters, notes, chunks[0])]
     return [line(path + [name], f"{name} · parte {i + 1}", filters, notes, chunk) for i, chunk in enumerate(chunks)]

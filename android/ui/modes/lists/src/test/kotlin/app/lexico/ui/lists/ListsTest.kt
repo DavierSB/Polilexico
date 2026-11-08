@@ -44,9 +44,22 @@ class ListsTest {
 
   @Test
   fun specSurvivesEncoding() {
-    val spec = FilterSpec(3, 7, "aerch", "c..", "..s", Kind.VERBAL, Order.LENGTH, 2, null, simpleOnly = true, words = true)
+    val spec = FilterSpec(3, 7, "aerch", "c..", "..s", Kind.VERBAL, Order.LENGTH, 2, null, simpleOnly = true, words = true, start = "ch", end = "ar")
     assertEquals(spec, FilterSpec.decode(spec.encode()))
     assertNull(FilterSpec.decode("roto"))
+  }
+
+  @Test
+  fun oldSpecsDecodeWithoutStartOrEnd() {
+    assertEquals(FilterSpec(contains = "aa"), FilterSpec.decode("2|10|aa|||ALL|POINTS||||f"))
+  }
+
+  @Test
+  fun startAndEndFixTheEdges() {
+    val chAr = FilterSpec(start = "ch", end = "ar").filter()
+    assertTrue(chAr.matches("Car"))
+    assertFalse(chAr.matches("cazar"))
+    assertEquals(listOf("Empieza por CH", "Termina en AR"), FilterSpec(start = "ch", end = "ar").summary())
   }
 
   @Test
@@ -101,6 +114,15 @@ class ListsTest {
     val cazar = lexicon.find("v:cazar")!!
     assertEquals(emptyList<VerbTrait>(), cazar.traits("cazar"))
     assertEquals(listOf(VerbTrait.INTRANSITIVE, VerbTrait.DEFECTIVE), cazar.traits("recazar"))
+  }
+
+  @Test
+  fun wordsShowTheirTag() {
+    val tagged = Lexicon.parse(
+      listOf("v\t9\t9\tcaer:i\tcaer", "v\t0\t0\tamatar:x\tamatar", "n\t5\t5\tm\tazucar", "n\t5\t5\tm\tmilitar", "v\t5\t5\t\tmilitar"),
+      { listOf("v\t0\t1\tamatar", "n\t5\t2\tazucar", "n\t5\t2\tazucares", "v\t9\t0\tcaer", "b\t5\t3,4\tmilitar") },
+    )
+    assertEquals(listOf("intr.", "desus.", "NoVerbo", null, null), listOf("caer", "amatar", "azucar", "militar", "azucares").map(tagged::tag))
   }
 
   @Test

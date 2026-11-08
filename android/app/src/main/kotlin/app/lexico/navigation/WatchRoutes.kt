@@ -93,7 +93,6 @@ private fun WatchTable(client: OnlineClient, watchers: List<PersonItem>, themes:
 
 private fun watchSeatActions(leave: () -> Unit): SeatActions = object : SeatActions {
   override fun propose(placement: Placement) {}
-  override fun pass() {}
   override fun ready() {}
   override fun exit() = leave()
 }

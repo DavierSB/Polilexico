@@ -38,6 +38,8 @@ import app.lexico.ui.board.RackTile
 import app.lexico.ui.common.Mulish
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import app.lexico.ui.common.ButtonText
+import app.lexico.ui.common.RowButtonPadding
 
 private const val HIT_PAUSE_MS = 900L
 
@@ -147,10 +149,10 @@ private fun AttemptButtons(session: RecallSession, verdict: Verdict?, attempt: A
       Verdict.HIT -> Unit
       null -> {
         val ready = attempt.answer.isComplete && !attempt.checking && !attempt.rejected
-        Button(onClick = { scope.launch { send(session, attempt) } }, Modifier.weight(1f), enabled = ready) { Text("Enviar") }
-        TextButton(onClick = session::forget, Modifier.weight(1f), enabled = !attempt.checking) { Text("No la recuerdo") }
+        Button(onClick = { scope.launch { send(session, attempt) } }, Modifier.weight(1f), enabled = ready, contentPadding = RowButtonPadding) { ButtonText("Enviar") }
+        TextButton(onClick = session::forget, Modifier.weight(1f), enabled = !attempt.checking, contentPadding = RowButtonPadding) { ButtonText("No la recuerdo") }
       }
-      else -> Button(onClick = session::next, Modifier.weight(1f)) { Text("Siguiente") }
+      else -> Button(onClick = session::next, Modifier.weight(1f)) { ButtonText("Siguiente") }
     }
   }
 }

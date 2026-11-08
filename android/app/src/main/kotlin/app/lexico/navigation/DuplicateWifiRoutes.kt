@@ -90,7 +90,6 @@ internal suspend fun read(json: String): TableState = withContext(Dispatchers.De
 
 internal fun seatActions(nav: Navigator, propose: (String) -> Unit, ready: () -> Unit): SeatActions = object : SeatActions {
   override fun propose(placement: Placement) = propose(placement.toString())
-  override fun pass() = propose("pasar")
   override fun ready() = ready()
   override fun exit() = nav.back()
 }

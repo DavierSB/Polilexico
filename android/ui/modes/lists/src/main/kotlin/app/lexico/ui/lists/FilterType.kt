@@ -1,20 +1,28 @@
 package app.lexico.ui.lists
 
 enum class FilterType(val title: String, val info: String) {
-  KIND("Tipo de palabra", "Elige si la lista tendrá solo verbos o solo palabras que no son verbos (sustantivos, adjetivos y demás)."),
-  LENGTH("Longitud", "Longitud de la palabra más pequeña de la familia, de un mínimo a un máximo. En los verbos se cuenta el infinitivo menos una letra: «cazar» cuenta como 4."),
-  COUNTS("Vocales y consonantes", "Cuántas vocales y cuántas consonantes exactas debe tener la palabra. Puedes fijar solo una de las dos."),
-  CONTAINS("Letras que debe contener", "Letras que la palabra tiene que llevar, en cualquier orden. Si escribes una letra dos veces, tiene que aparecer dos veces. Puedes pedir además que todas las demás letras sean simples, es decir, alguna de estas: A, E, I, O, U, C, D, L, N, R, S y T."),
-  FIXED("Letras en posición", "Fija una letra en un lugar concreto contando desde el principio: por ejemplo, una C en la primera casilla."),
-  FIXED_END("Letras en posición desde el final", "Fija una letra en un lugar concreto contando desde el final: por ejemplo, una S en la última casilla.");
+  KIND("Tipo de familia", "Incluir solo familias verbales o solo familias no verbales."),
+  LENGTH("Longitud", "Longitud de la palabra más corta de la familia."),
+  COUNTS("Vocales y consonantes", "Número de vocales y consonantes."),
+  CONTAINS("Letras que debe contener", "Letras que deben aparecer dentro de la palabra en cualquier orden."),
+  START("Comienzo", "Fija un comienzo para las palabras."),
+  END("Final", "Fija una terminación para las palabras."),
+  FIXED("Letras en posición", "Fija letras intermedias para la palabra."),
+  FIXED_END("Letras en posición inversa", "Fija letras en posiciones contadas de atrás hacia adelante.");
 
   fun line(spec: FilterSpec): String? = when (this) {
     KIND -> kindLine(spec.kind)
     LENGTH -> lengthLine(spec.minLength, spec.maxLength)
     COUNTS -> countsLine(spec.vowels, spec.consonants)
     CONTAINS -> lettersLine(spec.filter().contains, spec.simpleOnly)
+    START -> affixLine("Empieza por", spec.filter().start)
+    END -> affixLine("Termina en", spec.filter().end)
     FIXED -> positionsLine(spec.filter().fixed, "")
     FIXED_END -> positionsLine(spec.filter().fixedEnd, " desde el final")
+  }
+
+  companion object {
+    val ANAGRAM: List<FilterType> = listOf(START, END, FIXED, FIXED_END)
   }
 
   fun isSet(spec: FilterSpec): Boolean = line(spec) != null
@@ -29,6 +37,8 @@ enum class FilterType(val title: String, val info: String) {
     LENGTH -> spec.copy(minLength = MIN_TILES, maxLength = MAX_TILES)
     COUNTS -> spec.copy(vowels = null, consonants = null)
     CONTAINS -> spec.copy(contains = "", simpleOnly = false)
+    START -> spec.copy(start = "")
+    END -> spec.copy(end = "")
     FIXED -> spec.copy(fixed = "")
     FIXED_END -> spec.copy(fixedEnd = "")
   }
@@ -36,8 +46,8 @@ enum class FilterType(val title: String, val info: String) {
 
 private fun kindLine(kind: Kind): String? = when (kind) {
   Kind.ALL -> null
-  Kind.VERBAL -> "Verbos"
-  Kind.NON_VERBAL -> "No verbos"
+  Kind.VERBAL -> "Familias verbales"
+  Kind.NON_VERBAL -> "Familias no verbales"
 }
 
 private fun lengthLine(min: Int, max: Int): String? = when {
@@ -63,6 +73,8 @@ private fun containsLine(contains: String): String? {
   if (tiles.size > 1 && tiles.toSet().size == 1) return "Con la letra ${tiles[0]} " + if (tiles.size == 2) "duplicada" else "${tiles.size} veces"
   return if (tiles.size == 1) "Con la letra ${tiles[0]}" else "Con las letras " + tiles.dropLast(1).joinToString(", ") + " y " + tiles.last()
 }
+
+private fun affixLine(prefix: String, key: String): String? = key.takeIf { it.isNotEmpty() }?.let { "$prefix ${WordKeys.upper(it)}" }
 
 private fun positionsLine(fixed: Map<Int, Char>, suffix: String): String? {
   if (fixed.isEmpty()) return null

@@ -30,7 +30,6 @@ object DuplicateSamples {
   val noActions = object : DuplicateActions {
     override fun showRack() {}
     override fun propose(placement: Placement) {}
-    override fun pass() {}
     override fun cancel() {}
     override fun resign() {}
     override fun exit() {}

@@ -22,8 +22,6 @@ class DuplicateController(
 
   override fun propose(placement: Placement) = act { game.propose(placement) }
 
-  override fun pass() = act { game.pass() }
-
   override fun cancel() = act { game.cancel() }
 
   override fun analyze() = review(game.state.value.recordPath, onReview)

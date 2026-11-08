@@ -36,7 +36,6 @@ data class SeatView(
 
 interface SeatActions {
   fun propose(placement: Placement)
-  fun pass()
   fun ready()
   fun exit()
 }

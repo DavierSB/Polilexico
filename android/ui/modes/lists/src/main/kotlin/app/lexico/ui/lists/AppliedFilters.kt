@@ -29,21 +29,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AppliedFilters(spec: FilterSpec, onSpec: (FilterSpec) -> Unit) {
+fun AppliedFilters(spec: FilterSpec, types: List<FilterType> = FilterType.entries, onSpec: (FilterSpec) -> Unit) {
   var adding by remember { mutableStateOf(false) }
   var editing by remember { mutableStateOf<FilterType?>(null) }
-  FilterCard(spec, { editing = it }) { onSpec(it.cleared(spec)) }
+  FilterCard(spec, types, { editing = it }) { onSpec(it.cleared(spec)) }
   OutlinedButton(onClick = { adding = true }, Modifier.fillMaxWidth()) { Text(if (spec.isEmpty) "Añadir filtro" else "Añadir más filtros") }
-  if (adding) AddFilterDialog(spec, { adding = false }) { adding = false; editing = it }
+  if (adding) AddFilterDialog(spec, types, { adding = false }) { adding = false; editing = it }
   editing?.let { type -> FilterEditorDialog(type, spec, { onSpec(it); editing = null }) { editing = null } }
 }
 
 @Composable
-private fun FilterCard(spec: FilterSpec, onEdit: (FilterType) -> Unit, onRemove: (FilterType) -> Unit) {
+private fun FilterCard(spec: FilterSpec, types: List<FilterType>, onEdit: (FilterType) -> Unit, onRemove: (FilterType) -> Unit) {
   if (spec.isEmpty) return
   Column {
     Label("Filtros", Modifier.padding(bottom = 4.dp))
-    FilterType.entries.filter { it.isSet(spec) }.forEach { type -> FilterRow(type.line(spec)!!, type, onEdit, onRemove) }
+    types.filter { it.isSet(spec) }.forEach { type -> FilterRow(type.line(spec)!!, type, onEdit, onRemove) }
   }
 }
 
@@ -59,8 +59,8 @@ private fun FilterRow(text: String, type: FilterType, onEdit: (FilterType) -> Un
 }
 
 @Composable
-private fun AddFilterDialog(spec: FilterSpec, onCancel: () -> Unit, onPick: (FilterType) -> Unit) {
-  val available = FilterType.entries.filter { !it.isSet(spec) }
+private fun AddFilterDialog(spec: FilterSpec, types: List<FilterType>, onCancel: () -> Unit, onPick: (FilterType) -> Unit) {
+  val available = types.filter { !it.isSet(spec) }
   AlertDialog(
     onDismissRequest = onCancel,
     title = { Text("Añadir filtro") },

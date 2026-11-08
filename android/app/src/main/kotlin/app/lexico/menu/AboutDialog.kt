@@ -55,7 +55,7 @@ private fun AboutText(version: String, showAuthor: () -> Unit) {
         "modalidades del Scrabble con todas sus reglas precisas, y además brinde herramientas didácticas para su aprendizaje."
     )
     Text(
-      "El motor de juego es el de Woogles.io (Macondo), usado bajo los términos de su licencia, " +
+      "El motor de juego está basado en el de Woogles.io (Macondo), usado bajo los términos de su licencia, " +
         "la GNU General Public License v3."
     )
     Text(
@@ -103,6 +103,7 @@ private fun AuthorDialog(close: () -> Unit) {
       Column {
         Text("Davier Sánchez Bello")
         Text("daviersanbell@gmail.com", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("+53 55722267", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
       }
     },
   )
