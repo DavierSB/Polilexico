@@ -33,6 +33,12 @@ class Settings(ctx: Context) {
   var vibration: Boolean by mutableStateOf(prefs.getBoolean(VIBRATION_KEY, true))
     private set
 
+  var hidden: Boolean by mutableStateOf(prefs.getBoolean(HIDDEN_KEY, false))
+    private set
+
+  var noChallenges: Boolean by mutableStateOf(prefs.getBoolean(NO_CHALLENGES_KEY, false))
+    private set
+
   var statsSince: Long by mutableLongStateOf(prefs.getLong(STATS_SINCE_KEY, 0L))
     private set
 
@@ -67,6 +73,16 @@ class Settings(ctx: Context) {
     prefs.edit { putBoolean(VIBRATION_KEY, on) }
   }
 
+  fun hideOnline(on: Boolean) {
+    hidden = on
+    prefs.edit { putBoolean(HIDDEN_KEY, on) }
+  }
+
+  fun refuseChallenges(on: Boolean) {
+    noChallenges = on
+    prefs.edit { putBoolean(NO_CHALLENGES_KEY, on) }
+  }
+
   fun adoptStatsSince(at: Long) {
     if (at <= statsSince) return
     statsSince = at
@@ -85,5 +101,7 @@ class Settings(ctx: Context) {
     const val SOUNDS_KEY = "sounds"
     const val VIBRATION_KEY = "vibration"
     const val STATS_SINCE_KEY = "statsSince"
+    const val NO_CHALLENGES_KEY = "noChallenges"
+    const val HIDDEN_KEY = "hidden"
   }
 }

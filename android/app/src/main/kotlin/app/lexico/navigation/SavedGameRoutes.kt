@@ -3,9 +3,9 @@ package app.lexico.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.unit.dp
 import app.lexico.game.Lexico
 import app.lexico.games.export.GameExport
 import app.lexico.game.modes.classic.ClassicGame
@@ -19,11 +19,11 @@ import app.lexico.games.preEndgameRanking
 import app.lexico.games.reviewView
 import app.lexico.games.StatsGames
 import app.lexico.games.statsPage
+import app.lexico.games.NO_PROFILE
+import app.lexico.online.OnlineStatsRow
 import app.lexico.menu.Settings
 import app.lexico.menu.ThemeState
-import app.lexico.ui.classic.BOTS
 import app.lexico.ui.classic.bot
-import app.lexico.ui.classic.OpponentPhoto
 import app.lexico.ui.games.EndgameSessions
 import app.lexico.ui.games.FinishedGamesScreen
 import app.lexico.ui.games.InProgressScreen
@@ -66,12 +66,19 @@ internal fun FinishedFolderRoute(screen: Screen.FinishedFolder, lexico: Lexico, 
 @Composable
 internal fun StatsRoute(lexico: Lexico, settings: Settings, nav: Navigator) {
   val since = settings.statsSince
+  val online = rememberOnlineStats()
   WhenReady(rememberCreated(Screen.Stats) { statsGames(lexico, since) }, "Calculando tus estadísticas…") { games ->
-    StatsScreen(
-      BOTS.map { it.alias }, photo = { OpponentPhoto(it, 22.dp) },
-      pageFor = { statsPage(it, games, reset = since > 0) }, onReset = settings::resetStats, onBack = nav::back,
-    )
+    StatsScreen(pageFor = { statsPage(it, games, online, reset = since > 0) }, onReset = settings::resetStats, onBack = nav::back)
   }
+}
+
+@Composable
+private fun rememberOnlineStats(): Result<List<OnlineStatsRow>>? {
+  val online = rememberOnline()
+  val stats by produceState<Result<List<OnlineStatsRow>>?>(null) {
+    value = online.account.token()?.let { online.api.stats(it) } ?: Result.failure(Exception(NO_PROFILE))
+  }
+  return stats
 }
 
 private suspend fun statsGames(lexico: Lexico, since: Long): StatsGames = StatsGames(

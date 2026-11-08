@@ -19,13 +19,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.BarTextButton
+import app.lexico.ui.common.ChoiceOptions
 import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.Header
 
 @Composable
 fun StatsScreen(
-  opponents: List<String>,
-  photo: @Composable (String) -> Unit,
   pageFor: (StatsFilter) -> StatsPage,
   onReset: () -> Unit,
   onBack: () -> Unit,
@@ -34,8 +33,8 @@ fun StatsScreen(
   var confirmReset by remember { mutableStateOf(false) }
   Column(Modifier.fillMaxSize()) {
     Header("Mis estadísticas", onBack) { BarTextButton("Reiniciar") { confirmReset = true } }
-    ModeTabs(filter.mode) { filter = StatsFilter(it) }
-    StatsContent(filter, opponents, photo, remember(filter, pageFor) { pageFor(filter) }) { filter = filter.copy(opponent = it) }
+    ModeTabs(filter.mode) { filter = filter.copy(mode = it) }
+    StatsContent(filter, remember(filter, pageFor) { pageFor(filter) }) { filter = filter.copy(source = it) }
   }
   if (confirmReset) ResetDialog(onReset = { onReset(); confirmReset = false }, onCancel = { confirmReset = false })
 }
@@ -49,11 +48,9 @@ private fun ModeTabs(mode: StatsMode, select: (StatsMode) -> Unit) {
 }
 
 @Composable
-private fun StatsContent(
-  filter: StatsFilter, opponents: List<String>, photo: @Composable (String) -> Unit, page: StatsPage, selectOpponent: (String?) -> Unit,
-) {
+private fun StatsContent(filter: StatsFilter, page: StatsPage, selectSource: (StatsSource) -> Unit) {
   Column(Modifier.verticalScroll(rememberScrollState()).padding(top = 10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-    if (filter.mode == StatsMode.CLASSIC) OpponentSelector(filter.opponent, opponents, photo, selectOpponent)
+    ChoiceOptions(StatsSource.entries.map { it.label }, filter.source.ordinal) { selectSource(StatsSource.entries[it]) }
     if (page.rows.isEmpty()) return@Column Text(page.emptyText, style = MaterialTheme.typography.bodyMedium)
     StatsTable(page.rows)
     page.note?.let { Note(it) }

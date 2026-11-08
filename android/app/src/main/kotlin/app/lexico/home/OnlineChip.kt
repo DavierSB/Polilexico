@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
@@ -19,11 +20,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.lexico.online.Online
+import app.lexico.online.OnlineClient
 import kotlinx.coroutines.delay
 
 @Composable
 internal fun rememberPresence(): Int? {
   val online = Online.of(LocalContext.current)
+  val client by online.current.collectAsState()
+  return client?.let { liveCount(it) } ?: polledCount(online)
+}
+
+@Composable
+private fun liveCount(client: OnlineClient): Int? {
+  val connected by client.connected.collectAsState()
+  val lobby by client.lobby.collectAsState()
+  return if (connected) lobby.people.size + 1 else null
+}
+
+@Composable
+private fun polledCount(online: Online): Int? {
   val count by produceState<Int?>(null) {
     while (true) {
       value = online.api.presence().getOrNull()

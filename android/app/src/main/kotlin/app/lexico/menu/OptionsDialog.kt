@@ -33,6 +33,8 @@ private fun Options(settings: Settings) {
     UnseenSwitch(settings.showUnseen, settings::showUnseenTiles)
     OptionSwitch(settings.sounds, settings::useSounds, "Sonidos")
     OptionSwitch(settings.vibration, settings::useVibration, "Vibración")
+    OptionSwitch(settings.hidden, settings::hideOnline, "No aparecer en línea")
+    OptionSwitch(settings.noChallenges, settings::refuseChallenges, "No recibir desafíos")
   }
 }
 

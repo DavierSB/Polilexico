@@ -1,6 +1,8 @@
 package app.lexico.ui.games
 
-data class StatsFilter(val mode: StatsMode, val opponent: String? = null)
+data class StatsFilter(val mode: StatsMode, val source: StatsSource = StatsSource.ALL)
+
+enum class StatsSource(val label: String) { ALL("Todo"), ONLINE("En línea"), OFFLINE("Offline") }
 
 enum class StatsMode { CLASSIC, DUPLICATE }
 

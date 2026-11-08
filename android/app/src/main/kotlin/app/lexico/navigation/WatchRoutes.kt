@@ -28,7 +28,8 @@ import app.lexico.ui.duplicate.SeatActions
 
 @Composable
 internal fun Watch(client: OnlineClient, info: RoomInfo, nav: Navigator, themes: ThemeState) {
-  val watchers = client.watchers.collectAsState().value.map(::personItem)
+  val me = rememberOnline().account.session.collectAsState().value
+  val watchers = client.watchers.collectAsState().value.filterNot { it.name == me?.name && it.country == me.country }.map(::personItem)
   val leave = { client.leave(); nav.back() }
   if (info.duplicate) WatchTable(client, watchers, themes, leave) else WatchGame(client, info, watchers, themes, leave)
 }

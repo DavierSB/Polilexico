@@ -1,6 +1,7 @@
 package app.lexico.navigation
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -11,8 +12,11 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -51,16 +55,25 @@ fun App(lexico: Lexico, settings: Settings, updates: Updates, version: String) {
   LaunchedEffect(updates) { updates.check() }
   Themed(themes.current) {
     Surface(Modifier.fillMaxSize()) {
-      ModalNavigationDrawer(
-        drawerState = menu.drawer,
-        gesturesEnabled = !nav.current.isGame || menu.drawer.isOpen,
-        drawerContent = { AppMenu(nav, menu, themes, updates, cues::click) },
-      ) {
-        ScreenFrame(nav.current) { Screens(engine, lexico, nav, settings, themes, menu, cues, updates.available != null) }
+      Box(Modifier.fillMaxSize()) {
+        Drawer(nav, menu, { AppMenu(nav, menu, themes, updates, cues::click) }) {
+          ScreenFrame(nav.current) { Screens(engine, lexico, nav, settings, themes, menu, cues, updates.available != null) }
+        }
+        IncomingInvites(nav, settings.noChallenges, Modifier.align(Alignment.TopCenter).safeDrawingPadding().padding(12.dp))
       }
       Dialogs(settings, themes, menu, version)
     }
   }
+}
+
+@Composable
+private fun Drawer(nav: Navigator, menu: MenuState, drawer: @Composable () -> Unit, content: @Composable () -> Unit) {
+  ModalNavigationDrawer(
+    drawerState = menu.drawer,
+    gesturesEnabled = !nav.current.isGame || menu.drawer.isOpen,
+    drawerContent = drawer,
+    content = content,
+  )
 }
 
 @Composable
@@ -78,6 +91,7 @@ private fun Screens(
   val scorer = remember(lexico) { engineScorer(lexico) }
   LaunchedEffect(engine) { if (engine?.isSuccess == true) runCatching { WordLexicon.warmInBackground(lexico) } }
   WhenReady(engine, "Cargando el motor…") {
+    StayOnline(lexico, settings.hidden)
     CompositionLocalProvider(
       LocalPlayScorer provides scorer.takeIf { settings.liveScore },
       LocalShowUnseen provides settings.showUnseen,
@@ -93,7 +107,15 @@ private fun Screens(
 @Composable
 private fun rememberHomeButton(nav: Navigator): (@Composable () -> Unit)? {
   val busy = nav.current.isActivity
-  return remember(nav, busy) { if (busy) null else { { HomeLogo(nav::home) } } }
+  val session by rememberOnline().account.session.collectAsState()
+  val profile = session?.takeIf { nav.current.showsProfile }
+  return remember(nav, busy, profile) {
+    when {
+      profile != null -> { { ProfileButton(profile) { nav.go(Screen.OnlineProfile) } } }
+      busy -> null
+      else -> { { HomeLogo(nav::home) } }
+    }
+  }
 }
 
 @Composable

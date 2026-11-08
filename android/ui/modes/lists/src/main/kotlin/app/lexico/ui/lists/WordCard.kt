@@ -32,8 +32,10 @@ fun ColumnScope.WordCard(unit: Family, lexicon: Lexicon, onOpen: (String) -> Uni
       HeadWord(unit.head)
       Chips(*(listOf(kindText(unit)) + unit.traits(unit.head).map { it.label }).toTypedArray())
       MeaningLine(unit.head, lexicon)
-      Details(unit, lexicon) { onOpen(WORD_KEY + it) }
-      WordGroup("Similares", lexicon.similar(unit).map { it.word }, lexicon) { word -> lexicon.familyOf(word)?.let { onOpen(it.key) } }
+      WordGroups {
+        Details(unit, lexicon) { onOpen(WORD_KEY + it) }
+        WordGroup("Similares", lexicon.similar(unit).map { it.word }, lexicon) { word -> lexicon.familyOf(word)?.let { onOpen(it.key) } }
+      }
     }
   }
 }
@@ -68,10 +70,15 @@ private fun Details(unit: Family, lexicon: Lexicon, onWord: (String) -> Unit) {
 }
 
 @Composable
+private fun WordGroups(content: @Composable ColumnScope.() -> Unit) {
+  Column(verticalArrangement = Arrangement.spacedBy(14.dp), horizontalAlignment = Alignment.Start, content = content)
+}
+
+@Composable
 private fun WordGroup(title: String, words: List<String>, lexicon: Lexicon, onWord: (String) -> Unit) {
   if (words.isEmpty()) return
-  Column(Modifier.fillMaxWidth(), Arrangement.spacedBy(6.dp), Alignment.CenterHorizontally) {
-    Label(title, Modifier.padding(top = 8.dp))
+  Column(verticalArrangement = Arrangement.spacedBy(6.dp), horizontalAlignment = Alignment.Start) {
+    Label(title, Modifier.padding(start = WORD_INSET, top = 8.dp))
     AlignedWords(words, lexicon, onWord)
   }
 }
@@ -86,7 +93,7 @@ private fun AlignedWords(words: List<String>, lexicon: Lexicon, onWord: (String)
 @Composable
 private fun WordLine(word: String, tag: String?, onWord: (String) -> Unit) {
   Row(
-    Modifier.clip(RoundedCornerShape(8.dp)).clickable { onWord(word) }.padding(horizontal = 10.dp),
+    Modifier.clip(RoundedCornerShape(8.dp)).clickable { onWord(word) }.padding(horizontal = WORD_INSET),
     Arrangement.spacedBy(8.dp), Alignment.CenterVertically,
   ) {
     Text(WordKeys.upper(word), fontSize = 26.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 1.sp)
@@ -102,4 +109,6 @@ internal fun kindText(unit: Family): String = when {
 }
 
 private const val WORD_KEY = "w:"
+
+private val WORD_INSET = 10.dp
 private const val OUTSIDE = "No está en el léxico de estudio (palabras válidas de hasta 9 letras)."

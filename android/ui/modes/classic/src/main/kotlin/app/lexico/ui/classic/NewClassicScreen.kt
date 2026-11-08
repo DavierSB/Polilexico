@@ -1,6 +1,10 @@
 package app.lexico.ui.classic
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -12,10 +16,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.lexico.ui.common.ButtonText
 import app.lexico.ui.common.ChallengeModeSelector
 import app.lexico.ui.common.ChoiceOptions
 import app.lexico.ui.common.CreateRoomButton
 import app.lexico.ui.common.FitColumn
+import app.lexico.ui.common.OnlineTab
+import app.lexico.ui.common.SavedButtons
+import app.lexico.ui.common.SavedShortcuts
+import app.lexico.ui.common.SwitchPrompt
 import app.lexico.ui.common.Header
 import app.lexico.ui.common.SectionTitle
 import app.lexico.ui.common.StartButton
@@ -25,13 +34,17 @@ import app.lexico.ui.common.TwoOptions
 import app.lexico.ui.common.WifiTip
 
 @Composable
-fun NewClassicScreen(onBack: () -> Unit, onStart: (ClassicConfig) -> Unit, onHost: (ClassicConfig, String) -> Unit, onJoin: (String) -> Unit) {
+fun NewClassicScreen(
+  online: OnlineTab, saved: SavedShortcuts, onBack: () -> Unit, onStart: (ClassicConfig) -> Unit, onHost: (ClassicConfig, String) -> Unit, onJoin: (String) -> Unit,
+) {
   val form = rememberClassicForm()
   var chosen by remember { mutableStateOf(false) }
+  var tab by remember { mutableStateOf(if (online.preferred) RivalTab.ONLINE else RivalTab.LOCAL) }
   BackHandler(enabled = chosen) { chosen = false }
   val back = { chosen = false }
   when {
-    !chosen -> OpponentStep(form, onBack) { chosen = true }
+    !chosen && tab == RivalTab.ONLINE -> OnlineStep(online, onBack) { tab = it }
+    !chosen -> LocalStep(form, saved, onBack, { tab = it }) { chosen = true }
     !form.human -> SettingsStep(form, back) { onStart(form.toConfig()) }
     form.wifi -> WifiStep(form, back, onHost = { onHost(form.toConfig(), form.myName.trim()) }) { onJoin(form.myName.trim()) }
     else -> SharedStep(form, back) { onStart(form.toConfig()) }
@@ -39,30 +52,45 @@ fun NewClassicScreen(onBack: () -> Unit, onStart: (ClassicConfig) -> Unit, onHos
 }
 
 @Composable
-private fun OpponentStep(form: ClassicForm, onBack: () -> Unit, onChosen: () -> Unit) {
-  FitColumn(10.dp) {
+private fun LocalStep(form: ClassicForm, saved: SavedShortcuts, onBack: () -> Unit, onTab: (RivalTab) -> Unit, onChosen: () -> Unit) {
+  val switch = { form.human = !form.human; form.starter = 0 }
+  Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     Header("Clásica", onBack)
-    RivalTabs(form.human) { form.human = it; form.starter = 0 }
-    if (form.human) HumanRival(form, onChosen) else BotRival(form, onChosen)
+    RivalTabs(RivalTab.LOCAL, onTab)
+    Box(Modifier.weight(1f)) {
+      FitColumn(10.dp) {
+        if (form.human) HumanRival(form) else BotRival(form)
+        SwitchPrompt(if (form.human) "¿O prefieres jugar contra un bot?" else "¿O prefieres jugar contra una persona?", switch)
+      }
+    }
+    Button(modifier = Modifier.fillMaxWidth(), onClick = onChosen) { ButtonText(if (form.human) "Seleccionar modo de juego" else "Seleccionar rival") }
+    SavedButtons(saved)
   }
 }
 
 @Composable
-private fun BotRival(form: ClassicForm, onChosen: () -> Unit) {
-  BOTS.forEach { b -> BotOption(b, selected = b.name == form.opponent) { form.opponent = b.name } }
-  Button(modifier = Modifier.fillMaxWidth(), onClick = onChosen) { Text("Seleccionar rival") }
+private fun OnlineStep(online: OnlineTab, onBack: () -> Unit, onTab: (RivalTab) -> Unit) {
+  Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Header("Clásica", onBack)
+    RivalTabs(RivalTab.ONLINE, onTab)
+    online.content()
+  }
 }
 
 @Composable
-private fun HumanRival(form: ClassicForm, onChosen: () -> Unit) {
+private fun BotRival(form: ClassicForm) {
+  BOTS.forEach { b -> BotOption(b, selected = b.name == form.opponent) { form.opponent = b.name } }
+}
+
+@Composable
+private fun HumanRival(form: ClassicForm) {
   PlayModeOptions(form.wifi) { form.wifi = it; form.starter = 0 }
-  Button(modifier = Modifier.fillMaxWidth(), onClick = onChosen) { Text("Seleccionar modo de juego") }
 }
 
 @Composable
 private fun SharedStep(form: ClassicForm, onBack: () -> Unit, onStart: () -> Unit) {
   FitColumn(10.dp) {
-    Header("Un solo teléfono", onBack)
+    Header("Compartir teléfono", onBack)
     NamesSection(form)
     StarterSection(form)
     ChallengeSection(form)

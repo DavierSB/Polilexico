@@ -6,7 +6,9 @@ import app.lexico.game.Lexico
 import app.lexico.game.race.RaceGame
 import app.lexico.game.storage.Mode
 import app.lexico.home.HomeScreen
+import app.lexico.games.folderOf
 import app.lexico.home.MenuCounts
+import app.lexico.ui.common.SavedShortcuts
 import app.lexico.menu.Settings
 import app.lexico.menu.ThemeState
 import app.lexico.modes.analysis.engineAnagrams
@@ -63,16 +65,16 @@ private fun OtherScreens(
 ) {
   val style = settings.theme.board(settings.boardLook)
   when (screen) {
-    Screen.Home, Screen.ClassicMenu, Screen.DuplicateMenu, Screen.Minigames, Screen.Study, Screen.Lists ->
+    Screen.Home, Screen.Minigames, Screen.Study, Screen.Lists ->
       HomeScreen(screen, style, rememberCounts(screen, lexico), lexico.demoGames::nextPlacements, hasUpdate, onMenu, nav::back, nav::go)
     Screen.NewClassic -> NewClassicScreen(
-      nav::back, onStart = { nav.replace(Screen.Classic(it)) }, onHost = { config, name -> nav.replace(Screen.WifiHost(config, name)) },
+      rememberOnlineTab(Mode.CLASSIC, lexico, settings, nav), rememberSaved(Mode.CLASSIC, lexico, nav), nav::back, onStart = { nav.replace(Screen.Classic(it)) }, onHost = { config, name -> nav.replace(Screen.WifiHost(config, name)) },
     ) { nav.replace(Screen.WifiJoin(it)) }
     Screen.NewEndgame -> NewEndgameScreen(
       nav::back, onStart = { nav.replace(Screen.Endgame(it)) }, onHost = { config, name -> nav.replace(Screen.EndgameWifiHost(config, name)) },
     ) { nav.replace(Screen.EndgameWifiJoin(it)) }
     Screen.NewDuplicate -> NewDuplicateScreen(
-      nav::back, { lexico.duplicateRecords.best(it.toSetup()) }, onStart = { nav.replace(Screen.Duplicate(it)) },
+      rememberOnlineTab(Mode.DUPLICATE, lexico, settings, nav), rememberSaved(Mode.DUPLICATE, lexico, nav), nav::back, { lexico.duplicateRecords.best(it.toSetup()) }, onStart = { nav.replace(Screen.Duplicate(it)) },
       onHost = { nav.replace(Screen.DuplicateWifiHost(it)) },
     ) { nav.replace(Screen.DuplicateWifiJoin(it)) }
     Screen.NewRecall -> NewRecallScreen(
@@ -103,7 +105,7 @@ private fun OtherScreens(
     is Screen.FinishedFolder -> FinishedFolderRoute(screen, lexico, nav)
     is Screen.Review -> ReviewRoute(screen, lexico, nav, themes)
     Screen.Stats -> StatsRoute(lexico, settings, nav)
-    is Screen.Online -> OnlineRoute(screen.mode, lexico, settings, nav)
+    Screen.OnlineAccount -> OnlineAccountRoute(nav)
     is Screen.OnlineNewClassic -> NewOnlineClassicRoute(screen, lexico, nav)
     Screen.OnlineNewDuplicate -> NewOnlineDuplicateRoute(lexico, nav)
     Screen.OnlineProfile -> OnlineProfileRoute(nav)
@@ -113,15 +115,10 @@ private fun OtherScreens(
 
 @Composable
 private fun rememberCounts(menu: Screen, lexico: Lexico): MenuCounts =
-  remember(menu) { MenuCounts(savedOf(menu, lexico), if (menu == Screen.Lists) unfinishedStudies(lexico) else 0) }
+  remember(menu) { MenuCounts(if (menu == Screen.Lists) unfinishedStudies(lexico) else 0) }
 
-private fun savedOf(menu: Screen, lexico: Lexico): Int {
-  val mode = modeOf(menu) ?: return 0
-  return lexico.savedGames.list().count { it.mode == mode }
-}
-
-private fun modeOf(menu: Screen): Mode? = when (menu) {
-  Screen.ClassicMenu -> Mode.CLASSIC
-  Screen.DuplicateMenu -> Mode.DUPLICATE
-  else -> null
+@Composable
+private fun rememberSaved(mode: Mode, lexico: Lexico, nav: Navigator): SavedShortcuts {
+  val count = remember(mode) { lexico.savedGames.list().count { it.mode == mode } }
+  return SavedShortcuts(count, { nav.go(Screen.InProgress(mode)) }) { nav.go(Screen.FinishedFolder(folderOf(mode))) }
 }

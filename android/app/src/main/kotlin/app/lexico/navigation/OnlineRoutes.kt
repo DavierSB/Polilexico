@@ -1,5 +1,8 @@
 package app.lexico.navigation
 
+import androidx.compose.ui.graphics.asImageBitmap
+import android.util.Base64
+import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
@@ -22,6 +25,7 @@ import app.lexico.game.storage.Mode
 import app.lexico.menu.Settings
 import app.lexico.menu.ThemeState
 import app.lexico.modes.duplicate.seatView
+import app.lexico.games.onlineRows
 import app.lexico.online.ADJOURNED
 import app.lexico.online.AccountForm
 import app.lexico.online.LiveGame
@@ -43,8 +47,8 @@ import app.lexico.ui.common.CLOCK_RUNS
 import app.lexico.ui.common.AccountInput
 import app.lexico.ui.common.AdjournedItem
 import app.lexico.ui.common.ChatEntry
-import app.lexico.ui.common.ContactGroup
 import app.lexico.ui.common.ChatContact
+import app.lexico.ui.common.ContactGroup
 import app.lexico.ui.common.Durations
 import app.lexico.ui.common.GameItem
 import app.lexico.ui.common.GuestLobbyScreen
@@ -52,10 +56,9 @@ import app.lexico.ui.common.HostLobbyScreen
 import app.lexico.ui.common.LocalChat
 import app.lexico.ui.common.LocalPhotos
 import app.lexico.ui.common.OnlineAccountScreen
-import app.lexico.ui.common.OnlineHubActions
-import app.lexico.ui.common.OnlineHubScreen
-import app.lexico.ui.common.OnlineHubState
-import app.lexico.ui.common.OnlineProfile
+import app.lexico.ui.common.OnlinePanel
+import app.lexico.ui.common.OnlinePanelActions
+import app.lexico.ui.common.OnlinePanelState
 import app.lexico.ui.common.OnlineProfileScreen
 import app.lexico.ui.common.OnlineWaitScreen
 import app.lexico.ui.common.PersonItem
@@ -69,6 +72,7 @@ import app.lexico.ui.common.WaitingRoomScreen
 import app.lexico.ui.common.flagOf
 import app.lexico.ui.duplicate.NewOnlineDuplicateScreen
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 private const val RIVAL_AWAY = "Tu rival se desconectó."
 private const val RIVAL_CLOCK = " Su reloj sigue corriendo."
@@ -76,10 +80,11 @@ private const val RIVAL_CLOCK = " Su reloj sigue corriendo."
 private var backupSynced = false
 
 @Composable
-internal fun OnlineRoute(mode: Mode?, lexico: Lexico, settings: Settings, nav: Navigator) {
+internal fun OnlineAccountRoute(nav: Navigator) {
   val online = rememberOnline()
   val session by online.account.session.collectAsState()
-  session?.let { OnlineHub(it, mode, online, lexico, settings, nav) } ?: AccountRoute(online, nav)
+  LaunchedEffect(session != null) { if (session != null) nav.back() }
+  if (session == null) AccountRoute(online, nav)
 }
 
 @Composable
@@ -177,19 +182,40 @@ private fun AccountRoute(online: Online, nav: Navigator) {
   val scope = rememberCoroutineScope()
   var busy by remember { mutableStateOf(false) }
   var error by remember { mutableStateOf<String?>(null) }
+  val photo = rememberChosenPhoto { error = it }
   val submit = { signingUp: Boolean, input: AccountInput ->
     scope.launch {
       busy = true
       error = with(online.account) { if (signingUp) signUp(input.form()) else logIn(input.form()) }
+      if (error == null && signingUp) photo.base64?.let { online.setPhoto(it) }
       busy = false
     }
     Unit
   }
-  OnlineAccountScreen(busy, error, nav::back, { submit(true, it) }) { submit(false, it) }
+  OnlineAccountScreen(busy, error, photo.image, photo.pick, nav::back, { submit(true, it) }) { submit(false, it) }
 }
 
+private class ChosenPhoto(val base64: String?, val image: ImageBitmap?, val pick: () -> Unit)
+
 @Composable
-private fun OnlineHub(session: OnlineSession, mode: Mode?, online: Online, lexico: Lexico, settings: Settings, nav: Navigator) {
+private fun rememberChosenPhoto(onFailed: (String) -> Unit): ChosenPhoto {
+  val scope = rememberCoroutineScope()
+  val context = LocalContext.current
+  var base64 by remember { mutableStateOf<String?>(null) }
+  val picker = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
+    uri?.let { scope.launch { shrunkPhoto(context, it)?.let { chosen -> base64 = chosen } ?: onFailed("No se pudo leer esa foto.") } }
+  }
+  val image = remember(base64) { base64?.let(::decodePhoto) }
+  return ChosenPhoto(base64, image) { picker.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) }
+}
+
+private fun decodePhoto(base64: String): ImageBitmap? = runCatching {
+  val bytes = Base64.decode(base64, Base64.DEFAULT)
+  BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.asImageBitmap()
+}.getOrNull()
+
+@Composable
+internal fun OnlinePanelHost(session: OnlineSession, mode: Mode, online: Online, lexico: Lexico, settings: Settings, nav: Navigator) {
   val client = rememberClient(lexico)
   LaunchedEffect(session.name) { syncBackupOnce(online, settings) }
   val lobby by client.lobby.collectAsState()
@@ -197,23 +223,19 @@ private fun OnlineHub(session: OnlineSession, mode: Mode?, online: Online, lexic
   val game by client.game.collectAsState()
   val status by client.status.collectAsState()
   val refused by client.refused.collectAsState()
-  val ended by client.ended.collectAsState()
   JumpWhenSeated(room?.id) { nav.go(Screen.OnlinePlay) }
   val composer = remember { Composer() }
-  val inbox by client.inbox.collectAsState()
-  val actions = hubActions(client, lobby, nav, composer)
-  val seeks = lobby.seeks.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }
-  val state = OnlineHubState(
-    refused ?: status ?: ended.takeIf { room == null }, room != null && game?.state?.value?.result == null, seeks.map(::seekItem),
-    lobby.people.map(::personItem), lobby.invites.firstOrNull()?.let(::seekItem),
-    classic = mode != Mode.DUPLICATE, duplicate = mode != Mode.CLASSIC,
-    games = lobby.games.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }.map(::gameItem),
-    adjourned = lobby.adjourned.filter { mode == null || it.duplicate == (mode == Mode.DUPLICATE) }
+  val duplicate = mode == Mode.DUPLICATE
+  val state = OnlinePanelState(
+    refused ?: status, room != null && game?.state?.value?.result == null,
+    lobby.seeks.filter { it.duplicate == duplicate }.map(::seekItem), classic = !duplicate,
+    games = lobby.games.filter { it.duplicate == duplicate }.map(::gameItem),
+    adjourned = lobby.adjourned.filter { it.duplicate == duplicate }
       .map { AdjournedItem(it.id, it.opponent, it.country, it.online, it.busy, it.result, it.duplicate, it.untimed) },
-    unread = inbox.size,
+    people = shuffledPeople(lobby.people).map { personItem(it, lobby.games) },
   )
   ProvidePhotos(online, lobby) {
-    OnlineHubScreen(profileOf(session), state, actions)
+    OnlinePanel(state, panelActions(client, lobby, nav, composer))
     if (room == null) MessageDialogs(client, contacts(lobby, emptyList(), emptyList()), null, composer)
   }
 }
@@ -227,19 +249,18 @@ private fun JumpWhenSeated(roomId: String?, jump: () -> Unit) {
   }
 }
 
-private fun hubActions(client: OnlineClient, lobby: Lobby, nav: Navigator, composer: Composer): OnlineHubActions {
+private fun panelActions(client: OnlineClient, lobby: Lobby, nav: Navigator, composer: Composer): OnlinePanelActions {
   val seekOf = { id: String -> (lobby.seeks + lobby.invites).find { it.id == id } }
-  return OnlineHubActions(
-    back = nav::back, profile = { nav.go(Screen.OnlineProfile) }, resume = { nav.go(Screen.OnlinePlay) },
+  return OnlinePanelActions(
+    resume = { nav.go(Screen.OnlinePlay) },
     seekClassic = { nav.go(Screen.OnlineNewClassic()) }, createDuplicate = { nav.go(Screen.OnlineNewDuplicate) },
     accept = { id -> seekOf(id)?.let { client.accept(it); nav.go(Screen.OnlinePlay) } },
-    challenge = { nav.go(Screen.OnlineNewClassic(Person(it.name, it.country, it.busy))) },
-    decline = { id -> seekOf(id)?.let(client::decline) },
     cancel = { id -> seekOf(id)?.let(client::cancel) }, start = { id -> seekOf(id)?.let(client::startSeek) },
     watch = { id -> lobby.games.find { it.id == id }?.let { client.watch(it); nav.go(Screen.OnlinePlay) } },
     resumeAdjourned = { id -> lobby.adjourned.find { it.id == id }?.let(client::resume) },
     seenAdjourned = { id -> lobby.adjourned.find { it.id == id }?.let(client::seen) },
-    messages = { composer.write() }, write = { p -> composer.write(ChatContact(p.name, p.country, ContactGroup.OTHERS)) },
+    challenge = { nav.go(Screen.OnlineNewClassic(Person(it.name, it.country, it.busy))) },
+    write = { composer.write(ChatContact(it.name, it.country, ContactGroup.OTHERS)) },
   )
 }
 
@@ -318,7 +339,7 @@ private fun rememberPhotoActions(online: Online, onNotice: (String?) -> Unit): P
 }
 
 @Composable
-private fun ProvidePhotos(online: Online, lobby: Lobby, content: @Composable () -> Unit) {
+internal fun ProvidePhotos(online: Online, lobby: Lobby, content: @Composable () -> Unit) {
   val session by online.account.session.collectAsState()
   val source = remember(lobby, session) { LobbyPhotos(online.photos, countriesOf(lobby, session)) }
   CompositionLocalProvider(LocalPhotos provides source, content = content)
@@ -354,7 +375,7 @@ private fun rememberClient(lexico: Lexico): OnlineClient {
 }
 
 @Composable
-private fun rememberOnline(): Online {
+internal fun rememberOnline(): Online {
   val context = LocalContext.current
   return remember { Online.of(context) }
 }
@@ -372,7 +393,17 @@ private fun gameItem(g: LiveGame): GameItem {
 
 internal fun personItem(p: Person): PersonItem = PersonItem(p.name, p.country, p.busy)
 
-private fun seekItem(s: Seek): SeekItem =
+internal fun personItem(p: Person, games: List<LiveGame>): PersonItem = personItem(p).copy(game = gameOf(p, games))
+
+private fun gameOf(p: Person, games: List<LiveGame>): String? =
+  games.find { g -> g.players.zip(g.countries).any { (name, country) -> name == p.name && country == p.country } }?.id
+
+private val peopleSeed = Random.nextInt()
+
+internal fun shuffledPeople(people: List<Person>): List<Person> =
+  people.sortedWith(compareBy({ it.busy }, { (it.name.lowercase() + "|" + it.country).hashCode() xor peopleSeed }))
+
+internal fun seekItem(s: Seek): SeekItem =
   SeekItem(s.id, s.host, s.country, seekDetail(s), s.mine, s.duplicate, s.players, s.to, s.resume)
 
 private fun seekDetail(s: Seek): String =
@@ -385,32 +416,10 @@ private fun seekDetail(s: Seek): String =
 private fun classicTime(s: Seek): String =
   if (s.timed) "${Durations.format(s.timeMs)} + ${Durations.format(s.overtimeMs)}" else "Sin tiempo"
 
-private fun profileOf(session: OnlineSession): OnlineProfile = OnlineProfile(session.name, session.country)
-
 private fun AccountInput.form(): AccountForm = AccountForm(name, country, password, email)
 
 private fun statsSection(row: OnlineStatsRow): StatsSection = if (row.mode == "duplicate") duplicateSection(row) else classicSection(row)
 
-private fun classicSection(row: OnlineStatsRow): StatsSection = StatsSection(
-  "Clásica",
-  listOf(
-    "Partidas" to "${row.games}",
-    "Victorias" to "${row.wins}  (%.0f %%)".format(100.0 * row.wins / row.games.coerceAtLeast(1)),
-    "Derrotas" to "${row.losses}",
-    "Empates" to "${row.draws}",
-    "Promedio de puntos" to "%.0f".format(row.avgScore),
-    "Mayor scrabble" to if (row.bestBingo > 0) "${row.bestBingo}" else "—",
-    "Mejor jugada" to "${row.bestPlay}",
-  ),
-)
+private fun classicSection(row: OnlineStatsRow): StatsSection = StatsSection("Clásica", onlineRows(row))
 
-private fun duplicateSection(row: OnlineStatsRow): StatsSection = StatsSection(
-  "Duplicada",
-  listOf(
-    "Partidas" to "${row.games}",
-    "Primeros puestos" to "${row.wins}",
-    "Efectividad promedio" to (row.avgEfficiency?.let { "%.1f %%".format(it * 100) } ?: "—"),
-    "Mayor scrabble" to if (row.bestBingo > 0) "${row.bestBingo}" else "—",
-    "Mejor jugada" to "${row.bestPlay}",
-  ),
-)
+private fun duplicateSection(row: OnlineStatsRow): StatsSection = StatsSection("Duplicada", onlineRows(row))

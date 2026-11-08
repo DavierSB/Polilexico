@@ -1,7 +1,6 @@
 package app.lexico.ui.common
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,14 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -38,20 +31,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
-
-data class OnlineProfile(val name: String, val country: String)
 
 data class StatsSection(val title: String, val rows: List<Pair<String, String>>)
 
@@ -70,89 +57,66 @@ data class AdjournedItem(
 
 data class GameItem(val id: String, val title: String, val detail: String, val watchers: Int = 0)
 
-data class PersonItem(val name: String, val country: String, val busy: Boolean)
+data class PersonItem(val name: String, val country: String, val busy: Boolean, val game: String? = null)
 
-data class OnlineHubState(
-  val status: String?, val inRoom: Boolean, val seeks: List<SeekItem>, val people: List<PersonItem>, val invite: SeekItem?,
-  val classic: Boolean = true, val duplicate: Boolean = true, val games: List<GameItem> = emptyList(),
-  val adjourned: List<AdjournedItem> = emptyList(), val unread: Int = 0,
+data class OnlinePanelState(
+  val status: String?, val inRoom: Boolean, val seeks: List<SeekItem>, val classic: Boolean,
+  val games: List<GameItem> = emptyList(), val adjourned: List<AdjournedItem> = emptyList(), val people: List<PersonItem> = emptyList(),
 )
 
-class OnlineHubActions(
-  val back: () -> Unit, val profile: () -> Unit, val resume: () -> Unit, val seekClassic: () -> Unit, val createDuplicate: () -> Unit,
-  val accept: (String) -> Unit, val challenge: (PersonItem) -> Unit, val decline: (String) -> Unit,
+class OnlinePanelActions(
+  val resume: () -> Unit, val seekClassic: () -> Unit, val createDuplicate: () -> Unit, val accept: (String) -> Unit,
   val cancel: (String) -> Unit = {}, val start: (String) -> Unit = {}, val watch: (String) -> Unit = {},
   val resumeAdjourned: (String) -> Unit = {}, val seenAdjourned: (String) -> Unit = {},
-  val messages: () -> Unit = {}, val write: (PersonItem) -> Unit = {},
+  val challenge: (PersonItem) -> Unit = {}, val write: (PersonItem) -> Unit = {},
 )
 
+class OnlineTab(val preferred: Boolean, val content: @Composable () -> Unit)
+
 @Composable
-fun OnlineHubScreen(profile: OnlineProfile, state: OnlineHubState, actions: OnlineHubActions) {
-  Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    CompositionLocalProvider(LocalHomeButton provides null) {
-      Header("En línea", actions.back) {
-        MessagesButton(state.unread, actions.messages)
-        HubProfile(profile, actions.profile)
-      }
-    }
-    state.status?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-    if (state.inRoom) Button(onClick = actions.resume, Modifier.fillMaxWidth().height(52.dp)) { Text("Volver a la partida") }
-    val pager = rememberPagerState(if (state.duplicate && !state.classic) HubTab.DUPLICATES.ordinal else 0) { HubTab.entries.size }
-    HubTabs(pager, state)
-    HorizontalPager(pager, Modifier.weight(1f), verticalAlignment = Alignment.Top) { page -> TabPage { TabContent(HubTab.entries[page], state, actions) } }
-    PublishButtons(state, actions)
+fun OnlinePanel(state: OnlinePanelState, actions: OnlinePanelActions, modifier: Modifier = Modifier) {
+  Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    PanelStatus(state, actions)
+    Box(Modifier.weight(1f)) { PanelPage { ModeOffers(state, actions) } }
+    if (state.games.isNotEmpty()) WatchButton(state.games, actions.watch)
+    PublishButton(state, actions)
   }
+  PanelNotices(state, actions)
+}
+
+@Composable
+private fun PanelStatus(state: OnlinePanelState, actions: OnlinePanelActions) {
+  state.status?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+  if (state.inRoom) Button(onClick = actions.resume, Modifier.fillMaxWidth().height(52.dp)) { Text("Volver a la partida") }
+}
+
+@Composable
+private fun PanelNotices(state: OnlinePanelState, actions: OnlinePanelActions) {
   val verdict = state.adjourned.firstOrNull { !it.pending }
   when {
-    state.invite != null -> InviteDialog(state.invite, actions)
     verdict != null -> VerdictNotice(verdict.opponent, verdict.country, verdict.result) { actions.seenAdjourned(verdict.id) }
     else -> ResumeOnEntry(state, actions)
   }
 }
 
-private enum class HubTab(val label: String) { CLASSICS("Clásicas"), DUPLICATES("Duplicadas"), GAMES("En juego"), PEOPLE("Conectados") }
-
-private fun HubTab.count(state: OnlineHubState): Int = when (this) {
-  HubTab.CLASSICS -> state.seeks.count { !it.duplicate }
-  HubTab.DUPLICATES -> state.seeks.count { it.duplicate }
-  HubTab.PEOPLE -> state.people.size
-  HubTab.GAMES -> state.games.size
+@Composable
+private fun WatchButton(games: List<GameItem>, onWatch: (String) -> Unit) {
+  var open by remember { mutableStateOf(false) }
+  OutlinedButton(onClick = { open = true }, Modifier.fillMaxWidth()) { ButtonText("Observar partidas (${games.size})") }
+  if (open) GamesDialog(games, { open = false; onWatch(it) }) { open = false }
 }
 
 @Composable
-private fun HubTabs(pager: PagerState, state: OnlineHubState) {
-  val scope = rememberCoroutineScope()
-  Row(
-    Modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(14.dp)).padding(3.dp),
-    horizontalArrangement = Arrangement.spacedBy(3.dp),
-  ) {
-    HubTab.entries.forEach { tab ->
-      TabCell(tab.label, tab.count(state), pager.currentPage == tab.ordinal, Modifier.weight(1f)) {
-        scope.launch { pager.animateScrollToPage(tab.ordinal) }
-      }
-    }
-  }
+private fun GamesDialog(games: List<GameItem>, onWatch: (String) -> Unit, close: () -> Unit) {
+  AlertDialog(
+    onDismissRequest = close, title = { Text("Partidas en juego") },
+    text = { Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) { GameList(games, onWatch) } },
+    confirmButton = { TextButton(onClick = close) { Text("Cerrar") } },
+  )
 }
 
 @Composable
-private fun TabCell(label: String, count: Int, selected: Boolean, modifier: Modifier, onClick: () -> Unit) {
-  val colors = MaterialTheme.colorScheme
-  val ink = if (selected) colors.onPrimary else colors.onSurfaceVariant
-  Column(
-    modifier.clip(RoundedCornerShape(11.dp)).background(if (selected) colors.primary else colors.surfaceVariant)
-      .clickable(onClick = onClick).padding(horizontal = 2.dp, vertical = 6.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    BasicText(
-      label, maxLines = 1, autoSize = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 14.sp),
-      style = TextStyle(color = ink, fontWeight = FontWeight.Bold),
-    )
-    Text("$count", color = ink, style = MaterialTheme.typography.labelMedium)
-  }
-}
-
-@Composable
-private fun TabPage(content: @Composable ColumnScope.() -> Unit) {
+private fun PanelPage(content: @Composable ColumnScope.() -> Unit) {
   val scroll = rememberScrollState()
   Column(
     Modifier.fillMaxSize().scrollbar(scroll).verticalScroll(scroll).padding(top = 4.dp, end = 8.dp),
@@ -161,17 +125,23 @@ private fun TabPage(content: @Composable ColumnScope.() -> Unit) {
 }
 
 @Composable
-private fun TabContent(tab: HubTab, state: OnlineHubState, actions: OnlineHubActions) = when (tab) {
-  HubTab.CLASSICS -> {
-    SeekList(state.seeks.filter { !it.duplicate }, "No hay clásicas ofrecidas.", actions)
-    AdjournedList(state.adjourned.filter { !it.duplicate }, actions)
-  }
-  HubTab.DUPLICATES -> {
-    SeekList(state.seeks.filter { it.duplicate }, "No hay duplicadas ofrecidas.", actions)
-    AdjournedList(state.adjourned.filter { it.duplicate }, actions)
-  }
-  HubTab.PEOPLE -> PeopleList(state.people, actions.challenge, actions.write)
-  HubTab.GAMES -> GameList(state.games, actions.watch)
+private fun ModeOffers(state: OnlinePanelState, actions: OnlinePanelActions) {
+  val duplicate = !state.classic
+  SeekList(state.seeks.filter { it.duplicate == duplicate }, actions)
+  AdjournedList(state.adjourned.filter { it.duplicate == duplicate && it.available }, actions)
+  ConnectedList(state.people, PeopleActions(actions.write, actions.challenge.takeIf { state.classic }, actions.watch))
+}
+
+class PeopleActions(val write: (PersonItem) -> Unit, val challenge: ((PersonItem) -> Unit)?, val watch: (String) -> Unit)
+
+private const val NOBODY_ONLINE = "No hay nadie en línea."
+
+@Composable
+private fun ConnectedList(people: List<PersonItem>, actions: PeopleActions) {
+  if (people.isEmpty()) return EmptyState("👥", NOBODY_ONLINE)
+  Spacer(Modifier.height(12.dp))
+  Text("Conectados", style = MaterialTheme.typography.labelLarge)
+  PeopleList(people, actions)
 }
 
 @Composable
@@ -194,16 +164,13 @@ private fun GameList(games: List<GameItem>, onWatch: (String) -> Unit) {
 }
 
 @Composable
-private fun PublishButtons(state: OnlineHubState, actions: OnlineHubActions) {
-  Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    if (state.classic) Button(onClick = actions.seekClassic, Modifier.weight(1f)) { Text("Buscar clásica", maxLines = 1) }
-    if (state.duplicate) Button(onClick = actions.createDuplicate, Modifier.weight(1f)) { Text("Crear duplicada", maxLines = 1) }
-  }
+private fun PublishButton(state: OnlinePanelState, actions: OnlinePanelActions) {
+  if (state.classic) Button(onClick = actions.seekClassic, Modifier.fillMaxWidth()) { ButtonText("Buscar clásica") }
+  else Button(onClick = actions.createDuplicate, Modifier.fillMaxWidth()) { ButtonText("Crear duplicada") }
 }
 
 @Composable
-private fun SeekList(seeks: List<SeekItem>, empty: String, actions: OnlineHubActions) {
-  if (seeks.isEmpty()) return EmptyState("🔍", empty)
+private fun SeekList(seeks: List<SeekItem>, actions: OnlinePanelActions) {
   seeks.sortedByDescending { it.mine }.forEach { s ->
     PlayerRow(s.host, s.country, s.detail, mine = s.mine) { SeekActions(s, actions) }
   }
@@ -221,7 +188,7 @@ private fun EmptyState(icon: @Composable () -> Unit, text: String) {
 }
 
 @Composable
-private fun SeekActions(s: SeekItem, actions: OnlineHubActions) {
+private fun SeekActions(s: SeekItem, actions: OnlinePanelActions) {
   if (!s.mine) return Button(onClick = { actions.accept(s.id) }) { Text("Jugar") }
   Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
     if (s.duplicate) Button(onClick = { actions.start(s.id) }, enabled = s.players >= 2) { Text("Empezar") }
@@ -230,18 +197,33 @@ private fun SeekActions(s: SeekItem, actions: OnlineHubActions) {
 }
 
 @Composable
-private fun PeopleList(people: List<PersonItem>, onChallenge: (PersonItem) -> Unit, onWrite: (PersonItem) -> Unit) {
-  if (people.isEmpty()) EmptyState("👥", "No hay nadie más conectado.")
+private fun PeopleList(people: List<PersonItem>, actions: PeopleActions) {
+  if (people.isEmpty()) EmptyState("👥", NOBODY_ONLINE)
   people.forEach { p ->
     PlayerRow(p.name, p.country, if (p.busy) "Ocupado" else "Disponible") {
-      ChatIconButton("Escribir a ${p.name}") { onWrite(p) }
-      OutlinedButton(onClick = { onChallenge(p) }, enabled = !p.busy) { Text("Retar") }
+      ChatIconButton("Escribir a ${p.name}") { actions.write(p) }
+      PersonButton(p, actions)
     }
   }
 }
 
 @Composable
-private fun MessagesButton(unread: Int, onClick: () -> Unit) {
+private fun PersonButton(p: PersonItem, actions: PeopleActions) {
+  if (p.busy) return OutlinedButton(onClick = { p.game?.let(actions.watch) }, enabled = p.game != null) { Text("Ver") }
+  actions.challenge?.let { challenge -> OutlinedButton(onClick = { challenge(p) }) { Text("Retar") } }
+}
+
+@Composable
+fun PeopleDialog(people: List<PersonItem>, actions: PeopleActions, close: () -> Unit) {
+  AlertDialog(
+    onDismissRequest = close, title = { Text("Conectados") },
+    text = { Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) { PeopleList(people, actions) } },
+    confirmButton = { TextButton(onClick = close) { Text("Cerrar") } },
+  )
+}
+
+@Composable
+fun MessagesButton(unread: Int, onClick: () -> Unit) {
   BadgedBox(badge = { if (unread > 0) Badge { Text("$unread") } }) { ChatIconButton("Mensajes", onClick) }
 }
 
@@ -266,22 +248,34 @@ internal fun PlayerRow(
   }
 }
 
-private fun inviteTitle(invite: SeekItem): String =
+internal fun inviteTitle(invite: SeekItem): String =
   if (invite.resume) "${invite.host} ${flagOf(invite.country)} quiere retomar la partida aplazada" else "${invite.host} ${flagOf(invite.country)} te reta"
 
 @Composable
-private fun ResumeOnEntry(state: OnlineHubState, actions: OnlineHubActions) {
-  var asked by remember { mutableStateOf(false) }
-  var open by remember { mutableStateOf(false) }
+private fun ResumeOnEntry(state: OnlinePanelState, actions: OnlinePanelActions) {
+  var open by remember { mutableStateOf<List<AdjournedItem>>(emptyList()) }
   val online = state.adjourned.filter { it.available && it.online }
-  LaunchedEffect(online.isNotEmpty(), state.inRoom) {
-    if (online.isNotEmpty() && !state.inRoom && !asked) { asked = true; open = true }
+  LaunchedEffect(online.map { it.id }, state.inRoom) {
+    val due = ResumeReminders.due(online)
+    if (due.isNotEmpty() && !state.inRoom && open.isEmpty()) { ResumeReminders.mark(due); open = due }
   }
-  if (!open || online.isEmpty()) return
-  val close = { open = false }
-  if (online.size == 1) ResumeOneDialog(online[0], { close(); actions.resumeAdjourned(online[0].id) }, close)
-  else ResumeManyDialog(online, close)
+  val shown = open.filter { game -> online.any { it.id == game.id } }
+  if (shown.isEmpty()) return
+  val close = { open = emptyList() }
+  if (shown.size == 1) ResumeOneDialog(shown[0], { close(); actions.resumeAdjourned(shown[0].id) }, close)
+  else ResumeManyDialog(shown, close)
 }
+
+private object ResumeReminders {
+  private val shownAt = mutableMapOf<String, Long>()
+
+  fun due(games: List<AdjournedItem>): List<AdjournedItem> =
+    games.filter { System.currentTimeMillis() - (shownAt[it.id] ?: 0L) > REMIND_EVERY_MS }
+
+  fun mark(games: List<AdjournedItem>) = games.forEach { shownAt[it.id] = System.currentTimeMillis() }
+}
+
+private const val REMIND_EVERY_MS = 30 * 60_000L
 
 @Composable
 private fun ResumeOneDialog(game: AdjournedItem, onResume: () -> Unit, close: () -> Unit) {
@@ -305,7 +299,7 @@ private fun ResumeManyDialog(games: List<AdjournedItem>, close: () -> Unit) {
 }
 
 @Composable
-private fun AdjournedList(games: List<AdjournedItem>, actions: OnlineHubActions) {
+private fun AdjournedList(games: List<AdjournedItem>, actions: OnlinePanelActions) {
   val pending = games.filter { it.pending }
   if (pending.isEmpty()) return
   Spacer(Modifier.height(12.dp))
@@ -321,24 +315,6 @@ private fun adjournedDetail(g: AdjournedItem): String = when {
   !g.online -> "Desconectado · aplazada"
   g.busy -> "Jugando otra partida · aplazada"
   else -> "En línea · aplazada"
-}
-
-@Composable
-private fun InviteDialog(invite: SeekItem, actions: OnlineHubActions) {
-  AlertDialog(
-    onDismissRequest = {}, icon = { PersonAvatar(invite.host, invite.country, size = 56.dp) },
-    title = { Text(inviteTitle(invite)) }, text = { Text(invite.detail) },
-    confirmButton = { Button(onClick = { actions.accept(invite.id) }) { Text("Aceptar") } },
-    dismissButton = { TextButton(onClick = { actions.decline(invite.id) }) { Text("Rechazar") } },
-  )
-}
-
-@Composable
-private fun HubProfile(profile: OnlineProfile, onOpen: () -> Unit) {
-  Row(Modifier.widthIn(max = 170.dp).clip(RoundedCornerShape(10.dp)).clickable(onClick = onOpen).padding(horizontal = 6.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-    PersonAvatar(profile.name, profile.country, highlighted = true, size = 26.dp)
-    Text("${profile.name} ${flagOf(profile.country)}", style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
-  }
 }
 
 @Composable

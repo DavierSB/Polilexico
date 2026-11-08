@@ -75,7 +75,10 @@ private fun BoardWithBanner(view: ClassicView, c: TilePlacer, style: BoardStyle)
 
 @Composable
 private fun MyBar(view: ClassicView, c: TilePlacer, style: BoardStyle) {
-  PlayerBar(name = view.me, points = view.myScore, clock = view.myClock, onTurn = view.turn == Side.ME)
+  PlayerBar(
+    name = view.me, points = view.myScore, clock = view.myClock, onTurn = view.turn == Side.ME,
+    photo = if (view.watching) ({ OpponentPhoto(view.me, 24.dp) }) else null,
+  )
   PlacingRack(c, style, enabled = view.turn == Side.ME)
 }
 

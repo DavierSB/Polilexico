@@ -28,10 +28,12 @@ fun HomeScreen(
   menu: Screen, style: BoardStyle, counts: MenuCounts, demoGame: suspend () -> List<String>, hasUpdate: Boolean, onMenu: () -> Unit,
   back: () -> Unit, go: (Screen) -> Unit,
 ) {
+  val presence = rememberPresence()
+  val open = rememberProfileOffer(presence, go)
   Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-    if (menu == Screen.Home) HomeTopBar(hasUpdate, onMenu) { go(Screen.Online()) } else Header(menuTitle(menu), back) { MenuInfo(menu) }
+    if (menu == Screen.Home) HomeTopBar(presence, hasUpdate, onMenu, go) else Header(menuTitle(menu), back) { MenuInfo(menu) }
     DemoBoard(demoGame, style, Modifier.weight(1f, fill = false))
-    menuButtons(menu, counts).forEach { MenuButton(it, go) }
+    menuButtons(menu, counts).forEach { MenuButton(it, open) }
   }
 }
 
@@ -48,15 +50,14 @@ private fun MenuButton(entry: MenuEntry, go: (Screen) -> Unit) {
 }
 
 @Composable
-private fun HomeTopBar(hasUpdate: Boolean, onMenu: () -> Unit, onOnline: () -> Unit) {
-  val presence = rememberPresence()
+private fun HomeTopBar(presence: Int?, hasUpdate: Boolean, onMenu: () -> Unit, go: (Screen) -> Unit) {
   BoxWithConstraints(Modifier.fillMaxWidth()) {
     val narrow = maxWidth < NARROW_BAR
     val tiny = maxWidth < TINY_BAR
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
       DrawerButton(hasUpdate, onMenu)
       Logo(Modifier.padding(start = 4.dp).weight(1f), scale = if (narrow) 0.62f else 0.8f)
-      OnlineChip(presence, compact = tiny, onClick = onOnline)
+      HomeOnline(presence, compact = tiny, go)
     }
   }
 }

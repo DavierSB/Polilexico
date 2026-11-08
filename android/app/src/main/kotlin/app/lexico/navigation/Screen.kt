@@ -19,8 +19,6 @@ import app.lexico.ui.sprint.SprintConfig
 sealed interface Screen {
   data object Home : Screen
   data object Study : Screen
-  data object ClassicMenu : Screen
-  data object DuplicateMenu : Screen
   data object NewClassic : Screen
   data class Classic(val config: ClassicConfig) : Screen
   data class WifiHost(val config: ClassicConfig, val name: String) : Screen
@@ -60,7 +58,7 @@ sealed interface Screen {
   data class FinishedFolder(val folder: GameFolder) : Screen
   data class Review(val path: String, val atEndgame: Boolean = false) : Screen
   data object Stats : Screen
-  data class Online(val mode: Mode? = null) : Screen
+  data object OnlineAccount : Screen
   data class OnlineNewClassic(val rival: Person? = null) : Screen
   data object OnlineNewDuplicate : Screen
   data object OnlineProfile : Screen

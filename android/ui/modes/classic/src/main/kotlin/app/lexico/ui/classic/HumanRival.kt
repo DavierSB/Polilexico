@@ -19,6 +19,15 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.SectionTitle
 
+internal enum class RivalTab(val label: String) { LOCAL("Local"), ONLINE("En línea") }
+
+@Composable
+internal fun RivalTabs(selected: RivalTab, select: (RivalTab) -> Unit) {
+  PrimaryTabRow(selectedTabIndex = selected.ordinal) {
+    RivalTab.entries.forEach { tab -> Tab(selected = tab == selected, onClick = { select(tab) }, text = { Text(tab.label, maxLines = 1) }) }
+  }
+}
+
 @Composable
 internal fun RivalTabs(human: Boolean, select: (human: Boolean) -> Unit) {
   PrimaryTabRow(selectedTabIndex = if (human) 1 else 0) {
@@ -30,7 +39,7 @@ internal fun RivalTabs(human: Boolean, select: (human: Boolean) -> Unit) {
 @Composable
 internal fun PlayModeOptions(wifi: Boolean, select: (wifi: Boolean) -> Unit) {
   PlayModeOption("Por wifi", selected = wifi) { select(true) }
-  PlayModeOption("Un solo teléfono", selected = !wifi) { select(false) }
+  PlayModeOption("Compartir teléfono", selected = !wifi) { select(false) }
 }
 
 @Composable

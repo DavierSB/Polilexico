@@ -1,5 +1,12 @@
 package app.lexico.ui.common
 
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.border
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -64,7 +71,8 @@ fun flagOf(code: String): String = Country(code, "").flag
 
 @Composable
 fun OnlineAccountScreen(
-  busy: Boolean, error: String?, onBack: () -> Unit, onSignUp: (AccountInput) -> Unit, onLogIn: (AccountInput) -> Unit,
+  busy: Boolean, error: String?, photo: ImageBitmap?, onPickPhoto: () -> Unit, onBack: () -> Unit,
+  onSignUp: (AccountInput) -> Unit, onLogIn: (AccountInput) -> Unit,
 ) {
   var existing by rememberSaveable { mutableStateOf(false) }
   var input by remember { mutableStateOf(AccountInput("", DEFAULT_COUNTRY, "", "")) }
@@ -72,12 +80,33 @@ fun OnlineAccountScreen(
     Header("En línea", onBack)
     AccountCard {
       TwoOptions("Crear cuenta", "Ya tengo cuenta", existing) { existing = it }
+      if (!existing) AccountPhoto(input.name, photo, onPickPhoto)
       AccountFields(input, existing) { input = it }
       error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
       AccountButton(if (existing) "Entrar" else "Crear cuenta", busy, valid(input)) { if (existing) onLogIn(input) else onSignUp(input) }
     }
   }
 }
+
+@Composable
+private fun AccountPhoto(name: String, photo: ImageBitmap?, onPick: () -> Unit) {
+  Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Box(
+      Modifier.size(PHOTO_SIZE).clip(CircleShape).border(2.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape).clickable(onClick = onPick),
+      contentAlignment = Alignment.Center,
+    ) { PhotoContent(name, photo) }
+    TextButton(onClick = onPick) { ButtonText(if (photo == null) "Elegir foto" else "Cambiar foto") }
+  }
+}
+
+@Composable
+private fun PhotoContent(name: String, photo: ImageBitmap?) = when {
+  photo != null -> Image(photo, "Foto", Modifier.size(PHOTO_SIZE).clip(CircleShape), contentScale = ContentScale.Crop)
+  name.firstOrNull()?.isLetter() == true -> InitialTile(name, highlighted = true, size = PHOTO_SIZE * 0.62f)
+  else -> Text("Sin foto", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+}
+
+private val PHOTO_SIZE = 84.dp
 
 @Composable
 private fun AccountCard(content: @Composable ColumnScope.() -> Unit) {
@@ -150,6 +179,6 @@ private fun AccountButton(text: String, busy: Boolean, valid: Boolean, onClick: 
   }
 }
 
-private fun valid(input: AccountInput): Boolean = input.name.length >= 3 && input.country.length == 2 && input.password.length >= 6
+private fun valid(input: AccountInput): Boolean = input.name.length >= 3 && input.name.first().isLetter() && input.country.length == 2 && input.password.length >= 6
 
 private const val NAME_CHARS = 20

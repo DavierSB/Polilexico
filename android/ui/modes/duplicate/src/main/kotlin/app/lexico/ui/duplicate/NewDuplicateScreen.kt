@@ -2,8 +2,13 @@ package app.lexico.ui.duplicate
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -18,7 +23,10 @@ import app.lexico.ui.common.Header
 import app.lexico.ui.common.RecordCard
 import app.lexico.ui.common.RulesButton
 import app.lexico.ui.common.SectionTitle
-import app.lexico.ui.common.SoloOrWifiTabs
+import app.lexico.ui.common.OnlineTab
+import app.lexico.ui.common.SavedButtons
+import app.lexico.ui.common.SavedShortcuts
+import app.lexico.ui.common.SwitchPrompt
 import app.lexico.ui.common.StartButton
 import app.lexico.ui.common.Stepper
 import app.lexico.ui.common.StudyModeSelector
@@ -40,19 +48,60 @@ data class DuplicateConfig(
 
 @Composable
 fun NewDuplicateScreen(
-  onBack: () -> Unit, recordFor: (DuplicateConfig) -> Int, onStart: (DuplicateConfig) -> Unit,
+  online: OnlineTab, saved: SavedShortcuts, onBack: () -> Unit, recordFor: (DuplicateConfig) -> Int, onStart: (DuplicateConfig) -> Unit,
   onHost: (WifiDuplicateConfig) -> Unit, onJoin: (name: String) -> Unit,
 ) {
+  var tab by remember { mutableStateOf(if (online.preferred) DuplicateTab.ONLINE else DuplicateTab.LOCAL) }
   var wifi by remember { mutableStateOf(false) }
-  Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-    Header("Duplicada", onBack)
-    SoloOrWifiTabs(wifi) { wifi = it }
-    if (wifi) WifiDuplicateForm(onHost, onJoin) else SoloForm(recordFor, onStart)
+  when {
+    tab == DuplicateTab.ONLINE -> OnlineStep(online, onBack) { tab = it }
+    wifi -> WifiStep(onBack, onHost, onJoin, { tab = it }) { wifi = false }
+    else -> SoloStep(saved, onBack, recordFor, onStart, { tab = it }) { wifi = true }
   }
 }
 
 @Composable
-private fun SoloForm(recordFor: (DuplicateConfig) -> Int, onStart: (DuplicateConfig) -> Unit) {
+private fun SoloStep(
+  saved: SavedShortcuts, onBack: () -> Unit, recordFor: (DuplicateConfig) -> Int, onStart: (DuplicateConfig) -> Unit,
+  onTab: (DuplicateTab) -> Unit, onWifi: () -> Unit,
+) {
+  Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Header("Duplicada", onBack)
+    DuplicateTabs(DuplicateTab.LOCAL, onTab)
+    SoloForm(saved, recordFor, onStart, onWifi)
+  }
+}
+
+@Composable
+private fun WifiStep(onBack: () -> Unit, onHost: (WifiDuplicateConfig) -> Unit, onJoin: (name: String) -> Unit, onTab: (DuplicateTab) -> Unit, onSolo: () -> Unit) {
+  Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Header("Duplicada", onBack)
+    DuplicateTabs(DuplicateTab.LOCAL, onTab)
+    WifiDuplicateForm(onHost, onJoin)
+    SwitchPrompt("¿O prefieres jugar solo?", onSolo)
+  }
+}
+
+private enum class DuplicateTab(val label: String) { LOCAL("Local"), ONLINE("En línea") }
+
+@Composable
+private fun DuplicateTabs(selected: DuplicateTab, select: (DuplicateTab) -> Unit) {
+  PrimaryTabRow(selectedTabIndex = selected.ordinal) {
+    DuplicateTab.entries.forEach { tab -> Tab(selected = tab == selected, onClick = { select(tab) }, text = { Text(tab.label, maxLines = 1) }) }
+  }
+}
+
+@Composable
+private fun OnlineStep(online: OnlineTab, onBack: () -> Unit, onTab: (DuplicateTab) -> Unit) {
+  Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Header("Duplicada", onBack)
+    DuplicateTabs(DuplicateTab.ONLINE, onTab)
+    online.content()
+  }
+}
+
+@Composable
+private fun ColumnScope.SoloForm(saved: SavedShortcuts, recordFor: (DuplicateConfig) -> Int, onStart: (DuplicateConfig) -> Unit, onWifi: () -> Unit) {
   var check by remember { mutableStateOf(PlayCheck.SINGLE) }
   var turn by remember { mutableStateOf(Durations.format(DEFAULT_TURN_MS)) }
   var fixed by remember { mutableStateOf(false) }
@@ -61,14 +110,18 @@ private fun SoloForm(recordFor: (DuplicateConfig) -> Int, onStart: (DuplicateCon
   var rules by remember { mutableStateOf(false) }
   val turnMs = Durations.parse(turn)?.takeIf { it > 0 }
   val config = turnMs?.let { DuplicateConfig(check, it, if (fixed) rounds else 0, study) }
-  RulesButton { rules = true }
-  RoundsSection(fixed, rounds, { fixed = it }, { rounds = it })
-  ChallengeModeSelector(listOf("Single" to SINGLE_HINT, "Al Final" to AT_END_HINT), check.ordinal) { check = PlayCheck.entries[it] }
-  SectionTitle("Tiempo", info = "Si no juegas a tiempo, 0 puntos ese turno.")
-  TimeField(turn, { turn = it }, "Tiempo por turno")
-  StudyModeSelector(study) { study = it }
-  config?.let { RecordLine(recordFor(it)) }
+  Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    RulesButton { rules = true }
+    RoundsSection(fixed, rounds, { fixed = it }, { rounds = it })
+    ChallengeModeSelector(listOf("Single" to SINGLE_HINT, "Al Final" to AT_END_HINT), check.ordinal) { check = PlayCheck.entries[it] }
+    SectionTitle("Tiempo", info = "Si no juegas a tiempo, 0 puntos ese turno.")
+    TimeField(turn, { turn = it }, "Tiempo por turno")
+    StudyModeSelector(study) { study = it }
+    config?.let { RecordLine(recordFor(it)) }
+    SwitchPrompt("¿O prefieres jugar por wifi?", onWifi)
+  }
   StartButton(enabled = config != null) { config?.let(onStart) }
+  SavedButtons(saved)
   if (rules) DuplicateRulesDialog { rules = false }
 }
 

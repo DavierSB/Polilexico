@@ -32,6 +32,8 @@ class OnlineClient internal constructor(private val online: Online, private val 
   private var lingering: Job? = null
   private val _status = MutableStateFlow<String?>("Conectando…")
   val status: StateFlow<String?> = _status.asStateFlow()
+  private val _connected = MutableStateFlow(false)
+  val connected: StateFlow<Boolean> = _connected.asStateFlow()
   private val _refused = MutableStateFlow<String?>(null)
   val refused: StateFlow<String?> = _refused.asStateFlow()
   private val _lobby = MutableStateFlow(Lobby())
@@ -200,6 +202,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
   fun shutDown() {
     link?.close()
     link = null
+    _connected.value = false
     forget()
     _lobby.value = Lobby()
   }
@@ -214,7 +217,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
 
   private fun connect() {
     _refused.value = null
-    link = OnlineLink(online.store.server, online.http, online.network, scope, online.account::token, { online.account.session.value != null }, { _status.value = it }, ::handle)
+    link = OnlineLink(online.store.server, online.http, online.network, scope, online.account::token, { online.account.session.value != null }, ::linkStatus, ::handle)
       .also { it.open() }
   }
 
@@ -223,6 +226,12 @@ class OnlineClient internal constructor(private val online: Online, private val 
     if (users > 0 || seatedInGame()) return
     link?.close()
     link = null
+    _connected.value = false
+  }
+
+  private fun linkStatus(text: String?) {
+    _status.value = text
+    if (text != null) _connected.value = false
   }
 
   private fun send(text: String): Boolean = link?.send(text) == true
@@ -267,6 +276,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
 
   private fun welcomed() {
     _refused.value = null
+    _connected.value = true
     awaitingRoom = true
     _room.value?.takeIf { it.watching }?.let { send(roomAction("watch", it.id)) }
   }
@@ -306,5 +316,6 @@ class OnlineClient internal constructor(private val online: Online, private val 
     _refused.value = reason
     link?.close()
     link = null
+    _connected.value = false
   }
 }
