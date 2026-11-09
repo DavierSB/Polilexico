@@ -40,11 +40,11 @@ fun NewClassicScreen(
   val form = rememberClassicForm()
   var chosen by remember { mutableStateOf(false) }
   var tab by remember { mutableStateOf(if (online.preferred) RivalTab.ONLINE else RivalTab.LOCAL) }
-  BackHandler(enabled = chosen) { chosen = false }
-  val back = { chosen = false }
+  val back = { chosen = false; form.human = false }
+  BackHandler(enabled = chosen, onBack = back)
   when {
     !chosen && tab == RivalTab.ONLINE -> OnlineStep(online, onBack) { tab = it }
-    !chosen -> LocalStep(form, saved, onBack, { tab = it }) { chosen = true }
+    !chosen -> LocalStep(form, saved, online.label(), onBack, { tab = it }) { chosen = true }
     !form.human -> SettingsStep(form, back) { onStart(form.toConfig()) }
     form.wifi -> WifiStep(form, back, onHost = { onHost(form.toConfig(), form.myName.trim()) }) { onJoin(form.myName.trim()) }
     else -> SharedStep(form, back) { onStart(form.toConfig()) }
@@ -52,27 +52,28 @@ fun NewClassicScreen(
 }
 
 @Composable
-private fun LocalStep(form: ClassicForm, saved: SavedShortcuts, onBack: () -> Unit, onTab: (RivalTab) -> Unit, onChosen: () -> Unit) {
-  val switch = { form.human = !form.human; form.starter = 0 }
+private fun LocalStep(form: ClassicForm, saved: SavedShortcuts, onlineLabel: String, onBack: () -> Unit, onTab: (RivalTab) -> Unit, onChosen: () -> Unit) {
+  var asking by remember { mutableStateOf(false) }
   Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     Header("Clásica", onBack)
-    RivalTabs(RivalTab.LOCAL, onTab)
+    RivalTabs(RivalTab.LOCAL, onlineLabel, onTab)
     Box(Modifier.weight(1f)) {
       FitColumn(10.dp) {
-        if (form.human) HumanRival(form) else BotRival(form)
-        SwitchPrompt(if (form.human) "¿O prefieres jugar contra un bot?" else "¿O prefieres jugar contra una persona?", switch)
+        BotRival(form)
+        SwitchPrompt("¿O son dos jugadores locales?") { asking = true }
       }
     }
-    Button(modifier = Modifier.fillMaxWidth(), onClick = onChosen) { ButtonText(if (form.human) "Seleccionar modo de juego" else "Seleccionar rival") }
+    Button(modifier = Modifier.fillMaxWidth(), onClick = { form.human = false; onChosen() }) { ButtonText("Seleccionar rival") }
     SavedButtons(saved)
   }
+  if (asking) LocalHumansDialog(onClose = { asking = false }) { wifi -> asking = false; form.human = true; form.wifi = wifi; form.starter = 0; onChosen() }
 }
 
 @Composable
 private fun OnlineStep(online: OnlineTab, onBack: () -> Unit, onTab: (RivalTab) -> Unit) {
   Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     Header("Clásica", onBack)
-    RivalTabs(RivalTab.ONLINE, onTab)
+    RivalTabs(RivalTab.ONLINE, online.label(), onTab)
     online.content()
   }
 }
@@ -82,10 +83,6 @@ private fun BotRival(form: ClassicForm) {
   BOTS.forEach { b -> BotOption(b, selected = b.name == form.opponent) { form.opponent = b.name } }
 }
 
-@Composable
-private fun HumanRival(form: ClassicForm) {
-  PlayModeOptions(form.wifi) { form.wifi = it; form.starter = 0 }
-}
 
 @Composable
 private fun SharedStep(form: ClassicForm, onBack: () -> Unit, onStart: () -> Unit) {
@@ -96,6 +93,7 @@ private fun SharedStep(form: ClassicForm, onBack: () -> Unit, onStart: () -> Uni
     ChallengeSection(form)
     TimeSection(form)
     StartButton(enabled = form.valid, onClick = onStart)
+    SwitchPrompt("¿O eres tú solo?", onBack)
   }
 }
 
@@ -107,6 +105,7 @@ private fun WifiStep(form: ClassicForm, onBack: () -> Unit, onHost: () -> Unit, 
     MyNameSection(form)
     TwoOptions("Crear sala", "Unirse a una sala", !form.hosting) { form.hosting = !it }
     if (form.hosting) HostSettings(form, onHost) else JoinButton(form, onJoin)
+    SwitchPrompt("¿O eres tú solo?", onBack)
   }
 }
 

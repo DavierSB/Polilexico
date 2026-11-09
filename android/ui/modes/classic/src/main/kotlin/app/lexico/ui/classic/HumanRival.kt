@@ -13,6 +13,14 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -22,9 +30,11 @@ import app.lexico.ui.common.SectionTitle
 internal enum class RivalTab(val label: String) { LOCAL("Local"), ONLINE("En línea") }
 
 @Composable
-internal fun RivalTabs(selected: RivalTab, select: (RivalTab) -> Unit) {
+internal fun RivalTabs(selected: RivalTab, onlineLabel: String, select: (RivalTab) -> Unit) {
   PrimaryTabRow(selectedTabIndex = selected.ordinal) {
-    RivalTab.entries.forEach { tab -> Tab(selected = tab == selected, onClick = { select(tab) }, text = { Text(tab.label, maxLines = 1) }) }
+    RivalTab.entries.forEach { tab ->
+      Tab(selected = tab == selected, onClick = { select(tab) }, text = { Text(if (tab == RivalTab.ONLINE) onlineLabel else tab.label, maxLines = 1) })
+    }
   }
 }
 
@@ -38,8 +48,24 @@ internal fun RivalTabs(human: Boolean, select: (human: Boolean) -> Unit) {
 
 @Composable
 internal fun PlayModeOptions(wifi: Boolean, select: (wifi: Boolean) -> Unit) {
+  PlayModeOption("Compartiendo el teléfono", selected = !wifi) { select(false) }
   PlayModeOption("Por wifi", selected = wifi) { select(true) }
-  PlayModeOption("Compartir teléfono", selected = !wifi) { select(false) }
+}
+
+@Composable
+internal fun LocalHumansDialog(onClose: () -> Unit, onSelect: (wifi: Boolean) -> Unit) {
+  var wifi by remember { mutableStateOf(false) }
+  AlertDialog(
+    onDismissRequest = onClose,
+    text = {
+      Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text("Si quieres jugar de manera local contra otro humano puedes hacerlo")
+        PlayModeOptions(wifi) { wifi = it }
+      }
+    },
+    confirmButton = { Button(onClick = { onSelect(wifi) }) { Text("Seleccionar") } },
+    dismissButton = { TextButton(onClick = onClose) { Text("Jugar contra un bot") } },
+  )
 }
 
 @Composable

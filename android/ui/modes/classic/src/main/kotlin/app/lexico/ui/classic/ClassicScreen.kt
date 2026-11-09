@@ -14,6 +14,7 @@ import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.board.rememberTilePlacer
 import app.lexico.ui.common.BoardColumn
 import app.lexico.ui.common.GameBar
+import app.lexico.ui.common.LocalChat
 import app.lexico.ui.common.NOT_IN_A_LINE
 import app.lexico.ui.common.Notice
 import app.lexico.ui.common.Pausable
@@ -50,6 +51,7 @@ private fun TopBar(view: ClassicView, actions: ClassicActions, dialogs: ClassicD
     onResign = if (view.end == null && !view.watching) ({ dialogs.resign = true }) else null,
     onPause = if (view.pausable && view.end == null && view.myClock != null && !view.watching) actions::pause else null, onTheme = onTheme,
     watchers = view.watchers, onAdjourn = onAdjourn.takeIf { view.end == null && !view.watching },
+    onChat = LocalChat.current?.onOpen?.takeIf { view.watching },
   )
 }
 
@@ -66,7 +68,7 @@ private fun OpponentBar(view: ClassicView, style: BoardStyle) {
 private fun BoardWithBanner(view: ClassicView, c: TilePlacer, style: BoardStyle) {
   Box(contentAlignment = Alignment.Center) {
     PlacingBoard(
-      c, style, enabled = view.turn == Side.ME, latestScore = view.latestScore, showScore = true, lookUpWhenIdle = true,
+      c, style, enabled = view.canPlace, latestScore = view.latestScore, showScore = true, lookUpWhenIdle = true,
       landing = view.moves.lastOrNull()?.side == Side.OPPONENT,
     )
     OpponentBanner(view.moves, view.opponent)
@@ -79,7 +81,7 @@ private fun MyBar(view: ClassicView, c: TilePlacer, style: BoardStyle) {
     name = view.me, points = view.myScore, clock = view.myClock, onTurn = view.turn == Side.ME,
     photo = if (view.watching) ({ OpponentPhoto(view.me, 24.dp) }) else null,
   )
-  PlacingRack(c, style, enabled = view.turn == Side.ME)
+  PlacingRack(c, style, enabled = view.canPlace)
 }
 
 @Composable

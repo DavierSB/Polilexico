@@ -10,7 +10,11 @@ data class RoomInfo(
   val watching: Boolean = false, val timed: Boolean = true,
 )
 
-data class LiveGame(val id: String, val duplicate: Boolean, val players: List<String>, val countries: List<String>, val watchers: Int = 0)
+data class LiveGame(
+  val id: String, val duplicate: Boolean, val players: List<String>, val countries: List<String>, val watchers: Int = 0,
+  val scores: List<Int> = emptyList(), val bag: Int = 0, val round: Int = 0, val leader: String = "", val efficiency: Int = 0,
+  val tied: Int = 0,
+)
 
 data class Seek(
   val id: String, val duplicate: Boolean, val host: String, val country: String, val timeMs: Long, val overtimeMs: Long,
@@ -50,6 +54,7 @@ internal sealed interface OnlineEvent {
   data class AdjournAsk(val name: String) : OnlineEvent
   data class Tell(val name: String, val country: String, val text: String) : OnlineEvent
   data class Closed(val reason: String) : OnlineEvent
+  data class DuplicateOffer(val code: String) : OnlineEvent
 }
 
 internal fun hello(token: String): String = message("hello").put("version", ONLINE_PROTOCOL).put("token", token).toString()
@@ -97,6 +102,7 @@ private fun event(o: JSONObject): OnlineEvent? = when (o.getString("t")) {
   "rejected" -> OnlineEvent.Rejected(o.optString("reason"))
   "chat" -> OnlineEvent.Chat(o.optString("name"), o.optString("text"))
   "tell" -> OnlineEvent.Tell(o.optString("name"), o.optString("country"), o.optString("text"))
+  "duplicateOffer" -> OnlineEvent.DuplicateOffer(o.optString("code"))
   "rival" -> OnlineEvent.Rival(o.optBoolean("online"), o.optLong("awayMs"))
   "adjournAsk" -> OnlineEvent.AdjournAsk(o.optString("name"))
   "closed" -> OnlineEvent.Closed(o.optString("reason"))
@@ -109,7 +115,10 @@ private fun roomInfo(o: JSONObject): RoomInfo = RoomInfo(
 )
 
 private fun games(a: JSONArray?): List<LiveGame> = objects(a).map {
-  LiveGame(it.getString("id"), it.optString("mode") == "duplicate", strings(it.optJSONArray("players")), strings(it.optJSONArray("countries")), it.optInt("watchers"))
+  LiveGame(
+    it.getString("id"), it.optString("mode") == "duplicate", strings(it.optJSONArray("players")), strings(it.optJSONArray("countries")),
+    it.optInt("watchers"), ints(it.optJSONArray("scores")), it.optInt("bag"), it.optInt("round"), it.optString("leader"), it.optInt("efficiency"), it.optInt("tied"),
+  )
 }
 
 private fun seeks(a: JSONArray?): List<Seek> = objects(a).map { s ->
@@ -132,5 +141,7 @@ private fun people(a: JSONArray?): List<Person> = objects(a).map { Person(it.opt
 private fun objects(a: JSONArray?): List<JSONObject> = (0 until (a?.length() ?: 0)).map { a!!.getJSONObject(it) }
 
 private fun strings(a: JSONArray?): List<String> = (0 until (a?.length() ?: 0)).map { a!!.getString(it) }
+
+private fun ints(a: JSONArray?): List<Int> = (0 until (a?.length() ?: 0)).map { a!!.getInt(it) }
 
 private fun message(type: String): JSONObject = JSONObject().put("t", type)

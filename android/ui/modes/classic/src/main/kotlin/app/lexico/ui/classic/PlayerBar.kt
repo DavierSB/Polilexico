@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.ui.common.Durations
+import app.lexico.ui.common.nameWidth
 
 private val OvertimePink = Color(0xFFF2B8B5)
 
@@ -58,13 +60,17 @@ private fun RowScope.Identity(
   Column(Modifier.weight(1f)) {
     Row(verticalAlignment = Alignment.CenterVertically) {
       photo?.let { it(); Spacer(Modifier.width(6.dp)) }
-      Text(name, Modifier.weight(1f, fill = false), fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+      Text(name, nameFit(tilesBeside), fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
       if (thinking) Text("  pensando…", style = MaterialTheme.typography.labelSmall)
       if (tilesBeside) Row(Modifier.padding(start = 10.dp), Arrangement.spacedBy(2.dp)) { tiles() }
     }
     if (!tilesBeside) Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) { tiles() }
   }
 }
+
+@Composable
+private fun RowScope.nameFit(tilesBeside: Boolean): Modifier =
+  if (tilesBeside) Modifier.widthIn(max = nameWidth()) else Modifier.weight(1f, fill = false)
 
 @Composable
 private fun PlayerClock(clock: Clock, onTurn: Boolean) {

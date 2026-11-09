@@ -71,6 +71,7 @@ data class ClassicView(
   val watching: Boolean = false,
   val watchers: List<PersonItem> = emptyList(),
 ) {
+  val canPlace: Boolean get() = turn == Side.ME && !watching
   val latestScore: Int? get() = moves.lastOrNull { it.type == MoveType.PLACEMENT }?.points
 }
 

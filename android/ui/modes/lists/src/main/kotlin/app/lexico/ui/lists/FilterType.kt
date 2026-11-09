@@ -21,10 +21,6 @@ enum class FilterType(val title: String, val info: String) {
     FIXED_END -> positionsLine(spec.filter().fixedEnd, " desde el final")
   }
 
-  companion object {
-    val ANAGRAM: List<FilterType> = listOf(START, END, FIXED, FIXED_END)
-  }
-
   fun isSet(spec: FilterSpec): Boolean = line(spec) != null
 
   fun started(spec: FilterSpec): FilterSpec = when (this) {

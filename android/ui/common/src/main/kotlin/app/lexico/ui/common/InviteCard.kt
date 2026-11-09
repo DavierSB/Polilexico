@@ -20,30 +20,33 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun InviteCard(invite: SeekItem, onAccept: () -> Unit, onDecline: () -> Unit, modifier: Modifier = Modifier) {
+fun InviteCard(
+  invite: SeekItem, onAccept: () -> Unit, onDecline: () -> Unit, modifier: Modifier = Modifier,
+  title: String = inviteTitle(invite), labels: Pair<String, String> = "Rechazar" to "Aceptar",
+) {
   ElevatedCard(modifier.widthIn(max = 480.dp).fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-      InviteHeader(invite)
-      InviteButtons(onAccept, onDecline)
+      InviteHeader(invite, title)
+      InviteButtons(onAccept, onDecline, labels)
     }
   }
 }
 
 @Composable
-private fun InviteHeader(invite: SeekItem) {
+private fun InviteHeader(invite: SeekItem, title: String) {
   Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
     PersonAvatar(invite.host, invite.country, size = 44.dp)
     Column {
-      Text(inviteTitle(invite), fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+      Text(title, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
       Text(invite.detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
   }
 }
 
 @Composable
-private fun InviteButtons(onAccept: () -> Unit, onDecline: () -> Unit) {
+private fun InviteButtons(onAccept: () -> Unit, onDecline: () -> Unit, labels: Pair<String, String>) {
   Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    OutlinedButton(onClick = onDecline, Modifier.weight(1f)) { ButtonText("Rechazar") }
-    Button(onClick = onAccept, Modifier.weight(1f)) { ButtonText("Aceptar") }
+    OutlinedButton(onClick = onDecline, Modifier.weight(1f)) { ButtonText(labels.first) }
+    Button(onClick = onAccept, Modifier.weight(1f)) { ButtonText(labels.second) }
   }
 }

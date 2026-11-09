@@ -17,23 +17,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import app.lexico.model.Letters
 import app.lexico.ui.board.BoardStyle
-import app.lexico.ui.board.RackTile
 import app.lexico.ui.common.BarTextButton
 import app.lexico.ui.common.Header
-import app.lexico.ui.lists.AppliedFilters
-import app.lexico.ui.lists.FilterSpec
-import app.lexico.ui.lists.FilterType
 import kotlinx.coroutines.CancellationException
 
 private const val MAX_TILES = 15
@@ -46,19 +42,53 @@ fun interface Anagrams {
 
 @Composable
 fun AnagrammerScreen(style: BoardStyle, anagrams: Anagrams, onBack: () -> Unit) {
-  val tiles = remember { mutableStateListOf<String>() }
+  val rack = remember { AnagramRack() }
+  val drag = remember { PinDrag(rack::pin) }
   val found = remember { mutableStateOf<List<String>?>(null) }
-  var spec by remember { mutableStateOf(FilterSpec()) }
-  LaunchedEffect(tiles.toList()) { found.value = search(anagrams, tiles.toList()) }
-  Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-    Header("Anagramador", onBack) { BarTextButton("Vaciar", tiles::clear) }
-    Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-      RackCard(tiles, style)
-      AppliedFilters(spec, FilterType.ANAGRAM) { spec = it }
-      AnagramResults(tiles.size, found.value, spec)
+  LaunchedEffect(rack.tiles.toList()) { found.value = search(anagrams, rack.tiles.toList()) }
+  Box(Modifier.fillMaxSize().onGloballyPositioned { drag.root = it }) {
+    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+      Header("Anagramador", onBack) { BarTextButton("Vaciar", rack::clear) }
+      Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        RackCard(rack, drag, style)
+        if (rack.tiles.isNotEmpty()) PinnedCard(rack.tiles, rack.pins, drag, style)
+        AnagramResults(rack.tiles.size, found.value, rack.pinnedLetters())
+      }
+      LetterPalette(style, marked = null, modifier = Modifier.fillMaxWidth(), onLetter = rack::add)
     }
-    LetterPalette(style, marked = null, modifier = Modifier.fillMaxWidth()) { add(tiles, it) }
+    DraggedPin(drag, rack.tiles, style)
   }
+}
+
+private class AnagramRack {
+  val tiles = mutableStateListOf<String>()
+  val pins = mutableStateMapOf<Int, Int>()
+
+  fun add(letter: String) {
+    if (tiles.size >= MAX_TILES) return
+    if (letter == Letters.BLANK && tiles.count { it == Letters.BLANK } >= MAX_BLANKS) return
+    tiles.add(letter)
+  }
+
+  fun remove(i: Int) {
+    pins.clear()
+    tiles.removeAt(i)
+  }
+
+  fun clear() {
+    pins.clear()
+    tiles.clear()
+  }
+
+  fun pin(slot: Int, tile: Int) {
+    if (slot >= tiles.size || tile >= tiles.size) return
+    pins.entries.removeAll { it.value == tile }
+    pins[slot] = tile
+  }
+
+  fun isPinned(tile: Int): Boolean = tile in pins.values
+
+  fun pinnedLetters(): Map<Int, String> = pins.mapValues { tiles[it.value] }
 }
 
 private suspend fun search(anagrams: Anagrams, tiles: List<String>): List<String>? {
@@ -72,35 +102,26 @@ private suspend fun search(anagrams: Anagrams, tiles: List<String>): List<String
   }
 }
 
-private fun add(tiles: MutableList<String>, letter: String) {
-  if (tiles.size >= MAX_TILES) return
-  if (letter == Letters.BLANK && tiles.count { it == Letters.BLANK } >= MAX_BLANKS) return
-  tiles.add(letter)
-}
-
 @Composable
-private fun RackCard(tiles: MutableList<String>, style: BoardStyle) {
+private fun RackCard(rack: AnagramRack, drag: PinDrag, style: BoardStyle) {
   Box(
     Modifier.fillMaxWidth().heightIn(min = 56.dp)
       .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(14.dp)).padding(10.dp),
     contentAlignment = Alignment.CenterStart,
   ) {
-    if (tiles.isEmpty()) Text("Atril vacío", color = MaterialTheme.colorScheme.onSurfaceVariant)
-    else RackTiles(tiles, style)
+    if (rack.tiles.isEmpty()) Text("Atril vacío", color = MaterialTheme.colorScheme.onSurfaceVariant)
+    else RackTiles(rack, drag, style)
   }
 }
 
 @Composable
-private fun RackTiles(tiles: MutableList<String>, style: BoardStyle) {
+private fun RackTiles(rack: AnagramRack, drag: PinDrag, style: BoardStyle) {
   FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-    tiles.forEachIndexed { i, l -> RackKey(l, style) { tiles.removeAt(i) } }
+    rack.tiles.forEachIndexed { i, l -> RackKey(l, style, rack.isPinned(i), Modifier.pinSource(drag, i)) { rack.remove(i) } }
   }
 }
 
 @Composable
-private fun RackKey(letter: String, style: BoardStyle, onClick: () -> Unit) {
-  Box(Modifier.clickable(onClick = onClick), contentAlignment = Alignment.Center) {
-    RackTile(letter, style, size = 36.dp)
-    if (letter == Letters.BLANK) Text("?", color = style.blank, fontWeight = FontWeight.Bold)
-  }
+private fun RackKey(letter: String, style: BoardStyle, pinned: Boolean, modifier: Modifier, onClick: () -> Unit) {
+  Box(modifier.alpha(if (pinned) 0.4f else 1f).clickable(onClick = onClick)) { LetterTile(letter, style) }
 }

@@ -36,7 +36,7 @@ fun BoardColumn(
       val loose = Constraints(maxWidth = constraints.maxWidth)
       val (t, b, m, f) = slots.map { it.first().measure(loose) }
       val gap = GAP.roundToPx()
-      refit(scale, constraints.maxHeight + keyboard - b.height, t.height + m.height + f.height + gap * 3)
+      if (keyboard == 0) refit(scale, constraints.maxHeight - b.height, t.height + m.height + f.height + gap * 3)
       layout(constraints.maxWidth, constraints.maxHeight) { stack(listOf(t, b, m), gap, f, constraints.maxHeight) }
     }
   }

@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,11 +36,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 
 data class StatsSection(val title: String, val rows: List<Pair<String, String>>)
 
@@ -55,7 +62,7 @@ data class AdjournedItem(
   val available: Boolean get() = pending && (online || untimed) && !busy
 }
 
-data class GameItem(val id: String, val title: String, val detail: String, val watchers: Int = 0)
+data class GameItem(val id: String, val title: String, val detail: String, val watchers: Int = 0, val sides: Pair<String, String>? = null, val score: String = "", val duplicate: DuplicateLine? = null)
 
 data class PersonItem(val name: String, val country: String, val busy: Boolean, val game: String? = null)
 
@@ -71,14 +78,15 @@ class OnlinePanelActions(
   val challenge: (PersonItem) -> Unit = {}, val write: (PersonItem) -> Unit = {},
 )
 
-class OnlineTab(val preferred: Boolean, val content: @Composable () -> Unit)
+class OnlineTab(val preferred: Boolean, val label: @Composable () -> String = { "En línea" }, val content: @Composable () -> Unit)
+
+fun onlineLabel(count: Int?): String = count?.let { "En línea ($it)" } ?: "En línea"
 
 @Composable
 fun OnlinePanel(state: OnlinePanelState, actions: OnlinePanelActions, modifier: Modifier = Modifier) {
   Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
     PanelStatus(state, actions)
-    Box(Modifier.weight(1f)) { PanelPage { ModeOffers(state, actions) } }
-    if (state.games.isNotEmpty()) WatchButton(state.games, actions.watch)
+    Box(Modifier.weight(1f)) { PanelBody(state, actions) }
     PublishButton(state, actions)
   }
   PanelNotices(state, actions)
@@ -100,68 +108,95 @@ private fun PanelNotices(state: OnlinePanelState, actions: OnlinePanelActions) {
 }
 
 @Composable
-private fun WatchButton(games: List<GameItem>, onWatch: (String) -> Unit) {
-  var open by remember { mutableStateOf(false) }
-  OutlinedButton(onClick = { open = true }, Modifier.fillMaxWidth()) { ButtonText("Observar partidas (${games.size})") }
-  if (open) GamesDialog(games, { open = false; onWatch(it) }) { open = false }
-}
-
-@Composable
-private fun GamesDialog(games: List<GameItem>, onWatch: (String) -> Unit, close: () -> Unit) {
-  AlertDialog(
-    onDismissRequest = close, title = { Text("Partidas en juego") },
-    text = { Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) { GameList(games, onWatch) } },
-    confirmButton = { TextButton(onClick = close) { Text("Cerrar") } },
+private fun PanelBody(state: OnlinePanelState, actions: OnlinePanelActions) {
+  val available = if (state.classic) state.people.filter { !it.busy } else emptyList()
+  if (available.isEmpty() && state.games.isEmpty()) return TopPage(Modifier.fillMaxSize()) { ModeOffers(state, actions) }
+  TopThenFill(
+    lowerReserve(state.games.isNotEmpty(), available.isNotEmpty()), { TopPage(Modifier.fillMaxWidth()) { ModeOffers(state, actions) } },
+    { LowerSections(state.games, available, PeopleActions(actions.write, actions.challenge, actions.watch)) },
   )
 }
 
 @Composable
-private fun PanelPage(content: @Composable ColumnScope.() -> Unit) {
+private fun TopPage(modifier: Modifier, content: @Composable ColumnScope.() -> Unit) {
   val scroll = rememberScrollState()
-  Column(
-    Modifier.fillMaxSize().scrollbar(scroll).verticalScroll(scroll).padding(top = 4.dp, end = 8.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp), content = content,
-  )
+  Column(modifier.scrollbar(scroll).verticalScroll(scroll).padding(top = 4.dp, end = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), content = content)
 }
 
 @Composable
 private fun ModeOffers(state: OnlinePanelState, actions: OnlinePanelActions) {
   val duplicate = !state.classic
-  SeekList(state.seeks.filter { it.duplicate == duplicate }, actions)
-  AdjournedList(state.adjourned.filter { it.duplicate == duplicate && it.available }, actions)
-  ConnectedList(state.people, PeopleActions(actions.write, actions.challenge.takeIf { state.classic }, actions.watch))
+  val seeks = state.seeks.filter { it.duplicate == duplicate }
+  val adjourned = state.adjourned.filter { it.duplicate == duplicate && it.available }
+  if (seeks.isNotEmpty()) PanelSection("Ofertas de partidas", first = true)
+  SeekList(seeks, actions)
+  AdjournedList(adjourned, actions)
+  if (seeks.isNotEmpty() || adjourned.any { it.pending } || state.games.isNotEmpty()) return
+  if (duplicate) NoDuplicates(state.people.count { !it.busy }) else NoClassics()
+}
+
+@Composable
+internal fun PanelSection(text: String, first: Boolean = false) {
+  if (!first) Spacer(Modifier.height(8.dp))
+  Text(text, style = MaterialTheme.typography.labelLarge)
+}
+
+@Composable
+private fun NoClassics() = EmptyState({ InitialTile("C", highlighted = false, size = 34.dp) }, "No hay ofertas ni partidas en curso.")
+
+@Composable
+internal fun MoreButton(hidden: Int, onClick: () -> Unit) {
+  TextButton(onClick = onClick, Modifier.fillMaxWidth().height(36.dp)) { Text("$hidden más") }
+}
+
+@Composable
+internal fun GamesDialog(games: List<GameItem>, onWatch: (String) -> Unit, close: () -> Unit) {
+  val scroll = rememberScrollState()
+  AlertDialog(
+    onDismissRequest = close, title = { Text("Partidas en curso") },
+    modifier = Modifier.padding(horizontal = 16.dp), properties = DialogProperties(usePlatformDefaultWidth = false),
+    text = {
+      Column(Modifier.scrollbar(scroll).verticalScroll(scroll).padding(end = 8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        games.forEach { CompactGameRow(it) { onWatch(it.id) } }
+      }
+    },
+    confirmButton = { TextButton(onClick = close) { Text("Cerrar") } },
+  )
+}
+
+@Composable
+internal fun CompactGameRow(g: GameItem, onClick: () -> Unit) {
+  val sides = g.sides ?: (g.title to g.detail)
+  Row(
+    Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).background(MaterialTheme.colorScheme.surfaceVariant).clickable(onClick = onClick)
+      .padding(horizontal = 10.dp, vertical = 6.dp),
+    horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically,
+  ) {
+    g.duplicate?.let { return@Row DuplicateRowContent(it) }
+    Text(sides.first, Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+    if (g.score.isNotEmpty()) Text(g.score, fontWeight = FontWeight.Bold)
+    Text(sides.second, Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.End)
+  }
+}
+
+@Composable
+private fun NoDuplicates(idle: Int) {
+  Column(Modifier.fillMaxWidth().padding(vertical = 10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    InitialTile("D", highlighted = false, size = 34.dp)
+    Text(noDuplicatesText(idle), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+  }
+}
+
+private fun noDuplicatesText(idle: Int): AnnotatedString = buildAnnotatedString {
+  if (idle == 0) return@buildAnnotatedString append("No hay duplicadas publicadas.")
+  append(if (idle == 1) "Si creas una duplicada, la recibirá " else "Si creas una duplicada, la recibirán ")
+  withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(if (idle == 1) "1 jugador" else "$idle jugadores") }
+  append(" en línea.")
 }
 
 class PeopleActions(val write: (PersonItem) -> Unit, val challenge: ((PersonItem) -> Unit)?, val watch: (String) -> Unit)
 
 private const val NOBODY_ONLINE = "No hay nadie en línea."
-
-@Composable
-private fun ConnectedList(people: List<PersonItem>, actions: PeopleActions) {
-  if (people.isEmpty()) return EmptyState("👥", NOBODY_ONLINE)
-  Spacer(Modifier.height(12.dp))
-  Text("Conectados", style = MaterialTheme.typography.labelLarge)
-  PeopleList(people, actions)
-}
-
-@Composable
-private fun GameList(games: List<GameItem>, onWatch: (String) -> Unit) {
-  if (games.isEmpty()) return EmptyState({ InitialTile("J", highlighted = false, size = 34.dp) }, "No se está jugando ninguna partida.")
-  games.forEach { g ->
-    Row(
-      Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(14.dp)).clickable { onWatch(g.id) }
-        .padding(horizontal = 12.dp, vertical = 10.dp),
-      horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Column(Modifier.weight(1f)) {
-        Text(g.title, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Text(g.detail, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-      }
-      if (g.watchers > 0) Text(watchersLabel(g.watchers), style = MaterialTheme.typography.labelLarge)
-      Text("Ver", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-    }
-  }
-}
 
 @Composable
 private fun PublishButton(state: OnlinePanelState, actions: OnlinePanelActions) {
@@ -197,10 +232,10 @@ private fun SeekActions(s: SeekItem, actions: OnlinePanelActions) {
 }
 
 @Composable
-private fun PeopleList(people: List<PersonItem>, actions: PeopleActions) {
+internal fun PeopleList(people: List<PersonItem>, actions: PeopleActions) {
   if (people.isEmpty()) EmptyState("👥", NOBODY_ONLINE)
   people.forEach { p ->
-    PlayerRow(p.name, p.country, if (p.busy) "Ocupado" else "Disponible") {
+    PlayerRow(p.name, p.country) {
       ChatIconButton("Escribir a ${p.name}") { actions.write(p) }
       PersonButton(p, actions)
     }
@@ -209,17 +244,29 @@ private fun PeopleList(people: List<PersonItem>, actions: PeopleActions) {
 
 @Composable
 private fun PersonButton(p: PersonItem, actions: PeopleActions) {
-  if (p.busy) return OutlinedButton(onClick = { p.game?.let(actions.watch) }, enabled = p.game != null) { Text("Ver") }
-  actions.challenge?.let { challenge -> OutlinedButton(onClick = { challenge(p) }) { Text("Retar") } }
+  if (p.busy) return CompactButton("Ver", enabled = p.game != null) { p.game?.let(actions.watch) }
+  actions.challenge?.let { challenge -> Button(onClick = { challenge(p) }, contentPadding = PaddingValues(horizontal = 12.dp)) { Text("Retar", maxLines = 1) } }
 }
 
 @Composable
-fun PeopleDialog(people: List<PersonItem>, actions: PeopleActions, close: () -> Unit) {
+private fun CompactButton(text: String, enabled: Boolean = true, onClick: () -> Unit) {
+  OutlinedButton(onClick, enabled = enabled, contentPadding = PaddingValues(horizontal = 12.dp)) { Text(text, maxLines = 1) }
+}
+
+@Composable
+fun PeopleDialog(people: List<PersonItem>, actions: PeopleActions, title: String = "Conectados", close: () -> Unit) {
   AlertDialog(
-    onDismissRequest = close, title = { Text("Conectados") },
-    text = { Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) { PeopleList(people, actions) } },
+    onDismissRequest = close, title = { Text(title) },
+    modifier = Modifier.padding(horizontal = 16.dp), properties = DialogProperties(usePlatformDefaultWidth = false),
+    text = { ScrollingPeople(people, actions) },
     confirmButton = { TextButton(onClick = close) { Text("Cerrar") } },
   )
+}
+
+@Composable
+private fun ScrollingPeople(people: List<PersonItem>, actions: PeopleActions) {
+  val scroll = rememberScrollState()
+  Column(Modifier.scrollbar(scroll).verticalScroll(scroll).padding(end = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) { PeopleList(people, actions) }
 }
 
 @Composable
@@ -237,14 +284,21 @@ internal fun PlayerRow(
     Modifier.fillMaxWidth().clip(shape).then(onClick?.let { Modifier.clickable(onClick = it) } ?: Modifier)
       .background(if (mine) colors.primaryContainer else colors.surfaceVariant, shape)
       .padding(horizontal = 10.dp, vertical = 8.dp),
-    horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically,
   ) {
+    PlayerIdentity(name, country, detail, profile = onClick == null)
+    action()
+  }
+}
+
+@Composable
+private fun RowScope.PlayerIdentity(name: String, country: String, detail: String?, profile: Boolean) {
+  Row(Modifier.weight(1f).then(if (profile) Modifier.opensProfile(name, country) else Modifier), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
     PersonAvatar(name, country)
-    Column(Modifier.weight(1f)) {
-      Text("$name  ${flagOf(country)}", fontWeight = FontWeight.Bold, maxLines = 1)
+    Column {
+      Text("$name  ${flagOf(country)}", fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
       detail?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1) }
     }
-    action()
   }
 }
 
@@ -266,11 +320,20 @@ private fun ResumeOnEntry(state: OnlinePanelState, actions: OnlinePanelActions) 
   else ResumeManyDialog(shown, close)
 }
 
+fun snoozeResumeReminder(roomCode: String) = ResumeReminders.snooze(roomCode)
+
 private object ResumeReminders {
   private val shownAt = mutableMapOf<String, Long>()
+  private val snoozedRooms = mutableMapOf<String, Long>()
 
-  fun due(games: List<AdjournedItem>): List<AdjournedItem> =
-    games.filter { System.currentTimeMillis() - (shownAt[it.id] ?: 0L) > REMIND_EVERY_MS }
+  fun snooze(roomCode: String) {
+    snoozedRooms[roomCode] = System.currentTimeMillis()
+  }
+
+  fun due(games: List<AdjournedItem>): List<AdjournedItem> {
+    games.forEach { g -> snoozedRooms[g.id.substringBefore('-')]?.let { shownAt.putIfAbsent(g.id, it) } }
+    return games.filter { System.currentTimeMillis() - (shownAt[it.id] ?: 0L) > REMIND_EVERY_MS }
+  }
 
   fun mark(games: List<AdjournedItem>) = games.forEach { shownAt[it.id] = System.currentTimeMillis() }
 }
@@ -302,8 +365,7 @@ private fun ResumeManyDialog(games: List<AdjournedItem>, close: () -> Unit) {
 private fun AdjournedList(games: List<AdjournedItem>, actions: OnlinePanelActions) {
   val pending = games.filter { it.pending }
   if (pending.isEmpty()) return
-  Spacer(Modifier.height(12.dp))
-  Text("Partidas aplazadas", style = MaterialTheme.typography.labelLarge)
+  PanelSection("Partidas aplazadas")
   pending.forEach { g ->
     PlayerRow(g.opponent, g.country, adjournedDetail(g)) {
       Button(onClick = { actions.resumeAdjourned(g.id) }, enabled = g.available) { Text("Retomar") }

@@ -14,11 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.lexico.ui.common.nameWidth
 import kotlin.math.abs
 
 internal val STEP_NUMBER_WIDTH = 24.dp
-internal val WHO_WIDTH = 72.dp
+@Composable
+internal fun whoWidth(): Dp = nameWidth(captionStyle())
 internal val NUMBER_WIDTH = 48.dp
 
 @Composable
@@ -34,7 +37,7 @@ internal fun EndgameResult(position: ExploredPosition) {
 @Composable
 internal fun EndingLine(row: EndingRow) {
   Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-    Text(row.who, Modifier.width(STEP_NUMBER_WIDTH + WHO_WIDTH), style = captionStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
+    Text(row.who, Modifier.width(STEP_NUMBER_WIDTH + whoWidth()), style = captionStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
     Text(endingText(row), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
     Text("%+d".format(row.delta), Modifier.width(NUMBER_WIDTH), textAlign = TextAlign.End, fontWeight = FontWeight.Bold)
   }

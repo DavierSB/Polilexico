@@ -1,6 +1,15 @@
 package app.lexico.navigation
 
+import androidx.compose.ui.unit.sp
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
+import app.lexico.ui.common.LocalChat
+import app.lexico.ui.common.ContactGroup
+import app.lexico.ui.common.ChatEntry
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,10 +37,45 @@ import app.lexico.ui.duplicate.SeatActions
 
 @Composable
 internal fun Watch(client: OnlineClient, info: RoomInfo, nav: Navigator, themes: ThemeState) {
-  val me = rememberOnline().account.session.collectAsState().value
-  val watchers = client.watchers.collectAsState().value.filterNot { it.name == me?.name && it.country == me.country }.map(::personItem)
+  val watchers = client.watchers.collectAsState().value.map(::personItem)
   val leave = { client.leave(); nav.back() }
-  if (info.duplicate) WatchTable(client, watchers, themes, leave) else WatchGame(client, info, watchers, themes, leave)
+  WatchChat(client, info) {
+    if (info.duplicate) WatchTable(client, watchers, themes, leave) else WatchGame(client, info, watchers, themes, leave)
+  }
+  WatchingNotice(info.id)
+}
+
+@Composable
+private fun WatchChat(client: OnlineClient, info: RoomInfo, content: @Composable () -> Unit) {
+  val composer = remember { Composer() }
+  val lobby by client.lobby.collectAsState()
+  val watchers by client.watchers.collectAsState()
+  val list = contacts(lobby, info.players, watchers)
+  val onTurn = onTurn(client, info)?.let(::plainName)
+  val fallback = list.find { it.group == ContactGroup.RIVALS && it.name == onTurn } ?: list.firstOrNull { it.group == ContactGroup.RIVALS }
+  val latest by rememberUpdatedState(fallback)
+  val entry = remember { ChatEntry { composer.write(latest) } }
+  CompositionLocalProvider(LocalChat provides entry, content = content)
+  MessageDialogs(client, list, fallback, composer)
+}
+
+@Composable
+private fun onTurn(client: OnlineClient, info: RoomInfo): String? {
+  if (info.duplicate) return null
+  val state = client.game.collectAsState().value?.state?.collectAsState()?.value ?: return null
+  return info.players.getOrNull(if (state.myTurn) 0 else 1)
+}
+
+@Composable
+private fun WatchingNotice(roomId: String) {
+  var shown by remember(roomId) { mutableStateOf(true) }
+  if (!shown) return
+  AlertDialog(
+    onDismissRequest = { shown = false },
+    icon = { Text("👁", fontSize = 32.sp) },
+    title = { Text("Estás solo observando") },
+    confirmButton = { TextButton(onClick = { shown = false }) { Text("Entendido") } },
+  )
 }
 
 @Composable

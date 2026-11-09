@@ -29,7 +29,9 @@ import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.board.rememberTilePlacer
 import app.lexico.ui.common.BagCountDialog
 import app.lexico.ui.common.BoardColumn
+import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.GameBar
+import app.lexico.ui.common.LocalChat
 import app.lexico.ui.common.NOT_IN_A_LINE
 import app.lexico.ui.common.Notice
 import app.lexico.ui.common.RoundBar
@@ -37,16 +39,22 @@ import app.lexico.ui.common.rememberNotice
 import kotlinx.coroutines.delay
 
 @Composable
-fun SeatScreen(view: SeatView, style: BoardStyle, actions: SeatActions, onExport: (() -> Unit)? = null, onAdjourn: (() -> Unit)? = null) {
+fun SeatScreen(
+  view: SeatView, style: BoardStyle, actions: SeatActions, onExport: (() -> Unit)? = null, onAdjourn: (() -> Unit)? = null, onAbandon: (() -> Unit)? = null,
+) {
   val c = rememberTilePlacer(RackRenewal.MASTER_PLAYS)
   LaunchedEffect(view.board, view.rack) { c.reset(view.board, view.rack) }
   var message by rememberNotice(view.notice)
   var chart by remember { mutableStateOf(false) }
   var moves by remember { mutableStateOf(false) }
   var bag by remember { mutableStateOf(false) }
+  var abandoning by remember { mutableStateOf(false) }
+  val canAbandon = onAbandon != null && view.phase != SeatPhase.FINISHED && !view.watching
   val bar: @Composable () -> Unit = {
-    GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = null, onStandings = { chart = true }, watchers = view.watchers,
+    GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = { abandoning = true }.takeIf { canAbandon },
+      onStandings = { chart = true }, watchers = view.watchers,
       onAdjourn = onAdjourn.takeIf { view.phase != SeatPhase.FINISHED && !view.watching },
+      onChat = LocalChat.current?.onOpen?.takeIf { view.watching },
     )
   }
   var results by remember { mutableStateOf(false) }
@@ -64,6 +72,7 @@ fun SeatScreen(view: SeatView, style: BoardStyle, actions: SeatActions, onExport
   if (chart) ChartDialog(view) { chart = false }
   if (moves) MovesDialog(movesOf(view), if (view.watching) "Mejor" else "Tú") { moves = false }
   if (bag) BagCountDialog("En la bolsa", view.bag) { bag = false }
+  if (abandoning) ConfirmDialog("¿Seguro que quieres abandonar la partida?", yes = "Abandonar", no = "Seguir", onYes = { abandoning = false; onAbandon?.invoke() }) { abandoning = false }
   SeatVerdictOnce(view)
 }
 

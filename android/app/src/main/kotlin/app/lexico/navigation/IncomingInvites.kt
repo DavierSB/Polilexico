@@ -14,6 +14,7 @@ import app.lexico.online.RoomInfo
 import app.lexico.online.Seek
 import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.InviteCard
+import app.lexico.ui.common.flagOf
 
 @Composable
 internal fun IncomingInvites(nav: Navigator, refuse: Boolean, modifier: Modifier = Modifier) {
@@ -26,7 +27,7 @@ internal fun IncomingInvites(nav: Navigator, refuse: Boolean, modifier: Modifier
 private fun Invites(online: Online, client: OnlineClient, nav: Navigator, refuse: Boolean, modifier: Modifier) {
   val lobby by client.lobby.collectAsState()
   val room by client.room.collectAsState()
-  val invite = lobby.invites.firstOrNull() ?: return
+  val invite = lobby.invites.firstOrNull() ?: return DuplicateOffer(online, client, nav, refuse, modifier)
   if (refuse && !invite.resume) return LaunchedEffect(invite.id) { client.decline(invite) }
   if (!canInterrupt(nav.current, room)) return
   ProvidePhotos(online, lobby) { Invite(client, invite, nav, modifier) }
@@ -38,6 +39,22 @@ private fun Invite(client: OnlineClient, invite: Seek, nav: Navigator, modifier:
   val accept = { confirming = false; client.accept(invite); nav.go(Screen.OnlinePlay) }
   InviteCard(seekItem(invite), onAccept = { if (nav.current.isGame) confirming = true else accept() }, onDecline = { client.decline(invite) }, modifier)
   if (confirming) ConfirmDialog(LEAVE_GAME, yes = "Aceptar", no = "Cancelar", onYes = accept) { confirming = false }
+}
+
+@Composable
+private fun DuplicateOffer(online: Online, client: OnlineClient, nav: Navigator, refuse: Boolean, modifier: Modifier) {
+  val lobby by client.lobby.collectAsState()
+  val room by client.room.collectAsState()
+  val code by client.offer.collectAsState()
+  val seek = lobby.seeks.find { it.id == code } ?: return
+  if (refuse || !canInterrupt(nav.current, room) || nav.current.isGame) return
+  val join = { client.dismissOffer(); client.accept(seek); nav.go(Screen.OnlinePlay) }
+  ProvidePhotos(online, lobby) {
+    InviteCard(
+      seekItem(seek), onAccept = join, onDecline = client::dismissOffer, modifier,
+      title = "${seek.host} ${flagOf(seek.country)} creó una duplicada", labels = "Ahora no" to "Unirse",
+    )
+  }
 }
 
 private fun canInterrupt(screen: Screen, room: RoomInfo?): Boolean =

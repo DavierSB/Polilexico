@@ -39,6 +39,11 @@ class OnlineApi(private val server: () -> String, private val http: OkHttpClient
 
   suspend fun stats(token: String): Result<List<OnlineStatsRow>> = call("GET", "/stats", token = token).map { statsRows(it.optJSONArray("rows")) }
 
+  suspend fun profile(token: String, name: String, country: String): Result<List<OnlineStatsRow>> =
+    call("GET", "/profile?name=${enc(name)}&country=${enc(country)}", token = token).map { statsRows(it.optJSONArray("rows")) }
+
+  private fun enc(text: String): String = java.net.URLEncoder.encode(text, "UTF-8")
+
   suspend fun account(token: String): Result<AccountForm> = call("GET", "/account", token = token).map(::accountForm)
 
   suspend fun updateAccount(token: String, form: AccountForm): Result<AccountForm> =

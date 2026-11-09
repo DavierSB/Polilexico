@@ -14,6 +14,8 @@ import app.lexico.navigation.Screen
 import app.lexico.navigation.contacts
 import app.lexico.navigation.personItem
 import app.lexico.navigation.shuffledPeople
+import app.lexico.navigation.ProfileContext
+import app.lexico.navigation.ProfileHost
 import app.lexico.online.Lobby
 import app.lexico.online.Online
 import app.lexico.online.OnlineClient
@@ -49,9 +51,13 @@ private fun SignedIn(online: Online, client: OnlineClient, presence: Int?, compa
   MessagesButton(inbox.size) { composer.write() }
   OnlineChip(presence, compact) { showingPeople = true }
   ProvidePhotos(online, lobby) {
-    if (showingPeople) PeopleDialog(shuffledPeople(lobby.people).map { personItem(it, lobby.games) }, peopleActions(client, lobby, composer, go) { showingPeople = false }) {
-      showingPeople = false
-    }
+    ProfileHost(online, ProfileContext(client, composer, go)) { ChipPeople(client, lobby, composer, showingPeople, go) { showingPeople = false } }
     MessageDialogs(client, contacts(lobby, emptyList(), emptyList()), null, composer)
   }
+}
+
+@Composable
+private fun ChipPeople(client: OnlineClient, lobby: Lobby, composer: Composer, showing: Boolean, go: (Screen) -> Unit, close: () -> Unit) {
+  if (!showing) return
+  PeopleDialog(shuffledPeople(lobby.people).map { personItem(it, lobby.games) }, peopleActions(client, lobby, composer, go, close), close = close)
 }

@@ -16,9 +16,9 @@ private const val MASTER = "Máster"
 private const val SHOWN_PLACES = 3
 
 @Composable
-internal fun ExportableSeat(view: SeatView, style: BoardStyle, actions: SeatActions, onAdjourn: (() -> Unit)? = null) {
+internal fun ExportableSeat(view: SeatView, style: BoardStyle, actions: SeatActions, onAdjourn: (() -> Unit)? = null, onAbandon: (() -> Unit)? = null) {
   var exporting by remember { mutableStateOf(false) }
-  SeatScreen(view, style, actions, { exporting = true }, onAdjourn)
+  SeatScreen(view, style, actions, { exporting = true }, onAdjourn, onAbandon)
   SeatCues(view)
   if (exporting) BoardExport(view.board, exportTitle(view), exportCaption(view), style) { exporting = false }
 }

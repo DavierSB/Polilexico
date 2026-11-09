@@ -57,7 +57,7 @@ internal fun contacts(lobby: Lobby, rivals: List<String>, watchers: List<Person>
   }.sortedWith(compareBy({ it.group.ordinal }, { it.name.lowercase() }))
 }
 
-private fun plainName(seat: String): String = WITH_COUNTRY.matchEntire(seat)?.groupValues?.get(1) ?: seat
+internal fun plainName(seat: String): String = WITH_COUNTRY.matchEntire(seat)?.groupValues?.get(1) ?: seat
 
 private fun replyTo(line: ChatLine, contacts: List<ChatContact>): ChatContact =
   contacts.find { it.name == line.from && it.country == line.country } ?: ChatContact(line.from, line.country, ContactGroup.OTHERS)

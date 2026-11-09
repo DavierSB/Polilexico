@@ -11,17 +11,12 @@ import app.lexico.menu.Settings
 import app.lexico.online.Online
 import app.lexico.ui.common.NoProfileCard
 import app.lexico.ui.common.OnlineTab
+import app.lexico.ui.common.onlineLabel
 
 @Composable
 internal fun rememberOnlineTab(mode: Mode, lexico: Lexico, settings: Settings, nav: Navigator): OnlineTab {
   val online = rememberOnline()
-  val preferred = remember { othersOnline(online) }
-  return remember(preferred) { OnlineTab(preferred) { OnlinePanelRoute(mode, online, lexico, settings, nav) } }
-}
-
-private fun othersOnline(online: Online): Boolean {
-  val client = online.current.value ?: return false
-  return client.connected.value && client.lobby.value.people.isNotEmpty()
+  return remember { OnlineTab(preferred = false, label = { onlineLabel(rememberPresence()) }) { OnlinePanelRoute(mode, online, lexico, settings, nav) } }
 }
 
 @Composable

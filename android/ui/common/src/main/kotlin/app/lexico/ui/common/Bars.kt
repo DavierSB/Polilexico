@@ -45,6 +45,7 @@ fun GameBar(
   onStandings: (() -> Unit)? = null,
   watchers: List<PersonItem> = emptyList(),
   onAdjourn: (() -> Unit)? = null,
+  onChat: (() -> Unit)? = null,
 ) {
   Row(Modifier.fillMaxWidth().height(44.dp), verticalAlignment = Alignment.CenterVertically) {
     Row(Modifier.weight(1f).clipToBounds(), Arrangement.spacedBy(2.dp), Alignment.CenterVertically) {
@@ -55,6 +56,7 @@ fun GameBar(
       if (onPause != null) PauseButton(onPause)
       if (onTheme != null) ThemeButton(onTheme)
       WatchersButton(watchers)
+      if (onChat != null) BarTextButton(CHAT_GLYPH, onChat)
       if (onStandings != null) BarTextButton("Posiciones", onStandings)
       if (onAdjourn != null) BarIconButton(LexicoIcons.Moves, "Movidas", onMoves) else BarTextButton("Movidas", onMoves)
     }

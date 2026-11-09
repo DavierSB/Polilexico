@@ -5,6 +5,7 @@ import app.lexico.game.Lexico
 import app.lexico.game.modes.classic.ClassicGame
 import app.lexico.game.modes.classic.ClassicRemote
 import app.lexico.ui.common.ChatLine
+import app.lexico.ui.common.snoozeResumeReminder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -69,10 +70,14 @@ class OnlineClient internal constructor(private val online: Online, private val 
   private val _rivalAwaySince = MutableStateFlow<Long?>(null)
   val rivalAwaySince: StateFlow<Long?> = _rivalAwaySince.asStateFlow()
 
+  private val _offer = MutableStateFlow<String?>(null)
+  val offer: StateFlow<String?> = _offer.asStateFlow()
+
   private val _rejoined = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
   val rejoined: SharedFlow<Unit> = _rejoined
 
   private var noticeJob: Job? = null
+  private val queued = mutableListOf<String>()
   private var awaitingRoom = false
   private var awaitingGame = false
 
@@ -91,35 +96,35 @@ class OnlineClient internal constructor(private val online: Online, private val 
 
   fun publish(p: Proposal) {
     _ended.value = null
-    send(create(p))
+    sendWhenOnline(create(p))
   }
 
   fun challenge(person: Person, p: Proposal.Classic) {
     _ended.value = null
-    send(challengeMessage(person.name, person.country, p))
+    sendWhenOnline(challengeMessage(person.name, person.country, p))
   }
 
   fun cancel(seek: Seek) {
-    send(roomAction("cancel", seek.id))
+    sendWhenOnline(roomAction("cancel", seek.id))
   }
 
   fun startSeek(seek: Seek) {
     forget()
-    send(roomAction("start", seek.id))
+    sendWhenOnline(roomAction("start", seek.id))
   }
 
   fun accept(seek: Seek) {
     forget()
-    send(roomAction("join", seek.id))
+    sendWhenOnline(roomAction("join", seek.id))
   }
 
   fun decline(seek: Seek) {
-    send(roomAction("decline", seek.id))
+    sendWhenOnline(roomAction("decline", seek.id))
   }
 
   fun watch(game: LiveGame) {
     forget()
-    send(roomAction("watch", game.id))
+    sendWhenOnline(roomAction("watch", game.id))
   }
 
   fun adjourn() {
@@ -137,7 +142,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
 
   fun resume(game: AdjournedGame) {
     forget()
-    send(roomAction("resume", game.id))
+    sendWhenOnline(roomAction("resume", game.id))
   }
 
   fun start() {
@@ -160,6 +165,10 @@ class OnlineClient internal constructor(private val online: Online, private val 
   fun ignorePerson(name: String, country: String) {
     online.store.ignored = online.store.ignored + personKey(name, country)
     _inbox.value = _inbox.value.filterNot { it.from == name && it.country == country }
+  }
+
+  fun dismissOffer() {
+    _offer.value = null
   }
 
   fun closeChat() {
@@ -189,6 +198,10 @@ class OnlineClient internal constructor(private val online: Online, private val 
     _watchers.value = emptyList()
   }
 
+  fun stopWatchingOrForget() {
+    if (_room.value?.watching == true) leave() else forgetIfFinished()
+  }
+
   fun forgetIfFinished() {
     if (_room.value != null && (finished() || _ended.value != null)) forget()
   }
@@ -203,6 +216,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
     link?.close()
     link = null
     _connected.value = false
+    synchronized(queued) { queued.clear() }
     forget()
     _lobby.value = Lobby()
   }
@@ -236,6 +250,15 @@ class OnlineClient internal constructor(private val online: Online, private val 
 
   private fun send(text: String): Boolean = link?.send(text) == true
 
+  private fun sendWhenOnline(text: String) {
+    if (!send(text)) synchronized(queued) { queued.remove(text); queued += text }
+  }
+
+  private fun sendQueued() {
+    val due = synchronized(queued) { queued.toList().also { queued.clear() } }
+    due.forEach(::sendWhenOnline)
+  }
+
   private suspend fun handle(e: OnlineEvent) {
     when (e) {
       OnlineEvent.Welcome -> welcomed()
@@ -252,10 +275,12 @@ class OnlineClient internal constructor(private val online: Online, private val 
       is OnlineEvent.Chat -> heard(ChatLine(e.from, e.text))
       is OnlineEvent.Tell -> if (personKey(e.name, e.country) !in online.store.ignored) heard(ChatLine(e.name, e.text, e.country))
       is OnlineEvent.Watchers -> _watchers.value = e.people
+      is OnlineEvent.DuplicateOffer -> _offer.value = e.code
     }
   }
 
   private fun closed(reason: String) {
+    if (reason == ADJOURNED) _room.value?.id?.let(::snoozeResumeReminder)
     if (reason == ADJOURNED && !(awaitingRoom && seatedInGame())) forget()
     _ended.value = reason
   }
@@ -279,6 +304,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
     _connected.value = true
     awaitingRoom = true
     _room.value?.takeIf { it.watching }?.let { send(roomAction("watch", it.id)) }
+    sendQueued()
   }
 
   private fun seated(info: RoomInfo) {

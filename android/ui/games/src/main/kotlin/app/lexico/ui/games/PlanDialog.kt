@@ -121,7 +121,7 @@ private fun PlanStep(index: Int, step: StepView, active: Boolean, select: () -> 
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Text("${index + 1}", Modifier.width(STEP_NUMBER_WIDTH), color = MaterialTheme.colorScheme.onSurfaceVariant)
-    Text(step.who, Modifier.width(WHO_WIDTH), style = captionStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
+    Text(step.who, Modifier.width(whoWidth()), style = captionStyle(), maxLines = 1, overflow = TextOverflow.Ellipsis)
     Text(step.move.text, Modifier.weight(1f), fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
     Text("${step.move.points}", Modifier.width(NUMBER_WIDTH), textAlign = TextAlign.End, fontWeight = FontWeight.Bold)
   }

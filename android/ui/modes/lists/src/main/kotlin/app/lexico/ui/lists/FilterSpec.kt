@@ -20,7 +20,6 @@ data class FilterSpec(
     WordKeys.parse(start), WordKeys.parse(end),
   )
 
-  fun matchesWord(key: String): Boolean = filter().copy(minLength = 0, maxLength = Int.MAX_VALUE).matches(key)
 
   val isEmpty: Boolean get() = filter() == Filter()
 

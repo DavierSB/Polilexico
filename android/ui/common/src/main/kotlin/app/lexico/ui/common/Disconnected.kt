@@ -26,6 +26,14 @@ fun Disconnected(offline: Boolean, onHome: () -> Unit, note: String? = CLOCK_RUN
 }
 
 @Composable
+fun AwaitingReconnection(offline: Boolean, content: @Composable () -> Unit) {
+  Covered(offline, OFFLINE_ALPHA, content) {
+    CircularProgressIndicator()
+    Text("Esperando que te reconectes…", style = MaterialTheme.typography.titleMedium)
+  }
+}
+
+@Composable
 fun AdjournedCover(adjourned: Boolean, onHome: () -> Unit, content: @Composable () -> Unit) {
   Covered(adjourned, OFFLINE_ALPHA, content) {
     Text("Partida aplazada", style = MaterialTheme.typography.headlineSmall)

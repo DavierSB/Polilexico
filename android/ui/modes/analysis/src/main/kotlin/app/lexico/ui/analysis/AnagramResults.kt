@@ -16,26 +16,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.lexico.model.Letters
 import app.lexico.ui.common.DictionaryWord
-import app.lexico.ui.lists.FilterSpec
-import app.lexico.ui.lists.WordKeys
 
 @Composable
-internal fun AnagramResults(tiles: Int, found: List<String>?, spec: FilterSpec) {
+internal fun AnagramResults(tiles: Int, found: List<String>?, pins: Map<Int, String>) {
   if (tiles < MIN_TILES) return
   ResultCard {
     when {
       found == null -> Text("Buscando…", color = MaterialTheme.colorScheme.onSurfaceVariant)
       found.isEmpty() -> Empty("Sin anagramas")
-      else -> Shown(found.filter { spec.matchesWord(keyOf(it)) })
+      else -> Shown(found.filter { fitsPins(it, pins) })
     }
   }
 }
 
 @Composable
 private fun Shown(words: List<String>) {
-  if (words.isEmpty()) return Empty("Ninguno cumple los filtros")
+  if (words.isEmpty()) return Empty("Ninguno con esas letras fijadas")
   Count(words.size, if (words.size == 1) "anagrama" else "anagramas")
   FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
     words.forEach { DictionaryWord(it, fontSize = 22.sp) }
@@ -62,5 +59,3 @@ private fun Count(n: Int, label: String) {
 private fun Empty(text: String) {
   Text(text, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
-
-private fun keyOf(word: String): String = WordKeys.of(Letters.tiles(word).mapNotNull { it?.letter })

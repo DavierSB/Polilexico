@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,7 +42,7 @@ internal fun ChartDialog(view: SeatView, close: () -> Unit) {
 
 @Composable
 private fun ChartAndStandings(view: SeatView) {
-  Column {
+  Column(Modifier.verticalScroll(rememberScrollState())) {
     if (view.rounds.isEmpty()) Text("Aún no ha terminado ninguna ronda.")
     else if (view.watching) ColoredChart(percents(view))
     else PercentChart(percents(view), view.me)
@@ -63,28 +65,39 @@ private fun PercentChart(lines: Map<String, List<Float>>, me: String) {
 
 @Composable
 private fun ColoredChart(lines: Map<String, List<Float>>) {
-  val colors = lines.keys.withIndex().associate { (i, name) -> name to PLAYER_COLORS[i % PLAYER_COLORS.size] }
+  val ranked = lines.keys.sortedByDescending { lines.getValue(it).last() }
+  val colored = if (ranked.size > MAX_ALL_COLORED) ranked.take(TOP_COLORED) else ranked
+  val colors = colored.withIndex().associate { (i, name) -> name to PLAYER_COLORS[i % PLAYER_COLORS.size] }
+  val grey = MaterialTheme.colorScheme.outlineVariant
   val measurer = rememberTextMeasurer()
   val label = MaterialTheme.typography.labelSmall
   val floor = floorOf(lines)
   Canvas(Modifier.fillMaxWidth().height(190.dp).padding(top = 22.dp, bottom = 8.dp, start = 6.dp, end = 26.dp)) {
     val plot = Plot(floor, measurer, label)
-    lines.forEach { (name, points) -> plot.line(this, points, colors.getValue(name), 4f) }
+    lines.filterKeys { it !in colors }.values.forEach { plot.line(this, it, grey, 3f, labeled = false) }
+    colored.asReversed().forEach { plot.line(this, lines.getValue(it), colors.getValue(it), 4f) }
   }
-  Legend(colors)
+  Legend(colors, lines, greyed = ranked.size - colored.size)
 }
 
 @Composable
-private fun Legend(colors: Map<String, Color>) {
+private fun Legend(colors: Map<String, Color>, lines: Map<String, List<Float>>, greyed: Int) {
   FlowRow(Modifier.fillMaxWidth().padding(bottom = 8.dp), Arrangement.spacedBy(10.dp), Arrangement.spacedBy(4.dp)) {
-    colors.forEach { (name, color) ->
-      Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        Box(Modifier.size(10.dp).background(color, CircleShape))
-        Text(name, style = MaterialTheme.typography.labelMedium)
-      }
-    }
+    colors.forEach { (name, color) -> LegendEntry(name, lines.getValue(name).last(), color) }
+    if (greyed > 0) Text("+$greyed en gris", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
   }
 }
+
+@Composable
+private fun LegendEntry(name: String, percent: Float, color: Color) {
+  Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    Box(Modifier.size(10.dp).background(color, CircleShape))
+    Text("$name ${percent.toInt()} %", style = MaterialTheme.typography.labelMedium)
+  }
+}
+
+private const val MAX_ALL_COLORED = 8
+private const val TOP_COLORED = 5
 
 private val PLAYER_COLORS = listOf(
   Color(0xFFE53935), Color(0xFF1E88E5), Color(0xFF43A047), Color(0xFFFB8C00), Color(0xFF8E24AA), Color(0xFF00ACC1),
@@ -92,12 +105,12 @@ private val PLAYER_COLORS = listOf(
 )
 
 private class Plot(val floor: Float, val measurer: TextMeasurer, val label: TextStyle) {
-  fun line(scope: DrawScope, points: List<Float>, color: Color, width: Float) = with(scope) {
+  fun line(scope: DrawScope, points: List<Float>, color: Color, width: Float, labeled: Boolean = true) = with(scope) {
     val at = { i: Int -> point(points, i) }
     for (i in 1 until points.size) drawLine(color, at(i - 1), at(i), strokeWidth = width)
     val end = at(points.lastIndex)
     drawCircle(color, width * 1.6f, end)
-    percentLabel(points.last(), end, color)
+    if (labeled) percentLabel(points.last(), end, color)
   }
 
   private fun DrawScope.point(points: List<Float>, i: Int): Offset {

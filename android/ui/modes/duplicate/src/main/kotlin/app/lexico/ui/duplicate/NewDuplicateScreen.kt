@@ -10,6 +10,8 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -53,10 +55,12 @@ fun NewDuplicateScreen(
 ) {
   var tab by remember { mutableStateOf(if (online.preferred) DuplicateTab.ONLINE else DuplicateTab.LOCAL) }
   var wifi by remember { mutableStateOf(false) }
-  when {
-    tab == DuplicateTab.ONLINE -> OnlineStep(online, onBack) { tab = it }
-    wifi -> WifiStep(onBack, onHost, onJoin, { tab = it }) { wifi = false }
-    else -> SoloStep(saved, onBack, recordFor, onStart, { tab = it }) { wifi = true }
+  CompositionLocalProvider(LocalOnlineLabel provides online.label()) {
+    when {
+      tab == DuplicateTab.ONLINE -> OnlineStep(online, onBack) { tab = it }
+      wifi -> WifiStep(onBack, onHost, onJoin, { tab = it }) { wifi = false }
+      else -> SoloStep(saved, onBack, recordFor, onStart, { tab = it }) { wifi = true }
+    }
   }
 }
 
@@ -78,16 +82,21 @@ private fun WifiStep(onBack: () -> Unit, onHost: (WifiDuplicateConfig) -> Unit, 
     Header("Duplicada", onBack)
     DuplicateTabs(DuplicateTab.LOCAL, onTab)
     WifiDuplicateForm(onHost, onJoin)
-    SwitchPrompt("¿O prefieres jugar solo?", onSolo)
+    SwitchPrompt("¿O eres tú solo?", onSolo)
   }
 }
+
+private val LocalOnlineLabel = compositionLocalOf { "En línea" }
 
 private enum class DuplicateTab(val label: String) { LOCAL("Local"), ONLINE("En línea") }
 
 @Composable
 private fun DuplicateTabs(selected: DuplicateTab, select: (DuplicateTab) -> Unit) {
+  val onlineLabel = LocalOnlineLabel.current
   PrimaryTabRow(selectedTabIndex = selected.ordinal) {
-    DuplicateTab.entries.forEach { tab -> Tab(selected = tab == selected, onClick = { select(tab) }, text = { Text(tab.label, maxLines = 1) }) }
+    DuplicateTab.entries.forEach { tab ->
+      Tab(selected = tab == selected, onClick = { select(tab) }, text = { Text(if (tab == DuplicateTab.ONLINE) onlineLabel else tab.label, maxLines = 1) })
+    }
   }
 }
 
@@ -118,7 +127,7 @@ private fun ColumnScope.SoloForm(saved: SavedShortcuts, recordFor: (DuplicateCon
     TimeField(turn, { turn = it }, "Tiempo por turno")
     StudyModeSelector(study) { study = it }
     config?.let { RecordLine(recordFor(it)) }
-    SwitchPrompt("¿O prefieres jugar por wifi?", onWifi)
+    SwitchPrompt("¿O son varios jugadores locales?", onWifi)
   }
   StartButton(enabled = config != null) { config?.let(onStart) }
   SavedButtons(saved)

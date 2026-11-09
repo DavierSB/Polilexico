@@ -2,6 +2,7 @@ package app.lexico.ui.classic
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.compose.ui.unit.Dp
 import app.lexico.ui.board.AppTheme
 import app.lexico.ui.board.AppThemes
 import app.lexico.ui.common.LocalPhotos
+import app.lexico.ui.common.opensProfile
 import app.lexico.ui.common.SeatAvatar
 
 data class Bot(
@@ -39,6 +41,6 @@ fun alias(name: String): String = BOTS.find { it.name == name }?.alias ?: name
 
 @Composable
 fun OpponentPhoto(name: String, size: Dp) {
-  if (LocalPhotos.current != null) return SeatAvatar(name, size)
+  if (LocalPhotos.current != null) return Box(Modifier.opensProfile(name, "")) { SeatAvatar(name, size) }
   Image(painterResource(bot(name).photo), alias(name), Modifier.size(size).clip(CircleShape))
 }
