@@ -26,6 +26,7 @@ type room interface {
 	finished() bool
 	ongoing() (liveGame, bool)
 	watch(c *client) bool
+	forceAdjourn() bool
 }
 
 type hub struct {
@@ -135,6 +136,9 @@ func (h *hub) create(c *client, m message, invitee *player) {
 	h.rooms[code] = newRoom(h, code, c.player, m, invitee)
 	h.mu.Unlock()
 	h.changed()
+	if m.Mode == modeDuplicate {
+		h.announceDuplicate(c, code)
+	}
 }
 
 func (h *hub) canPublish(c *client) string {
@@ -171,6 +175,10 @@ func (h *hub) challenge(c *client, m message) {
 }
 
 func (h *hub) join(c *client, code string) {
+	if h.playing(c) {
+		c.send(notice("error", "Termina tu partida antes de entrar a otra."))
+		return
+	}
 	r := h.roomByCode(code)
 	if r == nil || !h.joinable(r, c) {
 		c.send(notice("error", "Esa partida ya no está disponible."))
@@ -289,10 +297,15 @@ func (h *hub) roomOf(playerID string) room {
 	return h.seats[playerID]
 }
 
-func (h *hub) seat(playerID string, r room) {
+func (h *hub) seat(playerID string, r room) room {
 	h.mu.Lock()
-	defer h.mu.Unlock()
+	prev := h.seats[playerID]
 	h.seats[playerID] = r
+	h.mu.Unlock()
+	if prev != nil && prev != r {
+		go h.settleSeat(playerID, prev, r)
+	}
+	return prev
 }
 
 func (h *hub) unseat(playerID string, r room) {

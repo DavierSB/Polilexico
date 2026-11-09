@@ -16,6 +16,7 @@ type store interface {
 	Identify(ctx context.Context, accessToken string) (player, error)
 	Record(ctx context.Context, r result) error
 	Stats(ctx context.Context, p player) ([]statsRow, error)
+	Find(ctx context.Context, name, country string) (player, error)
 	Backup(ctx context.Context, p player) (string, error)
 	SaveBackup(ctx context.Context, p player, data string) error
 	SavePhoto(ctx context.Context, p player, data string) error

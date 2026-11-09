@@ -111,7 +111,9 @@ func (r *classicRoom) ongoing() (liveGame, bool) {
 		return liveGame{}, false
 	}
 	names, countries := seatNames(r.seats)
-	return liveGame{ID: r.code, Mode: modeClassic, Players: names, Countries: countries, Watchers: len(r.watchers.list)}, true
+	st := r.match.Game().Status()
+	return liveGame{ID: r.code, Mode: modeClassic, Players: names, Countries: countries, Watchers: len(r.watchers.list),
+		Scores: []int{st.HumanScore, st.BotScore}, Bag: st.BagCount}, true
 }
 
 func (r *classicRoom) watch(c *client) bool {
@@ -203,10 +205,10 @@ func (r *classicRoom) admit(c *client) *seat {
 
 func (r *classicRoom) seatHost() {
 	host := r.seatOf(r.hostID)
-	r.hub.seat(host.player.ID, r)
+	prev := r.hub.seat(host.player.ID, r)
 	r.hub.matched(host.player.ID, r.code)
 	c := r.hub.clientOf(host.player.ID)
-	if c == nil {
+	if c == nil || (c.room != nil && c.room == prev && prev != r) {
 		return
 	}
 	if c.room != nil && c.room != r {

@@ -24,6 +24,7 @@ func routes(h *hub, st store) http.Handler {
 	mux.HandleFunc("POST /login", logIn(st))
 	mux.HandleFunc("POST /refresh", refresh(st))
 	mux.HandleFunc("GET /stats", authed(st, stats(st)))
+	mux.HandleFunc("GET /profile", authed(st, profileStats(st)))
 	mux.HandleFunc("GET /backup", authed(st, backup(st)))
 	mux.HandleFunc("PUT /backup", authed(st, saveBackup(st)))
 	return mux

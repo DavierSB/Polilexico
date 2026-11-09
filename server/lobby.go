@@ -36,6 +36,8 @@ type liveGame struct {
 	Players   []string `json:"players"`
 	Countries []string `json:"countries"`
 	Watchers  int      `json:"watchers,omitempty"`
+	Scores    []int    `json:"scores,omitempty"`
+	Bag       int      `json:"bag"`
 }
 
 type person struct {
