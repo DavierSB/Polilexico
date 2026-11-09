@@ -18,15 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.ui.common.SeatAvatar
-import app.lexico.ui.common.nameWidth
 
 private const val UNKNOWN = "—"
 
@@ -44,7 +41,7 @@ internal fun StandingsTable(view: SeatView, modifier: Modifier = Modifier.height
 private fun PlainHeader() {
   Row(Modifier.fillMaxWidth().padding(vertical = 2.dp)) {
     Cell("#", Modifier.width(PLACE_W), bold = true)
-    Cell("Jugador", Modifier.width(seatNameWidth()), bold = true)
+    Cell("Jugador", Modifier.weight(NAME_WEIGHT), bold = true)
     Cell("Jugada", Modifier.weight(1f), bold = true)
     Cell("Pts", Modifier.width(POINTS_W), bold = true, end = true)
     Cell("Total", Modifier.width(TOTAL_W), bold = true, end = true)
@@ -56,23 +53,22 @@ private fun PlainRow(place: Int, e: SeatEntry, mine: Boolean) {
   val color = if (mine) MaterialTheme.colorScheme.primary else Color.Unspecified
   Row(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
     Cell("$place", Modifier.width(PLACE_W), color = color)
-    Cell(e.name, Modifier.width(seatNameWidth()), bold = mine || e.name == MASTER_NAME, color = color)
-    Cell(e.text, Modifier.weight(1f), color = color, lines = 2)
+    Cell(e.name, Modifier.weight(NAME_WEIGHT), bold = mine || e.name == MASTER_NAME, color = color)
+    Cell(e.text, Modifier.weight(1f), color = color)
     Cell("${e.points}", Modifier.width(POINTS_W), end = true, color = color)
     Cell("${e.total}", Modifier.width(TOTAL_W), bold = true, end = true, color = color)
   }
 }
 
 @Composable
-private fun Cell(text: String, modifier: Modifier, bold: Boolean = false, end: Boolean = false, color: Color = Color.Unspecified, lines: Int = 1) {
+private fun Cell(text: String, modifier: Modifier, bold: Boolean = false, end: Boolean = false, color: Color = Color.Unspecified) {
   Text(
-    text, modifier, fontSize = CELL_SIZE, fontWeight = if (bold) FontWeight.Bold else null, color = color,
-    textAlign = if (end) TextAlign.End else TextAlign.Start, maxLines = lines, overflow = TextOverflow.Ellipsis,
+    text, modifier.padding(end = 4.dp), fontSize = CELL_SIZE, fontWeight = if (bold) FontWeight.Bold else null, color = color,
+    textAlign = if (end) TextAlign.End else TextAlign.Start, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis,
   )
 }
 
-@Composable
-private fun seatNameWidth(): Dp = nameWidth(TextStyle(fontSize = CELL_SIZE, fontWeight = FontWeight.Bold))
+private const val NAME_WEIGHT = 0.8f
 
 private val CELL_SIZE = 13.sp
 private val PLACE_W = 20.dp
@@ -80,14 +76,18 @@ private val POINTS_W = 34.dp
 private val TOTAL_W = 46.dp
 
 @Composable
-internal fun LeaderboardTable(view: SeatView, maxHeight: Int = 260) {
+internal fun LeaderboardTable(view: SeatView, maxHeight: Int = 260, me: String? = null) {
   val master = view.standings.find { it.name == MASTER_NAME }?.total ?: 0
   val known = view.standings.filter { it.name != MASTER_NAME }
   val rows = known.ifEmpty { view.players.map { SeatEntry(it, "", -1, -1) } }
   CardList(maxHeight) {
     rows.forEachIndexed { i, e ->
       val place = placeOf(rows, i)
-      val tone = if (place == 1 && e.total > 0) CardTone.LEADER else CardTone.PLAIN
+      val tone = when {
+        e.name == me -> CardTone.MINE
+        place == 1 && e.total > 0 -> CardTone.LEADER
+        else -> CardTone.PLAIN
+      }
       EntryCard("$place", e.name, "Ronda ${roundPoints(e.points)}", known(e.total), efficiency(e.total, master), tone)
     }
   }

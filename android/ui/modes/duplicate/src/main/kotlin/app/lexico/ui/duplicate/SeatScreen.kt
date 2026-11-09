@@ -27,7 +27,7 @@ import app.lexico.ui.board.PlacingRack
 import app.lexico.ui.board.RackRenewal
 import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.board.rememberTilePlacer
-import app.lexico.ui.common.BagCountDialog
+import app.lexico.ui.common.BagDialog
 import app.lexico.ui.common.BoardColumn
 import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.GameBar
@@ -41,6 +41,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SeatScreen(
   view: SeatView, style: BoardStyle, actions: SeatActions, onExport: (() -> Unit)? = null, onAdjourn: (() -> Unit)? = null, onAbandon: (() -> Unit)? = null,
+  online: Boolean = false,
 ) {
   val c = rememberTilePlacer(RackRenewal.MASTER_PLAYS)
   LaunchedEffect(view.board, view.rack) { c.reset(view.board, view.rack) }
@@ -49,10 +50,12 @@ fun SeatScreen(
   var moves by remember { mutableStateOf(false) }
   var bag by remember { mutableStateOf(false) }
   var abandoning by remember { mutableStateOf(false) }
-  val canAbandon = onAbandon != null && view.phase != SeatPhase.FINISHED && !view.watching
+  val canAbandon = onAbandon != null && onAdjourn == null && view.phase != SeatPhase.FINISHED && !view.watching
+  var standings by remember { mutableStateOf(false) }
+  val openStandings = { if (online && !view.watching) standings = true else chart = true }
   val bar: @Composable () -> Unit = {
     GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = { abandoning = true }.takeIf { canAbandon },
-      onStandings = { chart = true }, watchers = view.watchers,
+      onStandings = openStandings.takeIf { view.watching || view.phase != SeatPhase.PLAYING }, watchers = view.watchers,
       onAdjourn = onAdjourn.takeIf { view.phase != SeatPhase.FINISHED && !view.watching },
       onChat = LocalChat.current?.onOpen?.takeIf { view.watching },
     )
@@ -64,14 +67,15 @@ fun SeatScreen(
     bottom = { SeatBottom(view, c, style, actions, message, onExport, { results = true }) { message = it } },
     footer = {
       if (view.phase == SeatPhase.PLAYING && !view.watching) {
-        PlayingButtons(c, onPlay = { c.placement()?.let(actions::propose) ?: run { message = NOT_IN_A_LINE } })
+        PlayingButtons(c, onPlay = { c.placement()?.let(actions::propose) ?: run { message = NOT_IN_A_LINE } }, onStandings = openStandings)
       }
     },
   )
   RoundResultsPopup(view, actions, results) { results = it }
   if (chart) ChartDialog(view) { chart = false }
   if (moves) MovesDialog(movesOf(view), if (view.watching) "Mejor" else "Tú") { moves = false }
-  if (bag) BagCountDialog("En la bolsa", view.bag) { bag = false }
+  if (bag) BagDialog("Quedan en la bolsa", view.unseen) { bag = false }
+  if (standings) StandingsDialog(view) { standings = false }
   if (abandoning) ConfirmDialog("¿Seguro que quieres abandonar la partida?", yes = "Abandonar", no = "Seguir", onYes = { abandoning = false; onAbandon?.invoke() }) { abandoning = false }
   SeatVerdictOnce(view)
 }
@@ -143,6 +147,15 @@ private fun RoundResultsPopup(view: SeatView, actions: SeatActions, open: Boolea
 }
 
 private const val DIALOG_HEIGHT = 460
+
+@Composable
+private fun StandingsDialog(view: SeatView, close: () -> Unit) {
+  AlertDialog(
+    onDismissRequest = close, title = { Text("Posiciones") },
+    text = { LeaderboardTable(view, maxHeight = DIALOG_HEIGHT, me = view.me) },
+    confirmButton = { TextButton(onClick = close) { Text("Cerrar") } },
+  )
+}
 
 @Composable
 private fun Finished(view: SeatView, actions: SeatActions, onExport: (() -> Unit)?) {

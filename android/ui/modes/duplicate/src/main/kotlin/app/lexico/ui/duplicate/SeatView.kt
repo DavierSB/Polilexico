@@ -25,6 +25,7 @@ data class SeatView(
   val players: List<String>,
   val rounds: List<SeatRound>,
   val bag: Int,
+  val unseen: List<String> = emptyList(),
   val notice: String? = null,
   val status: String? = null,
   val watchers: List<PersonItem> = emptyList(),

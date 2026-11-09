@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import app.lexico.ui.common.Durations
 import app.lexico.ui.board.MoveButtons
 import app.lexico.ui.board.ShuffleOrRecall
+import app.lexico.ui.board.SmallButton
 import app.lexico.ui.board.TilePlacer
 
 @Composable
@@ -22,8 +23,11 @@ fun ShowRackButton(turnMs: Long, onShowRack: () -> Unit) {
 }
 
 @Composable
-fun PlayingButtons(c: TilePlacer, onPlay: () -> Unit) {
-  MoveButtons(c, playEnabled = true, onPlay) { ShuffleOrRecall(c) }
+fun PlayingButtons(c: TilePlacer, onPlay: () -> Unit, onStandings: (() -> Unit)? = null) {
+  MoveButtons(c, playEnabled = true, onPlay) {
+    ShuffleOrRecall(c)
+    onStandings?.let { SmallButton("Posiciones", onClick = it) }
+  }
 }
 
 @Composable

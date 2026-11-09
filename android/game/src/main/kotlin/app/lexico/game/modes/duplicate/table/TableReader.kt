@@ -28,6 +28,7 @@ data class TableState(
   val players: List<String>,
   val rounds: List<TableRound>,
   val bag: Int,
+  val unseen: List<String> = emptyList(),
 )
 
 const val MASTER = "Máster"
@@ -41,7 +42,7 @@ fun readTable(json: String): TableState {
     remainingMs = o.getLong("RemainingMs").takeIf { it >= 0 }, proposal = proposal(board, o.optJSONObject("Proposal")),
     ready = o.getInt("Ready"), waiting = o.getInt("Waiting"), iAmReady = o.getBoolean("IAmReady"), live = o.getBoolean("Live"),
     players = strings(o.optJSONArray("Players")), rounds = objects(rounds).map { round(board, it) },
-    bag = rackTiles(o.getString("Unseen")).size,
+    bag = rackTiles(o.getString("Unseen")).size, unseen = rackTiles(o.getString("Unseen")),
   )
 }
 

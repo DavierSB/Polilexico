@@ -11,7 +11,7 @@ import app.lexico.ui.duplicate.SeatView
 fun seatView(s: TableState, me: String, notice: String?, status: String? = null): SeatView = SeatView(
   me = me, board = s.board, rack = s.rack, phase = phase(s.phase), round = s.round, remainingMs = s.remainingMs,
   proposal = s.proposal?.let(::entry), ready = s.ready, waiting = s.waiting, iAmReady = s.iAmReady, live = s.live,
-  players = s.players, rounds = s.rounds.map { r -> SeatRound(r.number, r.entries.map(::entry)) }, bag = s.bag, notice = notice, status = status,
+  players = s.players, rounds = s.rounds.map { r -> SeatRound(r.number, r.entries.map(::entry)) }, bag = s.bag, unseen = s.unseen, notice = notice, status = status,
 )
 
 private fun entry(e: TableEntry): SeatEntry = SeatEntry(e.name, e.text, e.points, e.total)

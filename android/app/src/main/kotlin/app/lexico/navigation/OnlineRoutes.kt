@@ -321,7 +321,7 @@ private fun DuplicateOnline(client: OnlineClient, info: RoomInfo, nav: Navigator
     table != null -> {
       ExportableSeat(
         seatView(table, info.me, notice, status ?: ended).copy(watchers = watchers.map(::personItem)), themes.board, actions,
-        onAdjourn = { adjourning = true }.takeIf { info.players.size == 2 }, onAbandon = leave,
+        onAdjourn = { adjourning = true }.takeIf { info.players.size == 2 }, onAbandon = leave, online = true,
       )
       if (info.players.size == 2) AdjournDialogs(client, info, ended != null, adjourning) { adjourning = false }
     }
