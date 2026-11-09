@@ -31,13 +31,16 @@ type listing struct {
 }
 
 type liveGame struct {
-	ID        string   `json:"id"`
-	Mode      string   `json:"mode"`
-	Players   []string `json:"players"`
-	Countries []string `json:"countries"`
-	Watchers  int      `json:"watchers,omitempty"`
-	Scores    []int    `json:"scores,omitempty"`
-	Bag       int      `json:"bag"`
+	ID         string   `json:"id"`
+	Mode       string   `json:"mode"`
+	Players    []string `json:"players"`
+	Countries  []string `json:"countries"`
+	Watchers   int      `json:"watchers,omitempty"`
+	Scores     []int    `json:"scores,omitempty"`
+	Bag        int      `json:"bag"`
+	Round      int      `json:"round,omitempty"`
+	Leader     string   `json:"leader,omitempty"`
+	Efficiency int      `json:"efficiency,omitempty"`
 }
 
 type person struct {

@@ -100,7 +100,7 @@ func (r *duplicateRoom) ongoing() (liveGame, bool) {
 		return liveGame{}, false
 	}
 	names, countries := seatNames(r.seats)
-	return liveGame{ID: r.code, Mode: modeDuplicate, Players: names, Countries: countries, Watchers: len(r.watchers.list)}, true
+	return r.progress(liveGame{ID: r.code, Mode: modeDuplicate, Players: names, Countries: countries, Watchers: len(r.watchers.list)}), true
 }
 
 func (r *duplicateRoom) watch(c *client) bool {
