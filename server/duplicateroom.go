@@ -86,6 +86,9 @@ func (r *duplicateRoom) drop(c *client) {
 		r.awayChanged(s)
 		r.sendPresence()
 		r.watchAbandon()
+		if nobodyOnline(r.seats) {
+			r.watchers.dismiss(playersGone)
+		}
 		return
 	}
 	if r.watchers.remove(c) {
@@ -96,7 +99,7 @@ func (r *duplicateRoom) drop(c *client) {
 func (r *duplicateRoom) ongoing() (liveGame, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if r.table == nil || r.table.Finished() {
+	if r.table == nil || r.table.Finished() || nobodyOnline(r.seats) {
 		return liveGame{}, false
 	}
 	names, countries := seatNames(r.seats)
@@ -106,7 +109,7 @@ func (r *duplicateRoom) ongoing() (liveGame, bool) {
 func (r *duplicateRoom) watch(c *client) bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if r.table == nil || r.table.Finished() {
+	if r.table == nil || r.table.Finished() || nobodyOnline(r.seats) {
 		return false
 	}
 	r.watchers.add(c, r)

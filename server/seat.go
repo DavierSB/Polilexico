@@ -26,6 +26,17 @@ func (s *seat) online() bool {
 	return s.client != nil
 }
 
+func nobodyOnline(seats []*seat) bool {
+	for _, s := range seats {
+		if s.online() {
+			return false
+		}
+	}
+	return true
+}
+
+const playersGone = "Los jugadores se desconectaron."
+
 func firstAway(seats []*seat) *seat {
 	var first *seat
 	for _, s := range seats {

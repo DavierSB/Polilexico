@@ -219,7 +219,7 @@ func (h *hub) watch(c *client, code string) {
 	}
 	h.leaveCurrent(c)
 	if r := h.roomByCode(code); r == nil || !r.watch(c) {
-		c.send(notice("error", "Esa partida ya terminó."))
+		c.send(notice("error", "Esa partida ya no se puede ver."))
 		return
 	}
 	h.changed()

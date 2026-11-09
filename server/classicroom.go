@@ -97,6 +97,9 @@ func (r *classicRoom) drop(c *client) {
 		s.client, s.awayAt = nil, time.Now()
 		r.awayChanged(s)
 		r.sendPresence()
+		if r.nobodyLeft() {
+			r.watchers.dismiss(playersGone)
+		}
 		return
 	}
 	if r.watchers.remove(c) {
@@ -107,7 +110,7 @@ func (r *classicRoom) drop(c *client) {
 func (r *classicRoom) ongoing() (liveGame, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if r.match == nil || r.match.Game().Status().Over {
+	if r.match == nil || r.match.Game().Status().Over || r.nobodyLeft() {
 		return liveGame{}, false
 	}
 	names, countries := seatNames(r.seats)
@@ -119,7 +122,7 @@ func (r *classicRoom) ongoing() (liveGame, bool) {
 func (r *classicRoom) watch(c *client) bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if r.match == nil || r.match.Game().Status().Over {
+	if r.match == nil || r.match.Game().Status().Over || r.nobodyLeft() {
 		return false
 	}
 	r.watchers.add(c, r)
@@ -387,12 +390,7 @@ func (r *classicRoom) first(s *seat) bool {
 }
 
 func (r *classicRoom) nobodyLeft() bool {
-	for _, s := range r.seats {
-		if s.online() {
-			return false
-		}
-	}
-	return true
+	return nobodyOnline(r.seats)
 }
 
 func clamp(v, low, high, fallback int64) int64 {
