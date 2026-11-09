@@ -21,7 +21,14 @@ func TestLiveDuplicateShowsItsRound(t *testing.T) {
 	ana.send(message{T: "start", Code: code})
 	beto.waitFor("table")
 	games := srv.hub.liveGames()
-	if len(games) != 1 || games[0].Round != 1 {
+	if len(games) != 1 || games[0].Round != 0 {
 		t.Fatalf("%+v", games)
+	}
+}
+
+func TestLeaderIsTheFirstSeatOnATie(t *testing.T) {
+	leader, tied := leaderOf([]string{"Ana", "Beto", "Caro"}, map[string]int{"Ana": 20, "Beto": 30, "Caro": 30})
+	if leader != "Beto" || tied != 2 {
+		t.Fatalf("%s %d", leader, tied)
 	}
 }

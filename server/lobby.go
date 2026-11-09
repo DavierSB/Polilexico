@@ -41,6 +41,7 @@ type liveGame struct {
 	Round      int      `json:"round,omitempty"`
 	Leader     string   `json:"leader,omitempty"`
 	Efficiency int      `json:"efficiency,omitempty"`
+	Tied       int      `json:"tied,omitempty"`
 }
 
 type person struct {
