@@ -16,10 +16,12 @@ import { sprintGameScreen } from "./sprint/screen.js";
 import { endgameSetupScreen } from "./classic/endgame.js";
 import { recallSetupScreen } from "./recall/setup.js";
 import { recallGameScreen } from "./recall/screen.js";
+import { anagramSetupScreen } from "./anagram/setup.js";
+import { anagramGameScreen } from "./anagram/screen.js";
 import { READY_ROUTES } from "./screens/menu.js";
 
 apply();
-["sprint", "finales", "recuerdas"].forEach((r) => READY_ROUTES.add(r));
+["sprint", "finales", "recuerdas", "anagrama"].forEach((r) => READY_ROUTES.add(r));
 
 start({
   "": homeScreen,
@@ -36,6 +38,8 @@ start({
   finales: endgameSetupScreen,
   recuerdas: recallSetupScreen,
   "recuerdas-partida": recallGameScreen,
+  anagrama: anagramSetupScreen,
+  "anagrama-partida": anagramGameScreen,
   minijuegos: menuScreen("minijuegos"),
   estudiar: menuScreen("estudiar"),
 });

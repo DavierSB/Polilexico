@@ -40,13 +40,17 @@ async function toRecall({ tiles, score }) {
 async function chooseFixed(tiles) {
   const count = tiles.length - RACK_SIZE;
   if (count <= 0) return new Set();
+  const options = await fixedOptions(tiles, count);
+  return options.length ? options[Math.floor(Math.random() * options.length)] : new Set();
+}
+
+export async function fixedOptions(tiles, count) {
   const candidates = subsets(tiles.length, count);
   const runsOf = (fixed) => runs(fixed).filter((r) => r.length > 1).map((r) => dictionaryText(r.map((i) => tiles[i])));
   const all = [...new Set(candidates.flatMap(runsOf))];
   const valid = new Map(all.map((w, i) => [w, false]));
   if (all.length) (await call("areWords", all)).forEach((ok, i) => valid.set(all[i], ok));
-  const options = candidates.filter((fixed) => runsOf(fixed).every((w) => valid.get(w)));
-  return options.length ? options[Math.floor(Math.random() * options.length)] : new Set();
+  return candidates.filter((fixed) => runsOf(fixed).every((w) => valid.get(w)));
 }
 
 function runs(fixed) {
@@ -74,7 +78,7 @@ export function scramble(tiles) {
   return out;
 }
 
-function shuffle(list) {
+export function shuffle(list) {
   const out = list.slice();
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

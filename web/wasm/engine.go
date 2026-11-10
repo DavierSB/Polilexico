@@ -17,6 +17,21 @@ func registerEngine() {
 	handlers["demo"] = demoGame
 	handlers["demoScored"] = demoScored
 	handlers["areWords"] = areWords
+	handlers["anagrams"] = anagrams
+	handlers["anagramTiles"] = anagramTiles
+	handlers["randomWord"] = randomWord
+}
+
+func anagrams(args []json.RawMessage) (any, error) {
+	return engine.Anagrams(text(args, 0))
+}
+
+func anagramTiles(args []json.RawMessage) (any, error) {
+	return engine.AnagramTiles(text(args, 0))
+}
+
+func randomWord(args []json.RawMessage) (any, error) {
+	return engine.RandomWord(int(number(args, 0)), int(number(args, 1)))
 }
 
 func demoScored(_ []json.RawMessage) (any, error) {

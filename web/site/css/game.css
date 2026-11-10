@@ -381,3 +381,11 @@ button.word-row { cursor: pointer; }
 .result-progress { width: 100%; margin-top: 6px; }
 
 .answer-list { gap: 4px; }
+
+.reply-error { color: #FF8A7A; }
+
+.reply-muted { color: var(--on-surface-variant); }
+
+.reply-hit { color: #6FCF7F; }
+
+.recall-screen .turn-clock:empty { display: none; }
