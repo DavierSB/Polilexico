@@ -71,6 +71,13 @@ node test/penalty.test.mjs      # descuento por tiempo en los bordes de cada min
 
 ## Publicar
 
+La web vive en la raíz de `Polilexico/polilexico.github.io`; la portada informativa, en `/org/`.
+`version.json`, `/download/` y `/polilexico/` se quedan en la raíz porque las apps instaladas los usan.
+
+```bash
+./build.sh && ./publish.sh ~/Private/polilexico.github.io   # copia sin tocar org/, download/, polilexico/ ni version.json
+```
+
 `build/site` es un sitio estático: sirve en GitHub Pages o en cualquier hosting. Los trozos van ya
 comprimidos (`.bin`), así que el hosting no necesita comprimir nada. El servidor de partidas acepta
 peticiones de cualquier origen ([`server/cors.go`](../server/cors.go)).
