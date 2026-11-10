@@ -3,8 +3,9 @@
 La versión web de Poliléxico: HTML, CSS y JavaScript sin dependencias ni paso de compilación,
 más el mismo motor ([`engine/`](../engine/README.md)) compilado a WebAssembly.
 
-Trae la clásica contra los cinco rivales y el juego en línea (cuentas, ofertas, retos, partidas,
-espectadores y chat) contra el mismo servidor que la app.
+Trae lo mismo que la app sin conexión (Clásica, Duplicada, Scrabble Sprint, Finales,
+¿Cuántas recuerdas?, Anagrama, Listas, Diccionario, Anagramador y Analizador) y el juego en línea
+(cuentas, ofertas, retos, partidas, espectadores y chat) contra el mismo servidor que la app.
 
 ```
 web/
@@ -29,10 +30,12 @@ web/
 - **Al abrir** (~200 KB comprimidos): la interfaz y todo lo en línea. Jugar en línea no necesita
   el motor: `online/mirror.js` lee la partida que manda el servidor (las jugadas, los atriles, los
   relojes y el descuento) y `score.js` calcula la puntuación en vivo.
-- **En segundo plano**, 1,5 s después: el motor y el diccionario (~12,6 MB comprimidos), en
+- **En segundo plano**, 1,5 s después: el motor y el diccionario de juego (~13 MB comprimidos), en
   trozos de 1 MB que se guardan uno a uno en la caché del navegador (Cache API). Si la descarga se
   corta, se reintenta sola; si se cierra la página, sigue desde el último trozo la próxima vez.
-  Al cambiar la versión, se borran los trozos viejos.
+  Cada archivo lleva su propio hash: si cambia uno, solo se baja ese y se borran sus trozos viejos.
+- **Después**, el paquete de estudio (~7 MB: definiciones y léxico de `android/game/src/main/assets`),
+  igual de reanudable. Listas y Diccionario esperan a ese paquete; el resto, solo al motor.
 - Mientras tanto, Clásica y «Volver a la partida» se ven bloqueados con el porcentaje.
 
 ## Cómo corre el motor

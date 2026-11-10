@@ -1,20 +1,25 @@
 const pending = new Map();
 const watchers = new Map();
-const loading = new Set();
+const listeners = { engine: new Set(), study: new Set() };
+const packFiles = new Map();
 let worker = null;
 let started = null;
 let lastId = 0;
-let progress = { total: 0, loaded: 0, ready: false, failure: null, stalled: false };
+const progress = { engine: blank(), study: blank() };
 let markReady = null;
 
 export const readyLater = new Promise((resolve) => (markReady = resolve));
+
+function blank() {
+  return { total: 0, loaded: 0, ready: false, failure: null, stalled: false };
+}
 
 export function startEngine() {
   if (worker) return started;
   worker = new Worker("engine/worker.js");
   worker.onmessage = ({ data }) => receive(data);
-  started = send("init", ["/data", "/saves"]).then(() => (update({ ready: true }), markReady()));
-  started.catch((e) => update({ failure: e.message }));
+  started = send("init", ["/data", "/saves"]).then(() => (update("engine", { ready: true }), markReady()));
+  started.catch((e) => update("engine", { failure: e.message }));
   return started;
 }
 
@@ -23,7 +28,7 @@ export function whenReady() {
 }
 
 export function isReady() {
-  return progress.ready;
+  return progress.engine.ready;
 }
 
 export function call(name, ...args) {
@@ -39,10 +44,19 @@ export function unwatch(match) {
   watchers.delete(match);
 }
 
-export function onLoading(fn) {
-  loading.add(fn);
-  fn(snapshot());
-  return () => loading.delete(fn);
+export function onLoading(fn, pack = "engine") {
+  listeners[pack].add(fn);
+  fn(snapshot(pack));
+  return () => listeners[pack].delete(fn);
+}
+
+export function loadPack(name) {
+  startEngine();
+  if (!packFiles.has(name)) packFiles.set(name, new Promise((resolve) => {
+    packFiles.set(name + ":resolve", resolve);
+    worker.postMessage({ pack: name });
+  }));
+  return packFiles.get(name);
 }
 
 function send(name, args) {
@@ -54,10 +68,14 @@ function send(name, args) {
 function receive(data) {
   if (data.id) return settle(data);
   if (data.changed) return watchers.get(data.changed)?.();
-  if (data.total) update({ total: data.total });
-  if (data.loaded) update({ loaded: progress.loaded + data.loaded, stalled: false });
-  if (data.stalled) update({ stalled: true });
-  if (data.failed) update({ failure: data.failed });
+  if (data.files) return packFiles.get(data.pack + ":resolve")?.(data.files);
+  const p = progress[data.pack];
+  if (!p) return;
+  if (data.total) update(data.pack, { total: data.total });
+  if (data.loaded) update(data.pack, { loaded: p.loaded + data.loaded, stalled: false });
+  if (data.stalled) update(data.pack, { stalled: true });
+  if (data.failed) update(data.pack, { failure: data.failed });
+  if (data.done && data.pack === "study") update("study", { ready: true });
 }
 
 function settle({ id, ok, value }) {
@@ -67,12 +85,13 @@ function settle({ id, ok, value }) {
   else p.reject(new Error(value));
 }
 
-function update(changes) {
-  progress = { ...progress, ...changes };
-  loading.forEach((fn) => fn(snapshot()));
+function update(pack, changes) {
+  progress[pack] = { ...progress[pack], ...changes };
+  listeners[pack].forEach((fn) => fn(snapshot(pack)));
 }
 
-function snapshot() {
-  const fraction = progress.total ? Math.min(1, progress.loaded / progress.total) : 0;
-  return { ...progress, fraction, percent: Math.floor(fraction * 100) };
+function snapshot(pack) {
+  const p = progress[pack];
+  const fraction = p.total ? Math.min(1, p.loaded / p.total) : 0;
+  return { ...p, fraction, percent: Math.floor(fraction * 100) };
 }

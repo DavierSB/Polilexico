@@ -48,14 +48,14 @@ export function loadingLabel(p) {
   return p.ready ? "" : `${p.percent} %`;
 }
 
-export function engineGate(button) {
+export function engineGate(button, pack = "engine") {
   const badge = h("span.badge.loading-badge", {});
   button.append(badge);
   return onLoading((p) => {
     button.disabled = !p.ready;
     badge.textContent = loadingLabel(p);
     badge.classList.toggle("hidden", p.ready);
-  });
+  }, pack);
 }
 
 export function formatClock(ms) {

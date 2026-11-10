@@ -19,6 +19,11 @@ cp "$LEXICA"/FILE2017.{kwg,klv2} "$WORK/data/lexica/gaddag/"
 cp "$MACONDO"/data/letterdistributions/spanish "$WORK/data/letterdistributions/"
 cp "$MACONDO"/data/strategy/default/{preendgame.json,quackle_preendgame.json,winpct.csv} "$WORK/data/strategy/default/"
 
+ASSETS=../android/game/src/main/assets
+mkdir -p "$WORK/study"
+for f in words senses relations demonyms; do xz -dc "$ASSETS/dictionary/$f.xz" > "$WORK/study/$f.txt"; done
+cp "$ASSETS"/lexicon/{words,families,similar,default_lists}.tsv "$WORK/study/"
+
 SLIM="$(cd wasm/slim && pwd)"
 printf '{"Replace":{"%s":"%s","%s":"%s"}}\n' \
   "$MACONDO/triton/client.go" "$SLIM/triton.go.txt" \
@@ -28,19 +33,19 @@ OVERLAY="$(cd "$WORK" && pwd)/overlay.json"
 cp "$(cd wasm && GOWORK=off go env GOROOT)/lib/wasm/wasm_exec.js" "$ENGINE/"
 
 mkdir -p "$ENGINE/parts"
-FILES=$(cd "$WORK" && { echo engine.wasm; find data -type f | sort; })
-VERSION=$(cd "$WORK" && cat $FILES | sha256sum | cut -c1-12)
+FILES=$(cd "$WORK" && { echo engine.wasm; find data study -type f | sort; })
 ENTRIES=()
-TOTAL=0
 for f in $FILES; do
   name=$(echo "$f" | tr '/' '_')
   gzip -9 -n -c "$WORK/$f" | split -b "$PART_SIZE" -d -a 3 --additional-suffix=.bin - "$ENGINE/parts/$name."
   parts=$(ls "$ENGINE/parts/$name."*.bin | wc -l)
   bytes=$(cat "$ENGINE/parts/$name."*.bin | wc -c)
-  TOTAL=$((TOTAL + bytes))
-  ENTRIES+=("{\"path\":\"$f\",\"name\":\"$name\",\"parts\":$parts,\"bytes\":$bytes}")
+  hash=$(sha256sum "$WORK/$f" | cut -c1-12)
+  pack=engine
+  [[ "$f" == study/* ]] && pack=study
+  ENTRIES+=("{\"path\":\"$f\",\"name\":\"$name\",\"pack\":\"$pack\",\"hash\":\"$hash\",\"parts\":$parts,\"bytes\":$bytes}")
 done
-printf '{"version":"%s","bytes":%s,"files":[%s]}\n' "$VERSION" "$TOTAL" "$(IFS=,; echo "${ENTRIES[*]}")" > "$ENGINE/manifest.json"
+printf '{"files":[%s]}\n' "$(IFS=,; echo "${ENTRIES[*]}")" > "$ENGINE/manifest.json"
 
 rm -rf "$WORK"
 cat "$ENGINE/manifest.json"

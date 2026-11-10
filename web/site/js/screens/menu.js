@@ -14,6 +14,7 @@ const MENUS = {
 };
 
 export const READY_ROUTES = new Set();
+const STUDY_PACK = new Set(["listas", "diccionario"]);
 
 export function menuScreen(name) {
   return (app) => {
@@ -27,6 +28,6 @@ export function menuScreen(name) {
 function entry(label, route, gates) {
   if (!READY_ROUTES.has(route)) return h("button.btn.block.outlined", { disabled: true }, label, h("span.badge", {}, "Pronto"));
   const button = h("button.btn.block", { onclick: () => go(route) }, label);
-  gates.push(engineGate(button));
+  gates.push(engineGate(button, STUDY_PACK.has(route) ? "study" : "engine"));
   return button;
 }

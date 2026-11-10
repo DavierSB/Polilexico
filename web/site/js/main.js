@@ -20,10 +20,14 @@ import { anagramSetupScreen } from "./anagram/setup.js";
 import { anagramGameScreen } from "./anagram/screen.js";
 import { anagrammerScreen } from "./study/anagrammer.js";
 import { analyzerScreen } from "./study/analyzer.js";
+import { dictionaryScreen } from "./study/word.js";
+import { listsMenuScreen, catalogScreen, listScreen, studyScreen, unfinishedScreen, completedScreen } from "./study/listScreens.js";
+import { testScreen } from "./study/test.js";
+import { createListScreen } from "./study/create.js";
 import { READY_ROUTES } from "./screens/menu.js";
 
 apply();
-["sprint", "finales", "recuerdas", "anagrama", "anagramador", "analizador"].forEach((r) => READY_ROUTES.add(r));
+["sprint", "finales", "recuerdas", "anagrama", "anagramador", "analizador", "listas", "diccionario"].forEach((r) => READY_ROUTES.add(r));
 
 start({
   "": homeScreen,
@@ -44,6 +48,15 @@ start({
   "anagrama-partida": anagramGameScreen,
   anagramador: anagrammerScreen,
   analizador: analyzerScreen,
+  diccionario: dictionaryScreen,
+  listas: listsMenuScreen,
+  "listas-catalogo": catalogScreen,
+  lista: listScreen,
+  "lista-estudio": studyScreen,
+  "lista-evaluar": testScreen,
+  "crear-lista": createListScreen,
+  "estudios-medias": unfinishedScreen,
+  "estudios-culminados": completedScreen,
   minijuegos: menuScreen("minijuegos"),
   estudiar: menuScreen("estudiar"),
 });
