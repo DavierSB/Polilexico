@@ -1,0 +1,32 @@
+import { h } from "../dom.js";
+import { go } from "../router.js";
+import { screenHead, engineGate } from "../parts.js";
+
+const MENUS = {
+  minijuegos: {
+    title: "Minijuegos",
+    entries: [["Scrabble Sprint", "sprint"], ["Finales", "finales"], ["¿Cuántas recuerdas?", "recuerdas"], ["Anagrama", "anagrama"]],
+  },
+  estudiar: {
+    title: "Estudiar",
+    entries: [["Listas", "listas"], ["Diccionario", "diccionario"], ["Anagramador", "anagramador"], ["Analizador", "analizador"]],
+  },
+};
+
+export const READY_ROUTES = new Set();
+
+export function menuScreen(name) {
+  return (app) => {
+    const menu = MENUS[name];
+    const gates = [];
+    app.append(h("div.screen.menu-screen", {}, screenHead(menu.title), h("nav.stack.menu-list", {}, menu.entries.map(([label, route]) => entry(label, route, gates)))));
+    return () => gates.forEach((stop) => stop());
+  };
+}
+
+function entry(label, route, gates) {
+  if (!READY_ROUTES.has(route)) return h("button.btn.block.outlined", { disabled: true }, label, h("span.badge", {}, "Pronto"));
+  const button = h("button.btn.block", { onclick: () => go(route) }, label);
+  gates.push(engineGate(button));
+  return button;
+}

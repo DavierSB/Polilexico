@@ -34,14 +34,14 @@ export function movesDialog(state, names) {
   openDialog((close) => [h("h2", {}, "Movidas"), h("div.moves-scroll", {}, movesTable(state, names)), actions(h("button.text-btn", { onclick: close }, "Cerrar"))], { wide: true });
 }
 
-export function bagDialog(state) {
+export function bagDialog(state, title = null) {
   const counts = new Map();
   state.unseen.forEach((t) => counts.set(t, (counts.get(t) ?? 0) + 1));
   const order = [...LETTERS, BLANK].filter((l) => counts.has(l));
   openDialog((close) => [
-    h("h2", {}, `Por salir: ${state.unseen.length}`),
+    h("h2", {}, title ? `${title}: ${state.unseen.length}` : `Por salir: ${state.unseen.length}`),
     h("div.bag-grid", {}, order.map((l) => h("div.bag-item", {}, h("div.rack-tile.small", {}, face(l)), h("span.muted", {}, "×" + counts.get(l))))),
-    h("p.muted", {}, `${state.bag} en la bolsa · ${state.opponentTiles} en el atril rival`),
+    title ? null : h("p.muted", {}, `${state.bag} en la bolsa · ${state.opponentTiles} en el atril rival`),
     actions(h("button.text-btn", { onclick: close }, "Cerrar")),
   ]);
 }

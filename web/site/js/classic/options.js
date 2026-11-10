@@ -58,3 +58,23 @@ function timeField(label, value, change) {
     h("input", { id, value, inputmode: "numeric", oninput: (e) => change(e.target.value) }),
   );
 }
+
+export function stepper(value, min, max, change) {
+  return h("div.row.stepper", {},
+    h("button.btn.small.outlined", { disabled: value <= min, "aria-label": "Menos", onclick: () => change(value - 1) }, "−"),
+    h("span.stepper-value", {}, value),
+    h("button.btn.small.outlined", { disabled: value >= max, "aria-label": "Más", onclick: () => change(value + 1) }, "+"),
+  );
+}
+
+export function rulesButton(title, sections) {
+  return h("button.text-btn.rules-btn", { onclick: () => rulesDialog(title, sections) }, "Leer reglas");
+}
+
+function rulesDialog(title, sections) {
+  openDialog((close) => [
+    h("h2", {}, title),
+    h("div.rules-text", {}, sections.map(([text, heading]) => [heading ? h("h3", {}, heading) : null, text.split("\n\n").map((p) => h("p", {}, p))])),
+    actions(h("button.text-btn", { onclick: close }, "Cerrar")),
+  ], { wide: true });
+}

@@ -14,6 +14,7 @@ var handlers = map[string]handler{}
 func main() {
 	registerEngine()
 	registerClassic()
+	registerDuplicate()
 	js.Global().Set("lexicoCall", js.FuncOf(receive))
 	js.Global().Call("lexicoReady")
 	select {}

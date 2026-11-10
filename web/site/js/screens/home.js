@@ -5,6 +5,7 @@ import { brand, engineGate } from "../parts.js";
 import { themeDialog } from "../dialogs.js";
 import { startDemo } from "./demo.js";
 import { currentSession, hasSaved } from "../classic/session.js";
+import { currentDuplicate, hasSavedDuplicate } from "../duplicate/session.js";
 
 export function homeScreen(app) {
   const demo = startDemo();
@@ -26,18 +27,18 @@ function menu(gates) {
   return [
     resumeButton(gates),
     gated(gates, h("button.btn.block", { onclick: () => go("clasica") }, "Clásica")),
-    h("button.btn.block", { onclick: () => go("en-linea") }, icon("globe", 22), "En línea"),
-    soon("Duplicada"),
-    soon("Minijuegos"),
-    soon("Analizador"),
+    gated(gates, h("button.btn.block", { onclick: () => go("duplicada") }, "Duplicada")),
+    h("button.btn.block", { onclick: () => go("minijuegos") }, "Minijuegos"),
+    h("button.btn.block", { onclick: () => go("estudiar") }, "Estudiar"),
+    h("button.btn.block.tonal", { onclick: () => go("en-linea") }, icon("globe", 22), "En línea"),
   ];
 }
 
 function resumeButton(gates) {
-  if (!currentSession()?.live() && !hasSaved()) return null;
-  return gated(gates, h("button.btn.block.tonal", { onclick: () => go("partida") }, "Volver a la partida"));
-}
-
-function soon(label) {
-  return h("button.btn.block.outlined", { disabled: true }, label, h("span.badge", {}, "Pronto"));
+  const classic = currentSession()?.live() || hasSaved();
+  const duplicate = currentDuplicate()?.live() || hasSavedDuplicate();
+  return [
+    classic ? gated(gates, h("button.btn.block.tonal", { onclick: () => go("partida") }, "Volver a la partida")) : null,
+    duplicate ? gated(gates, h("button.btn.block.tonal", { onclick: () => go("duplicada-partida") }, "Volver a la duplicada")) : null,
+  ];
 }

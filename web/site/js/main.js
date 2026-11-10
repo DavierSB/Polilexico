@@ -8,6 +8,9 @@ import { accountScreen } from "./online/account.js";
 import { lobbyScreen } from "./online/lobby.js";
 import { seekScreen } from "./online/seek.js";
 import { onlineGameScreen } from "./online/game.js";
+import { menuScreen } from "./screens/menu.js";
+import { duplicateSetupScreen } from "./duplicate/setup.js";
+import { duplicateGameScreen } from "./duplicate/screen.js";
 
 apply();
 
@@ -19,6 +22,10 @@ start({
   cuenta: accountScreen,
   buscar: seekScreen,
   sala: onlineGameScreen,
+  duplicada: duplicateSetupScreen,
+  "duplicada-partida": duplicateGameScreen,
+  minijuegos: menuScreen("minijuegos"),
+  estudiar: menuScreen("estudiar"),
 });
 
 window.addEventListener("load", () => setTimeout(startEngine, 1500));

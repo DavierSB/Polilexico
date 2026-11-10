@@ -251,3 +251,15 @@
 .loading-badge { font-variant-numeric: tabular-nums; }
 
 .btn:disabled .loading-badge { background: var(--c4); color: var(--on-surface-variant); }
+
+.stepper { gap: 12px; }
+
+.stepper-value { min-width: 40px; text-align: center; font-size: 22px; font-weight: 700; }
+
+.rules-btn { align-self: flex-start; padding-left: 4px; }
+
+.rules-text h3 { font-family: var(--body-font); font-size: 16px; font-weight: 700; margin: 16px 0 4px; }
+
+.rules-text p { margin: 0 0 8px; }
+
+.setup-narrow { max-width: 560px; width: 100%; }
