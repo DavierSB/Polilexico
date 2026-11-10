@@ -27,7 +27,7 @@ func routes(h *hub, st store) http.Handler {
 	mux.HandleFunc("GET /profile", authed(st, profileStats(st)))
 	mux.HandleFunc("GET /backup", authed(st, backup(st)))
 	mux.HandleFunc("PUT /backup", authed(st, saveBackup(st)))
-	return mux
+	return withCORS(mux)
 }
 
 type playerHandler func(w http.ResponseWriter, r *http.Request, p player)

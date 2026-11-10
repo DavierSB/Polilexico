@@ -48,4 +48,6 @@ cambiar desde la pantalla de cuenta (*Servidor*).
 HTTP para las cuentas (`/signup`, `/login`, `/refresh`), las estadísticas (`/stats`) y la copia de
 las estadísticas offline (`/backup`); `/health` para Render y el cron. Las partidas van por un
 WebSocket en `/ws` con mensajes JSON de una línea (`hello`, `create`, `challenge`, `join`, `move`…),
-descritos en [`protocol.go`](protocol.go).
+descritos en [`protocol.go`](protocol.go). Las rutas HTTP aceptan peticiones de cualquier origen
+(CORS, en [`cors.go`](cors.go)) para que la [versión web](../web/README.md) pueda llamarlas: la
+sesión va en un token `Bearer`, no en cookies.
