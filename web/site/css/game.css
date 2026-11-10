@@ -333,3 +333,51 @@ button.word-row { cursor: pointer; }
   .sprint-game { grid-template-areas: "board bar" "board score" "board panel" "board rack" "board buttons" "board side" "board ."; }
   .sprint-game .game-side { overflow: auto; max-height: calc(100dvh - 300px); }
 }
+
+.recall-screen { max-width: clamp(560px, calc(100dvh - 280px), 860px); min-height: 100dvh; }
+
+.recall-body { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+
+.watch-head { display: flex; flex-direction: column; gap: 6px; }
+
+.memorize { font-family: var(--title-font); font-weight: 900; font-size: 13px; letter-spacing: 2px; color: var(--primary); }
+
+.watch-count { font-family: var(--title-font); font-weight: 900; font-size: 22px; }
+
+.word-card { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 20px 12px; border-radius: 20px; background: var(--c3); margin-top: auto; }
+
+.word-count { color: var(--primary); letter-spacing: 2px; }
+
+.tile-line { display: flex; justify-content: center; gap: 4px; width: 100%; }
+
+.line-tile { flex: 0 1 56px; max-width: 56px; }
+
+.line-tile.fixed { background: var(--b-latest); }
+
+.line-tile:disabled { cursor: default; }
+
+.empty-slot { flex: 0 1 56px; max-width: 56px; aspect-ratio: 1; border: 2px solid var(--b-lines); border-radius: 14%; outline: 1px solid var(--outline-variant); }
+
+.pool { padding: 10px; border-radius: 14px; background: color-mix(in srgb, var(--primary) 16%, transparent); }
+
+.attempt-buttons { gap: 8px; margin-bottom: auto; }
+
+.verdict-text { font-family: var(--title-font); font-weight: 900; font-size: 20px; text-align: center; }
+
+.verdict-text.hit { color: #6FCF7F; }
+
+.verdict-text.miss { color: #FF8A7A; }
+
+.missed { align-items: center; gap: 2px; }
+
+.word-mark { width: 20px; font-weight: 900; text-align: center; }
+
+.word-mark.hit { color: #6FCF7F; }
+
+.word-mark.miss { color: #FF8A7A; }
+
+.word-mark.none { color: var(--outline); }
+
+.result-progress { width: 100%; margin-top: 6px; }
+
+.answer-list { gap: 4px; }

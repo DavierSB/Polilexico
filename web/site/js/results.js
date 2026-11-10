@@ -1,9 +1,10 @@
 import { h } from "./dom.js";
 
-export function resultCard(label, value, caption, chips = []) {
+export function resultCard(label, value, caption, chips = [], progress = null) {
   return h("div.result-card", {},
     h("span.small-caps", {}, label),
     h("div.row.result-value", {}, h("b", {}, value), h("span", {}, caption)),
+    progress === null ? null : h("div.progress.result-progress", {}, h("div", { style: { width: Math.round(progress * 100) + "%" } })),
     chips.length ? h("div.row.result-chips", {}, chips.map(([text, on]) => h("span", { class: "result-chip" + (on ? " on" : "") }, text))) : null,
   );
 }
@@ -19,8 +20,9 @@ export function resultSection(title, hint = null) {
   return h("div.row.result-section", {}, h("span.small-caps.grow", {}, title.toUpperCase()), hint ? h("span.muted.small", {}, hint) : null);
 }
 
-export function wordRow(word, { tag = null, score = null, selected = false, onclick = null } = {}) {
+export function wordRow(word, { tag = null, score = null, selected = false, onclick = null, mark = null } = {}) {
   return h(onclick ? "button" : "div", { class: "word-row" + (selected ? " selected" : ""), onclick },
+    mark ? h("span", { class: "word-mark " + mark }, mark === "hit" ? "✓" : mark === "miss" ? "✗" : "·") : null,
     h("b.grow", {}, word.toUpperCase()),
     tag ? h("span.muted.small", {}, tag) : null,
     score !== null ? h("span.word-score", {}, score) : null,

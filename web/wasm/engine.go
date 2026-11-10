@@ -15,6 +15,24 @@ func registerEngine() {
 	handlers["placementScore"] = placementScore
 	handlers["bestMoves"] = bestMoves
 	handlers["demo"] = demoGame
+	handlers["demoScored"] = demoScored
+	handlers["areWords"] = areWords
+}
+
+func demoScored(_ []json.RawMessage) (any, error) {
+	game, err := demo.PlayWithScores()
+	return json.RawMessage(game), err
+}
+
+func areWords(args []json.RawMessage) (any, error) {
+	var words []string
+	at(args, 0, &words)
+	valid := make([]bool, len(words))
+	for i, w := range words {
+		ok, err := engine.IsValidWord(w)
+		valid[i] = ok && err == nil
+	}
+	return valid, nil
 }
 
 func initEngine(args []json.RawMessage) (any, error) {
