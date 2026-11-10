@@ -1,0 +1,115 @@
+.board {
+  container-type: inline-size;
+  width: 100%;
+  aspect-ratio: 1;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.board-grid {
+  display: grid;
+  grid-template-columns: 4.2cqw repeat(15, 1fr);
+  grid-template-rows: 4.2cqw repeat(15, 1fr);
+  gap: .26cqw;
+  width: 100%;
+  height: 100%;
+  padding: .3cqw;
+  background: var(--b-lines);
+  border-radius: 1.2cqw;
+}
+
+.coord {
+  display: grid;
+  place-items: center;
+  color: var(--b-coords);
+  font-size: 2.1cqw;
+  font-family: var(--tile-font);
+}
+
+.square {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: var(--b-square);
+  color: var(--b-bonus-text);
+  font-size: 2.1cqw;
+  font-family: var(--tile-font);
+  border-radius: .5cqw;
+  cursor: pointer;
+}
+
+.square.dl { background: var(--b-dl); }
+.square.tl { background: var(--b-tl); }
+.square.dw { background: var(--b-dw); }
+.square.tw { background: var(--b-tw); }
+.square.center { background: var(--b-center); font-size: 3.2cqw; }
+
+.square.drop { outline: .4cqw solid var(--b-arrow); outline-offset: -.4cqw; }
+
+.tile {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--b-tile);
+  color: var(--b-letter);
+  border-radius: 1.1cqw;
+  font-family: var(--tile-font);
+  font-weight: 700;
+  font-size: 3.9cqw;
+  line-height: 1;
+}
+
+.tile.digraph { font-size: 2.8cqw; letter-spacing: -.1cqw; }
+
+.tile.blank { color: var(--b-blank); }
+
+.tile.latest { background: var(--b-latest); }
+
+.tile.pending { background: var(--b-pending); cursor: grab; }
+
+.tile .value {
+  position: absolute;
+  right: .45cqw;
+  bottom: .2cqw;
+  font-size: 1.55cqw;
+  font-weight: 500;
+}
+
+.tile.dragging { opacity: .35; }
+
+.arrow {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--b-arrow);
+  color: var(--b-arrow-ink);
+  border-radius: 1.1cqw;
+}
+
+.arrow svg { width: 70%; height: 70%; }
+
+.arrow.vertical svg { transform: rotate(90deg); }
+
+.score-bubble {
+  position: absolute;
+  z-index: 2;
+  top: -1.8cqw;
+  right: -1.4cqw;
+  min-width: 3.6cqw;
+  height: 3.6cqw;
+  padding: 0 .7cqw;
+  display: grid;
+  place-items: center;
+  border-radius: var(--pill);
+  background: var(--b-score-ink);
+  color: var(--b-arrow-ink);
+  font-family: var(--tile-font);
+  font-weight: 700;
+  font-size: 2.2cqw;
+  pointer-events: none;
+}
+
+.score-bubble.high { background: var(--b-high-score-ink); color: #fff; }

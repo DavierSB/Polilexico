@@ -1,0 +1,28 @@
+package triton
+
+import "errors"
+
+var errUnavailable = errors.New("triton no está disponible en la web")
+
+type ModelOutputs struct {
+	Value     []float32
+	Points    []float32
+	BingoProb []float32
+	OppScore  []float32
+}
+
+type TritonClient struct{}
+
+func NewTritonClient(serverURL, modelName, modelVersion string) (*TritonClient, error) {
+	return nil, errUnavailable
+}
+
+func (c *TritonClient) SetDebug(debug bool) {}
+
+func (c *TritonClient) Infer(boardTensorData []float32, scalarTensorData []float32, numMoves int) (*ModelOutputs, error) {
+	return nil, errUnavailable
+}
+
+func (c *TritonClient) InferWithDiagnostics(boardTensorData []float32, scalarTensorData []float32, numMoves int) (*ModelOutputs, map[string]interface{}, error) {
+	return nil, nil, errUnavailable
+}

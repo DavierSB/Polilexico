@@ -1,0 +1,19 @@
+package game
+
+import (
+	"errors"
+
+	"github.com/domino14/macondo/equity"
+	"github.com/domino14/macondo/move"
+	"github.com/domino14/macondo/triton"
+)
+
+var errNoML = errors.New("la evaluación con redes neuronales no está disponible en la web")
+
+func (g *Game) MLEvaluateMove(m *move.Move, leaveCalc *equity.ExhaustiveLeaveCalculator, lastMoves []*move.Move) (*triton.ModelOutputs, error) {
+	return nil, errNoML
+}
+
+func (g *Game) MLEvaluateMoves(moves []*move.Move, leaveCalc *equity.ExhaustiveLeaveCalculator, lastMoves []*move.Move) (*triton.ModelOutputs, error) {
+	return nil, errNoML
+}

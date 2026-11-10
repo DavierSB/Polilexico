@@ -1,0 +1,69 @@
+@font-face { font-family: "Mulish"; font-weight: 700; src: url("../fonts/mulish_bold.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Mulish"; font-weight: 800; src: url("../fonts/mulish_extrabold.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Mulish"; font-weight: 900; src: url("../fonts/mulish_black.ttf") format("truetype"); font-display: swap; }
+
+:root {
+  --gutter: 16px;
+  --radius: 14px;
+  --pill: 999px;
+  --title-font: "Mulish", system-ui, sans-serif;
+  --body-font: Roboto, "Segoe UI", system-ui, -apple-system, sans-serif;
+  --tile-font: Roboto, "Segoe UI", Arial, sans-serif;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { margin: 0; height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--on-surface);
+  font-family: var(--body-font);
+  font-size: 16px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+#app { min-height: 100dvh; }
+
+h1, h2, h3 { font-family: var(--title-font); font-weight: 900; margin: 0; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+img { display: block; }
+
+.screen {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px var(--gutter) 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.screen.wide { max-width: 1180px; }
+
+.screen-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+}
+
+.screen-head h1 { font-size: 28px; color: var(--on-surface); flex: 1; }
+
+.section-title { font-weight: 600; font-size: 15px; margin: 8px 0 0; color: var(--on-surface); }
+
+.muted { color: var(--on-surface-variant); }
+
+.hidden { display: none !important; }
+
+.stack { display: flex; flex-direction: column; gap: 8px; }
+
+.row { display: flex; align-items: center; gap: 8px; }
+
+.grow { flex: 1; min-width: 0; }
+
+.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

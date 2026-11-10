@@ -1,0 +1,77 @@
+.lobby { display: grid; gap: 20px; }
+
+.lobby-col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+.lobby-section { display: flex; flex-direction: column; gap: 8px; }
+
+.lobby-status { min-height: 1.4em; margin: 0; font-size: 14px; }
+
+.lobby-seek { position: sticky; bottom: 12px; min-height: 52px; box-shadow: 0 6px 18px rgb(0 0 0 / .35); }
+
+.back-to-game { min-height: 52px; }
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius);
+  background: var(--c1);
+  min-width: 0;
+}
+
+.game-row .row { gap: 10px; flex-wrap: wrap; }
+
+.small { font-size: 13px; }
+
+.name-flag { font-weight: 600; }
+
+.empty-state, .empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 12px;
+  color: var(--on-surface-variant);
+  text-align: center;
+}
+
+.empty-card { color: var(--on-surface); }
+
+.empty-card svg, .empty-state svg { color: var(--primary); }
+
+.account-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 50%;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: var(--pill);
+  border: 1px solid var(--outline-variant);
+  background: var(--c2);
+  color: var(--on-surface);
+  cursor: pointer;
+}
+
+.account-chip svg { color: var(--primary); flex: none; }
+
+.account-form { max-width: 480px; }
+
+.chat-panel { display: flex; flex-direction: column; gap: 8px; }
+
+.chat-lines { display: flex; flex-direction: column; gap: 4px; max-height: 240px; overflow: auto; font-size: 15px; }
+
+.chat-line { overflow-wrap: anywhere; }
+
+.chat-line.mine b { color: var(--primary); }
+
+.chat-form { display: flex; gap: 4px; align-items: center; }
+
+.chat-input { min-height: 44px !important; }
+
+@media (min-width: 900px) {
+  .lobby { grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  .lobby-seek { max-width: 420px; margin: 8px auto 0; }
+}
