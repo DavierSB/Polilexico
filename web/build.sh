@@ -24,7 +24,7 @@ printf '{"Replace":{"%s":"%s","%s":"%s"}}\n' \
   "$MACONDO/triton/client.go" "$SLIM/triton.go.txt" \
   "$MACONDO/game/mlhelper.go" "$SLIM/mlhelper.go.txt" > "$WORK/overlay.json"
 OVERLAY="$(cd "$WORK" && pwd)/overlay.json"
-(cd wasm && GOWORK=off GOOS=js GOARCH=wasm go build -overlay "$OVERLAY" -trimpath -ldflags="-s -w" -o "$OLDPWD/$WORK/engine.wasm" .)
+(cd wasm && GOWORK=off GOOS=js GOARCH=wasm go build -buildvcs=false -overlay "$OVERLAY" -trimpath -ldflags="-s -w" -o "$OLDPWD/$WORK/engine.wasm" .)
 cp "$(cd wasm && GOWORK=off go env GOROOT)/lib/wasm/wasm_exec.js" "$ENGINE/"
 
 mkdir -p "$ENGINE/parts"
