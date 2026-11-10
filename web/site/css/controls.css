@@ -263,3 +263,15 @@
 .rules-text p { margin: 0 0 8px; }
 
 .setup-narrow { max-width: 560px; width: 100%; }
+
+.settings-list { display: flex; flex-direction: column; border: 1px solid var(--outline-variant); border-radius: var(--radius); overflow: hidden; }
+
+.setting-row { display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 16px; border: 0; border-bottom: 1px solid var(--outline-variant); background: var(--c1); color: inherit; text-align: left; cursor: pointer; font-size: 16px; }
+
+.setting-row:last-child { border-bottom: 0; }
+
+.setting-row:hover { background: var(--c2); }
+
+.range { width: 100%; accent-color: var(--primary); }
+
+.range-shown { font-size: 22px; text-align: center; }

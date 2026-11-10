@@ -4,7 +4,7 @@ import { overrideWith } from "../theme.js";
 import { engineLoading } from "../parts.js";
 import { openDialog, actions } from "../dialogs.js";
 import { bot, botPhoto } from "./bots.js";
-import { currentSession, resumeSaved, startLocal, hasSaved } from "./session.js";
+import { currentSession, resumeSaved, startAgain, hasSaved } from "./session.js";
 import { gameView } from "./view.js";
 import { verdict, endDetail } from "./verdict.js";
 
@@ -50,12 +50,12 @@ function endDialog(state, session, rival) {
     actions(
       h("button.text-btn", { onclick: () => (close(), go("")) }, "Salir"),
       h("button.text-btn", { onclick: close }, "Ver tablero"),
-      h("button.text-btn", { onclick: () => (close(), rematch(session)) }, "Revancha"),
+      h("button.text-btn", { onclick: () => (close(), rematch(session)) }, session.setup.endgame ? "Otro final" : "Revancha"),
     ),
   ]);
 }
 
 async function rematch(session) {
-  await startLocal(session.setup);
+  await startAgain(session.setup);
   go("partida", true);
 }

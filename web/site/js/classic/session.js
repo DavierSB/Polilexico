@@ -17,6 +17,17 @@ export async function startLocal(setup) {
   return adopt(new Session(match, { setup }));
 }
 
+export async function startEndgame(setup) {
+  await whenReady();
+  const e = setup.endgame;
+  const match = await call("endgameNew", e.minBag, e.maxBag, e.minLead, e.maxLead, e.q, setup.timeMs, setup.overtimeMs, setup.single);
+  return adopt(new Session(match, { setup }));
+}
+
+export function startAgain(setup) {
+  return setup.endgame ? startEndgame(setup) : startLocal(setup);
+}
+
 export async function resumeSaved() {
   const saved = load(SAVE_KEY, null);
   if (!saved) return null;

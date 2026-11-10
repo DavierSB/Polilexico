@@ -13,10 +13,11 @@ import { duplicateSetupScreen } from "./duplicate/setup.js";
 import { duplicateGameScreen } from "./duplicate/screen.js";
 import { sprintSetupScreen } from "./sprint/setup.js";
 import { sprintGameScreen } from "./sprint/screen.js";
+import { endgameSetupScreen } from "./classic/endgame.js";
 import { READY_ROUTES } from "./screens/menu.js";
 
 apply();
-["sprint"].forEach((r) => READY_ROUTES.add(r));
+["sprint", "finales"].forEach((r) => READY_ROUTES.add(r));
 
 start({
   "": homeScreen,
@@ -30,6 +31,7 @@ start({
   "duplicada-partida": duplicateGameScreen,
   sprint: sprintSetupScreen,
   "sprint-partida": sprintGameScreen,
+  finales: endgameSetupScreen,
   minijuegos: menuScreen("minijuegos"),
   estudiar: menuScreen("estudiar"),
 });

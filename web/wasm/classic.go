@@ -23,6 +23,14 @@ func registerClassic() {
 	handlers["classicSave"] = classicSave
 	handlers["classicView"] = classicView
 	handlers["classicClose"] = closeAny
+	handlers["endgameNew"] = endgameNew
+}
+
+func endgameNew(args []json.RawMessage) (any, error) {
+	search := classic.NewEndgameSearch(int(number(args, 0)), int(number(args, 1)), int(number(args, 2)), int(number(args, 3)), text(args, 4))
+	return open(func(l *listener) (classicMatch, error) {
+		return search.Match(number(args, 5), number(args, 6), flag(args, 7), l)
+	})
 }
 
 func classicNew(args []json.RawMessage) (any, error) {
