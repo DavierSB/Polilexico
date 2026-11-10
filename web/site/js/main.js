@@ -11,8 +11,12 @@ import { onlineGameScreen } from "./online/game.js";
 import { menuScreen } from "./screens/menu.js";
 import { duplicateSetupScreen } from "./duplicate/setup.js";
 import { duplicateGameScreen } from "./duplicate/screen.js";
+import { sprintSetupScreen } from "./sprint/setup.js";
+import { sprintGameScreen } from "./sprint/screen.js";
+import { READY_ROUTES } from "./screens/menu.js";
 
 apply();
+["sprint"].forEach((r) => READY_ROUTES.add(r));
 
 start({
   "": homeScreen,
@@ -24,6 +28,8 @@ start({
   sala: onlineGameScreen,
   duplicada: duplicateSetupScreen,
   "duplicada-partida": duplicateGameScreen,
+  sprint: sprintSetupScreen,
+  "sprint-partida": sprintGameScreen,
   minijuegos: menuScreen("minijuegos"),
   estudiar: menuScreen("estudiar"),
 });

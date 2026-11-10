@@ -243,3 +243,93 @@ table.moves td.marked { color: var(--primary); font-weight: 700; }
 @media (min-width: 900px) and (min-aspect-ratio: 1/1) {
   .duplicate-game { grid-template-areas: "board bar" "board score" "board panel" "board rack" "board buttons" "board notice" "board side"; }
 }
+
+.small-caps { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--on-surface-variant); }
+
+.result-card { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 16px; border-radius: 20px; background: var(--c3); }
+
+.result-value { align-items: baseline; gap: 8px; }
+
+.result-value b { font-family: var(--title-font); font-weight: 900; font-size: 52px; line-height: 1; }
+
+.result-value span { font-family: var(--title-font); font-weight: 700; font-size: 17px; color: var(--on-surface-variant); }
+
+.result-chips { padding-top: 6px; gap: 8px; }
+
+.result-chip { padding: 4px 12px; border-radius: var(--pill); background: var(--c4); font-size: 14px; }
+
+.result-chip.on { background: var(--primary); color: var(--on-primary); font-weight: 700; }
+
+.outcome-banner { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; }
+
+.outcome-banner.good { background: #1F4D2B; }
+
+.outcome-banner.bad { background: #5C1A16; }
+
+.outcome-mark { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 22px; flex: none; }
+
+.outcome-banner.good .outcome-mark { background: #7BD88F; color: #1F4D2B; }
+
+.outcome-banner.bad .outcome-mark { background: #FF8A7A; color: #5C1A16; }
+
+.outcome-banner .small-caps { color: inherit; opacity: .85; }
+
+.outcome-main { font-size: 22px; letter-spacing: 1px; margin-right: 8px; }
+
+.result-section { padding: 6px 4px 2px; }
+
+.word-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--outline-variant);
+  border-radius: 12px;
+  background: var(--c1);
+  color: inherit;
+  text-align: left;
+}
+
+button.word-row { cursor: pointer; }
+
+.word-row.selected { border: 2px solid var(--primary); padding: 9px 13px; }
+
+.word-score { font-weight: 700; color: var(--primary); }
+
+.lives-row { display: flex; align-items: center; padding: 6px 0; }
+
+.heart { font-size: 28px; color: var(--outline); }
+
+.heart.full { color: #E5484D; }
+
+.lives-side { display: flex; flex-direction: column; align-items: flex-end; }
+
+.record-new { color: var(--primary); font-size: 13px; font-weight: 700; }
+
+.turn-clock { text-align: center; font-family: ui-monospace, monospace; font-size: 24px; font-weight: 700; }
+
+.turn-clock.low { color: #FF6B9A; }
+
+.searching { aspect-ratio: 1; display: grid; place-content: center; justify-items: center; gap: 12px; color: var(--on-surface-variant); }
+
+.spinner { width: 40px; height: 40px; border-radius: 50%; border: 4px solid var(--c4); border-top-color: var(--primary); animation: spin 1s linear infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.bar-title { font-family: var(--title-font); font-weight: 900; font-size: 20px; padding-left: 6px; }
+
+.sprint-game { grid-template-areas: "bar" "board" "panel" "rack" "buttons" "side" "score"; }
+
+.sprint-lives { display: block; padding: 4px 12px; }
+
+.sprint-results { gap: 8px; }
+
+.result-buttons { gap: 8px; }
+
+.record-card { display: flex; justify-content: space-between; align-items: center; }
+
+@media (min-width: 900px) and (min-aspect-ratio: 1/1) {
+  .sprint-game { grid-template-areas: "board bar" "board score" "board panel" "board rack" "board buttons" "board side" "board ."; }
+  .sprint-game .game-side { overflow: auto; max-height: calc(100dvh - 300px); }
+}

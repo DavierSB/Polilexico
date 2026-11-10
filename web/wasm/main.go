@@ -15,6 +15,7 @@ func main() {
 	registerEngine()
 	registerClassic()
 	registerDuplicate()
+	registerSprint()
 	js.Global().Set("lexicoCall", js.FuncOf(receive))
 	js.Global().Call("lexicoReady")
 	select {}

@@ -1,5 +1,6 @@
 import { h } from "../dom.js";
 import { openDialog, actions } from "../dialogs.js";
+import { icon } from "../icons.js";
 
 const TIME_INFO = "Cuando se te acaba el tiempo empieza el descuento. Por cada minuto de descuento que empieces se te restan 10 puntos; si agotas también el descuento, pierdes por tiempo.";
 const CHALLENGE_INTRO = "Cómo se tratan las jugadas con palabras que no existen.";
@@ -69,6 +70,10 @@ export function stepper(value, min, max, change) {
 
 export function rulesButton(title, sections) {
   return h("button.text-btn.rules-btn", { onclick: () => rulesDialog(title, sections) }, "Leer reglas");
+}
+
+export function rulesIconButton(title, sections) {
+  return h("button.icon-btn", { "aria-label": "Reglas", onclick: () => rulesDialog(title, sections) }, icon("rules"));
 }
 
 function rulesDialog(title, sections) {
