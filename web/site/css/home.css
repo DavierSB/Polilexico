@@ -1,5 +1,5 @@
 .home {
-  max-width: 560px;
+  max-width: clamp(560px, calc(100dvh - 500px), 820px);
   margin: 0 auto;
   padding: 8px var(--gutter) 32px;
   display: grid;
@@ -30,18 +30,35 @@
 
 .loading-card { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
 
-@media (min-width: 960px) {
+@media (min-width: 900px) and (min-aspect-ratio: 1/1) {
   .home {
-    max-width: 1180px;
+    --menu: clamp(340px, 26vw, 520px);
+    --board: min(calc(100dvh - 48px), calc(100vw - var(--menu) - 112px));
+    max-width: none;
+    width: fit-content;
     padding-top: 16px;
-    grid-template-columns: minmax(0, 1fr) 380px;
+    grid-template-columns: var(--board) var(--menu);
     grid-template-areas: "board head" "board menu";
     grid-template-rows: auto 1fr;
     column-gap: 48px;
     align-items: start;
   }
 
-  .home-board { width: min(100%, calc(100dvh - 48px)); justify-self: end; }
+  .home-board { width: var(--board); }
+
+  .home-menu .btn { min-height: clamp(56px, 6.5dvh, 80px); font-size: clamp(19px, 2.2dvh, 26px); }
+
+  .brand { font-size: clamp(30px, 3.4dvh, 44px); }
+
+  .brand img { width: clamp(48px, 5.4dvh, 72px); }
+
+  .home-menu .badge { font-size: clamp(12px, 1.3dvh, 16px); }
+
+  .home-link { font-size: clamp(15px, 1.6dvh, 20px); }
+
+  .home-head .icon-btn { width: clamp(44px, 5dvh, 64px); height: clamp(44px, 5dvh, 64px); }
+
+  .home-head .icon-btn svg { width: 60%; height: 60%; }
 
   .home-head { padding-top: 24px; }
 }

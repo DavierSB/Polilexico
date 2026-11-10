@@ -1,6 +1,6 @@
 .game {
-  --side: 400px;
-  max-width: 640px;
+  --side: clamp(380px, 27vw, 560px);
+  max-width: clamp(560px, calc(100dvh - 380px), 900px);
   margin: 0 auto;
   padding: 4px 8px 24px;
   display: grid;
@@ -72,9 +72,9 @@
 
 .rack-tile {
   position: relative;
-  flex: 0 1 84px;
+  flex: 0 1 112px;
   aspect-ratio: 1;
-  max-width: 84px;
+  max-width: 112px;
   display: grid;
   place-items: center;
   border: 0;
@@ -150,7 +150,7 @@ table.moves tr.mine td:nth-child(2) { color: var(--primary); }
 
 .final-score { font-size: 34px; font-weight: 800; margin: 0; font-variant-numeric: tabular-nums; }
 
-@media (min-width: 1000px) {
+@media (min-width: 900px) and (min-aspect-ratio: 1/1) {
   .game {
     --board: min(calc(100dvh - 24px), calc(100vw - var(--side) - 72px));
     max-width: none;
@@ -178,5 +178,7 @@ table.moves tr.mine td:nth-child(2) { color: var(--primary); }
 
   .rack { gap: 6px; }
 
-  .rack-tile { flex-basis: 50px; }
+  .rack-tile { flex-basis: calc((var(--side) - 36px) / 7); }
+
+  .game-buttons .btn { min-height: clamp(44px, 5dvh, 60px); font-size: clamp(15px, 1.7dvh, 19px); }
 }
