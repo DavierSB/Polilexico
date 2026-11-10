@@ -133,12 +133,20 @@ func (h *hub) create(c *client, m message, invitee *player) {
 	h.leaveCurrent(c)
 	h.mu.Lock()
 	code := h.freeCode()
-	h.rooms[code] = newRoom(h, code, c.player, m, invitee)
+	r := newRoom(h, code, c.player, m, invitee)
+	h.rooms[code] = r
 	h.mu.Unlock()
-	h.changed()
 	if m.Mode == modeDuplicate {
-		h.announceDuplicate(c, code)
+		h.seatHost(c, r, code)
 	}
+	h.changed()
+}
+
+func (h *hub) seatHost(c *client, r room, code string) {
+	h.withdrawSeeksOf(c.player.ID, code)
+	h.seat(c.player.ID, r)
+	r.enter(c)
+	h.announceDuplicate(c, code)
 }
 
 func (h *hub) canPublish(c *client) string {
@@ -231,7 +239,9 @@ func (h *hub) startSeek(c *client, code string) {
 		return
 	}
 	if r := h.roomByCode(code); r != nil {
-		h.leaveCurrent(c)
+		if c.room != r {
+			h.leaveCurrent(c)
+		}
 		r.startBy(c)
 	}
 }

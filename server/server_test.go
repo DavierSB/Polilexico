@@ -368,17 +368,26 @@ func TestSeveralSeeksAndTheRestAreWithdrawn(t *testing.T) {
 	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
 	ana.send(message{T: "create", Mode: modeClassic, TimeMs: 600_000})
 	ana.send(message{T: "create", Mode: modeClassic, Void: true})
-	ana.send(message{T: "create", Mode: modeDuplicate})
-	seeks := ana.mySeeks(3)
-	classic := seeks[0]
-	for _, s := range seeks {
-		if s.Mode == modeClassic {
-			classic = s
-		}
-	}
-	beto.send(message{T: "join", Code: classic.ID})
+	beto.send(message{T: "join", Code: ana.mySeeks(2)[0].ID})
 	ana.waitFor("state")
 	ana.mySeeks(0)
+}
+
+func TestDuplicateHostWaitsInsideTheRoom(t *testing.T) {
+	srv := newTestServer(t)
+	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "create", Mode: modeClassic})
+	ana.mySeeks(1)
+	ana.send(message{T: "create", Mode: modeDuplicate})
+	room := ana.waitFor("room")
+	if !room.First || len(room.Players) != 1 {
+		t.Fatalf("sala del anfitrión: %+v", room)
+	}
+	code := ana.mySeeks(1)[0].ID
+	beto.send(message{T: "join", Code: code})
+	beto.waitFor("room")
+	ana.send(message{T: "start", Code: code})
+	ana.waitFor("table")
 }
 
 func TestCancelledSeekDisappears(t *testing.T) {
