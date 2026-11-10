@@ -18,10 +18,12 @@ import { recallSetupScreen } from "./recall/setup.js";
 import { recallGameScreen } from "./recall/screen.js";
 import { anagramSetupScreen } from "./anagram/setup.js";
 import { anagramGameScreen } from "./anagram/screen.js";
+import { anagrammerScreen } from "./study/anagrammer.js";
+import { analyzerScreen } from "./study/analyzer.js";
 import { READY_ROUTES } from "./screens/menu.js";
 
 apply();
-["sprint", "finales", "recuerdas", "anagrama"].forEach((r) => READY_ROUTES.add(r));
+["sprint", "finales", "recuerdas", "anagrama", "anagramador", "analizador"].forEach((r) => READY_ROUTES.add(r));
 
 start({
   "": homeScreen,
@@ -40,6 +42,8 @@ start({
   "recuerdas-partida": recallGameScreen,
   anagrama: anagramSetupScreen,
   "anagrama-partida": anagramGameScreen,
+  anagramador: anagrammerScreen,
+  analizador: analyzerScreen,
   minijuegos: menuScreen("minijuegos"),
   estudiar: menuScreen("estudiar"),
 });

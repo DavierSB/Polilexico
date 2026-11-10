@@ -66,6 +66,7 @@ function targetAt(e) {
     square: under?.closest(".square") ?? null,
     slot: under?.closest(".rack-tile") ?? null,
     rack: under?.closest(".rack") ?? null,
+    pin: under?.closest(".pin-slot") ?? null,
   };
 }
 
