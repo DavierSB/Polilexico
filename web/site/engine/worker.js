@@ -45,12 +45,24 @@ function pack(files) {
 }
 
 async function startEngine() {
-  const files = await inflateAll(packs.engine);
-  packs.engine.files.forEach((f, i) => f.path !== "engine.wasm" && memfs.put("/" + f.path, files[i]));
+  const p = packs.engine;
+  const data = p.files.filter((f) => f.path !== "engine.wasm");
+  const wasmFile = p.files.find((f) => f.path === "engine.wasm");
   const go = new Go();
-  const wasm = await WebAssembly.instantiate(files[packs.engine.files.findIndex((f) => f.path === "engine.wasm")], go.importObject);
-  packs.engine.parts.clear();
+  const [wasm, files] = await Promise.all([compile(p, wasmFile, go), Promise.all(data.map((f) => inflate(blobOf(p, f))))]);
+  data.forEach((f, i) => memfs.put("/" + f.path, files[i]));
+  p.parts.clear();
   go.run(wasm.instance);
+}
+
+function compile(p, f, go) {
+  const stream = blobOf(p, f).stream().pipeThrough(new DecompressionStream("gzip"));
+  const response = new Response(stream, { headers: { "Content-Type": "application/wasm" } });
+  return WebAssembly.instantiateStreaming(response, go.importObject);
+}
+
+function blobOf(p, f) {
+  return new Blob(partUrls(f).map((u) => p.parts.get(u)));
 }
 
 async function deliver(name) {
@@ -86,10 +98,10 @@ async function download(name, store) {
 
 async function part(name, url, store) {
   const cached = store && (await store.match(url));
-  if (cached) return report(name, await cached.arrayBuffer());
+  if (cached) return report(name, await cached.arrayBuffer(), true);
   const bytes = await fetchRetrying(name, url);
   await store?.put(url, new Response(bytes));
-  return report(name, bytes);
+  return report(name, bytes, false);
 }
 
 async function fetchRetrying(name, url) {
@@ -101,13 +113,13 @@ async function fetchRetrying(name, url) {
   }
 }
 
-function report(name, bytes) {
-  postMessage({ pack: name, loaded: bytes.byteLength });
+function report(name, bytes, cached) {
+  postMessage({ pack: name, loaded: bytes.byteLength, cached });
   return bytes;
 }
 
 function inflateAll(p) {
-  return Promise.all(p.files.map((f) => inflate(new Blob(partUrls(f).map((u) => p.parts.get(u))))));
+  return Promise.all(p.files.map((f) => inflate(blobOf(p, f))));
 }
 
 async function inflate(blob) {

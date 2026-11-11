@@ -6,7 +6,7 @@ import { openDialog, actions } from "../dialogs.js";
 import { bot, botPhoto } from "./bots.js";
 import { currentSession, resumeSaved, startAgain, hasSaved } from "./session.js";
 import { gameView } from "./view.js";
-import { verdict, endDetail } from "./verdict.js";
+import { verdict, endDetail, localVerdict } from "./verdict.js";
 
 export function classicGameScreen(app) {
   const holder = h("div.screen");
@@ -19,13 +19,15 @@ export function classicGameScreen(app) {
 async function open(holder, keep) {
   const session = currentSession() ?? (hasSaved() ? await waitFor(holder, resumeSaved()) : null);
   if (!session) return go("clasica", true);
+  const players = session.setup.players;
   const rival = bot(session.setup.bot) ?? bot("HastyBot");
-  overrideWith(rival.theme);
+  if (!players) overrideWith(rival.theme);
   const view = gameView(session, {
-    me: { name: "Tú" },
-    opponent: { name: rival.alias, photo: botPhoto(rival) },
+    me: { name: players ? players[0] : "Tú" },
+    opponent: players ? { name: players[1] } : { name: rival.alias, photo: botPhoto(rival) },
+    local: !!players,
     pausable: true,
-    thinkingText: "pensando…",
+    thinkingText: players ? null : "pensando…",
     exit: () => go(""),
     resign: () => (session.resign(), go("")),
     onEnd: (state) => endDialog(state, session, rival),
@@ -43,10 +45,12 @@ async function waitFor(holder, promise) {
 }
 
 function endDialog(state, session, rival) {
+  const players = session.setup.players;
+  const second = players ? players[1] : rival.alias;
   openDialog((close) => [
-    h("h2.verdict", {}, verdict(state, rival.alias)),
+    h("h2.verdict", {}, players ? localVerdict(state, players[0], second) : verdict(state, second)),
     h("p.final-score", {}, `${state.myScore} – ${state.opponentScore}`),
-    endDetail(state, rival.alias),
+    endDetail(state, second),
     actions(
       h("button.text-btn", { onclick: () => (close(), go("")) }, "Salir"),
       h("button.text-btn", { onclick: close }, "Ver tablero"),

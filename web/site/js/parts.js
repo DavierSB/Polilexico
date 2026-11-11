@@ -46,7 +46,7 @@ export function loadingLabel(p) {
   if (p.failure) return "Error";
   if (p.stalled) return "Reintentando…";
   if (p.ready) return "";
-  return p.percent >= 100 ? "Preparando…" : `${p.percent} %`;
+  return p.percent >= 100 || !p.downloading ? "Preparando…" : `${p.percent} %`;
 }
 
 export function engineGate(button, pack = "engine") {

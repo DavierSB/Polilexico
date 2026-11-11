@@ -65,4 +65,4 @@ start({
   estudiar: menuScreen("estudiar"),
 });
 
-window.addEventListener("load", () => setTimeout(startEngine, 1500));
+window.addEventListener("load", () => setTimeout(startEngine, 300));

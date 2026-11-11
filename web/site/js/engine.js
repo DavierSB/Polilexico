@@ -11,11 +11,12 @@ let markReady = null;
 export const readyLater = new Promise((resolve) => (markReady = resolve));
 
 function blank() {
-  return { total: 0, loaded: 0, ready: false, failure: null, stalled: false };
+  return { total: 0, loaded: 0, ready: false, failure: null, stalled: false, downloading: false };
 }
 
 export function startEngine() {
   if (worker) return started;
+  navigator.storage?.persist?.().catch(() => {});
   worker = new Worker("engine/worker.js");
   worker.onmessage = ({ data }) => receive(data);
   started = send("init", ["/data", "/saves"]).then(() => (update("engine", { ready: true }), markReady()));
@@ -72,7 +73,7 @@ function receive(data) {
   const p = progress[data.pack];
   if (!p) return;
   if (data.total) update(data.pack, { total: data.total });
-  if (data.loaded) update(data.pack, { loaded: p.loaded + data.loaded, stalled: false });
+  if (data.loaded) update(data.pack, { loaded: p.loaded + data.loaded, stalled: false, downloading: p.downloading || !data.cached });
   if (data.stalled) update(data.pack, { stalled: true });
   if (data.failed) update(data.pack, { failure: data.failed });
   if (data.done && data.pack === "study") update("study", { ready: true });

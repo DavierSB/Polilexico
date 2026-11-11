@@ -1,5 +1,5 @@
 import { call, whenReady, unwatch, watch } from "../engine.js";
-import { clocks, normalize } from "./state.js";
+import { clocks, flipClocks, normalize } from "./state.js";
 import { load, save } from "../store.js";
 
 const SAVE_KEY = "classicGame";
@@ -13,7 +13,9 @@ export function currentSession() {
 
 export async function startLocal(setup) {
   await whenReady();
-  const match = await call("classicNew", setup.bot, setup.starter, setup.timeMs, setup.overtimeMs, setup.single);
+  const match = setup.players
+    ? await call("classicNewLocal", setup.players[0], setup.players[1], setup.starter, setup.timeMs, setup.overtimeMs, setup.single)
+    : await call("classicNew", setup.bot, setup.starter, setup.timeMs, setup.overtimeMs, setup.single);
   return adopt(new Session(match, { setup }));
 }
 
@@ -71,7 +73,8 @@ export class Session {
   async refresh() {
     const raw = await call("classicRead", this.match).catch(() => null);
     if (!raw) return;
-    this.state = normalize(raw, false);
+    this.flipped = raw.Local && !raw.Status.Over && !raw.Status.HumanToMove;
+    this.state = normalize(raw, this.flipped);
     this.publish();
     this.tickWhileRunning();
     this.keep();
@@ -96,7 +99,7 @@ export class Session {
     const raw = await call("classicClocks", this.match).catch(() => null);
     if (!raw || !this.state) return;
     const c = clocks(raw);
-    this.state = { ...this.state, clocks: c };
+    this.state = { ...this.state, clocks: this.flipped ? flipClocks(c) : c };
     this.publish();
   }
 

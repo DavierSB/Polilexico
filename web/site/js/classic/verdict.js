@@ -6,6 +6,13 @@ const REASONS = {
   neutral: () => "Terminó por turnos sin puntos.",
 };
 
+export function localVerdict(state, first, second) {
+  const r = state.result;
+  const timed = r.lostOnTime || r.rivalLostOnTime ? " por tiempo" : "";
+  if (r.outcome === "tie") return "Empate";
+  return `Ganó ${r.outcome === "win" ? first : second}${timed}`;
+}
+
 export function verdict(state, rival, watchedName = null) {
   const r = state.result;
   if (watchedName) return r.outcome === "tie" ? "Empate" : `Ganó ${r.outcome === "win" ? watchedName : rival}`;

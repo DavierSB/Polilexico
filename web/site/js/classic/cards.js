@@ -2,17 +2,18 @@ import { h } from "../dom.js";
 import { formatClock, initialAvatar, flag } from "../parts.js";
 
 export function playerCard({ name, country, photo, mine }) {
+  const nameEl = h("span", {}, name);
   const score = h("span.score");
   const clock = h("span.clock.hidden");
   const tiles = h("div.mini-tiles");
   const status = h("span.player-status.muted");
   const el = h("div", { class: "player-card" + (mine ? " mine" : "") },
     avatar(name, photo, mine),
-    h("div.player-main", {}, h("div.row", {}, h("span.player-name.ellipsis", {}, name, country ? " " + flag(country) : ""), status), tiles),
+    h("div.player-main", {}, h("div.row", {}, h("span.player-name.ellipsis", {}, nameEl, country ? " " + flag(country) : ""), status), tiles),
     score,
     clock,
   );
-  return { el, update: (data) => update({ el, score, clock, tiles, status }, data) };
+  return { el, update: (data) => update({ el, score, clock, tiles, status, nameEl }, data) };
 }
 
 function avatar(name, photo, mine) {
@@ -21,7 +22,8 @@ function avatar(name, photo, mine) {
   return initialAvatar(name, 44);
 }
 
-function update(parts, { score, active, ms, timed, tileCount, status }) {
+function update(parts, { score, active, ms, timed, tileCount, status, name }) {
+  if (name !== undefined) parts.nameEl.textContent = name;
   parts.el.classList.toggle("active", !!active);
   parts.score.textContent = score;
   parts.clock.classList.toggle("hidden", !timed);
