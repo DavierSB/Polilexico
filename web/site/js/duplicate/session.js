@@ -2,6 +2,7 @@ import { call, whenReady, unwatch, watch } from "../engine.js";
 import { load, save } from "../store.js";
 import { normalizeDuplicate } from "./state.js";
 import { cueWatcher } from "../sound.js";
+import { keepRecord, countAbandoned } from "../records.js";
 
 const SAVE_KEY = "duplicateGame";
 const TICK_MS = 250;
@@ -64,6 +65,7 @@ class DuplicateSession {
     const raw = await call("duplicateRead", this.match).catch(() => null);
     if (!raw) return;
     this.cues(raw.CueCount, raw.Cue);
+    if (raw.Result?.RecordPath && !this.recorded) this.recorded = keepRecord(raw.Result.RecordPath).catch(() => null);
     const changed = raw.Turns?.length !== this.state?.rounds.length || raw.Phase !== this.state?.phase;
     this.state = normalizeDuplicate(raw);
     this.listeners.forEach((fn) => fn(this.state));
@@ -115,6 +117,7 @@ class DuplicateSession {
 
   resign() {
     save(SAVE_KEY, null);
+    countAbandoned("duplicate");
     this.close();
   }
 

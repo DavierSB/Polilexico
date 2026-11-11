@@ -2,6 +2,7 @@ import { call, whenReady, unwatch, watch } from "../engine.js";
 import { clocks, flipClocks, normalize } from "./state.js";
 import { load, save } from "../store.js";
 import { cueWatcher } from "../sound.js";
+import { keepRecord, countAbandoned } from "../records.js";
 
 const SAVE_KEY = "classicGame";
 const TICK_MS = 250;
@@ -76,6 +77,7 @@ export class Session {
     const raw = await call("classicRead", this.match).catch(() => null);
     if (!raw) return;
     this.cues(raw.CueCount, raw.Cue);
+    if (raw.Result?.RecordPath && !this.recorded) this.recorded = keepRecord(raw.Result.RecordPath).catch(() => null);
     this.flipped = raw.Local && !raw.Status.Over && !raw.Status.HumanToMove;
     this.state = normalize(raw, this.flipped);
     this.publish();
@@ -127,6 +129,7 @@ export class Session {
 
   resign() {
     save(SAVE_KEY, null);
+    countAbandoned(this.setup.endgame ? "endgame" : "classic");
     this.close();
   }
 

@@ -31,6 +31,7 @@ function menu(gates) {
     h("button.btn.block", { onclick: () => go("minijuegos") }, "Minijuegos"),
     h("button.btn.block", { onclick: () => go("estudiar") }, "Estudiar"),
     h("button.btn.block.tonal", { onclick: () => go("en-linea") }, icon("globe", 22), "En línea"),
+    h("button.btn.block.outlined", { onclick: () => go("partidas") }, "Mis partidas"),
   ];
 }
 

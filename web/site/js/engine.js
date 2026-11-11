@@ -51,6 +51,16 @@ export function onLoading(fn, pack = "engine") {
   return () => listeners[pack].delete(fn);
 }
 
+const reads = new Map();
+
+export function readFile(path) {
+  startEngine();
+  return new Promise((resolve) => {
+    reads.set(path, resolve);
+    worker.postMessage({ readFile: path });
+  });
+}
+
 export function loadPack(name) {
   startEngine();
   if (!packFiles.has(name)) packFiles.set(name, new Promise((resolve) => {
@@ -70,6 +80,7 @@ function receive(data) {
   if (data.id) return settle(data);
   if (data.changed) return watchers.get(data.changed)?.();
   if (data.files) return packFiles.get(data.pack + ":resolve")?.(data.files);
+  if (data.readFile) return reads.get(data.readFile)?.(data.text);
   const p = progress[data.pack];
   if (!p) return;
   if (data.total) update(data.pack, { total: data.total });

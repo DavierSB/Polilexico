@@ -20,6 +20,7 @@ globalThis.lexicoChanged = (match) => postMessage({ changed: match });
 
 globalThis.onmessage = (e) => {
   if (e.data.pack) return deliver(e.data.pack);
+  if (e.data.readFile) return postMessage({ readFile: e.data.readFile, text: new TextDecoder().decode(memfs.read(e.data.readFile) ?? new Uint8Array()) });
   if (ready) send(e.data);
   else waiting.push(e.data);
 };

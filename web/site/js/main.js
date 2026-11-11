@@ -26,6 +26,9 @@ import { dictionaryScreen } from "./study/word.js";
 import { listsMenuScreen, catalogScreen, listScreen, studyScreen, unfinishedScreen, completedScreen } from "./study/listScreens.js";
 import { testScreen } from "./study/test.js";
 import { createListScreen } from "./study/create.js";
+import { gamesScreen } from "./games/list.js";
+import { statsScreen } from "./games/stats.js";
+import { reviewScreen } from "./games/review.js";
 import { READY_ROUTES } from "./screens/menu.js";
 
 apply();
@@ -61,6 +64,9 @@ start({
   "crear-lista": createListScreen,
   "estudios-medias": unfinishedScreen,
   "estudios-culminados": completedScreen,
+  partidas: gamesScreen,
+  estadisticas: statsScreen,
+  "partida-revision": reviewScreen,
   minijuegos: menuScreen("minijuegos"),
   estudiar: menuScreen("estudiar"),
 });
