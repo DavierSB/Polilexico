@@ -462,3 +462,7 @@ hr.thick { width: 100%; border: 0; border-top: 2px solid var(--on-surface); marg
 .reveal-title { font-size: 20px; }
 
 .answer-row { display: flex; align-items: center; gap: 14px; padding: 4px; border: 0; border-radius: 8px; background: none; color: inherit; font-size: 26px; font-weight: 600; letter-spacing: 1px; cursor: pointer; text-align: left; }
+
+.lookup-word { padding-bottom: 8px; border-bottom: 1px solid var(--outline-variant); }
+
+.lookup-word a { align-self: flex-start; }

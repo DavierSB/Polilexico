@@ -12,6 +12,7 @@ import { dragFrom } from "../classic/drag.js";
 import { bindKeys } from "../classic/keys.js";
 import { totals } from "./state.js";
 import { roundsTable, movesDialog, roundDialog, endDialogs } from "./dialogs.js";
+import { lookUp } from "../study/lookup.js";
 
 const RESIGN_TEXT = "¿Abandonar la partida? Se borra de partidas en curso y cuenta como abandonada en tus estadísticas.";
 const LOW_ROUND_MS = 10000;
@@ -29,7 +30,7 @@ class DuplicateView {
     this.score = null;
     this.placer = new Placer(() => this.placerChanged());
     this.placer.askBlank = askBlank;
-    this.board = createBoard({ onSquare: (i) => this.canPlay() && this.placer.clickSquare(i) });
+    this.board = createBoard({ onSquare: (i) => this.tapSquare(i) });
     this.rack = createRack(this.placer);
     this.el = this.layout();
     this.board.el.addEventListener("pointerdown", (e) => this.dragPending(e));
@@ -99,6 +100,12 @@ class DuplicateView {
     this.rack.render(this.canPlay());
     this.renderButtons();
     this.liveScore();
+  }
+
+  tapSquare(i) {
+    const studying = this.options.study || this.state?.finished;
+    if (studying && this.state.cells[i] && !this.placer.pending.size) return lookUp(this.state.cells, i);
+    if (this.canPlay()) this.placer.clickSquare(i);
   }
 
   showsRack() {

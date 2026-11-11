@@ -13,6 +13,7 @@ import { bindKeys } from "../classic/keys.js";
 import { rulesIconButton } from "../classic/options.js";
 import { resultCard, outcomeBanner, resultSection, wordRow, livesRow } from "../results.js";
 import { SPRINT_RULES } from "./rules.js";
+import { lookUp } from "../study/lookup.js";
 
 const LOW_TIME_MS = 30000;
 const BANNERS = {
@@ -36,7 +37,7 @@ class SprintView {
     this.score = null;
     this.placer = new Placer(() => this.placerChanged());
     this.placer.askBlank = askBlank;
-    this.board = createBoard({ onSquare: (i) => this.canPlay() && this.placer.clickSquare(i) });
+    this.board = createBoard({ onSquare: (i) => this.tapSquare(i) });
     this.rack = createRack(this.placer);
     this.el = this.layout();
     this.board.el.addEventListener("pointerdown", (e) => this.dragPending(e));
@@ -103,6 +104,13 @@ class SprintView {
     this.rack.render(this.canPlay());
     this.renderButtons();
     this.liveScore();
+  }
+
+  tapSquare(i) {
+    if (this.canPlay()) return this.placer.clickSquare(i);
+    const p = this.shown && parsePlacement(this.shown.placement);
+    const cells = p ? applyPlacement(this.state.cells, p) : this.state.cells;
+    if (cells?.[i]) lookUp(cells, i);
   }
 
   canPlay() {

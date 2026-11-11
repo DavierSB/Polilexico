@@ -5,7 +5,7 @@ import { load, save } from "../store.js";
 import { BOTS, bot, botPhoto } from "./bots.js";
 import { startLocal } from "./session.js";
 import { toast } from "../dialogs.js";
-import { timeSection, challengeSection, choiceRow } from "./options.js";
+import { timeSection, challengeSection, choiceRow, studySection } from "./options.js";
 
 const DEFAULTS = { bot: "HastyBot", starter: 0, single: true, timed: false, time: "30:00", overtime: "8:00", shared: false, first: "Jugador A", second: "Jugador B" };
 const NAME_CHARS = 16;
@@ -55,6 +55,7 @@ function settingsFor(form, redraw, gates) {
     choiceRow(starters, form.starter, (i) => ((form.starter = i), redraw())),
     challengeSection(form, redraw, !form.shared && b.voidOnly ? b.alias : null),
     timeSection(form, redraw),
+    form.shared ? null : studySection(form, redraw),
     startButton(form, gates),
   ];
 }
@@ -78,6 +79,7 @@ async function begin(form, button) {
   const setup = {
     bot: form.bot, starter: form.starter, single: form.single && (form.shared || !b.voidOnly),
     players: form.shared ? [form.first.trim(), form.second.trim()] : null,
+    study: !form.shared && !!form.study,
     timeMs: form.timed ? parseDuration(form.time) : 0, overtimeMs: form.timed ? parseDuration(form.overtime) : 0,
   };
   try {

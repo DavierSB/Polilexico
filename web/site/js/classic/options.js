@@ -83,3 +83,10 @@ function rulesDialog(title, sections) {
     actions(h("button.text-btn", { onclick: close }, "Cerrar")),
   ], { wide: true });
 }
+
+export function studySection(form, redraw) {
+  return [
+    sectionTitle("Modo Estudio", "Con el Modo Estudio activado, durante la partida se puede tocar una palabra ya jugada en el tablero para ver su significado en el diccionario."),
+    choiceRow(["Off", "On"], form.study ? 1 : 0, (i) => ((form.study = i === 1), redraw())),
+  ];
+}

@@ -11,6 +11,7 @@ import { askBlank, bagDialog, movesDialog, movesTable } from "./moves.js";
 import { dragFrom } from "./drag.js";
 import { tile } from "../board.js";
 import { bindKeys } from "./keys.js";
+import { lookUp } from "../study/lookup.js";
 
 const RESIGN_TEXT = "¿Abandonar la partida? Se borra de partidas en curso y cuenta como abandonada en tus estadísticas.";
 
@@ -27,7 +28,7 @@ class GameView {
     this.score = null;
     this.placer = new Placer(() => this.placerChanged());
     this.placer.askBlank = askBlank;
-    this.board = createBoard({ onSquare: (i) => this.placer.clickSquare(i) });
+    this.board = createBoard({ onSquare: (i) => this.tapSquare(i) });
     this.rack = createRack(this.placer);
     this.cards = { opponent: playerCard(options.opponent), me: playerCard({ ...options.me, mine: true }) };
     this.el = this.layout();
@@ -72,6 +73,12 @@ class GameView {
     this.placer.sync(state.cells, state.rack);
     this.renderAll();
     if (state.result && !this.ended) this.end();
+  }
+
+  tapSquare(i) {
+    const studying = this.options.study || this.state?.result;
+    if (studying && this.state.cells[i] && !this.placer.pending.size) return lookUp(this.state.cells, i);
+    this.placer.clickSquare(i);
   }
 
   handOff() {

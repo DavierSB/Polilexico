@@ -3,7 +3,7 @@ import { go } from "../router.js";
 import { screenHead, parseDuration, engineGate } from "../parts.js";
 import { load, save } from "../store.js";
 import { toast } from "../dialogs.js";
-import { choiceRow, sectionTitle, stepper, rulesButton } from "../classic/options.js";
+import { choiceRow, sectionTitle, stepper, rulesButton, studySection } from "../classic/options.js";
 import { startDuplicate } from "./session.js";
 import { DUPLICATE_RULES, ROUNDS_TEXT, VOID_HINT, SINGLE_HINT, AT_END_HINT } from "./rules.js";
 
@@ -36,6 +36,7 @@ function fields(form, redraw, gates) {
     choiceRow(CHECKS, form.check, (i) => ((form.check = i), redraw())),
     sectionTitle("Tiempo", "Si no juegas a tiempo, 0 puntos ese turno."),
     turnField(form),
+    studySection(form, redraw),
     start,
   ];
 }
@@ -53,7 +54,7 @@ async function begin(form, button) {
   save("duplicateForm", form);
   button.disabled = true;
   try {
-    await startDuplicate({ turnMs, single: form.check !== 0, atEnd: form.check === 2, rounds: form.fixed ? form.rounds : 0 });
+    await startDuplicate({ turnMs, single: form.check !== 0, atEnd: form.check === 2, rounds: form.fixed ? form.rounds : 0, study: !!form.study });
     go("duplicada-partida");
   } catch (e) {
     toast(e.message);
