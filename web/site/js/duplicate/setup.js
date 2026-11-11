@@ -5,7 +5,8 @@ import { load, save } from "../store.js";
 import { toast } from "../dialogs.js";
 import { modeTabs } from "../modeTabs.js";
 import { choiceRow, sectionTitle, stepper, rulesButton, studySection } from "../classic/options.js";
-import { startDuplicate } from "./session.js";
+import { startDuplicate, currentDuplicate, hasSavedDuplicate } from "./session.js";
+import { savedButtons, keepScroll } from "../savedButtons.js";
 import { DUPLICATE_RULES, ROUNDS_TEXT, VOID_HINT, SINGLE_HINT, AT_END_HINT } from "./rules.js";
 
 const CHECKS = ["Void", "Single", "Al Final"];
@@ -14,21 +15,29 @@ const DEFAULTS = { check: 1, fixed: false, rounds: 12, turn: "3:00" };
 
 export function duplicateSetupScreen(app) {
   const form = { ...DEFAULTS, ...load("duplicateForm", {}) };
-  const body = h("div.stack.setup-narrow");
+  const body = h("div.setup-step");
   const gates = [];
   const redraw = () => {
     gates.splice(0).forEach((stop) => stop());
-    replace(body, fields(form, redraw, gates));
+    keepScroll(body, () => replace(body, h("div.setup-scroll", {}, fields(form, redraw)), startButton(form, gates), savedButtons("duplicate", inProgress(), "duplicada-partida", gates)));
   };
   redraw();
   const tabs = modeTabs("duplicate", () => ({ el: body }));
-  app.append(h("div.screen.wide", {}, screenHead("Duplicada"), tabs.el));
+  app.append(h("div.screen.wide.fit-screen", {}, screenHead("Duplicada"), tabs.el));
   return () => (gates.forEach((stop) => stop()), tabs.destroy());
 }
 
-function fields(form, redraw, gates) {
+function inProgress() {
+  return currentDuplicate()?.live() || hasSavedDuplicate() ? 1 : 0;
+}
+
+function startButton(form, gates) {
   const start = h("button.btn.block.start", { onclick: () => begin(form, start) }, "Empezar");
   gates.push(engineGate(start));
+  return start;
+}
+
+function fields(form, redraw) {
   return [
     rulesButton("Reglas de la Duplicada", DUPLICATE_RULES),
     sectionTitle("Rondas", ROUNDS_TEXT),
@@ -39,7 +48,6 @@ function fields(form, redraw, gates) {
     sectionTitle("Tiempo", "Si no juegas a tiempo, 0 puntos ese turno."),
     turnField(form),
     studySection(form, redraw),
-    start,
   ];
 }
 

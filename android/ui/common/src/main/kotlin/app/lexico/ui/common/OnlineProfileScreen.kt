@@ -94,7 +94,7 @@ private fun EditFields(data: ProfileData, hasPhoto: Boolean, busy: Boolean, acti
   var edited by remember(data) { mutableStateOf(data) }
   var password by remember { mutableStateOf("") }
   PhotoButtons(hasPhoto, actions)
-  OutlinedTextField(edited.name, { edited = edited.copy(name = it.take(20).trim()) }, Modifier.fillMaxWidth(), singleLine = true, label = { Text("Usuario") })
+  OutlinedTextField(edited.name, { edited = edited.copy(name = it.take(ONLINE_NAME_CHARS).trim()) }, Modifier.fillMaxWidth(), singleLine = true, label = { Text("Usuario") })
   CountryField(edited.country) { edited = edited.copy(country = it) }
   OutlinedTextField(
     edited.email, { edited = edited.copy(email = it.trim()) }, Modifier.fillMaxWidth(), singleLine = true, label = { Text("Correo (opcional)") },

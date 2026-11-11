@@ -46,6 +46,7 @@ fun GameBar(
   watchers: List<PersonItem> = emptyList(),
   onAdjourn: (() -> Unit)? = null,
   onChat: (() -> Unit)? = null,
+  onChart: (() -> Unit)? = null,
 ) {
   Row(Modifier.fillMaxWidth().height(44.dp), verticalAlignment = Alignment.CenterVertically) {
     Row(Modifier.weight(1f).clipToBounds(), Arrangement.spacedBy(2.dp), Alignment.CenterVertically) {
@@ -54,9 +55,10 @@ fun GameBar(
       if (onResign != null) BarTextButton("Abandonar", onResign)
       Spacer(Modifier.weight(1f))
       if (onPause != null) PauseButton(onPause)
-      if (onTheme != null) ThemeButton(onTheme)
+      if (onTheme != null && watchers.isEmpty()) ThemeButton(onTheme)
       WatchersButton(watchers)
       if (onChat != null) BarTextButton(CHAT_GLYPH, onChat)
+      if (onChart != null) BarIconButton(LexicoIcons.Chart, "Evolución", onChart)
       if (onStandings != null) BarTextButton("Posiciones", onStandings)
       if (onAdjourn != null) BarIconButton(LexicoIcons.Moves, "Movidas", onMoves) else BarTextButton("Movidas", onMoves)
     }
@@ -65,10 +67,10 @@ fun GameBar(
 }
 
 @Composable
-fun Header(title: String, onBack: () -> Unit, titleLines: Int = 1, extra: @Composable () -> Unit = {}) {
+fun Header(title: String, onBack: (() -> Unit)?, titleLines: Int = 1, extra: @Composable () -> Unit = {}) {
   val home = LocalHomeButton.current
   Row(Modifier.fillMaxWidth().height(48.dp), Arrangement.spacedBy(6.dp), Alignment.CenterVertically) {
-    BarIconButton(LexicoIcons.Back, "Volver", onBack)
+    onBack?.let { BarIconButton(LexicoIcons.Back, "Volver", it) }
     BarTitle(title, Modifier.weight(1f).padding(start = 6.dp), titleLines)
     extra()
     home?.invoke()

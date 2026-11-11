@@ -33,6 +33,7 @@ import app.lexico.modes.anagram.engineAnagramSource
 import app.lexico.modes.classic.ClassicController
 import app.lexico.modes.classic.classicView
 import app.lexico.modes.classic.toSetup
+import app.lexico.modes.classic.withRivalInvalid
 import app.lexico.modes.duplicate.DuplicateController
 import app.lexico.modes.duplicate.duplicateView
 import app.lexico.modes.duplicate.efficiencyTenths
@@ -128,7 +129,8 @@ internal fun ClassicPlay(
   }
   val state by game.state.collectAsState()
   LookupOnlyWhenOver(state.result != null || game.study) {
-    val view = classicView(state, game.opponent, controller.notice, game.host, handOff && game.host != null).copy(status = wifiNotice, pausable = pausable, watchers = watchers)
+    val view = classicView(state, game.opponent, controller.notice, game.host, handOff && game.host != null)
+      .copy(status = wifiNotice, pausable = pausable, watchers = watchers).let { if (online) withRivalInvalid(it, state) else it }
     ClassicScreen(view, themes.board, controller, { themes.picking = true }, onAdjourn)
   }
   exporting?.let { GameExport(it, finished, themes.board) { exporting = null } }

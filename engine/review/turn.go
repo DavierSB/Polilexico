@@ -13,6 +13,7 @@ type Turn struct {
 	marks         []*Mark
 	position      position
 	drawBase      int
+	master        bool
 }
 
 type Move struct {
@@ -54,7 +55,7 @@ func (t *Turn) MarkAt(i int) *Mark {
 func (t *Turn) mark(who string, played *Move) *Mark {
 	rank := -1
 	for i, c := range t.candidates {
-		if c.Description == played.Description {
+		if sameMove(c.Description, played.Description) {
 			rank = i
 			break
 		}

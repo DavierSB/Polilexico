@@ -58,7 +58,7 @@ fun RankedMoveList(moves: List<RankedMove>, selected: RankedMove?, modifier: Mod
   if (explaining && column != null) InfoDialog(column.title, column.info) { explaining = false }
 }
 
-private val RankWidth = 28.dp
+private val RankWidth = 40.dp
 private val PointsWidth = 56.dp
 private val ValueWidth = 76.dp
 

@@ -29,6 +29,14 @@ fun classicView(state: ClassicState, opponent: String, notice: String?, host: St
   notice = notice ?: state.botError, paused = state.paused && state.result == null,
 )
 
+fun withRivalInvalid(view: ClassicView, state: ClassicState): ClassicView =
+  view.copy(notice = view.notice ?: invalidNotice(state) { m -> view.opponent.takeUnless { m.byMe } })
+
+fun invalidNotice(state: ClassicState, mover: (PlayedMove) -> String?): String? {
+  val last = state.moves.lastOrNull()?.takeIf { it.kind == MoveKind.INVALID } ?: return null
+  return mover(last)?.let { "$it jugó una inválida: ${last.text}" }
+}
+
 private fun seated(state: ClassicState, opponent: String, host: String): Pair<String, String> =
   if (state.flipped) opponent to host else host to opponent
 

@@ -42,12 +42,14 @@ private val NAV_TEXT = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize =
 
 @Composable
 internal fun TurnPage(
-  review: ReviewView, index: Int, sessions: EndgameSessions?, preEndgames: PreEndgameAnalyses?, style: BoardStyle, height: Dp, go: (Int) -> Unit,
+  review: ReviewView, index: Int, sessions: EndgameSessions?, preEndgames: PreEndgameAnalyses?, rankings: TurnRankings?, style: BoardStyle,
+  height: Dp, go: (Int) -> Unit,
 ) {
   val turn = review.turns[index]
   when {
     sessions != null && turn.endgame -> key(index) { EndgamePage(review, index, sessions, style, height, go) }
     preEndgames != null && turn.preEndgame -> key(index) { PreEndgamePage(review, index, preEndgames, style, height, go) }
+    rankings != null -> key(index) { RankedPage(review, index, rankings, style, height, go) }
     else -> PlainPage(review, index, turn, null, style, height, go)
   }
 }

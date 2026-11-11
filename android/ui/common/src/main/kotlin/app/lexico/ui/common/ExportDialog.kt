@@ -23,7 +23,7 @@ fun ExportButton(onExport: () -> Unit) {
 }
 
 @Composable
-fun ExportDialog(onJpg: () -> Unit, onGif: () -> Unit, onGcg: () -> Unit, onClose: () -> Unit) {
+fun ExportDialog(onJpg: () -> Unit, onGif: () -> Unit, onGcg: (() -> Unit)?, onClose: () -> Unit) {
   AlertDialog(
     onDismissRequest = onClose,
     title = { Text("Exportar partida") },
@@ -50,10 +50,10 @@ fun ExportingDialog() {
 }
 
 @Composable
-private fun ExportChoices(onJpg: () -> Unit, onGif: () -> Unit, onGcg: () -> Unit) {
+private fun ExportChoices(onJpg: () -> Unit, onGif: () -> Unit, onGcg: (() -> Unit)?) {
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     Button(onClick = onJpg, Modifier.fillMaxWidth()) { Text("Imagen (.jpg)") }
     Button(onClick = onGif, Modifier.fillMaxWidth()) { Text("Animación (.gif)") }
-    OutlinedButton(onClick = onGcg, Modifier.fillMaxWidth()) { Text("Formato Scrabble (.gcg)") }
+    onGcg?.let { OutlinedButton(onClick = it, Modifier.fillMaxWidth()) { Text("Formato Scrabble (.gcg)") } }
   }
 }

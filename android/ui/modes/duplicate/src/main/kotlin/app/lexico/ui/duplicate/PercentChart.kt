@@ -31,20 +31,20 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun ChartDialog(view: SeatView, close: () -> Unit) {
+internal fun ChartDialog(view: SeatView, colored: Boolean = view.watching, close: () -> Unit) {
   AlertDialog(
     onDismissRequest = close,
     title = { Text("Evolución (% del Máster)") },
-    text = { ChartAndStandings(view) },
+    text = { ChartAndStandings(view, colored) },
     confirmButton = { TextButton(onClick = close) { Text("Cerrar") } },
   )
 }
 
 @Composable
-private fun ChartAndStandings(view: SeatView) {
+private fun ChartAndStandings(view: SeatView, colored: Boolean) {
   Column(Modifier.verticalScroll(rememberScrollState())) {
     if (view.rounds.isEmpty()) Text("Aún no ha terminado ninguna ronda.")
-    else if (view.watching) ColoredChart(percents(view))
+    else if (colored) ColoredChart(percents(view))
     else PercentChart(percents(view), view.me)
   }
 }

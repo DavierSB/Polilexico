@@ -8,6 +8,7 @@ import { online } from "./client.js";
 import { tellDialog } from "./tell.js";
 import { photoAvatar, profileDialog } from "./profile.js";
 import { load, save } from "../store.js";
+import { fitArea, fullSection } from "./fit.js";
 
 export function lobbyRoute() {
   return load("lobbyTab", "classic") === "duplicate" ? "duplicada" : "clasica";
@@ -20,11 +21,12 @@ export function lobbyScreen() {
 export function onlinePanel(duplicate) {
   save("lobbyTab", duplicate ? "duplicate" : "classic");
   if (!account()) return { el: signInFirst(), destroy: () => {} };
-  const ui = { body: h("div.lobby"), status: h("p.muted.lobby-status"), publish: h("div"), duplicate };
-  const el = h("div.stack.online-panel", {}, h("div.row.panel-top", {}, ui.status, accountChip()), ui.body, ui.publish);
+  const lower = fitArea();
+  const ui = { notice: h("div.stack.lobby-notice"), top: h("section.lobby-col.lobby-top"), lower, status: h("p.muted.lobby-status"), publish: h("div.lobby-publish"), duplicate };
+  const el = h("div.online-panel", {}, h("div.row.panel-top", {}, ui.status, accountChip()), ui.notice, h("div.lobby", {}, ui.top, lower.el), ui.publish);
   online.acquire();
   const stop = online.subscribe((c) => draw(c, ui));
-  return { el, destroy: () => (stop(), online.release()) };
+  return { el, destroy: () => (stop(), lower.stop(), online.release()) };
 }
 
 function signInFirst() {
@@ -37,7 +39,7 @@ export function peopleDialog() {
   let stop = null;
   openDialog((close) => {
     online.acquire();
-    stop = online.subscribe((c) => replace(body, people(c, false) ?? h("p.muted", {}, "No hay nadie más en línea.")));
+    stop = online.subscribe((c) => replace(body, fullSection(people(c, false))));
     return [h("h2", {}, "En línea"), body, actions(h("button.text-btn", { onclick: close }, "Cerrar"))];
   }, { onClose: () => (stop?.(), online.release()), wide: true });
 }
@@ -54,14 +56,14 @@ function draw(c, ui) {
   if (live && c.parked !== c.room.id) return go(room);
   const dup = ui.duplicate;
   ui.status.textContent = c.refused ?? c.status ?? c.ended ?? "";
-  replace(ui.body,
+  replace(ui.notice,
     c.refused ? h("button.btn", { onclick: () => (logOut(), go("cuenta")) }, "Entrar de nuevo") : null,
     live ? h("button.btn.tonal.back-to-game", { onclick: () => ((c.parked = null), go(room)) }, "Volver a la partida") : null,
     offerCard(c),
     waitingRoom(c),
-    h("section.lobby-col", {}, dup ? null : invites(c), seeks(c, dup), adjourned(c, dup)),
-    h("section.lobby-col", {}, games(c, dup), people(c, dup)),
   );
+  replace(ui.top, dup ? null : invites(c), seeks(c, dup), adjourned(c, dup));
+  ui.lower.show([games(c, dup), people(c, dup)]);
   replace(ui.publish, dup
     ? h("button.btn.block.lobby-seek", { onclick: () => go("crear-duplicada") }, "Crear duplicada")
     : h("button.btn.block.lobby-seek", { onclick: () => go("buscar") }, "Buscar clásica"));
@@ -160,13 +162,16 @@ function adjourned(c, dup) {
 }
 
 function games(c, dup) {
-  if (dup) return section("Partidas en curso", c.lobby.games.filter((g) => g.mode === "duplicate").map((g) => duplicateGame(c, g)));
-  const rows = c.lobby.games.filter((g) => g.mode !== "duplicate").map((g) => h("div.player-row.game-row", {},
+  const items = c.lobby.games.filter((g) => (g.mode === "duplicate") === dup);
+  return { title: "Partidas en curso", items, row: (g) => (dup ? duplicateGame(c, g) : classicGame(c, g)), empty: null };
+}
+
+function classicGame(c, g) {
+  return h("div.player-row.game-row", {},
     h("div.grow", {}, h("div.row", {}, nameFlag(g.players[0], g.countries?.[0]), h("b", {}, g.scores?.length === 2 ? `${g.scores[0]} – ${g.scores[1]}` : "–"), nameFlag(g.players[1], g.countries?.[1])),
       h("div.muted.small", {}, `${g.bag} en la bolsa${g.watchers ? ` · ${g.watchers} mirando` : ""}`)),
     h("button.btn.small.outlined", { onclick: () => c.watch(g.id) }, "Ver"),
-  ));
-  return section("Partidas en curso", rows);
+  );
 }
 
 function duplicateGame(c, g) {
@@ -179,10 +184,10 @@ function duplicateGame(c, g) {
 
 function people(c, dup) {
   const me = account();
-  const others = c.lobby.people.filter((p) => !(p.name === me.name && p.country === me.country));
-  const rows = others.map((p) => playerRow(p.name, p.country, p.playing ? "Jugando" : "",
+  const items = c.lobby.people.filter((p) => !(p.name === me.name && p.country === me.country));
+  const row = (p) => playerRow(p.name, p.country, p.playing ? "Jugando" : "",
     h("button.icon-btn", { "aria-label": `Escribir a ${p.name}`, onclick: () => tellDialog(p) }, icon("chat", 22)),
     p.playing || dup ? null : h("button.btn.small", { onclick: () => go("buscar/" + encodeURIComponent(p.name) + "/" + p.country) }, "Retar"),
-  ));
-  return section("En línea", rows, emptyState("person", "No hay nadie más en línea."));
+  );
+  return { title: "En línea", items, row, empty: () => emptyState("person", "No hay nadie más en línea.") };
 }

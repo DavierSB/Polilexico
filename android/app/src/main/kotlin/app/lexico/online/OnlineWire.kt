@@ -71,6 +71,8 @@ internal fun moveMessage(input: String): String = message("move").put("input", i
 internal fun tellMessage(name: String, country: String, text: String): String =
   message("tell").put("name", name).put("country", country).put("text", text).toString()
 
+internal fun roomChatMessage(text: String): String = message("chat").put("text", text).toString()
+
 internal fun signal(type: String): String = message(type).toString()
 
 internal fun ping(): String = signal("ping")

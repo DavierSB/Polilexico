@@ -1,6 +1,7 @@
 import { svg } from "./dom.js";
 
 const PATHS = {
+  menu: "M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z",
   back: "M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20z",
   pause: "M6 5h4v14H6zM14 5h4v14h-4z",
   play: "M8 5v14l11-7z",

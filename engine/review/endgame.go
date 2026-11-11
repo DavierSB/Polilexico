@@ -94,7 +94,7 @@ func (t *Turn) endgameGame() (*game.Game, error) {
 }
 
 func (t *Turn) isPlayed(m *macondo.Move) bool {
-	return len(t.marks) > 0 && describe(m) == t.marks[0].Description
+	return len(t.marks) > 0 && sameMove(describe(m), t.marks[0].Description)
 }
 
 func endgameOf(g *game.Game, a endgame.Analysis) *Endgame {

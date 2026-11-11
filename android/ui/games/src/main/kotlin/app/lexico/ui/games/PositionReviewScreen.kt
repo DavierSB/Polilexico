@@ -27,7 +27,7 @@ fun PositionReviewScreen(review: ReviewView, style: BoardStyle, sessions: Endgam
     Header(if (turn.endgame) "Análisis del final" else "Análisis del pre-final", onBack) { BagIcon(turn.bag) { bag = true } }
     BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
       val height = maxHeight
-      Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) { TurnPage(review, 0, sessions, preEndgames, style, height) {} }
+      Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) { TurnPage(review, 0, sessions, preEndgames, null, style, height) {} }
     }
   }
   if (bag) BagDialog("Por salir (bolsa ${turn.bag} + atril del rival)", turn.unseen) { bag = false }

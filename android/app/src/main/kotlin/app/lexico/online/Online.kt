@@ -14,6 +14,8 @@ import kotlinx.coroutines.withContext
 class Online private constructor(context: Context) {
   val store = OnlineStore(context)
 
+  val chatLog = ChatLog(context)
+
   val http: OkHttpClient = OkHttpClient.Builder()
     .connectTimeout(90, TimeUnit.SECONDS)
     .readTimeout(90, TimeUnit.SECONDS)

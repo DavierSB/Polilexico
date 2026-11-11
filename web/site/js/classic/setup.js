@@ -3,7 +3,9 @@ import { go } from "../router.js";
 import { screenHead, parseDuration, engineGate } from "../parts.js";
 import { load, save } from "../store.js";
 import { BOTS, bot, botPhoto } from "./bots.js";
-import { startLocal } from "./session.js";
+import { startLocal, currentSession, hasSaved } from "./session.js";
+import { icon } from "../icons.js";
+import { savedButtons, keepScroll } from "../savedButtons.js";
 import { toast } from "../dialogs.js";
 import { modeTabs } from "../modeTabs.js";
 import { timeSection, challengeSection, choiceRow, studySection } from "./options.js";
@@ -13,19 +15,48 @@ const NAME_CHARS = 16;
 
 export function classicSetupScreen(app) {
   const form = { ...DEFAULTS, ...load("classicForm", {}) };
-  const settings = h("div.stack.setup-settings");
-  const rivals = h("div.stack.setup-rivals");
   const gates = [];
+  const step = h("div.setup-step");
+  const screen = h("div.screen.wide.fit-screen");
+  const view = { settings: false };
   const redraw = () => {
     gates.splice(0).forEach((stop) => stop());
-    replace(rivals, form.shared ? sharedNames(form, redraw) : [h("p.section-title", {}, "Rival"), BOTS.map((b) => botCard(b, form, redraw)),
-      h("button.text-btn.switch-prompt", { onclick: () => ((form.shared = true), (form.starter = 0), redraw()) }, "¿O son dos jugadores locales?")]);
-    replace(settings, settingsFor(form, redraw, gates));
+    keepScroll(step, () => replace(step, view.settings ? settingsStep(form, redraw, gates) : rivalStep(form, redraw, gates, choose)));
   };
-  redraw();
-  const tabs = modeTabs("classic", () => ({ el: h("div.setup", {}, rivals, settings) }));
-  app.append(h("div.screen.wide", {}, screenHead("Clásica"), tabs.el));
+  const tabs = modeTabs("classic", () => ({ el: step }));
+  const choose = (settings) => {
+    view.settings = settings;
+    replace(step);
+    replace(screen, settings ? stepHead(form, () => choose(false)) : screenHead("Clásica"), settings ? step : tabs.el);
+    redraw();
+  };
+  choose(false);
+  app.append(screen);
   return () => (gates.forEach((stop) => stop()), tabs.destroy());
+}
+
+function stepHead(form, back) {
+  return h("header.screen-head", {},
+    h("button.icon-btn", { "aria-label": "Volver", onclick: back }, icon("back")),
+    h("h1", {}, form.shared ? "Dos jugadores" : "Clásica contra " + bot(form.bot).alias),
+  );
+}
+
+function rivalStep(form, redraw, gates, choose) {
+  const local = h("button.text-btn.switch-prompt", { onclick: () => ((form.shared = true), (form.starter = 0), choose(true)) }, "¿O son dos jugadores locales?");
+  const live = currentSession()?.live() || hasSaved();
+  return [
+    h("div.setup-scroll", {}, BOTS.map((b) => botCard(b, form, redraw)), local),
+    h("button.btn.block.start", { onclick: () => ((form.shared = false), choose(true)) }, "Seleccionar rival"),
+    savedButtons("classic", live ? 1 : 0, "partida", gates),
+  ];
+}
+
+function settingsStep(form, redraw, gates) {
+  return [
+    h("div.setup-scroll", {}, form.shared ? sharedNames(form, redraw) : null, settingsFor(form, redraw)),
+    startButton(form, gates),
+  ];
 }
 
 function botCard(b, form, redraw) {
@@ -38,10 +69,7 @@ function botCard(b, form, redraw) {
 
 function sharedNames(form, redraw) {
   const field = (label, key) => h("div.field", {}, h("label", {}, label), h("input", { value: form[key], maxlength: NAME_CHARS, onchange: (e) => ((form[key] = e.target.value), redraw()) }));
-  return [
-    h("p.section-title", {}, "Jugadores"), field("Jugador A", "first"), field("Jugador B", "second"),
-    h("button.text-btn.switch-prompt", { onclick: () => ((form.shared = false), (form.starter = 0), redraw()) }, "¿O eres tú solo?"),
-  ];
+  return [h("p.section-title", {}, "Jugadores"), field("Jugador A", "first"), field("Jugador B", "second")];
 }
 
 function namesValid(form) {
@@ -49,7 +77,7 @@ function namesValid(form) {
   return a && b && a.toLowerCase() !== b.toLowerCase() && !bot(a) && !bot(b);
 }
 
-function settingsFor(form, redraw, gates) {
+function settingsFor(form, redraw) {
   const b = bot(form.bot);
   const starters = form.shared ? ["Cualquiera", form.first.trim() || "A", form.second.trim() || "B"] : ["Cualquiera", "Tú", b.alias];
   return [
@@ -58,7 +86,6 @@ function settingsFor(form, redraw, gates) {
     challengeSection(form, redraw, !form.shared && b.voidOnly ? b.alias : null),
     timeSection(form, redraw),
     form.shared ? null : studySection(form, redraw),
-    startButton(form, gates),
   ];
 }
 

@@ -18,6 +18,10 @@ class FinishedGames internal constructor(private val dir: File) {
     GameReview(summary(path, game), (0 until game.turnCount()).map { reviewTurn(game.turnAt(it)) }, game.startTurn.toInt())
   }
 
+  suspend fun ranked(path: String, turn: Int): ReviewTurn = engine {
+    reviewTurn(Review.open(path).turnAt(turn.toLong()).rank())
+  }
+
   suspend fun explore(path: String, turn: Int): EndgameExplorer = engine {
     val t = Review.open(path).turnAt(turn.toLong())
     EndgameExplorer(t.explore(), parseBoard(t.board))

@@ -16,7 +16,7 @@ export function onlineGameScreen(app) {
   online.acquire();
   replace(holder, h("div.card.empty-card", {}, h("p", {}, "Entrando en la sala…")));
   const stop = online.subscribe((c) => update(screen, c));
-  return () => (stop(), screen.view?.destroy(), online.release());
+  return () => (stop(), screen.view?.destroy(), screen.stopInvalids?.(), online.release());
 }
 
 function update(screen, c) {
@@ -33,8 +33,10 @@ function update(screen, c) {
 
 function mount(screen, c) {
   screen.view?.destroy();
+  screen.stopInvalids?.();
   screen.session = c.session;
   const sides = seats(c);
+  screen.stopInvalids = announceInvalids(c.session, sides, c.room.watching);
   screen.chat = h("div.chat-lines.room-chat");
   screen.watchers = h("p.muted.small");
   screen.view = gameView(c.session, {
@@ -47,6 +49,21 @@ function mount(screen, c) {
     extra: chatPanel(screen),
   });
   (screen.holder.isConnected ? screen.holder : document.querySelector(".game"))?.replaceWith(screen.view.el);
+}
+
+function announceInvalids(session, sides, watching) {
+  let seen = null;
+  return session.subscribe((state) => {
+    const fresh = seen !== null && state.moves.length > seen;
+    seen = state.moves.length;
+    const last = state.moves.at(-1);
+    if (fresh && last.kind === "invalid" && (watching || !last.byMe)) toast(invalidText(last, sides));
+  });
+}
+
+function invalidText(move, sides) {
+  const name = move.byMe ? sides.me.name : sides.opponent.name;
+  return `${name} jugó una inválida: ${move.word}`;
 }
 
 function seats(c) {

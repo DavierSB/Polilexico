@@ -13,10 +13,18 @@ import app.lexico.ui.common.NoProfileCard
 import app.lexico.ui.common.OnlineTab
 import app.lexico.ui.common.onlineLabel
 
+private val chosenOnline = mutableMapOf<Mode, Boolean>()
+
 @Composable
 internal fun rememberOnlineTab(mode: Mode, lexico: Lexico, settings: Settings, nav: Navigator): OnlineTab {
   val online = rememberOnline()
-  return remember { OnlineTab(preferred = false, label = { onlineLabel(rememberPresence()) }) { OnlinePanelRoute(mode, online, lexico, settings, nav) } }
+  val client = rememberClient(lexico)
+  return remember {
+    val preferred = client.hasOwnGame(mode == Mode.DUPLICATE) || chosenOnline[mode] == true
+    OnlineTab(preferred, label = { onlineLabel(rememberPresence()) }, onChosen = { chosenOnline[mode] = it }) {
+      OnlinePanelRoute(mode, online, lexico, settings, nav)
+    }
+  }
 }
 
 @Composable

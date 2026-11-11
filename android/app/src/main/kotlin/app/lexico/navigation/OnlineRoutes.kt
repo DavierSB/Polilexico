@@ -1,5 +1,6 @@
 package app.lexico.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.ui.graphics.asImageBitmap
 import android.util.Base64
 import android.graphics.BitmapFactory
@@ -27,6 +28,7 @@ import app.lexico.menu.ThemeState
 import app.lexico.modes.duplicate.seatView
 import app.lexico.games.onlineRows
 import app.lexico.online.ADJOURNED
+import app.lexico.online.GAME_GONE
 import app.lexico.online.AccountForm
 import app.lexico.online.LiveGame
 import app.lexico.online.Lobby
@@ -43,6 +45,7 @@ import app.lexico.online.shrunkPhoto
 import app.lexico.ui.classic.NewOnlineClassicScreen
 import app.lexico.ui.common.AwaitingReconnection
 import app.lexico.ui.common.Disconnected
+import app.lexico.ui.common.GoneCover
 import app.lexico.ui.common.DuplicateLine
 import app.lexico.ui.common.AdjournedCover
 import app.lexico.ui.common.CLOCK_RUNS
@@ -53,9 +56,12 @@ import app.lexico.ui.common.ChatContact
 import app.lexico.ui.common.ContactGroup
 import app.lexico.ui.common.Durations
 import app.lexico.ui.common.GameItem
+import app.lexico.ui.common.GameSide
 import app.lexico.ui.common.GuestLobbyScreen
 import app.lexico.ui.common.HostLobbyScreen
 import app.lexico.ui.common.LocalChat
+import app.lexico.ui.common.LocalHomeButton
+import app.lexico.ui.common.LobbyExit
 import app.lexico.ui.common.LocalPhotos
 import app.lexico.ui.common.OnlineAccountScreen
 import app.lexico.ui.common.OnlinePanel
@@ -72,6 +78,7 @@ import app.lexico.ui.common.StatsDialog
 import app.lexico.ui.common.StatsSection
 import app.lexico.ui.common.WaitingRoomScreen
 import app.lexico.ui.common.flagOf
+import app.lexico.ui.common.ROOM_CONTACT
 import app.lexico.ui.duplicate.NewOnlineDuplicateScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -107,7 +114,7 @@ internal fun NewOnlineDuplicateRoute(lexico: Lexico, nav: Navigator) {
   val client = rememberClient(lexico)
   NewOnlineDuplicateScreen(nav::back) { turn, rounds, live ->
     client.publish(Proposal.Duplicate(turn, rounds, live))
-    nav.back()
+    nav.replace(Screen.OnlinePlay)
   }
 }
 
@@ -143,7 +150,7 @@ private fun StatsPopup(online: Online, onClose: () -> Unit) {
   val loaded by produceState<Result<List<OnlineStatsRow>>?>(null) {
     value = online.account.token()?.let { online.api.stats(it) } ?: Result.failure(Exception("La sesión caducó: vuelve a entrar."))
   }
-  StatsDialog(loaded?.getOrNull()?.map(::statsSection), loaded?.exceptionOrNull()?.message, onClose)
+  StatsDialog(loaded?.getOrNull()?.let(::statsSections), loaded?.exceptionOrNull()?.message, onClose)
 }
 
 @Composable
@@ -162,9 +169,11 @@ internal fun OnlinePlayRoute(lexico: Lexico, nav: Navigator, themes: ThemeState)
     current.watching -> Disconnected(status != null && ended == null, nav::home, note = null) {
       ProvidePhotos(rememberOnline(), client.lobby.collectAsState().value) { Watch(client, current, nav, themes) }
     }
-    else -> AdjournedCover(ended == ADJOURNED, { client.forget(); nav.home() }) {
-      Disconnected(status != null && ended == null, nav::home, CLOCK_RUNS.takeIf { current.timed }) {
-        SeatedGame(client, current, lexico, nav, themes)
+    else -> GoneCover(ended == GAME_GONE, { client.forget(); nav.home() }) {
+      AdjournedCover(ended == ADJOURNED, { client.forget(); nav.back() }) {
+        Disconnected(status != null && ended == null, nav::home, CLOCK_RUNS.takeIf { current.timed }) {
+          SeatedGame(client, current, lexico, nav, themes)
+        }
       }
     }
   }
@@ -325,10 +334,27 @@ private fun DuplicateOnline(client: OnlineClient, info: RoomInfo, nav: Navigator
       )
       if (info.players.size == 2) AdjournDialogs(client, info, ended != null, adjourning) { adjourning = false }
     }
-    info.first -> HostLobbyScreen(info.me, info.players, ended, client::start, leave, wifi = false)
-    else -> GuestLobbyScreen(info.host, info.players, status ?: ended, info.me, leave)
+    ended != null -> OnlineWaitScreen("Sala de ${info.host}", ended.orEmpty(), failed = true) { client.forget(); nav.back() }
+    else -> LockedLobby { OnlineLobby(client, info, status, leave) }
   }
 }
+
+@Composable
+private fun LockedLobby(content: @Composable () -> Unit) {
+  BackHandler {}
+  CompositionLocalProvider(LocalHomeButton provides null, content = content)
+}
+
+@Composable
+private fun OnlineLobby(client: OnlineClient, info: RoomInfo, status: String?, leave: () -> Unit) {
+  if (info.first) HostLobbyScreen(info.me, info.players, null, client::start, null, wifi = false, exit = LobbyExit(CANCEL_ROOM, CANCEL_ASK, leave))
+  else GuestLobbyScreen(info.host, info.players, status, info.me, LobbyExit(LEAVE_ROOM, LEAVE_ASK, leave), null)
+}
+
+private const val CANCEL_ROOM = "Cancelar partida"
+private const val CANCEL_ASK = "¿Seguro que quieres cancelar la partida?"
+private const val LEAVE_ROOM = "Salir de la sala"
+private const val LEAVE_ASK = "¿Seguro que quieres salir de la sala?"
 
 @Composable
 private fun WithChat(client: OnlineClient, info: RoomInfo, content: @Composable () -> Unit) {
@@ -336,7 +362,7 @@ private fun WithChat(client: OnlineClient, info: RoomInfo, content: @Composable 
   val lobby by client.lobby.collectAsState()
   val watchers by client.watchers.collectAsState()
   val rivals = info.players.filter { it != info.me }
-  val list = contacts(lobby, rivals, watchers)
+  val list = listOfNotNull(ROOM_CONTACT.takeIf { info.duplicate && rivals.isNotEmpty() }) + contacts(lobby, rivals, watchers)
   val fallback = remember(info.id, list.isEmpty()) { list.filter { it.group == ContactGroup.RIVALS }.randomOrNull() }
   val entry = remember { ChatEntry { composer.write() } }
   CompositionLocalProvider(LocalChat provides entry) { ProfileHost(rememberOnline(), ProfileContext(client, composer, {}, inGame = true), content) }
@@ -385,7 +411,7 @@ private fun countriesOf(lobby: Lobby, session: OnlineSession?): Map<String, Stri
   lobby.people.associate { it.name.lowercase() to it.country } + listOfNotNull(session).associate { it.name.lowercase() to it.country }
 
 @Composable
-private fun rememberClient(lexico: Lexico): OnlineClient {
+internal fun rememberClient(lexico: Lexico): OnlineClient {
   val online = rememberOnline()
   val client = remember { online.client(lexico) }
   DisposableEffect(client) { client.acquire(); onDispose { client.release() } }
@@ -406,7 +432,7 @@ private suspend fun syncBackupOnce(online: Online, settings: Settings) {
 private fun gameItem(g: LiveGame): GameItem {
   val names = g.players.zip(g.countries) { name, country -> "$name ${flagOf(country)}" }
   return if (g.duplicate) GameItem(g.id, duplicateTitle(g.players), duplicateDetail(g), g.watchers, duplicate = duplicateLine(g))
-  else GameItem(g.id, names.joinToString("  vs  "), classicDetail(g), g.watchers, sides(names), scoreOf(g))
+  else GameItem(g.id, names.joinToString("  vs  "), classicDetail(g), g.watchers, sides(g), scoreOf(g))
 }
 
 private fun duplicateTitle(players: List<String>): String = when {
@@ -425,7 +451,8 @@ private fun duplicateDetail(g: LiveGame): String = when {
   else -> "Ronda ${g.round} · líder ${g.efficiency} %"
 }
 
-private fun sides(names: List<String>): Pair<String, String>? = names.takeIf { it.size == 2 }?.let { it[0] to it[1] }
+private fun sides(g: LiveGame): Pair<GameSide, GameSide>? =
+  g.players.zip(g.countries, ::GameSide).takeIf { it.size == 2 }?.let { it[0] to it[1] }
 
 private fun scoreOf(g: LiveGame): String = if (g.scores.size == 2) "${g.scores[0]} – ${g.scores[1]}" else "vs"
 
@@ -459,7 +486,9 @@ private fun classicTime(s: Seek): String =
 
 private fun AccountInput.form(): AccountForm = AccountForm(name, country, password, email)
 
-internal fun statsSection(row: OnlineStatsRow): StatsSection = if (row.mode == "duplicate") duplicateSection(row) else classicSection(row)
+internal fun statsSections(rows: List<OnlineStatsRow>): List<StatsSection> = rows.sortedBy { it.mode == "duplicate" }.map(::statsSection)
+
+private fun statsSection(row: OnlineStatsRow): StatsSection = if (row.mode == "duplicate") duplicateSection(row) else classicSection(row)
 
 private fun classicSection(row: OnlineStatsRow): StatsSection = StatsSection("Clásica", onlineRows(row))
 

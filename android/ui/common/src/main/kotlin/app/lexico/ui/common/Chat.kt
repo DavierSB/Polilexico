@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -50,11 +51,15 @@ class ChatEntry(val onOpen: () -> Unit)
 
 val LocalChat = compositionLocalOf<ChatEntry?> { null }
 
-data class ChatLine(val from: String, val text: String, val country: String = "")
+data class ChatLine(val from: String, val text: String, val country: String = "", val room: Boolean = false)
 
-enum class ContactGroup(val title: String) { RIVALS("Rivales"), WATCHERS("Observando"), OTHERS("Conectados") }
+enum class ContactGroup(val title: String) { ROOM("Sala"), RIVALS("Rivales"), WATCHERS("Observando"), OTHERS("Conectados") }
 
 data class ChatContact(val name: String, val country: String, val group: ContactGroup)
+
+const val WHOLE_ROOM = "Toda la sala"
+
+val ROOM_CONTACT = ChatContact(WHOLE_ROOM, "", ContactGroup.ROOM)
 
 @Composable
 fun ChatPopup(lines: List<ChatLine>, onClose: () -> Unit, onReply: (ChatLine) -> Unit, onIgnoreUser: (ChatLine) -> Unit, onIgnoreAll: () -> Unit) {
@@ -62,10 +67,10 @@ fun ChatPopup(lines: List<ChatLine>, onClose: () -> Unit, onReply: (ChatLine) ->
   Dialog(onDismissRequest = onClose) {
     Surface(shape = RoundedCornerShape(20.dp), tonalElevation = 6.dp) {
       Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("${last.from} dice:", Modifier.fillMaxWidth(), fontWeight = FontWeight.Bold)
+        Text(if (last.room) "${last.from} dice a la sala:" else "${last.from} dice:", Modifier.fillMaxWidth(), fontWeight = FontWeight.Bold)
         Text("“${last.text}”", Modifier.fillMaxWidth(), fontSize = 18.sp, fontStyle = FontStyle.Italic)
         if (lines.size > 1) OlderCount(lines.size - 1)
-        if (last.country.isNotEmpty()) Button(onClick = { onReply(last) }, Modifier.fillMaxWidth()) { Text("Responder") }
+        if (last.country.isNotEmpty() || last.room) Button(onClick = { onReply(last) }, Modifier.fillMaxWidth()) { Text("Responder") }
         OutlinedButton(onClick = onClose, Modifier.fillMaxWidth()) { Text("Cerrar") }
         TextButton(onClick = { onIgnoreUser(last) }) { Text("Ignorar mensajes de ${last.from}", fontSize = 13.sp, textAlign = TextAlign.Center) }
         TextButton(onClick = onIgnoreAll) { Text("Ignorar todos los mensajes", fontSize = 13.sp, textAlign = TextAlign.Center) }
@@ -85,14 +90,14 @@ private fun OlderCount(n: Int) {
 @Composable
 fun ChatComposer(
   initial: ChatContact?, contacts: List<ChatContact>, ignoring: Boolean, onSend: (ChatContact, String) -> Unit, onListen: () -> Unit,
-  onClose: () -> Unit,
+  onHistory: () -> Unit, onClose: () -> Unit,
 ) {
   var text by remember { mutableStateOf("") }
   var nick by remember { mutableStateOf(initial?.name.orEmpty()) }
   var picking by remember { mutableStateOf(false) }
   val to = contacts.firstOrNull { it.name.equals(nick.trim(), ignoreCase = true) }
   AlertDialog(
-    onDismissRequest = onClose, title = { Text("Mensaje") },
+    onDismissRequest = onClose, title = { ComposerTitle(onHistory) },
     text = {
       Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         RecipientField(nick, to, { nick = it }) { picking = true }
@@ -106,10 +111,18 @@ fun ChatComposer(
 }
 
 @Composable
+private fun ComposerTitle(onHistory: () -> Unit) {
+  Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Text("Mensaje", Modifier.weight(1f))
+    TextButton(onClick = onHistory) { Text("Historial") }
+  }
+}
+
+@Composable
 private fun RecipientField(nick: String, to: ChatContact?, onChange: (String) -> Unit, onPick: () -> Unit) {
   OutlinedTextField(
     nick, onChange, Modifier.fillMaxWidth(), singleLine = true, label = { Text("Para") },
-    prefix = to?.let { { Text(flagOf(it.country) + " ") } },
+    prefix = to?.takeIf { it.country.isNotEmpty() }?.let { { Text(flagOf(it.country) + " ") } },
     trailingIcon = { TextButton(onClick = onPick) { Text("▾", fontSize = 18.sp) } },
     supportingText = if (nick.isNotBlank() && to == null) ({ Text("No está conectado") }) else null,
   )
@@ -133,7 +146,7 @@ private fun ContactPicker(contacts: List<ChatContact>, onPick: (ChatContact) -> 
 private fun ContactSection(group: ContactGroup, contacts: List<ChatContact>, onPick: (ChatContact) -> Unit) {
   if (contacts.isEmpty()) return
   Text(group.title, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-  contacts.forEach { c -> PlayerRow(c.name, c.country, onClick = { onPick(c) }) {} }
+  contacts.forEach { c -> if (c.group == ContactGroup.ROOM) RoomRow { onPick(c) } else PlayerRow(c.name, c.country, onClick = { onPick(c) }) {} }
 }
 
 @Composable

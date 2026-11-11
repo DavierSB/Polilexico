@@ -62,7 +62,9 @@ data class AdjournedItem(
   val available: Boolean get() = pending && (online || untimed) && !busy
 }
 
-data class GameItem(val id: String, val title: String, val detail: String, val watchers: Int = 0, val sides: Pair<String, String>? = null, val score: String = "", val duplicate: DuplicateLine? = null)
+data class GameItem(val id: String, val title: String, val detail: String, val watchers: Int = 0, val sides: Pair<GameSide, GameSide>? = null, val score: String = "", val duplicate: DuplicateLine? = null)
+
+data class GameSide(val name: String, val country: String)
 
 data class PersonItem(val name: String, val country: String, val busy: Boolean, val game: String? = null)
 
@@ -78,7 +80,9 @@ class OnlinePanelActions(
   val challenge: (PersonItem) -> Unit = {}, val write: (PersonItem) -> Unit = {},
 )
 
-class OnlineTab(val preferred: Boolean, val label: @Composable () -> String = { "En línea" }, val content: @Composable () -> Unit)
+class OnlineTab(
+  val preferred: Boolean, val label: @Composable () -> String = { "En línea" }, val onChosen: (Boolean) -> Unit = {}, val content: @Composable () -> Unit,
+)
 
 fun onlineLabel(count: Int?): String = count?.let { "En línea ($it)" } ?: "En línea"
 
@@ -126,13 +130,23 @@ private fun TopPage(modifier: Modifier, content: @Composable ColumnScope.() -> U
 @Composable
 private fun ModeOffers(state: OnlinePanelState, actions: OnlinePanelActions) {
   val duplicate = !state.classic
-  val seeks = state.seeks.filter { it.duplicate == duplicate }
+  val (sent, seeks) = state.seeks.filter { it.duplicate == duplicate }.partition(::isSentChallenge)
   val adjourned = state.adjourned.filter { it.duplicate == duplicate && it.available }
-  if (seeks.isNotEmpty()) PanelSection("Ofertas de partidas", first = true)
+  SentChallenges(sent, actions)
+  if (seeks.isNotEmpty()) PanelSection("Ofertas de partidas", first = sent.isEmpty())
   SeekList(seeks, actions)
   AdjournedList(adjourned, actions)
-  if (seeks.isNotEmpty() || adjourned.any { it.pending } || state.games.isNotEmpty()) return
+  if (sent.isNotEmpty() || seeks.isNotEmpty() || adjourned.any { it.pending } || state.games.isNotEmpty()) return
   if (duplicate) NoDuplicates(state.people.count { !it.busy }) else NoClassics()
+}
+
+private fun isSentChallenge(s: SeekItem): Boolean = s.mine && s.to.isNotEmpty()
+
+@Composable
+private fun SentChallenges(sent: List<SeekItem>, actions: OnlinePanelActions) {
+  if (sent.isEmpty()) return
+  PanelSection("Retos enviados", first = true)
+  SeekList(sent, actions)
 }
 
 @Composable
@@ -166,17 +180,28 @@ internal fun GamesDialog(games: List<GameItem>, onWatch: (String) -> Unit, close
 
 @Composable
 internal fun CompactGameRow(g: GameItem, onClick: () -> Unit) {
-  val sides = g.sides ?: (g.title to g.detail)
   Row(
     Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).background(MaterialTheme.colorScheme.surfaceVariant).clickable(onClick = onClick)
       .padding(horizontal = 10.dp, vertical = 6.dp),
     horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically,
   ) {
     g.duplicate?.let { return@Row DuplicateRowContent(it) }
-    Text(sides.first, Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+    val sides = g.sides ?: return@Row PlainSides(g.title, g.detail)
+    SideCell(sides.first, Alignment.CenterStart)
     if (g.score.isNotEmpty()) Text(g.score, fontWeight = FontWeight.Bold)
-    Text(sides.second, Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.End)
+    SideCell(sides.second, Alignment.CenterEnd)
   }
+}
+
+@Composable
+private fun RowScope.SideCell(side: GameSide, alignment: Alignment) {
+  Box(Modifier.weight(1f), contentAlignment = alignment) { NameFlag(side.name, side.country, weight = null) }
+}
+
+@Composable
+private fun RowScope.PlainSides(first: String, second: String) {
+  Text(first, Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+  Text(second, Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.End)
 }
 
 @Composable
@@ -296,7 +321,7 @@ private fun RowScope.PlayerIdentity(name: String, country: String, detail: Strin
   Row(Modifier.weight(1f).then(if (profile) Modifier.opensProfile(name, country) else Modifier), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
     PersonAvatar(name, country)
     Column {
-      Text("$name  ${flagOf(country)}", fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+      NameFlag(name, country)
       detail?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1) }
     }
   }

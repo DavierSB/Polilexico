@@ -119,7 +119,7 @@ private fun AccountCard(content: @Composable ColumnScope.() -> Unit) {
 @Composable
 private fun AccountFields(input: AccountInput, existing: Boolean, onChange: (AccountInput) -> Unit) {
   OutlinedTextField(
-    input.name, { onChange(input.copy(name = it.take(NAME_CHARS).trim())) }, Modifier.fillMaxWidth(), singleLine = true,
+    input.name, { onChange(input.copy(name = it.take(ONLINE_NAME_CHARS).trim())) }, Modifier.fillMaxWidth(), singleLine = true,
     label = { Text("Usuario") },
   )
   CountryField(input.country) { onChange(input.copy(country = it)) }
@@ -181,4 +181,4 @@ private fun AccountButton(text: String, busy: Boolean, valid: Boolean, onClick: 
 
 private fun valid(input: AccountInput): Boolean = input.name.length >= 3 && input.name.first().isLetter() && input.country.length == 2 && input.password.length >= 6
 
-private const val NAME_CHARS = 20
+const val ONLINE_NAME_CHARS = 15

@@ -36,7 +36,7 @@ web/
   Cada archivo lleva su propio hash: si cambia uno, solo se baja ese y se borran sus trozos viejos.
 - **Después**, el paquete de estudio (~7 MB: definiciones y léxico de `android/game/src/main/assets`),
   igual de reanudable. Listas y Diccionario esperan a ese paquete; el resto, solo al motor.
-- Mientras tanto, Clásica y «Volver a la partida» se ven bloqueados con el porcentaje.
+- Mientras tanto, «Empezar» y «En curso» se ven bloqueados con el porcentaje.
 
 ## Cómo corre el motor
 

@@ -6,7 +6,7 @@ import app.lexico.ui.common.PersonItem
 
 enum class SeatPhase { PLAYING, RESULTS, FINISHED }
 
-data class SeatEntry(val name: String, val text: String, val points: Int, val total: Int)
+data class SeatEntry(val name: String, val text: String, val points: Int, val total: Int, val placement: String = "")
 
 data class SeatRound(val number: Int, val entries: List<SeatEntry>)
 

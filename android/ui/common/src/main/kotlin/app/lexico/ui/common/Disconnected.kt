@@ -8,6 +8,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import kotlinx.coroutines.delay
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,7 +24,7 @@ fun Disconnected(offline: Boolean, onHome: () -> Unit, note: String? = CLOCK_RUN
     Text("Te desconectaste", style = MaterialTheme.typography.headlineSmall)
     Reconnecting()
     note?.let { Text(it) }
-    TextButton(onClick = onHome) { Text("Ir al inicio") }
+    TextButton(onClick = onHome) { Text("Volver") }
   }
 }
 
@@ -34,11 +37,26 @@ fun AwaitingReconnection(offline: Boolean, content: @Composable () -> Unit) {
 }
 
 @Composable
+fun GoneCover(gone: Boolean, onLeave: () -> Unit, content: @Composable () -> Unit) {
+  LaunchedEffect(gone) {
+    if (!gone) return@LaunchedEffect
+    delay(GONE_MS)
+    onLeave()
+  }
+  Covered(gone, OFFLINE_ALPHA, content) {
+    Text("La partida ya no está disponible", style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
+    Text("Volviendo al menú…")
+  }
+}
+
+private const val GONE_MS = 2_500L
+
+@Composable
 fun AdjournedCover(adjourned: Boolean, onHome: () -> Unit, content: @Composable () -> Unit) {
   Covered(adjourned, OFFLINE_ALPHA, content) {
     Text("Partida aplazada", style = MaterialTheme.typography.headlineSmall)
     Text("Se guarda 3 días para retomarla.")
-    TextButton(onClick = onHome) { Text("Ir al inicio") }
+    TextButton(onClick = onHome) { Text("Volver") }
   }
 }
 

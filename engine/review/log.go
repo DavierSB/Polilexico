@@ -91,6 +91,8 @@ func classicTurn(t turnLog, board *grid, scores *tally, mine bool, drawn int) *T
 func duplicateTurn(t turnLog, board *grid, scores *tally) *Turn {
 	turn := newTurn(t, "", board, scores, moves(t.TopPlays, false))
 	turn.marks = []*Mark{turn.mark("Máster", move(t.MasterPlay, false)), turn.mark("Tú", move(t.HumanPlay, false))}
+	turn.position = position{rack: rackOf(t.Rack)}
+	turn.master = true
 	return turn
 }
 
@@ -138,4 +140,19 @@ func rackText(rack string) string {
 		return rack
 	}
 	return strings.Join(plain(tokens(rack)), " ")
+}
+
+func rackOf(spaced string) string {
+	var rack strings.Builder
+	for _, tile := range strings.Fields(spaced) {
+		rack.WriteString(bracketed(tile))
+	}
+	return rack.String()
+}
+
+func bracketed(tile string) string {
+	if len([]rune(tile)) > 1 {
+		return "[" + tile + "]"
+	}
+	return tile
 }

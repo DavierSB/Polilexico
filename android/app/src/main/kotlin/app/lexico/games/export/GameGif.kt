@@ -26,11 +26,14 @@ import java.io.OutputStream
 internal class GameGif(context: Context, private val style: BoardStyle) {
   private val density = Density(1f)
   private val measurer = TextMeasurer(createFontFamilyResolver(context), density, LayoutDirection.Ltr)
+  private val logo = logoImage(context, LOGO_WIDTH, LOGO_HEIGHT)
+  private val writer = LineWriter(measurer, style)
 
-  fun write(review: GameReview, out: OutputStream) {
-    val stills = stills(review)
+  fun write(review: GameReview, out: OutputStream) = write(stills(review), out)
+
+  fun write(stills: List<Still>, out: OutputStream) {
     val frames = stills.mapIndexed { i, still -> GifFrame(pixels(still), if (i == stills.lastIndex) LAST_DELAY_CS else DELAY_CS) }
-    GifEncoder(WIDTH, HEIGHT).write(frames, out)
+    GifEncoder(WIDTH, heightOf(stills.first())).write(frames, out)
   }
 
   fun writeJpeg(review: GameReview, out: OutputStream) = writeJpeg(stills(review).last(), out)
@@ -39,20 +42,41 @@ internal class GameGif(context: Context, private val style: BoardStyle) {
     image(still).asAndroidBitmap().compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, out)
   }
 
-  private fun pixels(still: Still): IntArray =
-    IntArray(WIDTH * HEIGHT).also { image(still).asAndroidBitmap().getPixels(it, 0, WIDTH, 0, 0, WIDTH, HEIGHT) }
+  private fun heightOf(still: Still): Int = if (still.podium == null) HEIGHT else HEIGHT + PODIUM_HEIGHT
+
+  private fun pixels(still: Still): IntArray {
+    val height = heightOf(still)
+    return IntArray(WIDTH * height).also { image(still).asAndroidBitmap().getPixels(it, 0, WIDTH, 0, 0, WIDTH, height) }
+  }
 
   private fun image(still: Still): ImageBitmap {
-    val image = ImageBitmap(WIDTH, HEIGHT)
-    CanvasDrawScope().draw(density, LayoutDirection.Ltr, Canvas(image), Size(WIDTH.toFloat(), HEIGHT.toFloat())) { drawStill(still) }
+    val height = heightOf(still)
+    val image = ImageBitmap(WIDTH, height)
+    CanvasDrawScope().draw(density, LayoutDirection.Ltr, Canvas(image), Size(WIDTH.toFloat(), height.toFloat())) { drawStill(still) }
     return image
   }
 
   private fun DrawScope.drawStill(still: Still) {
+    still.podium?.let { return drawTableStill(still, it) }
     drawRect(style.backdrop)
+    drawImage(logo, Offset(LOGO_MARGIN, (CAPTION - LOGO_HEIGHT) / 2f))
     drawCaption(still.score, CAPTION * 0.32f, SCORE_PX, FontWeight.Bold)
     drawCaption(still.caption, CAPTION * 0.74f, CAPTION_PX, FontWeight.Normal)
     inset(0f, CAPTION.toFloat(), 0f, 0f) { drawStillBoard(still.board, style, measurer) }
+  }
+
+  private fun DrawScope.drawTableStill(still: Still, podium: Podium) {
+    drawRect(style.backdrop)
+    drawImage(logo, Offset(LOGO_MARGIN, (CAPTION - LOGO_HEIGHT) / 2f))
+    drawHeading(still.score, CAPTION * 0.32f, SCORE_PX, FontWeight.Bold)
+    drawHeading(still.caption, CAPTION * 0.72f, ROUND_PX, FontWeight.Normal)
+    inset(0f, CAPTION.toFloat(), 0f, PODIUM_HEIGHT.toFloat()) { drawStillBoard(still.board, style, measurer) }
+    inset(0f, (CAPTION + WIDTH).toFloat(), 0f, 0f) { drawPodium(podium, writer, style.bonusText) }
+  }
+
+  private fun DrawScope.drawHeading(text: String, centerY: Float, px: Float, weight: FontWeight) {
+    val layout = writer.line(text, px, weight, size.width - TEXT_LEFT - LOGO_MARGIN)
+    drawText(layout, topLeft = Offset(TEXT_LEFT, centerY - layout.size.height / 2))
   }
 
   private fun DrawScope.drawCaption(text: String, centerY: Float, px: Float, weight: FontWeight) {
@@ -69,5 +93,10 @@ internal class GameGif(context: Context, private val style: BoardStyle) {
     const val DELAY_CS = 120
     const val LAST_DELAY_CS = 500
     const val JPEG_QUALITY = 92
+    const val LOGO_HEIGHT = 50
+    const val LOGO_WIDTH = LOGO_HEIGHT * 116 / 100
+    const val LOGO_MARGIN = 16f
+    const val TEXT_LEFT = LOGO_MARGIN * 2 + LOGO_WIDTH
+    const val ROUND_PX = 21f
   }
 }

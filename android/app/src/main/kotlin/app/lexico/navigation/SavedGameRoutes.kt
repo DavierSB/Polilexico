@@ -7,6 +7,8 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import app.lexico.game.Lexico
+import app.lexico.game.records.GameReview
+import app.lexico.game.records.ReviewTurn
 import app.lexico.games.export.GameExport
 import app.lexico.game.modes.classic.ClassicGame
 import app.lexico.game.modes.duplicate.DuplicateGame
@@ -17,6 +19,7 @@ import app.lexico.games.folderOf
 import app.lexico.games.inProgressItem
 import app.lexico.games.preEndgameRanking
 import app.lexico.games.reviewView
+import app.lexico.games.turnView
 import app.lexico.games.StatsGames
 import app.lexico.games.statsPage
 import app.lexico.games.NO_PROFILE
@@ -29,6 +32,8 @@ import app.lexico.ui.games.FinishedGamesScreen
 import app.lexico.ui.games.InProgressScreen
 import app.lexico.ui.games.PreEndgameAnalyses
 import app.lexico.ui.games.ReviewScreen
+import app.lexico.ui.games.ReviewTurnView
+import app.lexico.ui.games.TurnRankings
 import app.lexico.ui.games.StatsScreen
 
 @Composable
@@ -96,8 +101,16 @@ internal fun ReviewRoute(screen: Screen.Review, lexico: Lexico, nav: Navigator, 
     val preEndgames: PreEndgameAnalyses = remember(view) {
       { i, update -> preEndgameRanking(lexico.finishedGames.preEndgame(screen.path, i), view.turns[i], update) }
     }
+    val rankings = rememberRankings(review) { i -> lexico.finishedGames.ranked(screen.path, i) }
     var exporting by remember { mutableStateOf(false) }
-    ReviewScreen(view, themes.board, sessions, preEndgames, screen.atEndgame, nav::back, { exporting = true }) { themes.picking = true }
+    ReviewScreen(view, themes.board, sessions, preEndgames, rankings, screen.atEndgame, nav::back, { exporting = true }) { themes.picking = true }
     if (exporting) GameExport(screen.path, lexico.finishedGames, themes.board) { exporting = false }
   }
+}
+
+@Composable
+private fun rememberRankings(review: GameReview, rank: suspend (Int) -> ReviewTurn): TurnRankings = remember(review) {
+  val cache = mutableMapOf<Int, ReviewTurnView>()
+  val rankings: TurnRankings = { i -> cache.getOrPut(i) { turnView(review, rank(i)) } }
+  rankings
 }

@@ -40,6 +40,7 @@ import app.lexico.ui.board.Themed
 import app.lexico.ui.classic.LocalShowUnseen
 import app.lexico.ui.common.LocalConfettiStart
 import app.lexico.ui.common.LocalHomeButton
+import app.lexico.update.UpdateCard
 import app.lexico.update.Updates
 import kotlinx.coroutines.launch
 
@@ -60,10 +61,18 @@ fun App(lexico: Lexico, settings: Settings, updates: Updates, version: String) {
           ScreenFrame(nav.current) { Screens(engine, lexico, nav, settings, themes, menu, cues, updates.available != null) }
         }
         IncomingInvites(nav, settings.noChallenges, Modifier.align(Alignment.TopCenter).safeDrawingPadding().padding(12.dp))
+        UpdateOffer(nav, updates, cues::click, Modifier.align(Alignment.BottomCenter).safeDrawingPadding().padding(12.dp))
       }
       Dialogs(settings, themes, menu, version)
     }
   }
+}
+
+@Composable
+private fun UpdateOffer(nav: Navigator, updates: Updates, click: () -> Unit, modifier: Modifier) {
+  val scope = rememberCoroutineScope()
+  val release = updates.offer?.takeIf { !nav.current.isGame } ?: return
+  UpdateCard(release.version, updates.progress, { click(); scope.launch { updates.install() } }, { click(); updates.dismiss() }, modifier)
 }
 
 @Composable

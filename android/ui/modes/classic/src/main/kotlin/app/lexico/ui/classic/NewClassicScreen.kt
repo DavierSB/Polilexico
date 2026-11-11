@@ -40,11 +40,12 @@ fun NewClassicScreen(
   val form = rememberClassicForm()
   var chosen by remember { mutableStateOf(false) }
   var tab by remember { mutableStateOf(if (online.preferred) RivalTab.ONLINE else RivalTab.LOCAL) }
+  val choose = { t: RivalTab -> tab = t; online.onChosen(t == RivalTab.ONLINE) }
   val back = { chosen = false; form.human = false }
   BackHandler(enabled = chosen, onBack = back)
   when {
-    !chosen && tab == RivalTab.ONLINE -> OnlineStep(online, onBack) { tab = it }
-    !chosen -> LocalStep(form, saved, online.label(), onBack, { tab = it }) { chosen = true }
+    !chosen && tab == RivalTab.ONLINE -> OnlineStep(online, onBack, choose)
+    !chosen -> LocalStep(form, saved, online.label(), onBack, choose) { chosen = true }
     !form.human -> SettingsStep(form, back) { onStart(form.toConfig()) }
     form.wifi -> WifiStep(form, back, onHost = { onHost(form.toConfig(), form.myName.trim()) }) { onJoin(form.myName.trim()) }
     else -> SharedStep(form, back) { onStart(form.toConfig()) }

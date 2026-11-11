@@ -1,13 +1,20 @@
 .home {
-  max-width: clamp(560px, calc(100dvh - 500px), 820px);
+  max-width: clamp(320px, calc(100dvh - 330px), 820px);
   margin: 0 auto;
-  padding: 8px var(--gutter) 32px;
+  padding: 8px var(--gutter) 16px;
   display: grid;
   grid-template-areas: "head" "board" "menu";
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
 }
 
-.home-head { grid-area: head; display: flex; align-items: center; justify-content: space-between; min-height: 64px; }
+.home-head { grid-area: head; display: flex; align-items: center; gap: 4px; min-height: 56px; }
+
+.home-head .icon-btn { flex: none; }
+
+.home-head .brand { min-width: 0; font-size: clamp(21px, 7vw, 30px); gap: clamp(6px, 2vw, 12px); }
+
+.home-head .brand img { width: clamp(32px, 10vw, 48px); }
 
 .home-board { grid-area: board; }
 
@@ -32,7 +39,7 @@
 
 @media (min-width: 900px) and (min-aspect-ratio: 1/1) {
   .home {
-    --menu: clamp(340px, 26vw, 520px);
+    --menu: clamp(420px, 28vw, 520px);
     --board: min(calc(100dvh - 48px), calc(100vw - var(--menu) - 112px));
     max-width: none;
     width: fit-content;
@@ -48,9 +55,9 @@
 
   .home-menu .btn { min-height: clamp(56px, 6.5dvh, 80px); font-size: clamp(19px, 2.2dvh, 26px); }
 
-  .brand { font-size: clamp(30px, 3.4dvh, 44px); }
+  .home-head .brand { font-size: clamp(30px, 3.4dvh, 44px); }
 
-  .brand img { width: clamp(48px, 5.4dvh, 72px); }
+  .home-head .brand img { width: clamp(48px, 5.4dvh, 72px); }
 
   .home-menu .badge { font-size: clamp(12px, 1.3dvh, 16px); }
 
@@ -69,7 +76,7 @@
 
 .head-actions { gap: 4px; }
 
-.online-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border: 1px solid var(--outline-variant); border-radius: 10px; background: transparent; color: var(--on-surface); cursor: pointer; white-space: nowrap; }
+.online-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 clamp(8px, 3vw, 14px); border: 1px solid var(--outline-variant); border-radius: 10px; background: transparent; color: var(--on-surface); cursor: pointer; white-space: nowrap; }
 
 .online-chip:hover { background: var(--c2); }
 
@@ -77,6 +84,5 @@
 
 .status-dot.on { background: #2E9E5B; }
 
-.home-head { flex-wrap: wrap; gap: 8px; }
 
 .home-head .head-actions { margin-left: auto; }

@@ -14,7 +14,7 @@ fun seatView(s: TableState, me: String, notice: String?, status: String? = null)
   players = s.players, rounds = s.rounds.map { r -> SeatRound(r.number, r.entries.map(::entry)) }, bag = s.bag, unseen = s.unseen, notice = notice, status = status,
 )
 
-private fun entry(e: TableEntry): SeatEntry = SeatEntry(e.name, e.text, e.points, e.total)
+private fun entry(e: TableEntry): SeatEntry = SeatEntry(e.name, e.text, e.points, e.total, e.placement)
 
 private fun phase(p: TablePhase): SeatPhase = when (p) {
   TablePhase.PLAYING -> SeatPhase.PLAYING

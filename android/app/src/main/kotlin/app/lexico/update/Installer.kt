@@ -16,7 +16,7 @@ private const val TIMEOUT_MS = 15_000
 private val SPLIT_ABIS = listOf("arm64-v8a", "armeabi-v7a")
 
 internal fun downloadApk(ctx: Context, onProgress: (Float) -> Unit): File {
-  val file = File(ctx.cacheDir, "updates/polilexico.apk").apply { parentFile?.mkdirs() }
+  val file = apkFile(ctx).apply { parentFile?.mkdirs() }
   val conn = URL(apkUrl()).openConnection() as HttpURLConnection
   conn.connectTimeout = TIMEOUT_MS
   conn.readTimeout = TIMEOUT_MS
@@ -28,6 +28,8 @@ internal fun downloadApk(ctx: Context, onProgress: (Float) -> Unit): File {
   }
   return file
 }
+
+internal fun apkFile(ctx: Context): File = File(ctx.cacheDir, "updates/polilexico.apk")
 
 internal fun installIntent(ctx: Context, apk: File): Intent {
   val uri = FileProvider.getUriForFile(ctx, "${ctx.packageName}.updates", apk)

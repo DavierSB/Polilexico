@@ -47,15 +47,19 @@ fun folderOf(mode: Mode): GameFolder = when (mode) {
 }
 
 fun reviewView(review: GameReview): ReviewView {
-  val equity = review.game.mode != Mode.DUPLICATE
+  val equity = hasEquity(review)
   val title = "${modeName(review.game.mode)} · ${review.game.myScore}–${review.game.opponentScore}"
   val opponent = alias(review.game.opponent)
-  val turns = review.turns.map { turnView(it, equity, review.game.opponent) }
+  val turns = review.turns.map { turnView(review, it) }
   return ReviewView(
     title, turns, review.startTurn, opponent, spread(review, opponent),
     classic = equity, efficiency = efficiency(review), moves = movesTable(review, opponent),
   )
 }
+
+fun turnView(review: GameReview, turn: ReviewTurn): ReviewTurnView = turnView(turn, hasEquity(review), review.game.opponent)
+
+private fun hasEquity(review: GameReview): Boolean = review.game.mode != Mode.DUPLICATE
 
 fun positionView(turn: ReviewTurn): ReviewView =
   ReviewView("Análisis", listOf(turnView(turn, equity = true, opponent = RIVAL)), opponent = RIVAL, classic = true, photo = false)

@@ -38,7 +38,7 @@ private fun Profile(online: Online, context: ProfileContext, name: String, count
   val loaded by produceState<Result<List<OnlineStatsRow>>?>(null, name, where) {
     value = online.account.token()?.let { online.api.profile(it, name, where) } ?: Result.failure(Exception("La sesión caducó: vuelve a entrar."))
   }
-  PlayerProfileDialog(name, where, loaded?.getOrNull()?.map(::statsSection), loaded?.exceptionOrNull()?.message, buttons(context, lobby, person), close)
+  PlayerProfileDialog(name, where, loaded?.getOrNull()?.let(::statsSections), loaded?.exceptionOrNull()?.message, buttons(context, lobby, person), close)
 }
 
 private fun buttons(context: ProfileContext, lobby: Lobby, person: Person?): ProfileButtons {

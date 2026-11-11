@@ -47,6 +47,7 @@ fun SeatScreen(
   LaunchedEffect(view.board, view.rack) { c.reset(view.board, view.rack) }
   var message by rememberNotice(view.notice)
   var chart by remember { mutableStateOf(false) }
+  var coloredChart by remember { mutableStateOf(false) }
   var moves by remember { mutableStateOf(false) }
   var bag by remember { mutableStateOf(false) }
   var abandoning by remember { mutableStateOf(false) }
@@ -58,6 +59,7 @@ fun SeatScreen(
       onStandings = openStandings.takeIf { view.watching || view.phase != SeatPhase.PLAYING }, watchers = view.watchers,
       onAdjourn = onAdjourn.takeIf { view.phase != SeatPhase.FINISHED && !view.watching },
       onChat = LocalChat.current?.onOpen?.takeIf { view.watching },
+      onChart = { coloredChart = true }.takeIf { online && !view.watching },
     )
   }
   var results by remember { mutableStateOf(false) }
@@ -73,11 +75,12 @@ fun SeatScreen(
   )
   RoundResultsPopup(view, actions, results) { results = it }
   if (chart) ChartDialog(view) { chart = false }
+  if (coloredChart) ChartDialog(view, colored = true) { coloredChart = false }
   if (moves) MovesDialog(movesOf(view), if (view.watching) "Mejor" else "Tú") { moves = false }
   if (bag) BagDialog("Quedan en la bolsa", view.unseen) { bag = false }
   if (standings) StandingsDialog(view) { standings = false }
   if (abandoning) ConfirmDialog("¿Seguro que quieres abandonar la partida?", yes = "Abandonar", no = "Seguir", onYes = { abandoning = false; onAbandon?.invoke() }) { abandoning = false }
-  SeatVerdictOnce(view)
+  SeatVerdictOnce(view, { actions.exit() }.takeIf { online })
 }
 
 @Composable

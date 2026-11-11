@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import app.lexico.update.UPDATE_YELLOW
 import app.lexico.home.Logo
 
 @Composable
@@ -36,8 +37,6 @@ fun SideMenu(
 private fun MenuItem(text: String, selected: Boolean, onClick: () -> Unit) {
   NavigationDrawerItem(label = { Text(text) }, selected = selected, onClick = onClick)
 }
-
-private val UPDATE_YELLOW = Color(0xFFFFC107)
 
 @Composable
 private fun UpdateItem(hasUpdate: Boolean, progress: Float?, onClick: () -> Unit) {

@@ -54,12 +54,13 @@ fun NewDuplicateScreen(
   onHost: (WifiDuplicateConfig) -> Unit, onJoin: (name: String) -> Unit,
 ) {
   var tab by remember { mutableStateOf(if (online.preferred) DuplicateTab.ONLINE else DuplicateTab.LOCAL) }
+  val choose = { t: DuplicateTab -> tab = t; online.onChosen(t == DuplicateTab.ONLINE) }
   var wifi by remember { mutableStateOf(false) }
   CompositionLocalProvider(LocalOnlineLabel provides online.label()) {
     when {
-      tab == DuplicateTab.ONLINE -> OnlineStep(online, onBack) { tab = it }
-      wifi -> WifiStep(onBack, onHost, onJoin, { tab = it }) { wifi = false }
-      else -> SoloStep(saved, onBack, recordFor, onStart, { tab = it }) { wifi = true }
+      tab == DuplicateTab.ONLINE -> OnlineStep(online, onBack, choose)
+      wifi -> WifiStep(onBack, onHost, onJoin, choose) { wifi = false }
+      else -> SoloStep(saved, onBack, recordFor, onStart, choose) { wifi = true }
     }
   }
 }

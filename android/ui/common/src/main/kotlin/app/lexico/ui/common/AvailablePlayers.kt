@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -123,10 +122,10 @@ private fun CompactGrid(people: List<PersonItem>) {
 
 @Composable
 private fun CompactPerson(p: PersonItem, modifier: Modifier) {
-  Text(
-    "${p.name}  ${flagOf(p.country)}",
+  NameFlag(
+    p.name, p.country,
     modifier.height(36.dp).clip(RoundedCornerShape(10.dp)).background(MaterialTheme.colorScheme.surfaceVariant).opensProfile(p.name, p.country)
       .padding(horizontal = 10.dp, vertical = 8.dp),
-    maxLines = 1, overflow = TextOverflow.Ellipsis,
+    weight = null,
   )
 }

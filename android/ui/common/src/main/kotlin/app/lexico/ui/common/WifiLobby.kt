@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +38,8 @@ import androidx.compose.ui.unit.sp
 
 data class RoomItem(val name: String, val address: String)
 
+class LobbyExit(val label: String, val question: String, val onLeave: () -> Unit)
+
 @Composable
 fun WaitingRoomScreen(name: String, error: String?, onBack: () -> Unit, waiting: String = "Esperando rival…", wifi: Boolean = true) {
   FitColumn(14.dp) {
@@ -48,7 +51,9 @@ fun WaitingRoomScreen(name: String, error: String?, onBack: () -> Unit, waiting:
 }
 
 @Composable
-fun HostLobbyScreen(name: String, players: List<String>, error: String?, onStart: () -> Unit, onBack: () -> Unit, wifi: Boolean = true) {
+fun HostLobbyScreen(
+  name: String, players: List<String>, error: String?, onStart: () -> Unit, onBack: (() -> Unit)?, wifi: Boolean = true, exit: LobbyExit? = null,
+) {
   FitColumn(12.dp) {
     Header("Sala de $name", onBack)
     if (error != null) return@FitColumn Text(error, color = MaterialTheme.colorScheme.error)
@@ -57,17 +62,33 @@ fun HostLobbyScreen(name: String, players: List<String>, error: String?, onStart
     Button(modifier = Modifier.fillMaxWidth().height(52.dp), enabled = players.size > 1, onClick = onStart) {
       Text("Empezar la partida", fontWeight = FontWeight.Bold)
     }
+    exit?.let { ExitButtons(it) }
   }
 }
 
 @Composable
-fun GuestLobbyScreen(room: String, players: List<String>, notice: String?, me: String, onBack: () -> Unit) {
+fun GuestLobbyScreen(room: String, players: List<String>, notice: String?, me: String, exit: LobbyExit? = null, onBack: (() -> Unit)?) {
   FitColumn(12.dp) {
     Header("Sala de $room", onBack)
-    if (players.isEmpty()) return@FitColumn Waiting(notice ?: "Conectando…")
-    PlayerGrid(players, host = room, me = me, waiting = null)
-    StatusCard(notice ?: "$room empezará la partida en breve")
+    if (players.isEmpty()) Waiting(notice ?: "Conectando…") else GuestPlayers(room, players, notice, me)
+    exit?.let { ExitButtons(it) }
   }
+}
+
+@Composable
+private fun GuestPlayers(room: String, players: List<String>, notice: String?, me: String) {
+  PlayerGrid(players, host = room, me = me, waiting = null)
+  StatusCard(notice ?: "$room empezará la partida en breve")
+}
+
+@Composable
+private fun ExitButtons(exit: LobbyExit) {
+  var asking by remember { mutableStateOf(false) }
+  LocalChat.current?.let { chat ->
+    OutlinedButton(onClick = chat.onOpen, Modifier.fillMaxWidth().height(48.dp)) { Text("$CHAT_GLYPH  Mensaje a la sala") }
+  }
+  TextButton(onClick = { asking = true }, Modifier.fillMaxWidth()) { Text(exit.label, color = MaterialTheme.colorScheme.error) }
+  if (asking) ConfirmDialog(exit.question, exit.label, "Seguir en la sala", { asking = false; exit.onLeave() }) { asking = false }
 }
 
 @Composable

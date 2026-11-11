@@ -9,7 +9,7 @@ import app.lexico.ui.classic.alias
 
 private const val ME = "Tú"
 
-internal data class Still(val board: Board, val score: String, val caption: String)
+internal data class Still(val board: Board, val score: String, val caption: String, val podium: Podium? = null)
 
 internal fun stills(review: GameReview): List<Still> {
   val first = review.turns.firstOrNull() ?: return emptyList()

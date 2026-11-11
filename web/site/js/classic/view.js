@@ -131,7 +131,7 @@ class GameView {
     const timed = !!s.clocks;
     const thinking = !s.myTurn && !s.result && this.options.thinkingText;
     const names = this.names();
-    this.cards.opponent.update({ name: names.opponent, score: s.opponentScore, active: !s.myTurn && !s.result, ms: s.clocks?.opponentMs, timed, tileCount: s.opponentTiles, status: thinking || "" });
+    this.cards.opponent.update({ name: names.opponent, score: s.opponentScore, active: !s.myTurn && !s.result, ms: s.clocks?.opponentMs, timed, tileCount: s.opponentTiles, letters: this.options.watching ? s.opponentRack : null, status: thinking || "" });
     this.cards.me.update({ name: names.me, score: s.myScore, active: s.myTurn && !s.result, ms: s.clocks?.myMs, timed });
   }
 

@@ -10,7 +10,7 @@ import org.json.JSONObject
 
 enum class TablePhase { PLAYING, RESULTS, FINISHED }
 
-data class TableEntry(val name: String, val text: String, val points: Int, val total: Int)
+data class TableEntry(val name: String, val text: String, val points: Int, val total: Int, val placement: String = "")
 
 data class TableRound(val number: Int, val entries: List<TableEntry>)
 
@@ -57,7 +57,10 @@ private fun round(board: Board, o: JSONObject): TableRound =
 
 private fun entry(board: Board, o: JSONObject): TableEntry = TableEntry(
   o.getString("Name"), playText(board, o.getString("Kind"), o.getString("Coords"), o.getString("Tiles")), o.getInt("Points"), o.getInt("Total"),
+  placementOf(o.getString("Kind"), o.getString("Coords"), o.getString("Tiles")),
 )
+
+private fun placementOf(kind: String, coords: String, tiles: String): String = if (kind == "play") "$coords $tiles" else ""
 
 private fun proposal(board: Board, o: JSONObject?): TableEntry? = o?.let {
   TableEntry("", playText(board, it.getString("Kind"), it.getString("Coords"), it.getString("Tiles")), it.getInt("Score"), 0)

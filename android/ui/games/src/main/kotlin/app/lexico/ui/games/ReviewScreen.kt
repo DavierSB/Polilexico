@@ -31,8 +31,8 @@ import app.lexico.ui.common.ThemeButton
 
 @Composable
 fun ReviewScreen(
-  review: ReviewView, style: BoardStyle, sessions: EndgameSessions?, preEndgames: PreEndgameAnalyses?, atEndgame: Boolean, onBack: () -> Unit,
-  onExport: (() -> Unit)? = null, onTheme: () -> Unit,
+  review: ReviewView, style: BoardStyle, sessions: EndgameSessions?, preEndgames: PreEndgameAnalyses?, rankings: TurnRankings?, atEndgame: Boolean,
+  onBack: () -> Unit, onExport: (() -> Unit)? = null, onTheme: () -> Unit,
 ) {
   var page by remember { mutableIntStateOf(firstPage(review, atEndgame)) }
   var dialog by remember { mutableStateOf(if (review.turns.isEmpty() || atEndgame) ReviewDialog.NONE else ReviewDialog.OPENING) }
@@ -42,7 +42,7 @@ fun ReviewScreen(
     if (review.turns.isEmpty()) return@Column Text("La partida no tiene turnos.")
     BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
       val height = maxHeight
-      Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) { TurnPage(review, page, sessions, preEndgames, style, height, go) }
+      Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) { TurnPage(review, page, sessions, preEndgames, rankings, style, height, go) }
     }
   }
   ReviewDialogShown(dialog, review, page, go, onExport) { dialog = ReviewDialog.NONE }

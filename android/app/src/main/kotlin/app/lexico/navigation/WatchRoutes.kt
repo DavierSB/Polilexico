@@ -22,6 +22,7 @@ import app.lexico.game.modes.duplicate.table.TableState
 import app.lexico.menu.ThemeState
 import app.lexico.model.Placement
 import app.lexico.modes.classic.classicView
+import app.lexico.modes.classic.invalidNotice
 import app.lexico.online.OnlineClient
 import app.lexico.online.RoomInfo
 import app.lexico.ui.classic.ClassicActions
@@ -93,15 +94,16 @@ private fun WatchedGame(game: ClassicGame, players: List<String>, watchers: List
 }
 
 private fun spectatorView(state: ClassicState, players: List<String>, watchers: List<PersonItem>): ClassicView {
-  val view = classicView(state, players.getOrElse(1) { "" }, null, players.getOrElse(0) { "" }, handOff = false)
-    .copy(local = false, watching = true, watchers = watchers)
+  val notice = invalidNotice(state) { m -> players.getOrElse(if (m.byMe) 0 else 1) { "" } }
+  val view = classicView(state, players.getOrElse(1) { "" }, notice, players.getOrElse(0) { "" }, handOff = false)
+    .copy(local = false, watching = true, watchers = watchers, opponentRack = OpponentRack.Visible(state.opponentRack), unseen = state.unseen.without(state.opponentRack))
   return if (state.result == null && !state.myTurn) fromSecondSeat(view, state) else view
 }
 
 private fun fromSecondSeat(view: ClassicView, state: ClassicState): ClassicView = view.copy(
-  me = view.opponent, opponent = view.me, rack = state.opponentRack, opponentRack = OpponentRack.Hidden(state.rack.size),
+  me = view.opponent, opponent = view.me, rack = state.opponentRack, opponentRack = OpponentRack.Visible(state.rack),
   myScore = view.opponentScore, opponentScore = view.myScore, myClock = view.opponentClock, opponentClock = view.myClock,
-  turn = Side.ME, unseen = view.unseen.without(state.opponentRack) + state.rack, moves = view.moves.map(::otherSide),
+  turn = Side.ME, moves = view.moves.map(::otherSide),
 )
 
 private fun otherSide(m: Move): Move =

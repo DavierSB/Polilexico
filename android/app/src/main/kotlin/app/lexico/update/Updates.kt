@@ -19,8 +19,17 @@ class Updates(private val ctx: Context, private val current: String) {
   var progress: Float? by mutableStateOf(null)
     private set
 
+  var offer: Release? by mutableStateOf(null)
+    private set
+
   suspend fun check() {
-    if (due()) refresh()
+    if (!due()) return
+    refresh()
+    offer = available
+  }
+
+  fun dismiss() {
+    offer = null
   }
 
   suspend fun refresh() {
@@ -33,11 +42,11 @@ class Updates(private val ctx: Context, private val current: String) {
     if (progress != null) return
     progress = 0f
     val apk = withContext(Dispatchers.IO) { runCatching { downloadApk(ctx) { progress = it } }.getOrNull() }
+    apk?.let { withContext(Dispatchers.IO) { installApk(ctx, it) } }
     progress = null
-    apk?.let { ctx.startActivity(installIntent(ctx, it)) }
   }
 
-  private fun due(): Boolean = System.currentTimeMillis() - prefs.getLong(CHECKED_KEY, 0L) >= DAY_MS
+  private fun due(): Boolean = System.currentTimeMillis() - prefs.getLong(CHECKED_KEY, 0L) >= HOUR_MS
 
   private fun stored(): Release? {
     val version = prefs.getString(VERSION_KEY, null) ?: return null
@@ -54,7 +63,7 @@ class Updates(private val ctx: Context, private val current: String) {
   }
 
   private companion object {
-    const val DAY_MS = 24 * 60 * 60 * 1000L
+    const val HOUR_MS = 60 * 60 * 1000L
     const val CHECKED_KEY = "checkedAt"
     const val VERSION_KEY = "latestVersion"
     const val URL_KEY = "latestUrl"

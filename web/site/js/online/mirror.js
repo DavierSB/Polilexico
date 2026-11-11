@@ -30,7 +30,7 @@ export function readSave(saved, guest, elapsedMs = 0) {
   return {
     Opponent: game.BotName, Host: game.Log?.human_name ?? "", Local: true, Study: false,
     Board: boardText(cells), Rack: racks[human].join(" "), OpponentRack: racks[1 - human].join(" "),
-    Unseen: unseen(cells, known).join(" "),
+    Unseen: unseen(cells, racks.flat()).join(" "),
     Status: {
       Over: over, HumanToMove: humanToMove, HumanScore: scores[0], BotScore: scores[1],
       BagCount: 100 - onBoard - counts[0] - counts[1], OpponentTiles: counts[1 - human], HumanTiles: counts[human],

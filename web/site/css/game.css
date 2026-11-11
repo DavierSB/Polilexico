@@ -48,6 +48,8 @@
 
 .mini-tile { width: 18px; height: 18px; border-radius: 4px; background: var(--primary); opacity: .85; }
 
+.mini-tile.face-up { width: auto; min-width: 22px; height: 22px; padding: 0 2px; display: grid; place-items: center; background: var(--b-tile); color: var(--b-letter); opacity: 1; font-weight: 800; font-size: 13px; }
+
 .score { font-weight: 800; font-size: 30px; font-variant-numeric: tabular-nums; min-width: 2.5ch; text-align: right; }
 
 .clock {
