@@ -8,6 +8,7 @@ import { applyPlacement, parsePlacement, at, spelled } from "../placement.js";
 import { face } from "../classic/rack.js";
 import { askBlank } from "../classic/moves.js";
 import { choiceRow, sectionTitle } from "../classic/options.js";
+import { deepView, DEEP_TITLES, BUDGET_MS } from "./deep.js";
 
 const MAX_RACK = 7;
 const BEST = 15;
@@ -15,7 +16,7 @@ const EQUITY_INFO = "El valor de la jugada, considerando su puntuación y lo que
 const TARGET_INFO = "Tablero: toca una casilla para poner la flecha (otra vez: vertical) y luego letras; o elige una letra y toca casillas. Toca una ficha del tablero para quitarla.\n\nAtril: toca letras para añadirlas (máx. 7).";
 
 export function analyzerScreen(app) {
-  const ed = { cells: emptyBoard(), rack: [], target: "board", letter: null, arrow: null, result: null, selected: null, running: false, message: null };
+  const ed = { cells: emptyBoard(), rack: [], target: "board", letter: null, arrow: null, result: null, selected: null, running: false, message: null, scores: null, deep: null };
   const board = createBoard({ onSquare: (i) => tapSquare(ui, i) });
   const rackRow = h("div.analysis-rack");
   const notice = h("p.muted.small");
@@ -23,7 +24,7 @@ export function analyzerScreen(app) {
   const ui = { ed, board, rackRow, notice, panel };
   ui.redraw = () => draw(ui);
   app.append(h("div.analyzer", {},
-    h("div.analyzer-head", {}, screenHead("Analizador", "estudiar", h("button.text-btn", { onclick: () => clearAll(ui) }, "Vaciar"))),
+    h("div.analyzer-head", {}, screenHead("Analizador", "estudiar", h("button.text-btn", { onclick: () => scoreDialog(ui) }, "Marcador"), h("button.text-btn", { onclick: () => clearAll(ui) }, "Vaciar"))),
     h("div.analyzer-board", {}, board.el),
     h("div.analyzer-side", {}, rackRow, notice, panel),
   ));
@@ -45,7 +46,7 @@ function draw(ui) {
     h("button.btn.small", { disabled: !ed.rack.length || ed.running, onclick: () => analyze(ui) }, ed.running ? "…" : "Analizar"),
   );
   ui.notice.textContent = ed.message ?? "";
-  replace(ui.panel, ed.result ? results(ui) : editPanel(ui));
+  replace(ui.panel, ed.deep ? deepPanel(ui) : ed.result ? results(ui) : editPanel(ui));
 }
 
 function keyFace(letter) {
@@ -141,8 +142,25 @@ function removeFromRack(ui, i) {
   resetAnalysis(ui);
 }
 
+function deepPanel(ui) {
+  return [
+    h("div.row", {}, h("b.grow", {}, DEEP_TITLES[ui.ed.deep.phase]), h("button.text-btn", { onclick: () => edit(ui) }, "Editar")),
+    deepView(ui.ed.deep.view, ui.ed.cells, (m) => ((ui.ed.selected = m.placement ? { placement: m.placement } : null), ui.redraw())),
+  ];
+}
+
+function scoreDialog(ui) {
+  const s = ui.ed.scores ?? { mine: 0, theirs: 0 };
+  const field = (label, key) => h("div.field", {}, h("label", {}, label), h("input", { type: "number", min: 0, max: 9999, value: s[key], oninput: (e) => (s[key] = Number(e.target.value) || 0) }));
+  openDialog((close) => [
+    h("h2", {}, "Marcador"), field("Tú", "mine"), field("Rival", "theirs"),
+    h("p.muted.small", {}, "Con marcador, en el pre-final y en el final se analiza esa fase (pasar o el scrabble pueden ganar). Sin marcador, solo equity."),
+    actions(h("button.text-btn", { onclick: () => ((ui.ed.scores = null), close(), resetAnalysis(ui)) }, "Quitar"), h("button.text-btn", { onclick: () => ((ui.ed.scores = s), close(), resetAnalysis(ui)) }, "Listo")),
+  ]);
+}
+
 function resetAnalysis(ui) {
-  Object.assign(ui.ed, { result: null, selected: null, message: null });
+  Object.assign(ui.ed, { result: null, selected: null, message: null, deep: null });
   ui.redraw();
 }
 
@@ -169,7 +187,9 @@ async function analyze(ui) {
   try {
     await whenReady();
     const boardText = ed.cells.map((t) => (t ? written(t).replace(/[[\]]/g, "") : ".")).join(" ");
-    const found = await call("bestMoves", boardText, ed.rack.map((t) => (t.length > 1 ? `[${t}]` : t)).join(""), BEST);
+    const rackText = ed.rack.map((t) => (t.length > 1 ? `[${t}]` : t)).join("");
+    if (ed.scores && (await deepAnalysis(ui, boardText, rackText))) return;
+    const found = await call("bestMoves", boardText, rackText, BEST);
     ed.result = found.map((c) => candidate(c, ed.cells));
     ed.selected = ed.result[0] ?? null;
     ed.message = ed.result.length ? null : "No hay jugadas posibles.";
@@ -179,6 +199,17 @@ async function analyze(ui) {
   }
   ed.running = false;
   ui.redraw();
+}
+
+async function deepAnalysis(ui, boardText, rackText) {
+  const ed = ui.ed;
+  const phase = await call("positionPhase", boardText, rackText, ed.scores.mine, ed.scores.theirs);
+  if (phase === "midgame") return false;
+  const view = await call("positionDeep", boardText, rackText, ed.scores.mine, ed.scores.theirs, BUDGET_MS);
+  ed.deep = { phase, view };
+  ed.running = false;
+  ui.redraw();
+  return true;
 }
 
 function candidate(c, cells) {

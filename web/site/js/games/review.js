@@ -10,6 +10,7 @@ import { face } from "../classic/rack.js";
 import { getRecord } from "../records.js";
 import { lookUp } from "../study/lookup.js";
 import { alias, gameTitle, scoreText } from "./list.js";
+import { deepView, DEEP_TITLES, BUDGET_MS } from "../study/deep.js";
 
 const WHO = { "Tú": "Tu jugada", "Máster": "Jugada del Máster" };
 
@@ -70,7 +71,25 @@ function draw(ui) {
       h("button.btn.small.outlined", { disabled: ui.index >= ui.game.Turns.length - 1, onclick: () => move(ui, 1) }, "›"),
     ),
     lines(ui, t),
+    deepSection(ui, t),
   );
+}
+
+function deepSection(ui, t) {
+  if (!ui.classic || (!t.Endgame && !t.PreEndgame)) return null;
+  const phase = t.Endgame ? "endgame" : "preendgame";
+  const known = ui.deep?.get(ui.index);
+  if (known) return h("div.stack", {}, h("b", {}, DEEP_TITLES[phase]), deepView(known, t.cells, (m) => select(ui, { text: m.label, placement: m.placement })));
+  return h("button.btn.block.outlined", { onclick: (e) => analyzeDeep(ui, e.target) }, t.Endgame ? "Analizar final" : "Analizar pre-final");
+}
+
+async function analyzeDeep(ui, button) {
+  button.disabled = true;
+  button.textContent = "Analizando…";
+  const view = await call("reviewDeep", ui.text, ui.index, BUDGET_MS).catch(() => null);
+  if (!view) return (button.textContent = "No se pudo analizar");
+  (ui.deep ??= new Map()).set(ui.index, view);
+  draw(ui);
 }
 
 function mine(ui, t) {

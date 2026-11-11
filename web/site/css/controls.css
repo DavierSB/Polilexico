@@ -466,3 +466,7 @@ hr.thick { width: 100%; border: 0; border-top: 2px solid var(--on-surface); marg
 .lookup-word { padding-bottom: 8px; border-bottom: 1px solid var(--outline-variant); }
 
 .lookup-word a { align-self: flex-start; }
+
+.deep-verdict { margin: 0; font-weight: 700; }
+
+.deep-line .stack { gap: 2px; }
