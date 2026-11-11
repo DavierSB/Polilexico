@@ -10,6 +10,7 @@ import { seekScreen } from "./online/seek.js";
 import { onlineGameScreen } from "./online/game.js";
 import { newDuplicateScreen } from "./online/newDuplicate.js";
 import { duplicateRoomScreen } from "./online/duplicateRoom.js";
+import { profileScreen } from "./online/profile.js";
 import { menuScreen } from "./screens/menu.js";
 import { duplicateSetupScreen } from "./duplicate/setup.js";
 import { duplicateGameScreen } from "./duplicate/screen.js";
@@ -44,6 +45,7 @@ start({
   sala: onlineGameScreen,
   "crear-duplicada": newDuplicateScreen,
   "sala-duplicada": duplicateRoomScreen,
+  perfil: profileScreen,
   duplicada: duplicateSetupScreen,
   "duplicada-partida": duplicateGameScreen,
   sprint: sprintSetupScreen,

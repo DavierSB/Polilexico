@@ -1,11 +1,11 @@
 import { h, replace } from "../dom.js";
 import { icon } from "../icons.js";
 import { go } from "../router.js";
-import { screenHead, nameFlag, initialAvatar, formatClock } from "../parts.js";
-import { confirm } from "../dialogs.js";
+import { screenHead, nameFlag, formatClock } from "../parts.js";
 import { account, logOut } from "./api.js";
 import { online } from "./client.js";
 import { tellDialog } from "./tell.js";
+import { photoAvatar, profileDialog } from "./profile.js";
 import { load, save } from "../store.js";
 import { choiceRow } from "../classic/options.js";
 
@@ -27,15 +27,9 @@ function signInFirst(app) {
 
 function accountChip() {
   const s = account();
-  return h("button.account-chip", { onclick: () => askLogOut() }, icon("person", 20), nameFlag(s.name, s.country));
+  return h("button.account-chip", { onclick: () => go("perfil") }, icon("person", 20), nameFlag(s.name, s.country));
 }
 
-async function askLogOut() {
-  if (!(await confirm("¿Seguro que quieres cerrar sesión?", "Cerrar sesión"))) return;
-  online.shutDown();
-  logOut();
-  go("", true);
-}
 
 function draw(c, ui) {
   const room = roomRoute(c);
@@ -98,7 +92,7 @@ function emptyState(iconName, text) {
 
 function playerRow(name, country, detail, ...buttons) {
   return h("div.player-row", {},
-    initialAvatar(name, 40),
+    h("button.avatar-btn", { "aria-label": `Perfil de ${name}`, onclick: () => profileDialog({ name, country, playing: false }) }, photoAvatar(name, country, 40)),
     h("div.grow", {}, h("div", {}, nameFlag(name, country)), detail ? h("div.muted.small.ellipsis", {}, detail) : null),
     h("div.row", {}, buttons),
   );

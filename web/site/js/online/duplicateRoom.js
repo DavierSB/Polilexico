@@ -5,7 +5,8 @@ import { createBoard, tile } from "../board.js";
 import { confirm, openDialog, actions, themeDialog, toast } from "../dialogs.js";
 import { at } from "../placement.js";
 import { placementScore } from "../score.js";
-import { formatClock, initialAvatar } from "../parts.js";
+import { formatClock } from "../parts.js";
+import { photoAvatar } from "./profile.js";
 import { Placer } from "../classic/placer.js";
 import { createRack } from "../classic/rack.js";
 import { askBlank, bagDialog } from "../classic/moves.js";
@@ -234,7 +235,7 @@ function leaderboard(t) {
     const place = placeOf(rows, i);
     const tone = e.name === t.me ? " mine" : place === 1 && e.total > 0 ? " leader" : "";
     return h("div", { class: "leader-card" + tone },
-      h("b.leader-place", {}, place), initialAvatar(e.name, 32),
+      h("b.leader-place", {}, place), photoAvatar(e.name, "", 32),
       h("div.grow", {}, h("b.ellipsis", {}, e.name), h("div.muted.small.ellipsis", {}, `Ronda ${e.points < 0 ? "—" : "+" + e.points}${e.text ? " · " + e.text : ""}`)),
       h("div.leader-total", {}, h("b", {}, e.total < 0 ? "—" : e.total), h("span.muted.small", {}, e.total < 0 || master <= 0 ? "—" : `${((e.total * 100) / master).toLocaleString("es", { maximumFractionDigits: 1, minimumFractionDigits: 1 })} %`)),
     );

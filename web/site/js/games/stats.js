@@ -76,7 +76,7 @@ async function online(body) {
   }
 }
 
-function onlineBlock(r) {
+export function onlineBlock(r) {
   const title = r.mode === "duplicate" ? "Duplicada" : "Clásica";
   const list = r.mode === "duplicate"
     ? [["Partidas", r.games], ["Primeros puestos", r.wins], ["Efectividad promedio", r.avg_efficiency == null ? "—" : `${fixed(r.avg_efficiency * 100, 1)} %`], ["Mayor scrabble", r.best_bingo || "—"], ["Mejor jugada", r.best_play]]

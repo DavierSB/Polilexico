@@ -95,3 +95,11 @@
 .leader-total { display: flex; flex-direction: column; align-items: flex-end; }
 
 .leader-total b { font-size: 20px; color: var(--primary); }
+
+.avatar-btn { padding: 0; border: 0; background: none; border-radius: 50%; cursor: pointer; flex: none; }
+
+.profile-head { gap: 14px; }
+
+.profile-card { display: flex; align-items: center; gap: 18px; }
+
+.photo-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
