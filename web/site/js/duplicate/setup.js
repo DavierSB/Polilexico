@@ -3,6 +3,7 @@ import { go } from "../router.js";
 import { screenHead, parseDuration, engineGate } from "../parts.js";
 import { load, save } from "../store.js";
 import { toast } from "../dialogs.js";
+import { modeTabs } from "../modeTabs.js";
 import { choiceRow, sectionTitle, stepper, rulesButton, studySection } from "../classic/options.js";
 import { startDuplicate } from "./session.js";
 import { DUPLICATE_RULES, ROUNDS_TEXT, VOID_HINT, SINGLE_HINT, AT_END_HINT } from "./rules.js";
@@ -20,8 +21,9 @@ export function duplicateSetupScreen(app) {
     replace(body, fields(form, redraw, gates));
   };
   redraw();
-  app.append(h("div.screen", {}, screenHead("Duplicada"), body));
-  return () => gates.forEach((stop) => stop());
+  const tabs = modeTabs("duplicate", () => ({ el: body }));
+  app.append(h("div.screen.wide", {}, screenHead("Duplicada"), tabs.el));
+  return () => (gates.forEach((stop) => stop()), tabs.destroy());
 }
 
 function fields(form, redraw, gates) {

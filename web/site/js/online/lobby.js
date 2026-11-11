@@ -1,28 +1,45 @@
 import { h, replace } from "../dom.js";
 import { icon } from "../icons.js";
 import { go } from "../router.js";
-import { screenHead, nameFlag, formatClock } from "../parts.js";
+import { nameFlag, formatClock } from "../parts.js";
+import { openDialog, actions } from "../dialogs.js";
 import { account, logOut } from "./api.js";
 import { online } from "./client.js";
 import { tellDialog } from "./tell.js";
 import { photoAvatar, profileDialog } from "./profile.js";
 import { load, save } from "../store.js";
-import { choiceRow } from "../classic/options.js";
 
-export function lobbyScreen(app) {
-  if (!account()) return signInFirst(app);
-  const ui = { body: h("div.lobby"), status: h("p.muted.lobby-status"), tabs: h("div"), publish: h("div"), duplicate: load("lobbyTab", "classic") === "duplicate" };
-  app.append(h("div.screen.wide", {}, screenHead("En línea", "", accountChip()), ui.tabs, ui.status, ui.body, ui.publish));
-  online.acquire();
-  const stop = online.subscribe((c) => draw(c, ui));
-  return () => (stop(), online.release());
+export function lobbyRoute() {
+  return load("lobbyTab", "classic") === "duplicate" ? "duplicada" : "clasica";
 }
 
-function signInFirst(app) {
-  app.append(h("div.screen", {}, screenHead("En línea"),
-    h("div.card.empty-card", {}, icon("globe", 40), h("p", {}, "Juega contra personas de todo el mundo."),
-      h("button.btn", { onclick: () => go("cuenta") }, "Entrar o crear cuenta")),
-  ));
+export function lobbyScreen() {
+  go(lobbyRoute(), true);
+}
+
+export function onlinePanel(duplicate) {
+  save("lobbyTab", duplicate ? "duplicate" : "classic");
+  if (!account()) return { el: signInFirst(), destroy: () => {} };
+  const ui = { body: h("div.lobby"), status: h("p.muted.lobby-status"), publish: h("div"), duplicate };
+  const el = h("div.stack.online-panel", {}, h("div.row.panel-top", {}, ui.status, accountChip()), ui.body, ui.publish);
+  online.acquire();
+  const stop = online.subscribe((c) => draw(c, ui));
+  return { el, destroy: () => (stop(), online.release()) };
+}
+
+function signInFirst() {
+  return h("div.card.empty-card", {}, icon("globe", 40), h("p", {}, "Juega contra personas de todo el mundo."),
+    h("button.btn", { onclick: () => go("cuenta") }, "Entrar o crear cuenta"));
+}
+
+export function peopleDialog() {
+  const body = h("div.stack");
+  let stop = null;
+  openDialog((close) => {
+    online.acquire();
+    stop = online.subscribe((c) => replace(body, people(c, false) ?? h("p.muted", {}, "No hay nadie más en línea.")));
+    return [h("h2", {}, "En línea"), body, actions(h("button.text-btn", { onclick: close }, "Cerrar"))];
+  }, { onClose: () => (stop?.(), online.release()), wide: true });
 }
 
 function accountChip() {
@@ -37,7 +54,6 @@ function draw(c, ui) {
   if (live && c.parked !== c.room.id) return go(room);
   const dup = ui.duplicate;
   ui.status.textContent = c.refused ?? c.status ?? c.ended ?? "";
-  replace(ui.tabs, choiceRow(["Clásica", "Duplicada"], dup ? 1 : 0, (i) => ((ui.duplicate = i === 1), save("lobbyTab", i ? "duplicate" : "classic"), draw(c, ui))));
   replace(ui.body,
     c.refused ? h("button.btn", { onclick: () => (logOut(), go("cuenta")) }, "Entrar de nuevo") : null,
     live ? h("button.btn.tonal.back-to-game", { onclick: () => ((c.parked = null), go(room)) }, "Volver a la partida") : null,

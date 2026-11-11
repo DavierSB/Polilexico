@@ -1,4 +1,5 @@
 import { h, replace } from "../dom.js";
+import { lobbyRoute } from "./lobby.js";
 import { go } from "../router.js";
 import { screenHead, nameFlag, initialAvatar } from "../parts.js";
 import { openDialog, actions, confirm, toast } from "../dialogs.js";
@@ -50,7 +51,7 @@ export function profileScreen(app) {
   drawPhoto();
   const file = h("input", { type: "file", accept: "image/*", hidden: true, onchange: (e) => upload(e.target.files[0], drawPhoto) });
   const body = h("div.stack");
-  app.append(h("div.screen", {}, screenHead("Perfil en línea", "en-linea"),
+  app.append(h("div.screen", {}, screenHead("Perfil en línea", lobbyRoute()),
     h("div.card.profile-card", {},
       h("button.photo-btn", { "aria-label": "Cambiar foto", onclick: () => file.click() }, photo, h("span.small.accent", {}, "Cambiar foto")), file,
       h("div.stack", {}, h("h2", {}, nameFlag(me.name, me.country)), h("span.muted", {}, countryName(me.country))),

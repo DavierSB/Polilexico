@@ -1,4 +1,5 @@
 import { h, replace } from "../dom.js";
+import { lobbyRoute } from "./lobby.js";
 import { go } from "../router.js";
 import { openDialog, actions, toast } from "../dialogs.js";
 import { account } from "./api.js";
@@ -19,7 +20,7 @@ export function onlineGameScreen(app) {
 }
 
 function update(screen, c) {
-  if (!c.room && !c.ended) return go("en-linea", true);
+  if (!c.room && !c.ended) return go(lobbyRoute(), true);
   if (c.session && c.session !== screen.session) mount(screen, c);
   if (c.notice && c.notice !== screen.notice) toast(c.notice);
   screen.notice = c.notice;
@@ -41,7 +42,7 @@ function mount(screen, c) {
     opponent: sides.opponent,
     watching: c.room.watching,
     exit: () => exit(c),
-    resign: c.room.watching ? null : () => (c.leave(), go("en-linea")),
+    resign: c.room.watching ? null : () => (c.leave(), go(lobbyRoute())),
     onEnd: (state) => endDialog(state, sides, c.room.watching),
     extra: chatPanel(screen),
   });
@@ -63,7 +64,7 @@ function countryOf(c, name) {
 function exit(c) {
   if (c.room?.watching || c.finished() || c.ended) c.leave();
   else c.parked = c.room?.id;
-  go("en-linea");
+  go(lobbyRoute());
 }
 
 function chatPanel(screen) {
@@ -90,7 +91,7 @@ function endDialog(state, sides, watching) {
     endDetail(state, rival),
     actions(
       h("button.text-btn", { onclick: close }, "Ver tablero"),
-      h("button.text-btn", { onclick: () => (close(), online.leave(), go("en-linea")) }, "Volver al lobby"),
+      h("button.text-btn", { onclick: () => (close(), online.leave(), go(lobbyRoute())) }, "Volver al lobby"),
     ),
   ]);
 }
@@ -98,7 +99,7 @@ function endDialog(state, sides, watching) {
 function closedDialog(reason) {
   openDialog((close) => [
     h("p", {}, reason),
-    actions(h("button.text-btn", { onclick: () => (close(), online.leave(), go("en-linea")) }, "Volver al lobby")),
+    actions(h("button.text-btn", { onclick: () => (close(), online.leave(), go(lobbyRoute())) }, "Volver al lobby")),
   ], { dismissable: false });
 }
 

@@ -1,4 +1,5 @@
 import { h, replace } from "../dom.js";
+import { lobbyRoute } from "./lobby.js";
 import { icon, bagIcon } from "../icons.js";
 import { go } from "../router.js";
 import { createBoard, tile } from "../board.js";
@@ -55,7 +56,7 @@ class RoomView {
   }
 
   update(c) {
-    if (!c.room && !c.ended) return go("en-linea", true);
+    if (!c.room && !c.ended) return go(lobbyRoute(), true);
     this.client = c;
     this.watching = !!c.room?.watching;
     if (c.notice && c.notice !== this.lastNotice) toast(c.notice);
@@ -176,14 +177,14 @@ class RoomView {
   exchange() {}
 
   async abandon() {
-    if (await confirm("¿Seguro que quieres abandonar la partida?", "Abandonar", "Seguir")) (online.leave(), go("en-linea"));
+    if (await confirm("¿Seguro que quieres abandonar la partida?", "Abandonar", "Seguir")) (online.leave(), go(lobbyRoute()));
   }
 
   exit() {
     const c = this.client;
     if (this.watching || c.finished() || c.ended) c.leave();
     else c.parked = c.room?.id;
-    go("en-linea");
+    go(lobbyRoute());
   }
 
   resultsDialog() {
@@ -210,7 +211,7 @@ class RoomView {
     openDialog((close) => [
       h("h2.verdict", {}, title),
       leaderboard(t),
-      actions(h("button.text-btn", { onclick: close }, "Ver tablero"), h("button.text-btn", { onclick: () => (close(), online.leave(), go("en-linea")) }, "Volver al lobby")),
+      actions(h("button.text-btn", { onclick: close }, "Ver tablero"), h("button.text-btn", { onclick: () => (close(), online.leave(), go(lobbyRoute())) }, "Volver al lobby")),
     ], { wide: true });
   }
 
@@ -243,5 +244,5 @@ function leaderboard(t) {
 }
 
 function closedDialog(reason) {
-  openDialog((close) => [h("p", {}, reason), actions(h("button.text-btn", { onclick: () => (close(), online.leave(), go("en-linea")) }, "Volver al lobby"))], { dismissable: false });
+  openDialog((close) => [h("p", {}, reason), actions(h("button.text-btn", { onclick: () => (close(), online.leave(), go(lobbyRoute())) }, "Volver al lobby"))], { dismissable: false });
 }

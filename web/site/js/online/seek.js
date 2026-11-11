@@ -1,4 +1,5 @@
 import { h, replace } from "../dom.js";
+import { lobbyRoute } from "./lobby.js";
 import { go } from "../router.js";
 import { screenHead, parseDuration, flag } from "../parts.js";
 import { toast } from "../dialogs.js";
@@ -17,7 +18,7 @@ export function seekScreen(app, [name, country]) {
   const redraw = () => replace(body, challengeSection(form, redraw), timeSection(form, redraw), sendButton(form, rival));
   redraw();
   const title = rival ? `Retar a ${rival.name} ${flag(rival.country)}` : "Buscar clásica";
-  app.append(h("div.screen", {}, screenHead(title, "en-linea"), body));
+  app.append(h("div.screen", {}, screenHead(title, lobbyRoute()), body));
   online.acquire();
   return () => online.release();
 }
@@ -31,8 +32,9 @@ function send(form, rival) {
   const overtimeMs = parseDuration(form.overtime);
   if (form.timed && (!timeMs || overtimeMs === null)) return toast("Revisa los tiempos.");
   save("seekForm", form);
+  save("lobbyTab", "classic");
   const proposal = { single: form.single, timed: form.timed, timeMs: form.timed ? timeMs : 0, overtimeMs: form.timed ? overtimeMs : 0 };
   if (rival) online.challenge(rival, proposal);
   else online.publish(proposal);
-  go("en-linea", true);
+  go(lobbyRoute(), true);
 }

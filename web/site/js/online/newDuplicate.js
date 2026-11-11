@@ -1,4 +1,5 @@
 import { h, replace } from "../dom.js";
+import { lobbyRoute } from "./lobby.js";
 import { go } from "../router.js";
 import { screenHead, parseDuration } from "../parts.js";
 import { load, save } from "../store.js";
@@ -26,7 +27,7 @@ export function newDuplicateScreen(app) {
     h("button.btn.block.start", { onclick: () => create(form) }, "Crear sala"),
   );
   redraw();
-  app.append(h("div.screen", {}, screenHead("Duplicada en línea", "en-linea"), body));
+  app.append(h("div.screen", {}, screenHead("Duplicada en línea", lobbyRoute()), body));
   online.acquire();
   return () => online.release();
 }
@@ -37,5 +38,5 @@ function create(form) {
   save("onlineDuplicateForm", form);
   save("lobbyTab", "duplicate");
   online.publish({ duplicate: true, turnMs, rounds: form.fixed ? form.rounds : 0, live: form.live });
-  go("en-linea", true);
+  go(lobbyRoute(), true);
 }

@@ -1,4 +1,5 @@
 import { h, replace } from "../dom.js";
+import { lobbyRoute } from "./lobby.js";
 import { go } from "../router.js";
 import { screenHead, flag } from "../parts.js";
 import { logIn, signUp } from "./api.js";
@@ -10,7 +11,7 @@ export function accountScreen(app) {
   const body = h("div.stack.account-form");
   const redraw = () => replace(body, fields(form, redraw));
   redraw();
-  app.append(h("div.screen", {}, screenHead("Cuenta en línea", "en-linea"), body));
+  app.append(h("div.screen", {}, screenHead("Cuenta en línea", lobbyRoute()), body));
 }
 
 function fields(form, redraw) {
@@ -52,7 +53,7 @@ async function send(e, form, error, submit) {
   const data = { name: form.name.trim(), country: form.country, password: form.password, email: form.email.trim() };
   try {
     await (form.mode === 1 ? signUp(data) : logIn(data));
-    go("en-linea", true);
+    go(lobbyRoute(), true);
   } catch (err) {
     error.textContent = err.message;
     submit.disabled = false;

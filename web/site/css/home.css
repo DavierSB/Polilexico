@@ -66,3 +66,17 @@
 .home-link { align-self: center; padding: 8px 12px; color: var(--on-surface-variant); font-size: 15px; text-decoration: none; border-radius: var(--pill); }
 
 .home-link:hover { color: var(--primary); }
+
+.head-actions { gap: 4px; }
+
+.online-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px; border: 1px solid var(--outline-variant); border-radius: 10px; background: transparent; color: var(--on-surface); cursor: pointer; white-space: nowrap; }
+
+.online-chip:hover { background: var(--c2); }
+
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #888; }
+
+.status-dot.on { background: #2E9E5B; }
+
+.home-head { flex-wrap: wrap; gap: 8px; }
+
+.home-head .head-actions { margin-left: auto; }

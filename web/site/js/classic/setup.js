@@ -5,6 +5,7 @@ import { load, save } from "../store.js";
 import { BOTS, bot, botPhoto } from "./bots.js";
 import { startLocal } from "./session.js";
 import { toast } from "../dialogs.js";
+import { modeTabs } from "../modeTabs.js";
 import { timeSection, challengeSection, choiceRow, studySection } from "./options.js";
 
 const DEFAULTS = { bot: "HastyBot", starter: 0, single: true, timed: false, time: "30:00", overtime: "8:00", shared: false, first: "Jugador A", second: "Jugador B" };
@@ -22,8 +23,9 @@ export function classicSetupScreen(app) {
     replace(settings, settingsFor(form, redraw, gates));
   };
   redraw();
-  app.append(h("div.screen.wide", {}, screenHead("Clásica"), h("div.setup", {}, rivals, settings)));
-  return () => gates.forEach((stop) => stop());
+  const tabs = modeTabs("classic", () => ({ el: h("div.setup", {}, rivals, settings) }));
+  app.append(h("div.screen.wide", {}, screenHead("Clásica"), tabs.el));
+  return () => (gates.forEach((stop) => stop()), tabs.destroy());
 }
 
 function botCard(b, form, redraw) {
