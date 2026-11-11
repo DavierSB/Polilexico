@@ -1,5 +1,6 @@
 import { Link } from "./link.js";
 import { RemoteSession } from "./remote.js";
+import { readTable } from "./table.js";
 import { load, save } from "../store.js";
 
 const NOTICE_MS = 5000;
@@ -29,6 +30,7 @@ class OnlineClient {
   forgetRoom() {
     this.session?.close();
     this.session = null;
+    this.table = null;
     this.room = null;
     this.notice = null;
     this.ended = null;
@@ -99,12 +101,27 @@ class OnlineClient {
   }
 
   finished() {
-    return !!this.session?.state?.result;
+    return !!this.session?.state?.result || this.table?.phase === "finished";
   }
 
   publish(proposal) {
     this.ended = null;
+    if (proposal.duplicate) this.forgetRoom();
     this.sendWhenOnline({ t: "create", ...proposalFields(proposal) });
+  }
+
+  startSeek(seek) {
+    this.forgetRoom();
+    this.roomAction("start", seek.id);
+  }
+
+  ready() {
+    this.send({ t: "ready" });
+  }
+
+  dismissOffer() {
+    this.offer = null;
+    this.changed();
   }
 
   challenge(person, proposal) {
@@ -241,6 +258,8 @@ const HANDLERS = {
   chat: (c, e) => c.heard({ from: e.name, text: e.text }),
   tell: (c, e) => !c.ignored().includes(key(e)) && c.heard({ from: e.name, country: e.country, text: e.text, private: true }),
   watchers: (c, e) => (c.watchers = e.people ?? []),
+  table: (c, e) => c.room && (c.table = readTable(e.view, c.room.watching ? "" : c.room.me)),
+  duplicateOffer: (c, e) => (c.offer = e.code),
 };
 
 function key(p) {
@@ -248,6 +267,7 @@ function key(p) {
 }
 
 function proposalFields(p) {
+  if (p.duplicate) return { mode: "duplicate", turnMs: p.turnMs, rounds: p.rounds, live: p.live };
   return { mode: "classic", timeMs: p.timeMs, overtimeMs: p.overtimeMs, void: !p.single, untimed: !p.timed };
 }
 

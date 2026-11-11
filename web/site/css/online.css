@@ -75,3 +75,23 @@
   .lobby { grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
   .lobby-seek { max-width: 420px; margin: 8px auto 0; }
 }
+
+.offer-card { display: flex; flex-direction: column; gap: 6px; border-color: var(--primary); }
+
+.offer-card .row { justify-content: flex-end; }
+
+.proposal-card { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; padding: 10px 14px; border-radius: 12px; background: var(--c3); }
+
+.leaderboard { gap: 6px; }
+
+.leader-card { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: var(--surface-variant); min-width: 0; }
+
+.leader-card.mine, .leader-card.leader { background: var(--primary-container); }
+
+.leader-card.master { border: 1.5px solid var(--primary); background: transparent; }
+
+.leader-place { width: 18px; }
+
+.leader-total { display: flex; flex-direction: column; align-items: flex-end; }
+
+.leader-total b { font-size: 20px; color: var(--primary); }

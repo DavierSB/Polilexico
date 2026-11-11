@@ -8,6 +8,8 @@ import { accountScreen } from "./online/account.js";
 import { lobbyScreen } from "./online/lobby.js";
 import { seekScreen } from "./online/seek.js";
 import { onlineGameScreen } from "./online/game.js";
+import { newDuplicateScreen } from "./online/newDuplicate.js";
+import { duplicateRoomScreen } from "./online/duplicateRoom.js";
 import { menuScreen } from "./screens/menu.js";
 import { duplicateSetupScreen } from "./duplicate/setup.js";
 import { duplicateGameScreen } from "./duplicate/screen.js";
@@ -37,6 +39,8 @@ start({
   cuenta: accountScreen,
   buscar: seekScreen,
   sala: onlineGameScreen,
+  "crear-duplicada": newDuplicateScreen,
+  "sala-duplicada": duplicateRoomScreen,
   duplicada: duplicateSetupScreen,
   "duplicada-partida": duplicateGameScreen,
   sprint: sprintSetupScreen,
