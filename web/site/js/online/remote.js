@@ -1,5 +1,6 @@
 import { normalize } from "../classic/state.js";
 import { parseSave, readSave } from "./mirror.js";
+import { play } from "../sound.js";
 
 const TICK_MS = 250;
 
@@ -15,9 +16,16 @@ export class RemoteSession {
   }
 
   replace(text) {
+    const before = this.state;
     this.saved = parseSave(text);
     this.receivedAt = performance.now();
     this.refresh();
+    if (before) this.cue(before, this.state);
+  }
+
+  cue(before, after) {
+    if (after.result && !before.result) return play(after.result.outcome === "win" ? "victory" : "game_over");
+    if (after.moves.length > before.moves.length && !after.moves.at(-1).byMe) play("opponent");
   }
 
   refresh() {

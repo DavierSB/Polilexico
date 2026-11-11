@@ -1,6 +1,7 @@
 import { call, whenReady } from "../engine.js";
 import { load, save } from "../store.js";
 import { pick, dictionaryText } from "./words.js";
+import { play } from "../sound.js";
 
 const WORDS_PER_GAME = 10;
 
@@ -72,7 +73,7 @@ export class RecallSession {
     if (!s) return null;
     const word = this.words[s.index];
     const verdict = letters.join() === word.tiles.join() ? "hit" : (await call("isValidWord", dictionaryText(letters))) ? "not_played" : this.config.single ? "invalid" : null;
-    if (!verdict) return "rejected";
+    if (!verdict) return (play("wrong"), "rejected");
     if (this.solving() !== s) return null;
     this.resolve(s, verdict);
     return verdict;
@@ -86,6 +87,8 @@ export class RecallSession {
   resolve(s, verdict) {
     const word = this.words[s.index];
     const hit = verdict === "hit";
+    if (hit) play("correct");
+    else if (verdict !== "forgotten") play("wrong");
     this.answers = [...this.answers, { word, hit }];
     this.history = [...this.history, { word, hit }];
     this.asked++;
@@ -107,6 +110,7 @@ export class RecallSession {
     const best = load(recordKey(this.config), 0);
     if (this.recalled > best) save(recordKey(this.config), this.recalled);
     this.record = { best: Math.max(best, this.recalled), isNew: this.recalled > best };
+    if (this.record.isNew) play("victory");
     return { name: "series_done" };
   }
 

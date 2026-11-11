@@ -2,6 +2,7 @@ import { call, whenReady, unwatch, watch } from "../engine.js";
 import { load, save } from "../store.js";
 import { parseBoard, tokens } from "../tiles.js";
 import { parsePlacement, spelled } from "../placement.js";
+import { cueWatcher, play } from "../sound.js";
 
 const TICK_MS = 250;
 let current = null;
@@ -30,6 +31,7 @@ class SprintSession {
     this.played = [];
     this.listeners = new Set();
     this.state = null;
+    this.cues = cueWatcher();
     watch(match, () => this.refresh());
     this.refresh();
   }
@@ -43,6 +45,7 @@ class SprintSession {
   async refresh() {
     const raw = await call("sprintRead", this.match).catch(() => null);
     if (!raw) return;
+    this.cues(raw.CueCount, raw.Cue);
     this.state = this.normalize(raw);
     this.noteRecord();
     this.listeners.forEach((fn) => fn(this.state));
@@ -63,7 +66,10 @@ class SprintSession {
   noteRecord() {
     const a = this.state.answer;
     if (this.state.outcome === "solved" && a && this.played.at(-1)?.placement !== a.placement) this.played.push(a);
-    if (this.state.phase === "finished" && this.state.solved > load(recordKey(this.setup), 0)) save(recordKey(this.setup), this.state.solved);
+    if (this.state.phase === "finished" && this.state.solved > load(recordKey(this.setup), 0)) {
+      save(recordKey(this.setup), this.state.solved);
+      play("victory");
+    }
   }
 
   tickWhileRunning() {

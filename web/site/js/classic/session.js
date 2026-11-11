@@ -1,6 +1,7 @@
 import { call, whenReady, unwatch, watch } from "../engine.js";
 import { clocks, flipClocks, normalize } from "./state.js";
 import { load, save } from "../store.js";
+import { cueWatcher } from "../sound.js";
 
 const SAVE_KEY = "classicGame";
 const TICK_MS = 250;
@@ -56,6 +57,7 @@ export class Session {
     this.listeners = new Set();
     this.state = null;
     this.ticker = null;
+    this.cues = cueWatcher();
     watch(match, () => this.refresh());
     this.refresh();
   }
@@ -73,6 +75,7 @@ export class Session {
   async refresh() {
     const raw = await call("classicRead", this.match).catch(() => null);
     if (!raw) return;
+    this.cues(raw.CueCount, raw.Cue);
     this.flipped = raw.Local && !raw.Status.Over && !raw.Status.HumanToMove;
     this.state = normalize(raw, this.flipped);
     this.publish();

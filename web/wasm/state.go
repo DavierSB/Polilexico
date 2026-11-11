@@ -19,6 +19,8 @@ type classicState struct {
 	Paused       bool
 	Result       *classic.Result
 	BotError     string
+	CueCount     int
+	Cue          string
 }
 
 func read(m *classic.Match) classicState {
@@ -27,7 +29,7 @@ func read(m *classic.Match) classicState {
 		Opponent: g.Opponent(), Host: g.Host(), Local: g.Local(), Study: m.Study(),
 		Board: g.Board(), Rack: g.Rack(), OpponentRack: g.OpponentRack(), Unseen: g.Unseen(),
 		Status: g.Status(), Moves: moves(g), Clocks: m.Clocks(), Paused: m.Paused(),
-		Result: g.Result(), BotError: m.BotError(),
+		Result: g.Result(), BotError: m.BotError(), CueCount: m.CueCount(), Cue: m.Cue(),
 	}
 }
 

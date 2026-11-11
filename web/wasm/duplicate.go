@@ -28,6 +28,8 @@ type duplicateState struct {
 	RevealAtEnd bool
 	SingleCheck bool
 	MaxRounds   int
+	CueCount    int
+	Cue         string
 }
 
 func registerDuplicate() {
@@ -88,6 +90,7 @@ func readDuplicate(m duplicateMatch) duplicateState {
 		Proposal: m.Proposal(), TurnMs: m.TurnMs(), RemainingMs: m.TurnRemainingMs(), CancelMs: m.CancelRemainingMs(),
 		LastError: m.LastError(), Paused: m.Paused(), Status: g.Status(), Turns: duplicateTurns(g), Result: g.Result(),
 		RevealAtEnd: g.RevealAtEnd(), SingleCheck: g.InvalidPlayLosesTurn(), MaxRounds: g.MaxRounds(),
+		CueCount: m.CueCount(), Cue: m.Cue(),
 	}
 }
 

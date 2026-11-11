@@ -1,5 +1,6 @@
 import { load, save } from "../store.js";
 import { nextPuzzle, DIFFICULTIES } from "./puzzles.js";
+import { play } from "../sound.js";
 
 const TICK_MS = 100;
 
@@ -63,8 +64,11 @@ export class AnagramSession {
     const elapsed = now - (this.lastTick ?? now);
     this.lastTick = now;
     if (this.stage?.name !== "solving" || this.paused) return;
+    const before = this.remainingMs;
     this.remainingMs = Math.max(0, this.remainingMs - elapsed);
-    if (this.remainingMs === 0) this.finish("timeout");
+    if (before > 30000 && this.remainingMs <= 30000) play("warning");
+    if (before > 5000 && this.remainingMs <= 5000) play("last_seconds");
+    if (this.remainingMs === 0) (play("time_up"), this.finish("timeout"));
     this.changed();
   }
 
@@ -78,6 +82,7 @@ export class AnagramSession {
   }
 
   hit(s, found) {
+    play("correct");
     if (DIFFICULTIES[this.config.difficulty].findAll && found.length < s.puzzle.answers.length) {
       this.stage = { ...s, found };
       this.changed();
@@ -90,6 +95,7 @@ export class AnagramSession {
   }
 
   miss(s) {
+    play("wrong");
     this.lives--;
     if (this.lives === 0) this.finish("no_lives");
     this.changed();
@@ -99,6 +105,7 @@ export class AnagramSession {
   giveUp() {
     const s = this.stage;
     if (s.name !== "solving") return;
+    play("wrong");
     this.lives--;
     if (this.lives === 0) this.finish("no_lives");
     else this.stage = { name: "revealed", puzzle: s.puzzle, found: s.found, outcome: "gave_up" };
@@ -110,6 +117,7 @@ export class AnagramSession {
     const best = load(recordKey(this.config), 0);
     if (this.solved > best) save(recordKey(this.config), this.solved);
     this.record = { best: Math.max(best, this.solved), isNew: this.solved > best };
+    if (this.record.isNew) play("victory");
     this.stage = { name: "finished", puzzle: s.puzzle ?? null, found: s.found ?? [], outcome };
   }
 

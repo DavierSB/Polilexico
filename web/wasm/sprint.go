@@ -26,6 +26,8 @@ type sprintState struct {
 	Outcome     string
 	Answer      *sprint.Solution
 	LastError   string
+	CueCount    int
+	Cue         string
 }
 
 func registerSprint() {
@@ -74,6 +76,7 @@ func readSprint(m sprintMatch) sprintState {
 		Phase: m.Phase(), Paused: m.Paused(), Lives: m.Lives(), MaxLives: m.MaxLives(), Solved: m.Solved(), Posed: m.Posed(),
 		TotalMs: m.TotalMs(), RemainingMs: m.RemainingMs(), Board: m.Board(), Rack: m.Rack(), Bingos: m.SolutionCount(),
 		Solutions: sprintSolutions(m), Outcome: m.Outcome(), Answer: m.Answer(), LastError: m.LastError(),
+		CueCount: m.CueCount(), Cue: m.Cue(),
 	}
 }
 

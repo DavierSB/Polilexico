@@ -15,6 +15,7 @@ import { account } from "./api.js";
 import { online } from "./client.js";
 import { MASTER, standings, placeOf, leftMs } from "./table.js";
 import { chatInput, chatLine } from "./tell.js";
+import { play } from "../sound.js";
 
 const LOW_ROUND_MS = 10000;
 const TICK_MS = 250;
@@ -70,6 +71,12 @@ class RoomView {
   }
 
   announce(previous, t) {
+    if (previous && t.rounds.length > previous.rounds.length && !this.watching) {
+      const last = t.rounds.at(-1).entries;
+      const mine = last.find((e) => e.name === t.me)?.points ?? -1;
+      play(mine === last.find((e) => e.name === MASTER)?.points ? "correct" : "miss");
+    }
+    if (previous && t.phase === "finished" && previous.phase !== "finished") play(standings(t).find((e) => e.name !== MASTER)?.name === t.me ? "victory" : "game_over");
     if (t.phase === "results" && (previous?.phase !== "results" || previous.round !== t.round)) this.resultsDialog();
     if (t.phase === "finished" && previous?.phase !== "finished") this.verdictDialog();
   }

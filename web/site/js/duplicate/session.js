@@ -1,6 +1,7 @@
 import { call, whenReady, unwatch, watch } from "../engine.js";
 import { load, save } from "../store.js";
 import { normalizeDuplicate } from "./state.js";
+import { cueWatcher } from "../sound.js";
 
 const SAVE_KEY = "duplicateGame";
 const TICK_MS = 250;
@@ -44,6 +45,7 @@ class DuplicateSession {
     this.listeners = new Set();
     this.state = null;
     this.ticker = null;
+    this.cues = cueWatcher();
     watch(match, () => this.refresh());
     this.refresh();
   }
@@ -61,6 +63,7 @@ class DuplicateSession {
   async refresh() {
     const raw = await call("duplicateRead", this.match).catch(() => null);
     if (!raw) return;
+    this.cues(raw.CueCount, raw.Cue);
     const changed = raw.Turns?.length !== this.state?.rounds.length || raw.Phase !== this.state?.phase;
     this.state = normalizeDuplicate(raw);
     this.listeners.forEach((fn) => fn(this.state));
