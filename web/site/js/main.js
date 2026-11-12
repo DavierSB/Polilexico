@@ -1,4 +1,5 @@
 import { apply } from "./theme.js";
+import { ensureFlags } from "./flags.js";
 import { startEngine } from "./engine.js";
 import { start } from "./router.js";
 import { homeScreen } from "./screens/home.js";
@@ -35,6 +36,7 @@ import { offerDownload } from "./screens/download.js";
 import { watchMessages } from "./online/messages.js";
 
 apply();
+ensureFlags();
 ["sprint", "finales", "recuerdas", "anagrama", "anagramador", "analizador", "listas", "diccionario"].forEach((r) => READY_ROUTES.add(r));
 
 start({

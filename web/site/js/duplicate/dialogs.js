@@ -2,16 +2,16 @@ import { h } from "../dom.js";
 import { openDialog, actions } from "../dialogs.js";
 import { totals } from "./state.js";
 
-export function movesDialog(rounds) {
-  const body = h("div.moves-scroll", {}, roundLines(rounds));
+export function movesDialog(rounds, who = "Tú") {
+  const body = h("div.moves-scroll", {}, roundLines(rounds, who));
   openDialog((close) => [h("h2", {}, "Movidas"), body, actions(h("button.text-btn", { onclick: close }, "Cerrar"))], { wide: true });
   body.scrollTop = body.scrollHeight;
 }
 
-function roundLines(rounds) {
+function roundLines(rounds, who) {
   if (!rounds.length) return h("p.muted.moves-empty", {}, "Todavía no hay movidas.");
   return h("div.turns", {},
-    h("div.turn-line.turn-head", {}, h("b.turn-number", {}, "#"), h("b.turn-cell", {}, "Máster"), h("b.turn-cell", {}, "Tú")),
+    h("div.turn-line.turn-head", {}, h("b.turn-number", {}, "#"), h("b.turn-cell", {}, "Máster"), h("b.turn-cell", {}, who)),
     rounds.map((r) => h("div.turn-line", {}, h("span.turn-number", {}, r.number), roundCell(r.master, false), roundCell(r.mine, r.hit))),
   );
 }

@@ -8,7 +8,8 @@ import { placementScore } from "../score.js";
 import { Placer } from "./placer.js";
 import { createRack } from "./rack.js";
 import { playerCard } from "./cards.js";
-import { askBlank, bagDialog, movesDialog, movesTable } from "./moves.js";
+import { askBlank, bagDialog, movesDialog, movesTable, turnsTable } from "./moves.js";
+import { flip } from "./state.js";
 import { dragFrom } from "./drag.js";
 import { chatButton } from "../online/tell.js";
 import { tile } from "../board.js";
@@ -32,7 +33,7 @@ class GameView {
     this.placer.askBlank = askBlank;
     this.board = createBoard({ onSquare: (i) => this.tapSquare(i) });
     this.rack = createRack(this.placer);
-    this.cards = { opponent: playerCard(options.opponent), me: playerCard({ ...options.me, mine: true }) };
+    this.cards = { opponent: playerCard(options.opponent), me: playerCard({ ...options.me, mine: !options.watching }) };
     this.el = this.layout();
     this.cover = h("div.handoff.hidden");
     this.el.append(this.cover);
@@ -46,11 +47,13 @@ class GameView {
     this.buttons = h("div.game-buttons");
     this.notice = h("div.game-notice");
     this.pauseCover = h("div.pause-cover.hidden", {}, h("div.card.pause-card", {}, h("p", {}, "En pausa"), h("button.btn", { onclick: () => this.session.resume() }, "Seguir")));
+    this.top = h("div.game-opponent", {}, this.cards.opponent.el);
+    this.bottom = h("div.game-me", {}, this.cards.me.el);
     return h("div.game", {},
       this.bar,
-      h("div.game-opponent", {}, this.cards.opponent.el),
+      this.top,
       h("div.game-board", {}, this.board.el, this.pauseCover),
-      h("div.game-me", {}, this.cards.me.el),
+      this.bottom,
       h("div.game-rack", {}, this.rack.el),
       this.buttons,
       this.notice,
@@ -63,7 +66,8 @@ class GameView {
     this.unbindKeys();
   }
 
-  show(state) {
+  show(raw) {
+    const state = this.seen(raw);
     const first = !this.state;
     const turnChanged = this.state?.moves.length !== state.moves.length || this.state?.result !== state.result;
     this.state = state;
@@ -74,6 +78,11 @@ class GameView {
     this.placer.sync(state.cells, state.rack);
     this.renderAll();
     if (state.result && !this.ended) this.end();
+  }
+
+  seen(state) {
+    this.flipped = !!this.options.watching && !state.myTurn && !state.result;
+    return this.flipped ? flip(state) : state;
   }
 
   tapSquare(i) {
@@ -123,7 +132,8 @@ class GameView {
 
   names() {
     if (this.options.local && this.state) return { me: this.state.host, opponent: this.state.opponent };
-    return { me: this.options.me.name, opponent: this.options.opponent.name };
+    const { me, opponent } = this.options;
+    return this.flipped ? { me: opponent.name, opponent: me.name } : { me: me.name, opponent: opponent.name };
   }
 
   updateCards() {
@@ -131,8 +141,15 @@ class GameView {
     const timed = !!s.clocks;
     const thinking = !s.myTurn && !s.result && this.options.thinkingText;
     const names = this.names();
-    this.cards.opponent.update({ name: names.opponent, score: s.opponentScore, active: !s.myTurn && !s.result, ms: s.clocks?.opponentMs, timed, tileCount: s.opponentTiles, letters: this.options.watching ? s.opponentRack : null, status: thinking || "" });
-    this.cards.me.update({ name: names.me, score: s.myScore, active: s.myTurn && !s.result, ms: s.clocks?.myMs, timed });
+    const [top, bottom] = this.seats();
+    top.update({ name: names.opponent, score: s.opponentScore, active: !s.myTurn && !s.result, ms: s.clocks?.opponentMs, timed, tileCount: s.opponentTiles, letters: this.options.watching ? s.opponentRack : null, status: thinking || "" });
+    bottom.update({ name: names.me, score: s.myScore, active: s.myTurn && !s.result, ms: s.clocks?.myMs, timed, tileCount: this.options.watching ? 0 : undefined });
+  }
+
+  seats() {
+    const seats = this.flipped ? [this.cards.me, this.cards.opponent] : [this.cards.opponent, this.cards.me];
+    if (this.top.firstChild !== seats[0].el) (this.top.replaceChildren(seats[0].el), this.bottom.replaceChildren(seats[1].el));
+    return seats;
   }
 
   renderBar() {
@@ -156,7 +173,7 @@ class GameView {
 
   renderButtons() {
     const p = this.placer;
-    if (this.options.watching) return replace(this.buttons);
+    if (this.options.watching) return this.watchPanel();
     if (p.exchanging) return replace(this.buttons, this.exchangeButtons());
     const enabled = this.canPlay();
     replace(this.buttons,
@@ -165,6 +182,19 @@ class GameView {
       h("button.btn.small.outlined", { disabled: !enabled || this.state.bag < 7, onclick: () => p.startExchange() }, "Cambiar"),
       h("button.btn.small.outlined", { disabled: !enabled, onclick: () => this.pass() }, "Pasar"),
     );
+  }
+
+  watchPanel() {
+    const s = this.state;
+    const list = h("div.watch-moves", {}, turnsTable(s, this.names()));
+    replace(this.buttons, h("div.watch-panel", {}, s.result ? h("b", {}, `${this.watchTitle()}   ${s.myScore} – ${s.opponentScore}`) : null, list));
+    list.scrollTop = list.scrollHeight;
+  }
+
+  watchTitle() {
+    const { outcome } = this.state.result;
+    if (outcome === "tie") return "Empate";
+    return `${outcome === "win" ? this.names().me : this.names().opponent} ganó`;
   }
 
   exchangeButtons() {

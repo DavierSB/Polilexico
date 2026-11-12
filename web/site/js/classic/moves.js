@@ -42,7 +42,7 @@ export function movesDialog(state, names) {
   body.scrollTop = body.scrollHeight;
 }
 
-function turnsTable(state, names) {
+export function turnsTable(state, names) {
   if (!state.moves.length) return h("p.muted.moves-empty", {}, "Todavía no hay movidas.");
   const meFirst = state.moves[0].byMe;
   const order = (mine, theirs) => (meFirst ? [mine, theirs] : [theirs, mine]);

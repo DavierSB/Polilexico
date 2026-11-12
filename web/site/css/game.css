@@ -480,3 +480,9 @@ button.word-row { cursor: pointer; }
   }
   .review-board { width: var(--board); }
 }
+
+.watch-panel { display: flex; flex-direction: column; gap: 4px; padding: 10px; border-radius: 14px; background: var(--surface-variant); }
+
+.watch-moves { max-height: 150px; overflow-y: auto; background: inherit; }
+
+.watch-moves .turns { background: inherit; }

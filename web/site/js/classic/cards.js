@@ -42,6 +42,7 @@ function clockText(el, ms, active) {
 
 function miniTiles(el, count) {
   if (el.childElementCount === count && !el.querySelector(".face-up")) return;
+  delete el.dataset.letters;
   el.replaceChildren(...Array.from({ length: count }, () => h("span.mini-tile")));
 }
 

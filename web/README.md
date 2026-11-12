@@ -84,3 +84,9 @@ La web vive en la raíz de `Polilexico/polilexico.github.io`; la portada informa
 `build/site` es un sitio estático: sirve en GitHub Pages o en cualquier hosting. Los trozos van ya
 comprimidos (`.bin`), así que el hosting no necesita comprimir nada. El servidor de partidas acepta
 peticiones de cualquier origen ([`server/cors.go`](../server/cors.go)).
+
+## Banderas en Windows
+
+Windows no dibuja los emojis de banderas: muestra las dos letras del país. Si el navegador no las dibuja,
+`js/flags.js` carga `fonts/twemoji_flags.woff2` (de [country-flag-emoji-polyfill](https://github.com/talkjs/country-flag-emoji-polyfill),
+MIT; dibujos de [Twemoji](https://github.com/twitter/twemoji), CC-BY 4.0), que solo cubre los caracteres de banderas.

@@ -12,6 +12,7 @@ import { photoAvatar } from "./profile.js";
 import { Placer } from "../classic/placer.js";
 import { createRack } from "../classic/rack.js";
 import { askBlank, bagDialog } from "../classic/moves.js";
+import { movesDialog } from "../duplicate/dialogs.js";
 import { dragFrom } from "../classic/drag.js";
 import { bindKeys } from "../classic/keys.js";
 import { account } from "./api.js";
@@ -76,7 +77,7 @@ class RoomView {
     if (!c.table || c.table === this.t) return;
     const previous = this.t;
     this.t = c.table;
-    this.placer.sync(this.t.cells, this.t.phase === "playing" && !this.watching ? this.t.rack : []);
+    this.placer.sync(this.t.cells, this.t.phase === "playing" ? this.t.rack : []);
     this.renderAll();
     this.announce(previous, this.t);
   }
@@ -128,9 +129,10 @@ class RoomView {
       h("button.text-btn", { onclick: () => this.exit() }, "Salir"),
       live ? h("button.text-btn", { onclick: () => this.abandon() }, "Abandonar") : null,
       h("span.grow"),
-      t.phase !== "playing" || this.watching ? h("button.text-btn", { onclick: () => this.standingsDialog() }, "Posiciones") : null,
-      chatButton(this.chatPanel),
       h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
+      chatButton(this.chatPanel),
+      t.phase !== "playing" || this.watching ? h("button.text-btn", { onclick: () => this.standingsDialog() }, "Posiciones") : null,
+      h("button.text-btn.moves-btn", { onclick: () => movesDialog(roundsOf(t, this.watching), this.watching ? "Mejor" : "Tú") }, "Movidas"),
       h("button.bag-btn", { "aria-label": "Quedan en la bolsa", onclick: () => bagDialog({ unseen: t.unseen }, "Quedan en la bolsa") }, bagIcon(t.unseen.length)),
     );
   }
@@ -235,6 +237,21 @@ class RoomView {
       if (target.rack) this.placer.take(from);
     });
   }
+}
+
+function roundsOf(t, watching) {
+  return t.rounds.map((r) => roundOf(r, watching ? bestOf(r) : r.entries.find((e) => e.name === t.me))).filter(Boolean);
+}
+
+function roundOf(r, other) {
+  const master = r.entries.find((e) => e.name === MASTER);
+  if (!master || !other) return null;
+  const play = (e) => ({ text: e.text, score: e.points });
+  return { number: r.number, master: play(master), mine: play(other), hit: other.points > 0 && other.points === master.points };
+}
+
+function bestOf(r) {
+  return r.entries.filter((e) => e.name !== MASTER).reduce((best, e) => (!best || e.points > best.points ? e : best), null);
 }
 
 function leaderboard(t) {
