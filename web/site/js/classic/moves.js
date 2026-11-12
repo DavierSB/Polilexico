@@ -37,8 +37,7 @@ function moveText(m) {
 }
 
 export function movesDialog(state, names) {
-  const phone = matchMedia(PHONE).matches;
-  const body = h("div.moves-scroll", {}, phone ? turnsTable(state, names) : movesTable(state, names));
+  const body = h("div.moves-scroll", {}, turnsTable(state, names));
   openDialog((close) => [h("h2", {}, "Movidas"), body, actions(h("button.text-btn", { onclick: close }, "Cerrar"))], { wide: true });
   body.scrollTop = body.scrollHeight;
 }

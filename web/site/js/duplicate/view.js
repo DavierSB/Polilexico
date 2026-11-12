@@ -12,7 +12,7 @@ import { askBlank, bagDialog } from "../classic/moves.js";
 import { dragFrom } from "../classic/drag.js";
 import { bindKeys } from "../classic/keys.js";
 import { totals } from "./state.js";
-import { roundsTable, movesDialog, roundDialog, endDialogs } from "./dialogs.js";
+import { movesDialog, roundDialog, endDialogs } from "./dialogs.js";
 import { lookUp } from "../study/lookup.js";
 
 const RESIGN_TEXT = "¿Abandonar la partida? Se borra de partidas en curso y cuenta como abandonada en tus estadísticas.";
@@ -45,7 +45,6 @@ class DuplicateView {
     this.panel = h("div.dup-panel");
     this.buttons = h("div.game-buttons");
     this.notice = h("div.game-notice");
-    this.side = h("div.game-moves");
     this.pauseCover = h("div.pause-cover.hidden", {}, h("div.card.pause-card", {}, h("p", {}, "En pausa"), h("button.btn", { onclick: () => this.session.resume() }, "Seguir")));
     return h("div.game.duplicate-game", {},
       this.bar,
@@ -55,7 +54,6 @@ class DuplicateView {
       h("div.game-rack", {}, this.rack.el),
       this.buttons,
       this.notice,
-      h("aside.game-side", {}, this.side),
     );
   }
 
@@ -91,7 +89,6 @@ class DuplicateView {
     this.rack.el.classList.toggle("hidden", !this.showsRack());
     this.rack.render(this.canPlay());
     this.renderButtons();
-    replace(this.side, h("h3.side-title", {}, "Movidas"), h("div.moves-scroll", {}, roundsTable(this.state.rounds)));
     this.pauseCover.classList.toggle("hidden", !this.state.paused);
   }
 

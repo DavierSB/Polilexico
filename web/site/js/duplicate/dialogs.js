@@ -2,34 +2,8 @@ import { h } from "../dom.js";
 import { openDialog, actions } from "../dialogs.js";
 import { totals } from "./state.js";
 
-const PHONE = "(max-width: 899px)";
-
-export function roundsTable(rounds) {
-  if (!rounds.length) return h("p.muted.moves-empty", {}, "Aún no ha terminado ninguna ronda.");
-  return h("table.moves.dup-moves", {},
-    h("thead", {}, h("tr", {}, h("th", {}, "#"), h("th", {}, "Máster"), h("th.num", {}, "Pts"), h("th", {}, "Tú"), h("th.num", {}, "Pts"))),
-    h("tbody", {}, rounds.map(roundRow).reverse()),
-  );
-}
-
-function roundRow(r) {
-  return h("tr", {},
-    h("td.muted", {}, r.number),
-    h("td", {}, playText(r.master)),
-    h("td.num", { class: r.master.bingo ? "marked" : "" }, r.master.score),
-    h("td", {}, playText(r.mine)),
-    h("td.num", { class: r.hit || r.mine.bingo ? "marked" : "" }, r.mine.score + (r.hit ? " ✓" : "")),
-  );
-}
-
-function playText(play) {
-  const [coords, word] = play.text.split(" ");
-  if (!word) return h("span.muted", {}, play.text);
-  return h("span", {}, h("span.muted.coords", {}, coords), " ", h("b", {}, word));
-}
-
 export function movesDialog(rounds) {
-  const body = h("div.moves-scroll", {}, matchMedia(PHONE).matches ? roundLines(rounds) : roundsTable(rounds));
+  const body = h("div.moves-scroll", {}, roundLines(rounds));
   openDialog((close) => [h("h2", {}, "Movidas"), body, actions(h("button.text-btn", { onclick: close }, "Cerrar"))], { wide: true });
   body.scrollTop = body.scrollHeight;
 }

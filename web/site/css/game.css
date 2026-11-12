@@ -17,7 +17,6 @@
 .game-buttons { grid-area: buttons; display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 6px; }
 .game-notice { grid-area: notice; }
 .game-side { grid-area: side; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
-.game-side .game-moves { display: none; }
 
 .game-buttons .btn { padding: 0 8px; min-height: 48px; }
 
@@ -144,6 +143,34 @@ table.moves tr.mine td:nth-child(2) { color: var(--primary); }
 
 .moves-empty { margin: 8px 0; }
 
+.turns { display: flex; flex-direction: column; font-size: 12px; font-variant-numeric: tabular-nums; }
+
+.turn-line { display: flex; align-items: center; gap: 0; padding: 3px 0; min-width: 0; }
+
+.turn-head { position: sticky; top: 0; padding: 0 0 4px; border-bottom: 1px solid var(--outline-variant); background: inherit; }
+
+.turn-number { flex: none; width: 18px; font-size: 11px; }
+
+.turn-cell { flex: 1 1 0; min-width: 0; display: flex; align-items: center; }
+
+.turn-text { flex: 1 1 0; min-width: 0; font-family: ui-monospace, "Roboto Mono", monospace; white-space: nowrap; }
+
+.turn-points { padding: 0 3px; color: var(--on-surface-variant); }
+
+.turn-sep { flex: none; padding: 0 3px; color: var(--outline); }
+
+.total-badge { padding: 1px 5px; border-radius: 6px; background: var(--primary); color: var(--on-primary); }
+
+.turn-cell.bingo .turn-text, .turn-cell.bingo .turn-points { color: var(--primary); font-weight: 700; }
+
+.turn-delta { padding: 0 3px; }
+
+.turn-dots { height: 9px; margin-top: 4px; background: linear-gradient(to right, var(--outline) 50%, transparent 0) center / 8px 1px repeat-x; }
+
+.turn-cell.dup-cell { flex-direction: row; padding-right: 6px; }
+
+.turn-points.hit { color: var(--primary); font-weight: 700; }
+
 .bag-grid, .blank-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .bag-item { display: flex; align-items: center; gap: 4px; min-width: 76px; }
@@ -168,15 +195,7 @@ table.moves tr.mine td:nth-child(2) { color: var(--primary); }
 
   .game-board { grid-row: 1 / -1; width: var(--board); }
 
-  .game-bar .moves-btn { display: none; }
-
   .game-side { height: 100%; }
-
-  .game-side .game-moves { display: flex; flex-direction: column; gap: 4px; min-height: 0; flex: 1; }
-
-  .game-side .moves-scroll { max-height: none; flex: 1; min-height: 120px; }
-
-  .game-side table.moves th { background: var(--bg); }
 
   .rack { gap: 6px; }
 

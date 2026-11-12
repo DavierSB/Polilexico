@@ -65,17 +65,16 @@ export const THEMES = Object.keys(PALETTES);
 
 export const LABELS = NUMBER_LABELS;
 
-let current = { name: load("theme", "Polimita"), light: load("lightBoard", false) };
+let current = { name: THEMES[Math.floor(Math.random() * THEMES.length)], light: load("lightBoard", false) };
 let override = null;
 
 export function theme() {
-  return current;
+  return override ? { ...current, name: override } : current;
 }
 
 export function choose(name) {
-  current = { ...current, name };
-  override = null;
-  save("theme", name);
+  if (override) override = name;
+  else current = { ...current, name };
   apply();
 }
 

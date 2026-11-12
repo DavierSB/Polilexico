@@ -45,7 +45,6 @@ class GameView {
     this.bar = h("div.game-bar");
     this.buttons = h("div.game-buttons");
     this.notice = h("div.game-notice");
-    this.side = h("div.game-moves");
     this.pauseCover = h("div.pause-cover.hidden", {}, h("div.card.pause-card", {}, h("p", {}, "En pausa"), h("button.btn", { onclick: () => this.session.resume() }, "Seguir")));
     return h("div.game", {},
       this.bar,
@@ -55,7 +54,7 @@ class GameView {
       h("div.game-rack", {}, this.rack.el),
       this.buttons,
       this.notice,
-      h("aside.game-side", {}, this.side, this.options.extra ?? null),
+      h("aside.game-side", {}, this.options.extra ?? null),
     );
   }
 
@@ -106,7 +105,6 @@ class GameView {
     this.renderBoard();
     this.rack.render(this.canPlay());
     this.renderButtons();
-    this.renderSide();
     this.renderNotice();
     this.pauseCover.classList.toggle("hidden", !this.state.paused);
   }
@@ -175,10 +173,6 @@ class GameView {
       h("button.btn.small", { disabled: !n, onclick: () => this.exchange() }, `Cambiar ${n}`),
       h("button.btn.small.outlined", { onclick: () => this.placer.cancelExchange() }, "Cancelar"),
     ];
-  }
-
-  renderSide() {
-    replace(this.side, h("h3.side-title", {}, "Movidas"), h("div.moves-scroll", {}, movesTable(this.state, this.names())));
   }
 
   renderNotice() {
