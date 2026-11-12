@@ -13,6 +13,7 @@ import { flip } from "./state.js";
 import { dragFrom } from "./drag.js";
 import { chatButton } from "../online/tell.js";
 import { tile } from "../board.js";
+import { moveButtons } from "../parts.js";
 import { bindKeys } from "./keys.js";
 import { lookUp } from "../study/lookup.js";
 import { floatScore, landTiles } from "../motion.js";
@@ -116,8 +117,7 @@ class GameView {
   }
 
   tapSquare(i) {
-    const studying = this.options.study || this.state?.result;
-    if (studying && this.state.cells[i] && !this.placer.pending.size) return lookUp(this.state.cells, i);
+    if (this.state?.result && this.state.cells[i] && !this.placer.pending.size) return lookUp(this.state.cells, i);
     this.placer.clickSquare(i);
   }
 
@@ -207,12 +207,12 @@ class GameView {
     if (this.options.watching) return this.watchPanel();
     if (p.exchanging) return replace(this.buttons, this.exchangeButtons());
     const enabled = this.canPlay();
-    replace(this.buttons,
-      h("button.btn.small", { disabled: !enabled || !p.pending.size, onclick: () => this.play() }, "Jugar"),
+    replace(this.buttons, moveButtons(
+      h("button.btn", { disabled: !enabled || !p.pending.size, onclick: () => this.play() }, "Jugar"),
       p.pending.size ? h("button.btn.small.tonal", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.tonal", { onclick: () => p.shuffle() }, "Mezclar"),
       h("button.btn.small.outlined", { disabled: !enabled || !this.state.bag, onclick: () => p.startExchange(this.state.bag) }, "Cambiar"),
       h("button.btn.small.outlined", { disabled: !enabled, onclick: () => this.pass() }, "Pasar"),
-    );
+    ));
   }
 
   watchPanel() {

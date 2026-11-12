@@ -6,7 +6,6 @@ data class ClassicSetup(
   val invalidLosesTurn: Boolean,
   val timeMs: Long,
   val overtimeMs: Long,
-  val study: Boolean = false,
   val players: LocalPlayers? = null,
 )
 

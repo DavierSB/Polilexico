@@ -35,8 +35,6 @@ class ClassicGame private constructor(
 ) : LiveGame<ClassicState>(id, mode, saves, scope, ClassicReader(match, seat).read()) {
   val opponent: String = match.game().opponent()
 
-  val study: Boolean = match.study()
-
   val host: String? = match.game().takeIf { it.local() }?.host()
 
   suspend fun play(placement: Placement): String? = move(placement.toString())
@@ -93,7 +91,7 @@ class ClassicGame private constructor(
 
   internal companion object {
     suspend fun start(setup: ClassicSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame =
-      open(id, Mode.CLASSIC, saves, scope) { newMatch(setup, it).also { m -> m.setStudy(setup.study) } }
+      open(id, Mode.CLASSIC, saves, scope) { newMatch(setup, it) }
 
     suspend fun startHost(setup: ClassicSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame =
       open(id, null, saves, scope, Seat.HOST) { newMatch(setup, it) }

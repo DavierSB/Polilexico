@@ -77,7 +77,7 @@ fun SeatScreen(
   if (chart) ChartDialog(view) { chart = false }
   if (coloredChart) ChartDialog(view, colored = true) { coloredChart = false }
   if (moves) MovesDialog(movesOf(view), if (view.watching) "Mejor" else "Tú") { moves = false }
-  if (bag) BagDialog("Quedan en la bolsa", view.unseen) { bag = false }
+  if (bag) BagDialog(view.unseen.size, null, view.unseen) { bag = false }
   if (standings) StandingsDialog(view) { standings = false }
   if (abandoning) ConfirmDialog("¿Seguro que quieres abandonar la partida?", yes = "Abandonar", no = "Seguir", onYes = { abandoning = false; onAbandon?.invoke() }) { abandoning = false }
   SeatVerdictOnce(view, { actions.exit() }.takeIf { online })

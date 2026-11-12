@@ -14,9 +14,7 @@
 
 .card.choice .avatar { width: 44px; height: 44px; }
 
-.card.choice .title { font-size: 16px; }
-
-.card.choice .muted { font-size: 14px; line-height: 1.3; }
+.card.choice .muted { line-height: 1.3; }
 
 .study-btn { font-size: 15px; padding: 0 8px; }
 
@@ -55,8 +53,6 @@
 .bar-chat { display: inline-grid; }
 
 .game-side > .chat-panel { display: none; }
-
-.bag-summary { margin: 0 0 12px; }
 
 .letter-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 
@@ -100,3 +96,43 @@
 .game-bar .icon-btn { flex: none; width: 36px; }
 
 .game-bar .bag-btn { flex: none; margin-left: auto; }
+
+body { font-size: 15px; }
+
+.btn { min-height: 44px; padding: 0 20px; font-size: 15px; }
+
+.btn.small { min-height: 38px; padding: 0 14px; font-size: 14px; }
+
+.text-btn { font-size: 15px; }
+
+.icon-btn { width: 40px; height: 40px; }
+
+.icon-btn svg { width: 22px; height: 22px; }
+
+.chip { min-height: 36px; padding: 0 16px; font-size: 14px; }
+
+.screen-head { min-height: 48px; }
+
+.screen-head h1 { font-size: 21px; }
+
+.section-title { font-size: 14px; }
+
+.mode-tab { min-height: 44px; font-size: 15px; }
+
+.field input, .field select, .chat-input { min-height: 48px; font-size: 16px; }
+
+.home-menu { gap: 12px; }
+
+.home-menu .btn { min-height: 52px; font-size: 17px; }
+
+.setup-step .start { min-height: 48px; }
+
+.dialog h2 { font-size: 20px; }
+
+.card.choice .title { font-size: 15px; }
+
+.card.choice .muted { font-size: 13px; }
+
+.move-row > .btn { min-height: 36px; font-size: 14px; }
+
+.game-buttons .play-btn { min-height: 52px; font-size: 18px; }

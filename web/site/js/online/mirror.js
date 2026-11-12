@@ -28,7 +28,7 @@ export function readSave(saved, guest, elapsedMs = 0) {
   const known = racks[viewer];
   const counts = [0, 1].map((i) => (racks[i].length || i === viewer ? racks[i].length : Math.min(RACK_SIZE, 100 - onBoard - known.length)));
   return {
-    Opponent: game.BotName, Host: game.Log?.human_name ?? "", Local: true, Study: false,
+    Opponent: game.BotName, Host: game.Log?.human_name ?? "", Local: true,
     Board: boardText(cells), Rack: racks[human].join(" "), OpponentRack: racks[1 - human].join(" "),
     Unseen: unseen(cells, racks.flat()).join(" "),
     Status: {

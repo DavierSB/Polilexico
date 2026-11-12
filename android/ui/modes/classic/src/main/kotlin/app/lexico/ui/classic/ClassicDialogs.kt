@@ -9,7 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import app.lexico.ui.board.TilePlacer
-import app.lexico.ui.common.BagCountDialog
 import app.lexico.ui.common.BagDialog
 import app.lexico.ui.common.ConfirmDialog
 import app.lexico.ui.common.InfoDialog
@@ -74,8 +73,7 @@ internal fun ClassicDialogsShown(view: ClassicView, c: TilePlacer, actions: Clas
 
 @Composable
 private fun UnseenDialog(view: ClassicView, close: () -> Unit) {
-  val title = "Por salir (bolsa ${view.bag} + atril del rival)"
-  if (LocalShowUnseen.current) BagDialog(title, view.unseen, close) else BagCountDialog(title, view.unseen.size, close)
+  BagDialog(view.bag, view.unseen.size - view.bag, view.unseen.takeIf { LocalShowUnseen.current }, close)
 }
 
 @Composable

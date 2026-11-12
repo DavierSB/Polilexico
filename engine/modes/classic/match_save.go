@@ -14,7 +14,6 @@ type savedMatch struct {
 	OvertimeMs   int64
 	HumanSpentMs int64
 	BotSpentMs   int64
-	Study        bool
 }
 
 func (m *Match) Save() (string, error) {
@@ -38,7 +37,6 @@ func LoadMatch(text string, l events.Listener) (*Match, error) {
 	}
 	clock := timing.Real()
 	m := startMatch(g, s.clockPair(clock), clock, l, true)
-	m.study = s.Study
 	return m, nil
 }
 
@@ -75,7 +73,7 @@ func (s savedGame) progress() *Progress {
 }
 
 func (m *Match) saved(game string) savedMatch {
-	s := savedMatch{Game: game, Study: m.study}
+	s := savedMatch{Game: game}
 	if p := m.clocks; p != nil {
 		s.TimeMs, s.OvertimeMs = p.time.Milliseconds(), p.overtime.Milliseconds()
 		s.HumanSpentMs, s.BotSpentMs = p.human.Spent().Milliseconds(), p.bot.Spent().Milliseconds()

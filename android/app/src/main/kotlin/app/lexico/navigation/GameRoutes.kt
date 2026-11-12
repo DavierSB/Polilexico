@@ -128,7 +128,7 @@ internal fun ClassicPlay(
     ClassicController(game, scope, nav::back, { exporting = it }) { path, atEndgame -> nav.replace(Screen.Review(path, atEndgame)) }
   }
   val state by game.state.collectAsState()
-  LookupOnlyWhenOver(state.result != null || game.study) {
+  LookupOnlyWhenOver(state.result != null) {
     val view = classicView(state, game.opponent, controller.notice, game.host, handOff && game.host != null)
       .copy(status = wifiNotice, pausable = pausable, watchers = watchers).let { if (online) withRivalInvalid(it, state) else it }
     ClassicScreen(view, themes.board, controller, { themes.picking = true }, onAdjourn)
@@ -148,7 +148,7 @@ internal fun DuplicatePlay(game: DuplicateGame, nav: Navigator, themes: ThemeSta
   val state by game.state.collectAsState()
   val finished = state.phase is DuplicatePhase.Finished
   remember(finished) { if (finished) records.submit(game.setup, efficiencyTenths(state)) }
-  LookupOnlyWhenOver(finished || game.setup.study) { DuplicateScreen(duplicateView(state, controller.notice), themes.board, controller) { themes.picking = true } }
+  LookupOnlyWhenOver(finished) { DuplicateScreen(duplicateView(state, controller.notice), themes.board, controller) { themes.picking = true } }
   exporting?.let { GameExport(it, games, themes.board) { exporting = null } }
 }
 

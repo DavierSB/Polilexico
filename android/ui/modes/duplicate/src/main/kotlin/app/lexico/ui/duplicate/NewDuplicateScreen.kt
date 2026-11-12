@@ -31,7 +31,6 @@ import app.lexico.ui.common.SavedShortcuts
 import app.lexico.ui.common.SwitchPrompt
 import app.lexico.ui.common.StartButton
 import app.lexico.ui.common.Stepper
-import app.lexico.ui.common.StudyModeSelector
 import app.lexico.ui.common.TimeField
 import app.lexico.ui.common.TwoOptions
 import java.util.Locale
@@ -45,7 +44,6 @@ data class DuplicateConfig(
   val check: PlayCheck = PlayCheck.SINGLE,
   val turnMs: Long = DEFAULT_TURN_MS,
   val rounds: Int = 0,
-  val study: Boolean = false,
 )
 
 @Composable
@@ -116,17 +114,15 @@ private fun ColumnScope.SoloForm(saved: SavedShortcuts, recordFor: (DuplicateCon
   var turn by remember { mutableStateOf(Durations.format(DEFAULT_TURN_MS)) }
   var fixed by remember { mutableStateOf(false) }
   var rounds by remember { mutableIntStateOf(PRESET_ROUNDS) }
-  var study by remember { mutableStateOf(false) }
   var rules by remember { mutableStateOf(false) }
   val turnMs = Durations.parse(turn)?.takeIf { it > 0 }
-  val config = turnMs?.let { DuplicateConfig(check, it, if (fixed) rounds else 0, study) }
+  val config = turnMs?.let { DuplicateConfig(check, it, if (fixed) rounds else 0) }
   Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
     RulesButton { rules = true }
     RoundsSection(fixed, rounds, { fixed = it }, { rounds = it })
     ChallengeModeSelector(listOf("Single" to SINGLE_HINT, "Al Final" to AT_END_HINT), check.ordinal) { check = PlayCheck.entries[it] }
     SectionTitle("Tiempo", info = "Si no juegas a tiempo, 0 puntos ese turno.")
     TimeField(turn, { turn = it }, "Tiempo por turno")
-    StudyModeSelector(study) { study = it }
     config?.let { RecordLine(recordFor(it)) }
     SwitchPrompt("¿O son varios jugadores locales?", onWifi)
   }

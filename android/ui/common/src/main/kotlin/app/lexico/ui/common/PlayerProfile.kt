@@ -22,7 +22,9 @@ class ProfileOpener(val open: (name: String, country: String) -> Unit)
 
 val LocalProfileOpener = compositionLocalOf<ProfileOpener?> { null }
 
-class ProfileButtons(val write: (() -> Unit)? = null, val challenge: (() -> Unit)? = null, val watch: (() -> Unit)? = null)
+class ProfileButtons(
+  val write: (() -> Unit)? = null, val challenge: (() -> Unit)? = null, val watch: (() -> Unit)? = null, val resume: (() -> Unit)? = null,
+)
 
 @Composable
 fun Modifier.opensProfile(name: String, country: String): Modifier {
@@ -56,7 +58,7 @@ private fun ProfileStats(sections: List<StatsSection>?, error: String?) {
 
 @Composable
 private fun MainAction(buttons: ProfileButtons, close: () -> Unit) {
-  val main = buttons.watch?.let { "Ver" to it } ?: buttons.challenge?.let { "Retar" to it }
+  val main = buttons.watch?.let { "Ver" to it } ?: buttons.resume?.let { "Retomar" to it } ?: buttons.challenge?.let { "Retar" to it }
   if (main == null) return TextButton(onClick = close) { Text("Cerrar") }
   Button(onClick = { close(); main.second() }) { Text(main.first) }
 }

@@ -34,11 +34,16 @@ internal class Composer {
 @Composable
 internal fun MessageDialogs(client: OnlineClient, contacts: List<ChatContact>, fallback: ChatContact?, composer: Composer) {
   val inbox by client.inbox.collectAsState()
-  var history by remember { mutableStateOf(false) }
   if (!composer.open) ChatPopup(
     inbox, client::closeChat, onReply = { line -> client.closeChat(); composer.write(replyTo(line, contacts)) },
     onIgnoreUser = { client.ignorePerson(it.from, it.country) }, onIgnoreAll = { client.ignore(true) },
   )
+  ComposerDialogs(client, contacts, fallback, composer)
+}
+
+@Composable
+internal fun ComposerDialogs(client: OnlineClient, contacts: List<ChatContact>, fallback: ChatContact?, composer: Composer) {
+  var history by remember { mutableStateOf(false) }
   if (composer.open) Composing(client, contacts, fallback, composer) { history = true }
   if (history) ChatHistoryDialog(rememberOnline().chatLog.records.collectAsState().value) { history = false }
 }

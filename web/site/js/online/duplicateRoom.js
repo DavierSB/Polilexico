@@ -7,11 +7,11 @@ import { createBoard, tile } from "../board.js";
 import { confirm, openDialog, actions, themeDialog, toast } from "../dialogs.js";
 import { at } from "../placement.js";
 import { placementScore } from "../score.js";
-import { formatClock } from "../parts.js";
+import { formatClock, moveButtons } from "../parts.js";
 import { photoAvatar } from "./profile.js";
 import { Placer } from "../classic/placer.js";
 import { createRack } from "../classic/rack.js";
-import { askBlank, bagDialog } from "../classic/moves.js";
+import { askBlank, duplicateBagDialog } from "../classic/moves.js";
 import { movesDialog } from "../duplicate/dialogs.js";
 import { dragFrom } from "../classic/drag.js";
 import { bindKeys } from "../classic/keys.js";
@@ -133,7 +133,7 @@ class RoomView {
       chatButton(this.chatPanel),
       t.phase !== "playing" || this.watching ? h("button.text-btn", { onclick: () => this.standingsDialog() }, "Posiciones") : null,
       h("button.text-btn.moves-btn", { onclick: () => movesDialog(roundsOf(t, this.watching), this.watching ? "Mejor" : "Tú") }, "Movidas"),
-      h("button.bag-btn", { "aria-label": "Quedan en la bolsa", onclick: () => bagDialog({ unseen: t.unseen }, "Quedan en la bolsa") }, bagIcon(t.unseen.length)),
+      h("button.bag-btn", { "aria-label": "Quedan en la bolsa", onclick: () => duplicateBagDialog(t.unseen) }, bagIcon(t.unseen.length)),
     );
   }
 
@@ -162,10 +162,10 @@ class RoomView {
   renderButtons() {
     if (!this.canPlay()) return replace(this.buttons);
     const p = this.placer;
-    replace(this.buttons,
-      h("button.btn.small", { disabled: !p.pending.size, onclick: () => this.play() }, "Jugar"),
+    replace(this.buttons, moveButtons(
+      h("button.btn", { disabled: !p.pending.size, onclick: () => this.play() }, "Jugar"),
       p.pending.size ? h("button.btn.small.tonal", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.tonal", { onclick: () => p.shuffle() }, "Mezclar"),
-    );
+    ));
   }
 
   renderSide() {

@@ -1,13 +1,12 @@
 import { h, replace } from "../dom.js";
-import { lobbyRoute } from "./lobby.js";
+import { lobbyRoute, adjournedWith, resumeWith, challenge } from "./lobby.js";
 import { go } from "../router.js";
 import { screenHead, nameFlag, initialAvatar } from "../parts.js";
 import { openDialog, actions, confirm, toast } from "../dialogs.js";
 import { account, request, token, server, logOut } from "./api.js";
 import { countryName } from "./countries.js";
 import { online } from "./client.js";
-import { writeMessage } from "./messages.js";
-import { blockedByGame } from "./involved.js";
+import { writeMessage, messagesButton } from "./messages.js";
 import { onlineBlock } from "../games/stats.js";
 
 const PHOTO_SIDE = 256;
@@ -20,10 +19,22 @@ export function photoAvatar(name, country, size = 40) {
   return img;
 }
 
+export function accountButtons() {
+  if (!account()) return { el: null, stop: () => {} };
+  const messages = messagesButton();
+  return { el: h("div.row.head-actions", {}, messages.el, profileButton()), stop: messages.stop };
+}
+
 export function profileButton() {
   const me = account();
   if (!me) return null;
   return h("button.icon-btn.profile-btn", { "aria-label": "Perfil en línea", onclick: () => go("perfil") }, photoAvatar(me.name, me.country, 32));
+}
+
+function challengeAction(person, close) {
+  const game = adjournedWith(online, person);
+  if (game) return h("button.text-btn", { disabled: !!game.busy, onclick: () => (close(), resumeWith(online, game)) }, "Retomar");
+  return h("button.text-btn", { onclick: () => (close(), challenge(person)) }, "Retar");
 }
 
 export function profileDialog(person) {
@@ -33,7 +44,7 @@ export function profileDialog(person) {
     body,
     actions(
       h("button.text-btn", { onclick: () => (close(), writeMessage(person)) }, "Escribir"),
-      person.playing ? null : h("button.text-btn", { onclick: () => (close(), blockedByGame() || go("buscar/" + encodeURIComponent(person.name) + "/" + person.country)) }, "Retar"),
+      person.playing ? null : challengeAction(person, close),
       h("button.text-btn", { onclick: close }, "Cerrar"),
     ),
   ], { wide: true });

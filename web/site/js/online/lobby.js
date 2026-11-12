@@ -226,6 +226,27 @@ function personRow(c, p, close = () => {}) {
   const game = c.lobby.games.find((g) => g.players?.includes(p.name));
   const action = p.playing
     ? h("button.btn.small.outlined", { disabled: !game, onclick: () => (close(), c.watch(game.id)) }, "Ver")
-    : h("button.btn.small", { onclick: () => (close(), blockedByGame() || go("buscar/" + encodeURIComponent(p.name) + "/" + p.country)) }, "Retar");
+    : challengeButton(c, p, close);
   return playerRow(p.name, p.country, null, false, chatButton(p), action);
+}
+
+function challengeButton(c, p, close) {
+  const game = adjournedWith(c, p);
+  if (game) return h("button.btn.small", { disabled: !!game.busy, onclick: () => (close(), resumeWith(c, game)) }, "Retomar");
+  return h("button.btn.small", { onclick: () => (close(), challenge(p)) }, "Retar");
+}
+
+export function adjournedWith(c, p) {
+  return c.lobby.adjourned.find((a) => !a.duplicate && !a.result && a.opponent === p.name && a.country === p.country) ?? null;
+}
+
+export function resumeWith(c, game) {
+  if (blockedByGame()) return;
+  save("tab.classic", "online");
+  c.resumeAdjourned(game.id);
+  go("clasica");
+}
+
+export function challenge(p) {
+  if (!blockedByGame()) go("buscar/" + encodeURIComponent(p.name) + "/" + p.country);
 }

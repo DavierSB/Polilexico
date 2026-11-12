@@ -18,6 +18,8 @@
 
 .home-board { grid-area: board; }
 
+.home-side { grid-area: side; display: none; }
+
 .home-menu { grid-area: menu; display: flex; flex-direction: column; gap: 14px; }
 
 .home-menu .btn { min-height: 56px; font-size: 19px; }
@@ -39,25 +41,35 @@
 
 @media (min-width: 900px) and (min-aspect-ratio: 1/1) {
   .home {
-    --menu: clamp(420px, 28vw, 520px);
-    --board: min(calc(100dvh - 48px), calc(100vw - var(--menu) - 112px));
+    --menu: clamp(260px, 22vw, 440px);
+    --board: min(calc(100dvh - 48px), calc(100vw - 2 * var(--menu) - 128px));
     max-width: none;
     width: fit-content;
     padding-top: 16px;
-    grid-template-columns: var(--board) var(--menu);
-    grid-template-areas: "board head" "board menu";
+    grid-template-columns: var(--menu) var(--board) var(--menu);
+    grid-template-areas: "side board head" "side board menu";
     grid-template-rows: auto 1fr;
-    column-gap: 48px;
+    column-gap: 40px;
     align-items: start;
   }
+
+  .home-side { display: flex; flex-direction: column; gap: 2px; padding-top: 16px; }
+
+  .home-side .drawer-brand { padding: 0 8px 20px; }
+
+  .home-side .brand { font-size: clamp(26px, 3dvh, 36px); }
+
+  .home-side .brand img { width: clamp(40px, 4.6dvh, 56px); }
+
+  .home-side .drawer-item { min-height: clamp(48px, 5.4dvh, 64px); font-size: clamp(16px, 1.8dvh, 21px); }
+
+  .home-head .drawer-btn, .home-head > .brand { display: none; }
+
+  .home-head { justify-content: flex-end; }
 
   .home-board { width: var(--board); }
 
   .home-menu .btn { min-height: clamp(56px, 6.5dvh, 80px); font-size: clamp(19px, 2.2dvh, 26px); }
-
-  .home-head .brand { font-size: clamp(30px, 3.4dvh, 44px); }
-
-  .home-head .brand img { width: clamp(48px, 5.4dvh, 72px); }
 
   .home-menu .badge { font-size: clamp(12px, 1.3dvh, 16px); }
 

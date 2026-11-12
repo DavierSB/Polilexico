@@ -46,9 +46,11 @@ private fun buttons(context: ProfileContext, lobby: Lobby, person: Person?): Pro
   val write = { context.composer.write(ChatContact(person.name, person.country, ContactGroup.OTHERS)) }
   if (context.inGame) return ProfileButtons(write = write)
   val game = lobby.games.find { g -> g.players.zip(g.countries).any { it == person.name to person.country } }
+  val adjourned = adjournedWith(person, lobby)
   return ProfileButtons(
     write = write,
     watch = game?.let { { context.client.watch(it); context.go(Screen.OnlinePlay) } },
-    challenge = { context.go(Screen.OnlineNewClassic(person)) }.takeIf { !person.busy },
+    resume = adjourned?.let { { context.client.resume(it); context.go(Screen.OnlinePlay) } }.takeIf { !person.busy },
+    challenge = { context.go(Screen.OnlineNewClassic(person)) }.takeIf { !person.busy && adjourned == null },
   )
 }

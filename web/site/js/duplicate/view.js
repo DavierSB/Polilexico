@@ -5,10 +5,10 @@ import { createBoard, tile } from "../board.js";
 import { confirm, themeDialog, toast } from "../dialogs.js";
 import { at } from "../placement.js";
 import { placementScore } from "../score.js";
-import { formatClock } from "../parts.js";
+import { formatClock, moveButtons } from "../parts.js";
 import { Placer } from "../classic/placer.js";
 import { createRack, face } from "../classic/rack.js";
-import { askBlank, bagDialog } from "../classic/moves.js";
+import { askBlank, duplicateBagDialog } from "../classic/moves.js";
 import { dragFrom } from "../classic/drag.js";
 import { bindKeys } from "../classic/keys.js";
 import { totals } from "./state.js";
@@ -101,8 +101,7 @@ class DuplicateView {
   }
 
   tapSquare(i) {
-    const studying = this.options.study || this.state?.finished;
-    if (studying && this.state.cells[i] && !this.placer.pending.size) return lookUp(this.state.cells, i);
+    if (this.state?.finished && this.state.cells[i] && !this.placer.pending.size) return lookUp(this.state.cells, i);
     if (this.canPlay()) this.placer.clickSquare(i);
   }
 
@@ -133,7 +132,7 @@ class DuplicateView {
       live ? h("button.icon-btn", { "aria-label": "Pausa", onclick: () => this.togglePause() }, icon(this.state.paused ? "play" : "pause")) : null,
       h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
       h("button.text-btn.moves-btn", { onclick: () => movesDialog(this.state.rounds) }, "Movidas"),
-      h("button.bag-btn", { "aria-label": "Quedan en la bolsa", onclick: () => bagDialog({ unseen: this.state.bag }, "Quedan en la bolsa") }, bagIcon(this.state.bag.length)),
+      h("button.bag-btn", { "aria-label": "Quedan en la bolsa", onclick: () => duplicateBagDialog(this.state.bag) }, bagIcon(this.state.bag.length)),
     );
   }
 
@@ -168,10 +167,10 @@ class DuplicateView {
     if (s.phase === "confirming") return replace(this.buttons, confirming(s, () => this.session.cancel()));
     if (s.phase === "finished") return replace(this.buttons, h("button.btn.small", { onclick: () => endDialogs(s, true) }, "Resultados"), h("button.btn.small.outlined", { onclick: () => this.options.exit() }, "Salir"));
     if (s.phase !== "playing") return replace(this.buttons);
-    replace(this.buttons,
-      h("button.btn.small", { disabled: !this.canPlay() || !p.pending.size, onclick: () => this.play() }, "Jugar"),
+    replace(this.buttons, moveButtons(
+      h("button.btn", { disabled: !this.canPlay() || !p.pending.size, onclick: () => this.play() }, "Jugar"),
       p.pending.size ? h("button.btn.small.tonal", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.tonal", { onclick: () => p.shuffle() }, "Mezclar"),
-    );
+    ));
   }
 
   liveScore() {

@@ -54,6 +54,6 @@ internal fun DuplicateDialogsShown(view: DuplicateView, c: TilePlacer, actions: 
   if (dialogs.invalids) InvalidPlaysDialog(view.invalidPlays, dialogs::closeInvalids)
   if (dialogs.end) GameEndDialog(view) { dialogs.end = false }
   if (dialogs.moves) MovesDialog(view.rounds) { dialogs.moves = false }
-  if (dialogs.bag) BagDialog("Quedan en la bolsa", view.bag) { dialogs.bag = false }
+  if (dialogs.bag) BagDialog(view.bag.size, null, view.bag) { dialogs.bag = false }
   if (dialogs.resign) ResignDialog(onResign = actions::resign, onContinue = { dialogs.resign = false })
 }

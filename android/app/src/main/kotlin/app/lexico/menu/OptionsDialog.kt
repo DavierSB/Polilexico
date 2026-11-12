@@ -44,7 +44,7 @@ private fun LiveScoreSwitch(on: Boolean, change: (Boolean) -> Unit) =
 
 @Composable
 private fun UnseenSwitch(on: Boolean, change: (Boolean) -> Unit) =
-  OptionSwitch(on, change, "Mostrar las letras faltantes", "En la clásica, al tocar la bolsa: las fichas que no has visto (bolsa y atril del rival); si no, solo cuántas quedan.")
+  OptionSwitch(on, change, "Mostrar las letras faltantes", "En la Clásica, al tocar la bolsa se ven las fichas que faltan por salir, no solo cuántas son.")
 
 @Composable
 private fun OptionSwitch(on: Boolean, change: (Boolean) -> Unit, title: String, hint: String? = null) {

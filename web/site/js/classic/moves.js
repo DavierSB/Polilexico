@@ -106,16 +106,26 @@ function signed(n) {
   return n > 0 ? `+${n}` : `${n}`;
 }
 
-export function bagDialog(state, title = null) {
-  if (matchMedia(PHONE).matches) return phoneBag(state, title);
-  if (!title && !setting("showUnseen")) return bagCount(state);
-  const counts = letterCounts(state.unseen);
+export function bagDialog(state) {
+  showBag(state.bag, state.opponentTiles, setting("showUnseen") ? state.unseen : null);
+}
+
+export function duplicateBagDialog(tiles) {
+  showBag(tiles.length, null, tiles);
+}
+
+function showBag(bag, rival, tiles) {
   openDialog((close) => [
-    h("h2", {}, title ? `${title}: ${state.unseen.length}` : `Por salir: ${state.unseen.length}`),
-    h("div.bag-grid", {}, [...counts].map(([l, n]) => h("div.bag-item", {}, h("div.rack-tile.small", {}, face(l)), h("span.muted", {}, "×" + n)))),
-    title ? null : h("p.muted", {}, `${state.bag} en la bolsa · ${state.opponentTiles} en el atril rival`),
+    h("h2.bag-title", {}, h("span", {}, `Bolsa: ${bag}`), rival === null ? null : h("span", {}, `Atril rival: ${rival}`)),
+    tiles ? h("p.small.bag-summary", {}, bagSummary(tiles)) : null,
+    tiles ? letterView(letterCounts(tiles)) : null,
     actions(h("button.text-btn", { onclick: close }, "Cerrar")),
   ]);
+}
+
+function letterView(counts) {
+  if (matchMedia(PHONE).matches) return h("div.letter-chips", {}, [...counts].map(([l, n]) => h("span.letter-chip", {}, h("span.chip-count", {}, n), h("b.chip-letter", {}, l))));
+  return h("div.bag-grid", {}, [...counts].map(([l, n]) => h("div.bag-item", {}, h("div.rack-tile.small", {}, face(l)), h("span.muted", {}, "×" + n))));
 }
 
 function letterCounts(tiles) {
@@ -124,26 +134,11 @@ function letterCounts(tiles) {
   return new Map([...LETTERS, BLANK].filter((l) => counts.has(l)).map((l) => [l, counts.get(l)]));
 }
 
-function phoneBag(state, title) {
-  const heading = title ?? `Por salir (bolsa ${state.bag} + atril del rival)`;
-  const full = !!title || setting("showUnseen");
-  openDialog((close) => [
-    h("h2", {}, heading),
-    full ? h("p.small.bag-summary", {}, bagSummary(state.unseen)) : h("p", {}, `${state.unseen.length} fichas`),
-    full ? h("div.letter-chips", {}, [...letterCounts(state.unseen)].map(([l, n]) => h("span.letter-chip", {}, h("span.chip-count", {}, n), h("b.chip-letter", {}, l)))) : null,
-    actions(h("button.text-btn", { onclick: close }, "Cerrar")),
-  ]);
-}
-
 function bagSummary(tiles) {
   const vowels = tiles.filter((t) => VOWELS.has(t)).length;
   const blanks = tiles.filter((t) => t === BLANK).length;
   const blankText = blanks === 0 ? "" : blanks === 1 ? " · 1 comodín" : ` · ${blanks} comodines`;
-  return `${tiles.length} fichas · ${vowels} vocales · ${tiles.length - vowels - blanks} consonantes${blankText}`;
-}
-
-function bagCount(state) {
-  openDialog((close) => [h("h2", {}, `En la bolsa: ${state.bag}`), actions(h("button.text-btn", { onclick: close }, "Cerrar"))]);
+  return `${vowels} vocales · ${tiles.length - vowels - blanks} consonantes${blankText}`;
 }
 
 export function askBlank() {

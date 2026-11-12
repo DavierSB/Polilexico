@@ -75,7 +75,7 @@ private fun ReviewDialogShown(
     ReviewDialog.OPENING -> OpeningChart(review, page, go, onExport, close)
     ReviewDialog.ADVANTAGE -> ChartShown(review, page, go, close)
     ReviewDialog.MOVES -> ReviewMovesDialog(review.moves, close) { go(it); close() }
-    ReviewDialog.BAG -> BagDialog(bagTitle(review, review.turns[page]), review.turns[page].unseen, close)
+    ReviewDialog.BAG -> TurnBag(review, review.turns[page], close)
     ReviewDialog.NONE -> Unit
   }
 }
@@ -105,5 +105,7 @@ private fun ReviewChoices(onGame: () -> Unit, onEndgame: () -> Unit) {
 
 private fun chartName(review: ReviewView): String = if (review.efficiency != null) "Eficiencia" else "Ventaja"
 
-private fun bagTitle(review: ReviewView, turn: ReviewTurnView): String =
-  if (review.classic) "Por salir (bolsa ${turn.bag} + atril del rival)" else "Quedan en la bolsa"
+@Composable
+private fun TurnBag(review: ReviewView, turn: ReviewTurnView, close: () -> Unit) {
+  if (review.classic) BagDialog(turn.bag, turn.unseen.size - turn.bag, turn.unseen, close) else BagDialog(turn.unseen.size, null, turn.unseen, close)
+}

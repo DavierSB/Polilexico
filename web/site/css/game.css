@@ -20,6 +20,14 @@
 
 .game-buttons .btn { padding: 0 8px; min-height: 48px; }
 
+.move-buttons { display: flex; flex-direction: column; gap: 6px; }
+
+.move-row { display: flex; gap: 6px; }
+
+.move-row > .btn { flex: 1; min-width: 0; min-height: 40px; }
+
+.game-buttons .play-btn { min-height: 54px; font-size: 19px; font-weight: 800; }
+
 .bag-btn { background: none; border: 0; color: var(--on-surface); cursor: pointer; padding: 0 4px; display: grid; place-items: center; }
 
 .player-card {
@@ -171,6 +179,10 @@ table.moves tr.mine td:nth-child(2) { color: var(--primary); }
 
 .turn-points.hit { color: var(--primary); font-weight: 700; }
 
+.bag-title { display: flex; flex-direction: column; gap: 2px; }
+
+.bag-summary { margin: 0 0 12px; color: var(--on-surface-variant); }
+
 .bag-grid, .blank-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .bag-item { display: flex; align-items: center; gap: 4px; min-width: 76px; }
@@ -202,6 +214,10 @@ table.moves tr.mine td:nth-child(2) { color: var(--primary); }
   .rack-tile { flex-basis: calc((var(--side) - 36px) / 7); }
 
   .game-buttons .btn { min-height: clamp(44px, 5dvh, 60px); font-size: clamp(15px, 1.7dvh, 19px); }
+
+  .move-row > .btn { min-height: clamp(40px, 4.4dvh, 52px); }
+
+  .game-buttons .play-btn { min-height: clamp(52px, 6dvh, 72px); font-size: clamp(18px, 2dvh, 23px); }
 }
 
 .duplicate-game { grid-template-areas: "bar" "board" "panel" "rack" "buttons" "notice" "score" "side"; }

@@ -106,7 +106,7 @@ private fun Screens(
       LocalShowUnseen provides settings.showUnseen,
       LocalCues provides cues::play,
       LocalConfettiStart provides { cues.play(Cue.CELEBRATION) },
-      LocalHomeButton provides rememberHomeButton(nav),
+      LocalHomeButton provides rememberHomeButton(nav, lexico),
     ) {
       WordLookupHost(lexico, cues::click) { Content(nav.current, lexico, nav, settings, themes, hasUpdate, onMenu = menu::open) }
     }
@@ -114,13 +114,13 @@ private fun Screens(
 }
 
 @Composable
-private fun rememberHomeButton(nav: Navigator): (@Composable () -> Unit)? {
+private fun rememberHomeButton(nav: Navigator, lexico: Lexico): (@Composable () -> Unit)? {
   val busy = nav.current.isActivity
   val session by rememberOnline().account.session.collectAsState()
   val profile = session?.takeIf { nav.current.showsProfile }
   return remember(nav, busy, profile) {
     when {
-      profile != null -> { { ProfileButton(profile) { nav.go(Screen.OnlineProfile) } } }
+      profile != null -> { { AccountButtons(profile, lexico) { nav.go(Screen.OnlineProfile) } } }
       busy -> null
       else -> { { HomeLogo(nav::home) } }
     }

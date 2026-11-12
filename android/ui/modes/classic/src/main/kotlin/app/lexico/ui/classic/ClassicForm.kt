@@ -19,7 +19,6 @@ internal class ClassicForm {
   var timed by mutableStateOf(false)
   var time by mutableStateOf(Durations.format(ClassicConfig().timeMs))
   var overtime by mutableStateOf(Durations.format(ClassicConfig().overtimeMs))
-  var study by mutableStateOf(false)
   var human by mutableStateOf(false)
   var first by mutableStateOf("Jugador A")
   var second by mutableStateOf("Jugador B")
@@ -42,7 +41,7 @@ internal class ClassicForm {
   }
 
   fun toConfig(): ClassicConfig = ClassicConfig(
-    opponent, starter, single && !voidOnly, timed, timeMs() ?: 0, Durations.parse(overtime) ?: 0, study && !human,
+    opponent, starter, single && !voidOnly, timed, timeMs() ?: 0, Durations.parse(overtime) ?: 0,
     players = players(),
   )
 

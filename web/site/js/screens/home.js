@@ -5,7 +5,7 @@ import { startDemo } from "./demo.js";
 import { onPresence } from "../online/presence.js";
 import { peopleDialog } from "../online/lobby.js";
 import { account } from "../online/api.js";
-import { drawerButton } from "./drawer.js";
+import { drawerButton, drawerItems } from "./drawer.js";
 import { online } from "../online/client.js";
 import { messagesButton } from "../online/messages.js";
 import { setting } from "../settings.js";
@@ -16,6 +16,7 @@ export function homeScreen(app) {
   const messages = account() ? messagesButton() : null;
   const stay = stayOnline();
   app.append(h("div.home", {},
+    h("aside.home-side", {}, h("div.drawer-brand", {}, brand()), h("nav.home-drawer", { "aria-label": "Menú" }, drawerItems())),
     h("header.home-head", {}, drawerButton(), brand(), h("div.row.head-actions", {}, messages?.el, chip.el)),
     h("div.home-board", {}, demo.el),
     h("nav.home-menu", {}, menu()),

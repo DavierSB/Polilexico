@@ -30,5 +30,5 @@ fun PositionReviewScreen(review: ReviewView, style: BoardStyle, sessions: Endgam
       Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState())) { TurnPage(review, 0, sessions, preEndgames, null, style, height) {} }
     }
   }
-  if (bag) BagDialog("Por salir (bolsa ${turn.bag} + atril del rival)", turn.unseen) { bag = false }
+  if (bag) BagDialog(turn.bag, turn.unseen.size - turn.bag, turn.unseen) { bag = false }
 }

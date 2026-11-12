@@ -28,7 +28,6 @@ async function open(holder, keep) {
     me: { name: players ? players[0] : "Tú" },
     opponent: players ? { name: players[1] } : { name: rival.alias, photo: botPhoto(rival) },
     local: !!players,
-    study: !!session.setup.study,
     pausable: true,
     thinkingText: players ? null : "pensando…",
     exit: () => go(""),

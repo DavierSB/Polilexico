@@ -8,7 +8,6 @@ type classicState struct {
 	Opponent     string
 	Host         string
 	Local        bool
-	Study        bool
 	Board        string
 	Rack         string
 	OpponentRack string
@@ -26,7 +25,7 @@ type classicState struct {
 func read(m *classic.Match) classicState {
 	g := m.Game()
 	return classicState{
-		Opponent: g.Opponent(), Host: g.Host(), Local: g.Local(), Study: m.Study(),
+		Opponent: g.Opponent(), Host: g.Host(), Local: g.Local(),
 		Board: g.Board(), Rack: g.Rack(), OpponentRack: g.OpponentRack(), Unseen: g.Unseen(),
 		Status: g.Status(), Moves: moves(g), Clocks: m.Clocks(), Paused: m.Paused(),
 		Result: g.Result(), BotError: m.BotError(), CueCount: m.CueCount(), Cue: m.Cue(),

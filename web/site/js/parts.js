@@ -13,6 +13,11 @@ export function screenHead(title, backTo = "", ...extra) {
   );
 }
 
+export function moveButtons(play, ...small) {
+  play.classList.add("play-btn");
+  return h("div.move-buttons", {}, h("div.move-row", {}, small), play);
+}
+
 export function brand() {
   return h("a.brand", { href: "#/" },
     h("img", { src: "img/logo.svg", alt: "", width: 48, height: 41 }),

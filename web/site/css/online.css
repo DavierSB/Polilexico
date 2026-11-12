@@ -228,7 +228,15 @@
 
 .drawer-download:hover { background: var(--primary); filter: brightness(1.08); }
 
+.about-title { display: flex; align-items: center; flex-wrap: wrap; gap: 0 8px; }
+
+.about-heart { color: #E53935; font-size: 1.6em; line-height: 1; }
+
+.about-text { gap: 10px; font-size: 14px; line-height: 1.45; }
+
 .about-text p { margin: 0; }
+
+.about-text p .about-link { display: inline; font-size: inherit; }
 
 .about-link { align-self: flex-start; padding: 0; border: 0; background: none; color: var(--primary); font-size: 14px; text-decoration: underline; cursor: pointer; }
 

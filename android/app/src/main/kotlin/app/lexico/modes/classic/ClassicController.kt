@@ -41,6 +41,6 @@ fun EndgameConfig.toSetup(): EndgameSetup = EndgameSetup(
 
 fun ClassicConfig.toSetup(): ClassicSetup =
   ClassicSetup(
-    bot = bot, starter = starter, invalidLosesTurn = single, timeMs = if (timed) timeMs else 0, overtimeMs = overtimeMs, study = study,
+    bot = bot, starter = starter, invalidLosesTurn = single, timeMs = if (timed) timeMs else 0, overtimeMs = overtimeMs,
     players = players?.let { LocalPlayers(it.first, it.second) },
   )

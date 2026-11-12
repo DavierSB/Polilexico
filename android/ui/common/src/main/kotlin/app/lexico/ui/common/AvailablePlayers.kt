@@ -106,6 +106,7 @@ private fun CompactWithMore(people: List<PersonItem>, actions: PeopleActions, sh
 
 private fun closing(actions: PeopleActions, close: () -> Unit) = PeopleActions(
   write = { close(); actions.write(it) }, challenge = actions.challenge?.let { c -> { close(); c(it) } }, watch = actions.watch,
+  resume = { close(); actions.resume(it) },
 )
 
 @Composable

@@ -8,11 +8,12 @@ import { icon } from "../icons.js";
 import { savedButtons, keepScroll } from "../savedButtons.js";
 import { toast } from "../dialogs.js";
 import { modeTabs } from "../modeTabs.js";
-import { profileButton } from "../online/profile.js";
-import { timeSection, challengeSection, choiceRow, studySection } from "./options.js";
+import { accountButtons } from "../online/profile.js";
+import { timeSection, challengeSection, choiceRow } from "./options.js";
 
 const DEFAULTS = { bot: "HastyBot", starter: 0, single: true, timed: false, time: "30:00", overtime: "8:00", shared: false, first: "Jugador A", second: "Jugador B" };
 const NAME_CHARS = 16;
+const LAPTOP = "(min-width: 900px) and (min-aspect-ratio: 1/1)";
 
 export function classicSetupScreen(app) {
   const form = { ...DEFAULTS, ...load("classicForm", {}) };
@@ -20,6 +21,7 @@ export function classicSetupScreen(app) {
   const step = h("div.setup-step");
   const screen = h("div.screen.wide.fit-screen");
   const view = { settings: false };
+  const account = accountButtons();
   const redraw = () => {
     gates.splice(0).forEach((stop) => stop());
     keepScroll(step, () => replace(step, view.settings ? settingsStep(form, redraw, gates) : rivalStep(form, redraw, gates, choose)));
@@ -28,12 +30,12 @@ export function classicSetupScreen(app) {
   const choose = (settings) => {
     view.settings = settings;
     replace(step);
-    replace(screen, settings ? stepHead(form, () => choose(false)) : screenHead("Clásica", "", profileButton()), settings ? step : tabs.el);
+    replace(screen, settings ? stepHead(form, () => choose(false)) : screenHead("Clásica", "", account.el), settings ? step : tabs.el);
     redraw();
   };
   choose(false);
   app.append(screen);
-  return () => (gates.forEach((stop) => stop()), tabs.destroy());
+  return () => (gates.forEach((stop) => stop()), tabs.destroy(), account.stop());
 }
 
 function stepHead(form, back) {
@@ -44,13 +46,29 @@ function stepHead(form, back) {
 }
 
 function rivalStep(form, redraw, gates, choose) {
-  const local = h("button.text-btn.switch-prompt", { onclick: () => ((form.shared = true), (form.starter = 0), choose(true)) }, "¿O son dos jugadores locales?");
-  const live = currentSession()?.live() || hasSaved();
+  if (matchMedia(LAPTOP).matches) return laptopStep(form, redraw, gates, choose);
   return [
-    h("div.setup-scroll", {}, BOTS.map((b) => botCard(b, form, redraw)), local),
+    h("div.setup-scroll", {}, BOTS.map((b) => botCard(b, form, redraw)), localPrompt(form, choose)),
     h("button.btn.block.start", { onclick: () => ((form.shared = false), choose(true)) }, "Seleccionar rival"),
-    savedButtons("classic", live ? 1 : 0, "partida", gates),
+    savedGames(gates),
   ];
+}
+
+function laptopStep(form, redraw, gates, choose) {
+  form.shared = false;
+  return h("div.setup-columns", {},
+    h("div.setup-scroll.bot-column", {}, BOTS.map((b) => botCard(b, form, redraw)), localPrompt(form, choose)),
+    h("div.setup-column", {}, h("div.setup-scroll", {}, settingsFor(form, redraw)), startButton(form, gates), savedGames(gates)),
+  );
+}
+
+function localPrompt(form, choose) {
+  return h("button.text-btn.switch-prompt", { onclick: () => ((form.shared = true), (form.starter = 0), choose(true)) }, "¿O son dos jugadores locales?");
+}
+
+function savedGames(gates) {
+  const live = currentSession()?.live() || hasSaved();
+  return savedButtons("classic", live ? 1 : 0, "partida", gates);
 }
 
 function settingsStep(form, redraw, gates) {
@@ -86,7 +104,6 @@ function settingsFor(form, redraw) {
     choiceRow(starters, form.starter, (i) => ((form.starter = i), redraw())),
     challengeSection(form, redraw, !form.shared && b.voidOnly ? b.alias : null),
     timeSection(form, redraw),
-    form.shared ? null : studySection(form, redraw),
   ];
 }
 
@@ -109,7 +126,6 @@ async function begin(form, button) {
   const setup = {
     bot: form.bot, starter: form.starter, single: form.single && (form.shared || !b.voidOnly),
     players: form.shared ? [form.first.trim(), form.second.trim()] : null,
-    study: !form.shared && !!form.study,
     timeMs: form.timed ? parseDuration(form.time) : 0, overtimeMs: form.timed ? parseDuration(form.overtime) : 0,
   };
   try {

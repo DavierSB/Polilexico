@@ -40,6 +40,7 @@ private fun peopleActions(client: OnlineClient, lobby: Lobby, composer: Composer
   write = { close(); composer.write(ChatContact(it.name, it.country, ContactGroup.OTHERS)) },
   challenge = { close(); go(Screen.OnlineNewClassic(Person(it.name, it.country, it.busy))) },
   watch = { id -> lobby.games.find { it.id == id }?.let { close(); client.watch(it); go(Screen.OnlinePlay) } },
+  resume = { id -> lobby.adjourned.find { it.id == id }?.let { close(); client.resume(it); go(Screen.OnlinePlay) } },
 )
 
 @Composable
@@ -59,5 +60,5 @@ private fun SignedIn(online: Online, client: OnlineClient, presence: Int?, compa
 @Composable
 private fun ChipPeople(client: OnlineClient, lobby: Lobby, composer: Composer, showing: Boolean, go: (Screen) -> Unit, close: () -> Unit) {
   if (!showing) return
-  PeopleDialog(shuffledPeople(lobby.people).map { personItem(it, lobby.games) }, peopleActions(client, lobby, composer, go, close), close = close)
+  PeopleDialog(shuffledPeople(lobby.people).map { personItem(it, lobby) }, peopleActions(client, lobby, composer, go, close), close = close)
 }

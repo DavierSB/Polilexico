@@ -15,7 +15,7 @@ export function duplicateGameScreen(app) {
 async function open(holder, keep) {
   const session = currentDuplicate() ?? (hasSavedDuplicate() ? await waitFor(holder, resumeDuplicate()) : null);
   if (!session) return go("duplicada", true);
-  const view = duplicateView(session, { study: !!session.setup?.study, exit: () => go(""), resign: () => (session.resign(), go("")) });
+  const view = duplicateView(session, { exit: () => go(""), resign: () => (session.resign(), go("")) });
   keep(view);
   holder.replaceWith(view.el);
 }

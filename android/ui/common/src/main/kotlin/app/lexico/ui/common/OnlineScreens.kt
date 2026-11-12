@@ -66,7 +66,7 @@ data class GameItem(val id: String, val title: String, val detail: String, val w
 
 data class GameSide(val name: String, val country: String)
 
-data class PersonItem(val name: String, val country: String, val busy: Boolean, val game: String? = null)
+data class PersonItem(val name: String, val country: String, val busy: Boolean, val game: String? = null, val adjourned: String? = null)
 
 data class OnlinePanelState(
   val status: String?, val inRoom: Boolean, val seeks: List<SeekItem>, val classic: Boolean,
@@ -117,7 +117,7 @@ private fun PanelBody(state: OnlinePanelState, actions: OnlinePanelActions) {
   if (available.isEmpty() && state.games.isEmpty()) return TopPage(Modifier.fillMaxSize()) { ModeOffers(state, actions) }
   TopThenFill(
     lowerReserve(state.games.isNotEmpty(), available.isNotEmpty()), { TopPage(Modifier.fillMaxWidth()) { ModeOffers(state, actions) } },
-    { LowerSections(state.games, available, PeopleActions(actions.write, actions.challenge, actions.watch)) },
+    { LowerSections(state.games, available, PeopleActions(actions.write, actions.challenge, actions.watch, actions.resumeAdjourned)) },
   )
 }
 
@@ -219,7 +219,9 @@ private fun noDuplicatesText(idle: Int): AnnotatedString = buildAnnotatedString 
   append(" en línea.")
 }
 
-class PeopleActions(val write: (PersonItem) -> Unit, val challenge: ((PersonItem) -> Unit)?, val watch: (String) -> Unit)
+class PeopleActions(
+  val write: (PersonItem) -> Unit, val challenge: ((PersonItem) -> Unit)?, val watch: (String) -> Unit, val resume: (String) -> Unit = {},
+)
 
 private const val NOBODY_ONLINE = "No hay nadie en línea."
 
@@ -273,6 +275,7 @@ internal fun PeopleList(people: List<PersonItem>, actions: PeopleActions) {
 @Composable
 private fun PersonButton(p: PersonItem, actions: PeopleActions) {
   if (p.busy) return CompactButton("Ver", enabled = p.game != null) { p.game?.let(actions.watch) }
+  p.adjourned?.let { id -> return Button(onClick = { actions.resume(id) }, contentPadding = PaddingValues(horizontal = 12.dp)) { Text("Retomar", maxLines = 1) } }
   actions.challenge?.let { challenge -> Button(onClick = { challenge(p) }, contentPadding = PaddingValues(horizontal = 12.dp)) { Text("Retar", maxLines = 1) } }
 }
 

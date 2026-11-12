@@ -6,7 +6,7 @@ import { infoButton } from "../classic/options.js";
 
 const OPTIONS = [
   ["liveScore", "Contar los puntos al colocar", "Mientras pones fichas, el tablero muestra los puntos que valdría la jugada."],
-  ["showUnseen", "Mostrar las letras faltantes", "En la clásica, al tocar la bolsa: las fichas que no has visto (bolsa y atril del rival); si no, solo cuántas quedan."],
+  ["showUnseen", "Mostrar las letras faltantes", "En la Clásica, al tocar la bolsa se ven las fichas que faltan por salir, no solo cuántas son."],
   ["sounds", "Sonidos"],
   ["hidden", "No aparecer en línea"],
   ["noChallenges", "No recibir desafíos"],

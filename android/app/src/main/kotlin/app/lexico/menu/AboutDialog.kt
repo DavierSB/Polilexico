@@ -16,11 +16,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 private const val SOURCE_URL = "https://github.com/DavierSB/polilexico"
 
@@ -42,18 +48,34 @@ fun AboutDialog(version: String, close: () -> Unit) {
 private fun Thanks() {
   Text(buildAnnotatedString {
     append("¡Gracias por usar Poliléxico! ")
-    withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) { append("♥") }
+    withStyle(SpanStyle(color = HEART_RED, fontSize = 28.sp)) { append("♥") }
   })
+}
+
+private const val PURPOSE =
+  "El propósito de Poliléxico es ser un espacio multiplataforma gratuito, con todos los recursos necesarios para jugar " +
+    "al Scrabble en cualquiera de sus modalidades, y hacer más fácil y directo el crecimiento de los jugadores de Scrabble."
+
+private val HEART_RED = Color(0xFFE53935)
+
+@Composable
+private fun platforms(): AnnotatedString = buildAnnotatedString {
+  append("Contamos con una plataforma web (")
+  withLink(LinkAnnotation.Url(SITE_URL, TextLinkStyles(SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)))) {
+    append("polilexico.github.io")
+  }
+  append(
+    ") y una aplicación móvil para Android, que permiten jugar con o sin conexión a internet cualquiera de las modalidades, " +
+      "Clásica o Duplicada, con sus reglas oficiales; así como disfrutar de minijuegos, listas de palabras para estudiar y " +
+      "herramientas como el Diccionario, el Anagramador y el Analizador de posiciones."
+  )
 }
 
 @Composable
 private fun AboutText(version: String, showAuthor: () -> Unit) {
-  val uriHandler = LocalUriHandler.current
   Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-    Text(
-      "El propósito de Poliléxico es ser la primera aplicación offline para móvil que combine las diferentes " +
-        "modalidades del Scrabble con todas sus reglas precisas, y además brinde herramientas didácticas para su aprendizaje."
-    )
+    Text(PURPOSE)
+    Text(platforms())
     Text(
       "El motor de juego está basado en el de Woogles.io (Macondo), usado bajo los términos de su licencia, " +
         "la GNU General Public License v3."
@@ -66,7 +88,6 @@ private fun AboutText(version: String, showAuthor: () -> Unit) {
       "Los avatares de los bots son un tributo a la cultura hispanoamericana, y en especial a la cubana."
     )
     Text("Hecha con amor desde Cuba.")
-    Link("Visítanos") { uriHandler.openUri(SITE_URL) }
     Link("Acerca del autor", showAuthor)
     License(version)
   }

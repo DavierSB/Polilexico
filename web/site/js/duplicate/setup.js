@@ -4,8 +4,8 @@ import { screenHead, parseDuration, engineGate } from "../parts.js";
 import { load, save } from "../store.js";
 import { toast } from "../dialogs.js";
 import { modeTabs } from "../modeTabs.js";
-import { profileButton } from "../online/profile.js";
-import { choiceRow, sectionTitle, stepper, rulesButton, studySection } from "../classic/options.js";
+import { accountButtons } from "../online/profile.js";
+import { choiceRow, sectionTitle, stepper, rulesButton } from "../classic/options.js";
 import { startDuplicate, currentDuplicate, hasSavedDuplicate } from "./session.js";
 import { savedButtons, keepScroll } from "../savedButtons.js";
 import { DUPLICATE_RULES, ROUNDS_TEXT, VOID_HINT, SINGLE_HINT, AT_END_HINT } from "./rules.js";
@@ -24,8 +24,9 @@ export function duplicateSetupScreen(app) {
   };
   redraw();
   const tabs = modeTabs("duplicate", () => ({ el: body }));
-  app.append(h("div.screen.wide.fit-screen", {}, screenHead("Duplicada", "", profileButton()), tabs.el));
-  return () => (gates.forEach((stop) => stop()), tabs.destroy());
+  const account = accountButtons();
+  app.append(h("div.screen.wide.fit-screen", {}, screenHead("Duplicada", "", account.el), tabs.el));
+  return () => (gates.forEach((stop) => stop()), tabs.destroy(), account.stop());
 }
 
 function inProgress() {
@@ -48,7 +49,6 @@ function fields(form, redraw) {
     choiceRow(CHECKS, form.check, (i) => ((form.check = i), redraw())),
     sectionTitle("Tiempo", "Si no juegas a tiempo, 0 puntos ese turno."),
     turnField(form),
-    studySection(form, redraw),
   ];
 }
 
@@ -65,7 +65,7 @@ async function begin(form, button) {
   save("duplicateForm", form);
   button.disabled = true;
   try {
-    await startDuplicate({ turnMs, single: form.check !== 0, atEnd: form.check === 2, rounds: form.fixed ? form.rounds : 0, study: !!form.study });
+    await startDuplicate({ turnMs, single: form.check !== 0, atEnd: form.check === 2, rounds: form.fixed ? form.rounds : 0 });
     go("duplicada-partida");
   } catch (e) {
     toast(e.message);

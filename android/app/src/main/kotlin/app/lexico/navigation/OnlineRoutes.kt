@@ -28,6 +28,7 @@ import app.lexico.menu.ThemeState
 import app.lexico.modes.duplicate.seatView
 import app.lexico.games.onlineRows
 import app.lexico.online.ADJOURNED
+import app.lexico.online.AdjournedGame
 import app.lexico.online.GAME_GONE
 import app.lexico.online.AccountForm
 import app.lexico.online.LiveGame
@@ -252,7 +253,7 @@ internal fun OnlinePanelHost(session: OnlineSession, mode: Mode, online: Online,
     games = lobby.games.filter { it.duplicate == duplicate }.sortedBy { it.id.hashCode() xor peopleSeed }.map(::gameItem),
     adjourned = lobby.adjourned.filter { it.duplicate == duplicate }
       .map { AdjournedItem(it.id, it.opponent, it.country, it.online, it.busy, it.result, it.duplicate, it.untimed) },
-    people = shuffledPeople(lobby.people).map { personItem(it, lobby.games) },
+    people = shuffledPeople(lobby.people).map { personItem(it, lobby) },
   )
   ProvidePhotos(online, lobby) {
     ProfileHost(online, ProfileContext(client, composer, nav::go)) {
@@ -470,7 +471,10 @@ private fun classicDetail(g: LiveGame): String =
 
 internal fun personItem(p: Person): PersonItem = PersonItem(p.name, p.country, p.busy)
 
-internal fun personItem(p: Person, games: List<LiveGame>): PersonItem = personItem(p).copy(game = gameOf(p, games))
+internal fun personItem(p: Person, lobby: Lobby): PersonItem = personItem(p).copy(game = gameOf(p, lobby.games), adjourned = adjournedWith(p, lobby)?.id)
+
+internal fun adjournedWith(p: Person, lobby: Lobby): AdjournedGame? =
+  lobby.adjourned.find { !it.duplicate && it.result.isEmpty() && it.opponent == p.name && it.country == p.country }
 
 private fun gameOf(p: Person, games: List<LiveGame>): String? =
   games.find { g -> g.players.zip(g.countries).any { (name, country) -> name == p.name && country == p.country } }?.id

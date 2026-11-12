@@ -22,28 +22,29 @@ import androidx.compose.ui.unit.sp
 import app.lexico.model.Letters
 
 @Composable
-fun BagDialog(title: String, tiles: List<String>, close: () -> Unit) {
+fun BagDialog(bag: Int, rivalRack: Int?, tiles: List<String>?, close: () -> Unit) {
   AlertDialog(
     onDismissRequest = close,
-    title = { Text(title) },
-    text = {
-      Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(summary(tiles), style = MaterialTheme.typography.bodySmall)
-        LetterChips(counts(tiles))
-      }
-    },
+    title = { BagTitle(bag, rivalRack) },
+    text = tiles?.let { t -> @Composable { BagContents(t) } },
     confirmButton = { TextButton(onClick = close) { Text("Cerrar") } },
   )
 }
 
 @Composable
-fun BagCountDialog(title: String, tiles: Int, close: () -> Unit) {
-  AlertDialog(
-    onDismissRequest = close,
-    title = { Text(title) },
-    text = { Text("$tiles fichas") },
-    confirmButton = { TextButton(onClick = close) { Text("Cerrar") } },
-  )
+private fun BagTitle(bag: Int, rivalRack: Int?) {
+  Column {
+    Text("Bolsa: $bag")
+    rivalRack?.let { Text("Atril rival: $it") }
+  }
+}
+
+@Composable
+private fun BagContents(tiles: List<String>) {
+  Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Text(summary(tiles), style = MaterialTheme.typography.bodySmall)
+    LetterChips(counts(tiles))
+  }
 }
 
 @Composable
@@ -72,7 +73,7 @@ private fun summary(tiles: List<String>): String {
   val vowels = tiles.count(Letters::isVowel)
   val blanks = tiles.count { it == Letters.BLANK }
   val consonants = tiles.size - vowels - blanks
-  return "${tiles.size} fichas · $vowels vocales · $consonants consonantes" + blanksText(blanks)
+  return "$vowels vocales · $consonants consonantes" + blanksText(blanks)
 }
 
 private fun blanksText(blanks: Int): String = when (blanks) {
