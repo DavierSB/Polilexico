@@ -16,6 +16,7 @@ import { tile } from "../board.js";
 import { bindKeys } from "./keys.js";
 import { lookUp } from "../study/lookup.js";
 import { floatScore, landTiles } from "../motion.js";
+import { recall, remember } from "../tabMemory.js";
 
 const RESIGN_TEXT = "¿Abandonar la partida? Se borra de partidas en curso y cuenta como abandonada en tus estadísticas.";
 
@@ -77,18 +78,36 @@ class GameView {
     this.handOff();
     if (!first && !turnChanged && this.state.paused === this.lastPaused) return;
     this.lastPaused = state.paused;
+    const kept = first ? this.keptPlacement() : null;
     this.placer.sync(state.cells, state.rack);
+    if (kept) this.placer.restore(kept);
     this.renderAll();
-    if (moved) this.animateMove(first);
+    if (moved && this.freshMove(first)) this.animateMove();
     if (state.result && !this.ended) this.end();
   }
 
-  animateMove(first) {
+  freshMove(first) {
+    const count = this.state.moves.length;
+    const seen = this.options.memory ? recall(this.options.memory + ".seen") : null;
+    if (this.options.memory) remember(this.options.memory + ".seen", count);
+    return !first || seen === null || count > seen;
+  }
+
+  animateMove() {
     const last = this.state.moves.at(-1);
     const squares = [...this.state.latest];
     if (!last || !squares.length) return;
-    const delay = first || last.byMe ? 0 : landTiles(this.board, squares);
+    const delay = last.byMe ? 0 : landTiles(this.board, squares);
     floatScore(this.board, this.state.cells, squares, last.score, delay);
+  }
+
+  keptPlacement() {
+    const kept = this.options.memory ? recall(this.options.memory + ".placement") : null;
+    return kept?.moves === this.state.moves.length ? kept : null;
+  }
+
+  keepPlacement() {
+    if (this.options.memory) remember(this.options.memory + ".placement", { ...this.placer.snapshot(), moves: this.state.moves.length });
   }
 
   seen(state) {
@@ -131,6 +150,7 @@ class GameView {
 
   placerChanged() {
     if (!this.state) return;
+    this.keepPlacement();
     this.renderBoard();
     this.rack.render(this.canPlay());
     this.renderButtons();
@@ -190,7 +210,7 @@ class GameView {
     replace(this.buttons,
       h("button.btn.small", { disabled: !enabled || !p.pending.size, onclick: () => this.play() }, "Jugar"),
       p.pending.size ? h("button.btn.small.tonal", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.tonal", { onclick: () => p.shuffle() }, "Mezclar"),
-      h("button.btn.small.outlined", { disabled: !enabled || this.state.bag < 7, onclick: () => p.startExchange() }, "Cambiar"),
+      h("button.btn.small.outlined", { disabled: !enabled || !this.state.bag, onclick: () => p.startExchange(this.state.bag) }, "Cambiar"),
       h("button.btn.small.outlined", { disabled: !enabled, onclick: () => this.pass() }, "Pasar"),
     );
   }

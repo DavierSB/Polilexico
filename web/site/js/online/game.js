@@ -9,6 +9,7 @@ import { verdict, endDetail } from "../classic/verdict.js";
 import { chatInput, chatLine } from "./tell.js";
 import { endTools } from "../games/endTools.js";
 import { confetti } from "../confetti.js";
+import { forget } from "../tabMemory.js";
 
 const INVALID_MS = 5000;
 
@@ -20,7 +21,13 @@ export function onlineGameScreen(app) {
   online.acquire();
   replace(holder, h("div.card.empty-card", {}, h("p", {}, "Entrando en la sala…")));
   const stop = online.subscribe((c) => update(screen, c));
-  return () => (stop(), screen.view?.destroy(), screen.stopInvalids?.(), online.release());
+  return () => (stop(), screen.view?.destroy(), screen.stopInvalids?.(), forgetView(screen), online.release());
+}
+
+function forgetView(screen) {
+  if (!screen.memory) return;
+  forget(screen.memory + ".seen");
+  forget(screen.memory + ".placement");
 }
 
 function update(screen, c) {
@@ -44,10 +51,12 @@ function mount(screen, c) {
   screen.chat = h("div.chat-lines.room-chat");
   screen.watchers = h("p.muted.small");
   const chat = chatPanel(screen);
+  screen.memory = c.room.watching ? null : `online.${c.room.id}.${c.room.players.join(".")}`;
   screen.view = gameView(c.session, {
     me: sides.me,
     opponent: sides.opponent,
     watching: c.room.watching,
+    memory: screen.memory,
     exit: () => exit(c),
     resign: c.room.watching ? null : () => (c.leave(), go(lobbyRoute())),
     onEnd: (state) => endDialog(state, sides, c.room.watching, c.session),

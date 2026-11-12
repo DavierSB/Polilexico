@@ -2,6 +2,8 @@ import { h } from "./dom.js";
 import { icon } from "./icons.js";
 import { go } from "./router.js";
 import { onLoading } from "./engine.js";
+import { rackValue } from "./tiles.js";
+import { tileColorsOf } from "./tileColors.js";
 
 export function screenHead(title, backTo = "", ...extra) {
   return h("header.screen-head", {},
@@ -28,8 +30,23 @@ export function nameFlag(name, country) {
 }
 
 export function initialAvatar(name, size = 40) {
-  return h("span.initial", { style: { width: size + "px", height: size + "px", fontSize: size * 0.45 + "px" } }, (name || "?")[0].toUpperCase());
+  const letter = initialOf(name);
+  const { face, edge, ink } = tileColorsOf(name);
+  const style = { width: size + "px", height: size + "px", fontSize: size * (letter.length > 1 ? 0.38 : 0.55) + "px", background: face, borderColor: edge, color: ink };
+  return h("span.initial", { style }, letter, initialValue(letter, size));
 }
+
+function initialValue(letter, size) {
+  const value = rackValue(letter);
+  return value > 0 ? h("small", { style: { fontSize: size * 0.22 + "px" } }, String(value)) : null;
+}
+
+function initialOf(name) {
+  const upper = (name || "?").trim().toUpperCase();
+  return NAME_DIGRAPHS.includes(upper.slice(0, 2)) ? upper.slice(0, 2) : [...upper][0] ?? "?";
+}
+
+const NAME_DIGRAPHS = ["CH", "LL"];
 
 export function engineLoading() {
   const bar = h("div", {});

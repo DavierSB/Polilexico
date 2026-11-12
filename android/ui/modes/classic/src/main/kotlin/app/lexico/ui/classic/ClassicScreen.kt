@@ -92,7 +92,7 @@ private fun Controls(view: ClassicView, c: TilePlacer, actions: ClassicActions, 
     view, end, onAnalyze = actions::analyze, onAnalyzeEndgame = actions::analyzeEndgame, onExport = actions::export, onMenu = actions::exit,
   )
   ActionButtons(
-    c, myTurn = view.turn == Side.ME,
+    c, myTurn = view.turn == Side.ME, bag = view.bag,
     onPlay = { c.placement()?.let(actions::play) ?: onNotice(NOT_IN_A_LINE) },
     onExchange = actions::exchange,
     onPass = { dialogs.pass = true },

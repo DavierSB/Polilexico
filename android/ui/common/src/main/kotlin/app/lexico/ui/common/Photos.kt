@@ -48,23 +48,24 @@ fun SeatAvatar(seatName: String, size: Dp) {
 @Composable
 internal fun InitialTile(name: String, highlighted: Boolean, size: Dp) {
   val shape = RoundedCornerShape(size * 0.18f)
-  val edge = if (highlighted) MaterialTheme.colorScheme.primary else TILE_EDGE
+  val colors = tileColorsOf(name)
+  val edge = if (highlighted) MaterialTheme.colorScheme.primary else colors.edge
   val letter = initialOf(name)
   Box(
-    Modifier.size(size).background(TILE_FACE, shape).border(if (highlighted) 2.dp else 1.dp, edge, shape),
+    Modifier.size(size).background(colors.face, shape).border(if (highlighted) 2.dp else 1.dp, edge, shape),
     contentAlignment = Alignment.Center,
   ) {
-    Text(letter, fontSize = (size.value * if (letter.length > 1) 0.38f else 0.55f).sp, fontWeight = FontWeight.Black, color = TILE_INK, softWrap = false)
-    TileValue(Letters.value(letter), size)
+    Text(letter, fontSize = (size.value * if (letter.length > 1) 0.38f else 0.55f).sp, fontWeight = FontWeight.Black, color = colors.ink, softWrap = false)
+    TileValue(Letters.value(letter), size, colors.ink)
   }
 }
 
 @Composable
-private fun BoxScope.TileValue(value: Int, size: Dp) {
+private fun BoxScope.TileValue(value: Int, size: Dp, ink: Color) {
   if (value <= 0) return
   Text(
     "$value", Modifier.align(Alignment.BottomEnd).padding(end = size * 0.08f, bottom = size * 0.02f),
-    fontSize = (size.value * 0.22f).sp, fontWeight = FontWeight.Bold, color = TILE_INK, softWrap = false,
+    fontSize = (size.value * 0.22f).sp, fontWeight = FontWeight.Bold, color = ink, softWrap = false,
   )
 }
 
@@ -74,10 +75,6 @@ private fun initialOf(name: String): String {
 }
 
 private val NAME_DIGRAPHS = setOf("CH", "LL")
-
-private val TILE_FACE = Color(0xFFF2DCA8)
-private val TILE_EDGE = Color(0xFFC9A96A)
-private val TILE_INK = Color(0xFF3B2A1A)
 
 @Composable
 internal fun PhotoCircle(image: ImageBitmap, description: String, size: Dp) {

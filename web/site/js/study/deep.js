@@ -2,7 +2,7 @@ import { h } from "../dom.js";
 import { parsePlacement, spelled } from "../placement.js";
 import { tokens } from "../tiles.js";
 
-const BUDGET_MS = 8000;
+const BUDGET_MS = 30000;
 export { BUDGET_MS };
 
 export const DEEP_TITLES = { endgame: "Análisis del final", preendgame: "Análisis del pre-final" };

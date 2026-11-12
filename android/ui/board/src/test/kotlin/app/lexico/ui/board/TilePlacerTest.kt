@@ -62,6 +62,15 @@ class TilePlacerTest {
     assertEquals(listOf("R", "?"), c.tilesToExchange())
   }
 
+  @Test fun exchangeMarksNoMoreThanTheBagHolds() {
+    val c = placer()
+    c.startExchange(limit = 2)
+    c.tapRack(0)
+    c.tapRack(1)
+    c.tapRack(2)
+    assertEquals(2, c.tilesToExchange().size)
+  }
+
   @Test fun resetRecallsEverything() {
     val c = placer()
     c.tapRack(0)

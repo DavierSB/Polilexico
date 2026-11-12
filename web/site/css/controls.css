@@ -81,13 +81,22 @@
 .avatar { border-radius: 50%; object-fit: cover; flex: none; background: var(--c3); }
 
 .initial {
+  position: relative;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  background: var(--primary-container);
-  color: var(--on-primary-container);
-  font-weight: 700;
+  box-sizing: border-box;
+  border: 1px solid;
+  border-radius: 18%;
+  font-weight: 900;
+  line-height: 1;
   flex: none;
+}
+
+.initial small {
+  position: absolute;
+  right: 8%;
+  bottom: 2%;
+  font-weight: 700;
 }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }

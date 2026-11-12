@@ -1,5 +1,5 @@
 import { h, svg } from "./dom.js";
-import { SIZE, bonusAt, value } from "./tiles.js";
+import { SIZE, bonusAt, blankFace, value } from "./tiles.js";
 import { LABELS } from "./theme.js";
 
 const ARROW = `<svg viewBox="0 0 100 100"><rect class="frame-edge" x="9.5" y="9.5" width="81" height="81" rx="12" stroke-width="13"/><rect class="frame" x="9.5" y="9.5" width="81" height="81" rx="12" stroke-width="9"/><g class="halo"><line x1="20" y1="50" x2="54" y2="50" stroke-width="19" stroke-linecap="round"/><path d="M80 50L54 29.2V70.8Z" stroke-width="8" stroke-linejoin="round"/></g><g class="shaft"><line x1="20" y1="50" x2="54" y2="50" stroke-width="11" stroke-linecap="round"/><path d="M80 50L54 29.2V70.8Z" stroke="none"/></g></svg>`;
@@ -67,8 +67,7 @@ function label(i) {
 
 export function tile(t, extra = "") {
   const classes = ["tile", extra, t.blank ? "blank" : "", t.letter.length > 1 ? "digraph" : ""].join(" ");
-  const shown = t.blank ? t.letter.toLowerCase() : t.letter;
-  return h("div", { class: classes }, shown, t.blank ? null : h("span.value", {}, value(t)));
+  return h("div", { class: classes }, blankFace(t), t.blank ? null : h("span.value", {}, value(t)));
 }
 
 function arrow(vertical) {

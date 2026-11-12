@@ -30,6 +30,19 @@ export class Placer {
     this.clear();
   }
 
+  snapshot() {
+    return { rackKey: this.rackKey, slots: this.slots, pending: [...this.pending], order: this.order, arrow: this.arrow };
+  }
+
+  restore(kept) {
+    if (kept.rackKey !== this.rackKey || kept.pending.some(([i]) => this.cells[i])) return;
+    this.slots = kept.slots;
+    this.pending = new Map(kept.pending);
+    this.order = kept.order;
+    this.arrow = kept.arrow;
+    this.changed();
+  }
+
   clear() {
     this.pending.clear();
     this.order = [];
@@ -179,16 +192,17 @@ export class Placer {
     this.changed();
   }
 
-  startExchange() {
+  startExchange(limit = Infinity) {
     this.recall();
     this.arrow = null;
+    this.exchangeLimit = limit;
     this.exchanging = new Set();
     this.changed();
   }
 
   toggleExchange(id) {
     if (this.exchanging.has(id)) this.exchanging.delete(id);
-    else this.exchanging.add(id);
+    else if (this.exchanging.size < this.exchangeLimit) this.exchanging.add(id);
     this.changed();
   }
 

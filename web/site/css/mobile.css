@@ -73,6 +73,7 @@
 .player-card.active { padding: 2px 9px; }
 
 .player-card > .avatar, .player-card > .initial { grid-area: photo; width: 24px !important; height: 24px !important; margin-right: 6px; font-size: 11px !important; }
+.player-card > .initial small { font-size: 6px !important; }
 
 .player-main { display: contents; }
 

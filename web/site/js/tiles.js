@@ -60,6 +60,10 @@ export function readWord(text) {
   return tiles;
 }
 
+export function blankFace(tile) {
+  return tile.blank && tile.letter !== "L" ? tile.letter.toLowerCase() : tile.letter;
+}
+
 export function written(tile) {
   if (!tile) return ".";
   const text = tile.blank ? tile.letter.toLowerCase() : tile.letter;

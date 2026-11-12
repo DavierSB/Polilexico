@@ -16,19 +16,20 @@ import app.lexico.ui.board.TilePlacer
 fun ActionButtons(
   c: TilePlacer,
   myTurn: Boolean,
+  bag: Int,
   onPlay: () -> Unit,
   onExchange: (List<String>) -> Unit,
   onPass: () -> Unit,
 ) {
-  if (c.exchanging) ExchangeButtons(c, myTurn, onExchange) else TurnButtons(c, myTurn, onPlay, onPass)
+  if (c.exchanging) ExchangeButtons(c, myTurn, onExchange) else TurnButtons(c, myTurn, bag, onPlay, onPass)
 }
 
 @Composable
-private fun TurnButtons(c: TilePlacer, myTurn: Boolean, onPlay: () -> Unit, onPass: () -> Unit) {
+private fun TurnButtons(c: TilePlacer, myTurn: Boolean, bag: Int, onPlay: () -> Unit, onPass: () -> Unit) {
   MoveButtons(c, myTurn, onPlay) {
     SmallButton("Pasar", enabled = myTurn, onClick = onPass)
     ShuffleOrRecall(c)
-    SmallButton("Cambiar", enabled = myTurn, onClick = c::startExchange)
+    SmallButton("Cambiar", enabled = myTurn && bag > 0, onClick = { c.startExchange(bag) })
   }
 }
 

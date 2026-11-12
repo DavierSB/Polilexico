@@ -1,0 +1,11 @@
+{
+  "name": "Poliléxico",
+  "short_name": "Poliléxico",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#1B1411",
+  "theme_color": "#1B1411",
+  "icons": [{ "src": "/img/logo.svg", "sizes": "any", "type": "image/svg+xml" }],
+  "prefer_related_applications": true,
+  "related_applications": [{ "platform": "play", "id": "app.lexico" }]
+}

@@ -37,6 +37,7 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
   val toExchange = mutableStateListOf<Int>()
 
   private var exchanged: List<Int> = emptyList()
+  private var exchangeLimit = Int.MAX_VALUE
 
   private var staying: List<String> = emptyList()
 
@@ -75,8 +76,9 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
     order.addAll(fresh)
   }
 
-  fun startExchange() {
+  fun startExchange(limit: Int = Int.MAX_VALUE) {
     recall()
+    exchangeLimit = limit
     exchanging = true
   }
 
@@ -170,7 +172,7 @@ class TilePlacer(private val renewal: RackRenewal = RackRenewal.MY_PLAYS) {
   }
 
   private fun toggleExchange(i: Int) {
-    if (i in toExchange) toExchange.remove(i) else toExchange.add(i)
+    if (i in toExchange) toExchange.remove(i) else if (toExchange.size < exchangeLimit) toExchange.add(i)
   }
 
   private fun placeAtArrow(i: Int) {

@@ -1,6 +1,6 @@
 import { h } from "../dom.js";
 import { openDialog, actions, toast } from "../dialogs.js";
-import { SIZE, bonusAt, value } from "../tiles.js";
+import { SIZE, bonusAt, blankFace, value } from "../tiles.js";
 import { LABELS } from "../theme.js";
 
 const WIDTH = 1080;
@@ -90,7 +90,7 @@ function tileText(ctx, tile, x, y, side, color) {
   ctx.textAlign = "center";
   ctx.fillStyle = color(tile.blank ? "b-blank" : "b-letter");
   ctx.font = `700 ${side * (tile.letter.length > 1 ? 0.42 : 0.58)}px Mulish, sans-serif`;
-  ctx.fillText(tile.blank ? tile.letter.toLowerCase() : tile.letter, x + side / 2, y + side * 0.5);
+  ctx.fillText(blankFace(tile), x + side / 2, y + side * 0.5);
   if (tile.blank) return;
   ctx.font = `600 ${side * 0.22}px Mulish, sans-serif`;
   ctx.textAlign = "right";

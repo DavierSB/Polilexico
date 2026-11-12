@@ -1,7 +1,7 @@
 import { h, replace } from "../dom.js";
 import { screenHead } from "../parts.js";
 import { call, whenReady } from "../engine.js";
-import { BLANK, LETTERS, readWord, tokens } from "../tiles.js";
+import { BLANK, LETTERS, blankFace, readWord, tokens } from "../tiles.js";
 import { face } from "../classic/rack.js";
 import { draggable } from "../classic/drag.js";
 
@@ -105,7 +105,7 @@ function results(s) {
 }
 
 export function wordText(tiles) {
-  return h("span.found-word", {}, tiles.map((t) => (t.blank ? h("span.blank-letter", {}, t.letter.toLowerCase()) : t.letter)));
+  return h("span.found-word", {}, tiles.map((t) => (t.blank ? h("span.blank-letter", {}, blankFace(t)) : t.letter)));
 }
 
 function keys(ui, e) {
