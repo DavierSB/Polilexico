@@ -2,6 +2,7 @@ import { h, replace } from "../dom.js";
 import { icon } from "../icons.js";
 import { go } from "../router.js";
 import { createBoard } from "../board.js";
+import { floatScore } from "../motion.js";
 import { themeDialog } from "../dialogs.js";
 import { applyPlacement, parsePlacement, placedSquares } from "../placement.js";
 import { emptyBoard, LETTERS } from "../tiles.js";
@@ -74,7 +75,8 @@ async function replay(ui, game, board, progress) {
     if (!p) continue;
     cells = applyPlacement(cells, p);
     const squares = placedSquares(p);
-    board.render({ cells, latest: new Set(squares), score: { index: Math.max(...squares), value: score } });
+    board.render({ cells, latest: new Set(squares) });
+    floatScore(board, cells, squares, score);
     progress(n + 1);
   }
   await wait(FINAL_PAUSE_MS);

@@ -15,6 +15,7 @@ import { chatButton } from "../online/tell.js";
 import { tile } from "../board.js";
 import { bindKeys } from "./keys.js";
 import { lookUp } from "../study/lookup.js";
+import { floatScore, landTiles } from "../motion.js";
 
 const RESIGN_TEXT = "¿Abandonar la partida? Se borra de partidas en curso y cuenta como abandonada en tus estadísticas.";
 
@@ -69,7 +70,8 @@ class GameView {
   show(raw) {
     const state = this.seen(raw);
     const first = !this.state;
-    const turnChanged = this.state?.moves.length !== state.moves.length || this.state?.result !== state.result;
+    const moved = this.state?.moves.length !== state.moves.length;
+    const turnChanged = moved || this.state?.result !== state.result;
     this.state = state;
     this.updateCards();
     this.handOff();
@@ -77,7 +79,16 @@ class GameView {
     this.lastPaused = state.paused;
     this.placer.sync(state.cells, state.rack);
     this.renderAll();
+    if (moved) this.animateMove(first);
     if (state.result && !this.ended) this.end();
+  }
+
+  animateMove(first) {
+    const last = this.state.moves.at(-1);
+    const squares = [...this.state.latest];
+    if (!last || !squares.length) return;
+    const delay = first || last.byMe ? 0 : landTiles(this.board, squares);
+    floatScore(this.board, this.state.cells, squares, last.score, delay);
   }
 
   seen(state) {

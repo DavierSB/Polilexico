@@ -99,7 +99,13 @@ class OnlineClient {
   }
 
   sendWhenOnline(message) {
-    if (!this.send(message)) this.queued.push(message);
+    if (this.connected && this.link?.sendSure(message)) return;
+    this.enqueue(message);
+  }
+
+  enqueue(message) {
+    const text = JSON.stringify(message);
+    this.queued = [...this.queued.filter((m) => JSON.stringify(m) !== text), message];
   }
 
   seated() {
@@ -122,7 +128,7 @@ class OnlineClient {
   }
 
   ready() {
-    this.send({ t: "ready" });
+    this.sendWhenOnline({ t: "ready" });
   }
 
   dismissOffer() {
@@ -239,7 +245,8 @@ class OnlineClient {
     this.refused = null;
     this.connected = true;
     if (this.room?.watching) this.send({ t: "watch", code: this.room.id });
-    this.queued.splice(0).forEach((m) => this.sendWhenOnline(m));
+    const due = [...(this.link?.takeUnconfirmed() ?? []), ...this.queued.splice(0)];
+    new Map(due.map((m) => [JSON.stringify(m), m])).forEach((m) => this.sendWhenOnline(m));
   }
 
   seatedIn(e) {

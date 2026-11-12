@@ -1,4 +1,5 @@
 .board {
+  --side-cqw: 6.087cqw;
   container-type: inline-size;
   width: 100%;
   aspect-ratio: 1;
@@ -117,3 +118,36 @@
 }
 
 .score-bubble.high { background: var(--b-high-score-ink); color: #fff; }
+
+.tile.landing { z-index: 3; animation: land 300ms cubic-bezier(.4, 0, .2, 1) var(--delay) both; }
+
+@keyframes land { from { transform: scale(1.6); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.score-float {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: calc(var(--side-cqw) * -.1);
+  translate: -50% -50%;
+  white-space: nowrap;
+  pointer-events: none;
+  color: var(--b-score-ink);
+  font-family: var(--tile-font);
+  font-weight: 900;
+  font-size: calc(var(--side-cqw) * 1.1);
+  line-height: 1;
+  text-shadow: 0 0 calc(var(--side-cqw) * .25) rgb(0 0 0 / .8);
+  opacity: 0;
+  animation: score-rise 1600ms linear var(--delay) both;
+}
+
+.score-float.vertical { top: calc(var(--side-cqw) * -.55); }
+
+.score-float.high { color: var(--b-high-score-ink); }
+
+@keyframes score-rise {
+  0% { opacity: 0; transform: translate(var(--dx, 0), var(--dy, 0)) scaleX(.7); }
+  12% { opacity: 1; transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--rise, var(--side-cqw) * .8) * -.12)) scaleX(.7); }
+  65% { opacity: 1; transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--rise, var(--side-cqw) * .8) * -.65)) scaleX(.7); }
+  100% { opacity: 0; transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--rise, var(--side-cqw) * .8) * -1)) scaleX(.7); }
+}
