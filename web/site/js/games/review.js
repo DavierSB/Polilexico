@@ -11,6 +11,8 @@ import { getRecord } from "../records.js";
 import { lookUp } from "../study/lookup.js";
 import { alias, gameTitle, scoreText } from "./list.js";
 import { deepView, DEEP_TITLES, BUDGET_MS } from "../study/deep.js";
+import { spreadOf, spreadDialog } from "./spread.js";
+import { exportDialog } from "./export.js";
 
 const WHO = { "Tú": "Tu jugada", "Máster": "Jugada del Máster" };
 
@@ -30,6 +32,7 @@ async function open(holder, id, ui) {
   if (!record) return go("partidas", true);
   await whenReady();
   ui.text = record.text;
+  ui.record = record;
   ui.game = await call("reviewOpen", record.text);
   loading.stop();
   ui.classic = ui.game.Mode !== "duplicate";
@@ -40,13 +43,40 @@ async function open(holder, id, ui) {
   ui.top = h("div.stack");
   ui.bottom = h("div.stack");
   const el = h("div.review", {},
-    h("div.review-head", {}, screenHead(`${gameTitle(ui.game)} · ${scoreText(ui.game)}`, "partidas")),
+    h("div.review-head", {}, screenHead(`${gameTitle(ui.game)} · ${scoreText(ui.game)}`, "partidas",
+      ui.classic ? h("button.text-btn", { onclick: () => chartDialog(ui) }, "Ventaja") : null)),
     h("div.review-board", {}, ui.top, ui.board.el),
     h("div.review-side", {}, ui.bottom),
   );
   holder.replaceWith(el);
   draw(ui);
+  if (ui.classic && ui.game.Turns.length) openingDialog(ui);
   return el;
+}
+
+function reviewSpread(ui) {
+  const g = ui.game;
+  const totals = [...g.Turns.map((t) => [t.MyScore, t.OpponentScore]), [g.MyScore, g.OpponentScore]];
+  return spreadOf(ui.me, ui.opponent, g.HumanStarts, totals);
+}
+
+function chartDialog(ui, extra = null) {
+  spreadDialog(reviewSpread(ui), { selected: ui.index, pick: (i) => goTo(ui, i), extra });
+}
+
+function openingDialog(ui) {
+  const endgame = ui.game.Turns.findIndex((t) => t.Endgame);
+  chartDialog(ui, (close) => h("div.stack.opening-choices", {},
+    endgame >= 0 ? h("button.btn.block", { onclick: () => (close(), goTo(ui, ui.game.StartTurn ?? 0)) }, "Analizar partida") : null,
+    endgame >= 0 ? h("button.btn.block", { onclick: () => (close(), goTo(ui, endgame)) }, "Analizar final") : null,
+    ui.record.gcg ? h("button.btn.block.outlined", { onclick: () => (close(), exportDialog(null, ui.record)) }, "Exportar") : null,
+  ));
+}
+
+function goTo(ui, i) {
+  ui.index = Math.min(Math.max(i, 0), ui.game.Turns.length - 1);
+  ui.selected = null;
+  draw(ui);
 }
 
 function turn(ui) {

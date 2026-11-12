@@ -28,6 +28,9 @@ body {
 
 #app { min-height: 100dvh; }
 
+.intro { min-height: 100dvh; display: grid; place-content: center; justify-items: center; gap: 8px; padding: var(--gutter); text-align: center; color: var(--on-surface, #FFF1D6); }
+.intro p { margin: 0; opacity: .7; }
+
 h1, h2, h3 { font-family: var(--title-font); font-weight: 900; margin: 0; }
 
 button, input, select, textarea { font: inherit; color: inherit; }

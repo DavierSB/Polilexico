@@ -1,3 +1,4 @@
+import { setting } from "../settings.js";
 import { h, replace } from "../dom.js";
 import { lobbyRoute } from "./lobby.js";
 import { icon, bagIcon } from "../icons.js";
@@ -16,7 +17,8 @@ import { bindKeys } from "../classic/keys.js";
 import { account } from "./api.js";
 import { online } from "./client.js";
 import { MASTER, standings, placeOf, leftMs } from "./table.js";
-import { chatInput, chatLine } from "./tell.js";
+import { chatInput, chatLine, chatButton } from "./tell.js";
+import { confetti } from "../confetti.js";
 import { play } from "../sound.js";
 
 const LOW_ROUND_MS = 10000;
@@ -44,15 +46,22 @@ class RoomView {
     this.notice = h("div.game-notice");
     this.side = h("div.stack");
     this.chat = h("div.chat-lines.room-chat");
+    this.chatPanel = h("div.chat-panel", {}, h("h3.side-title", {}, "Chat"), this.chat, chatInput((t) => online.sayInRoom(t)));
     this.el = h("div.game.duplicate-game", {}, this.bar, h("div.game-board", {}, this.board.el), this.panel,
       h("div.game-rack", {}, this.rack.el), this.buttons, this.notice,
-      h("aside.game-side", {}, this.side, h("div.chat-panel", {}, h("h3.side-title", {}, "Chat"), this.chat, chatInput((t) => online.sayInRoom(t)))));
+      h("aside.game-side", {}, this.side, this.chatPanel));
     this.board.el.addEventListener("pointerdown", (e) => this.dragPending(e));
     this.unbindKeys = bindKeys(this);
   }
 
   destroy() {
     this.unbindKeys();
+  }
+
+  celebrate(t) {
+    const won = standings(t).find((e) => e.name !== MASTER)?.name === t.me;
+    play(won ? "victory" : "game_over");
+    if (won && !this.watching) confetti();
   }
 
   update(c) {
@@ -78,7 +87,7 @@ class RoomView {
       const mine = last.find((e) => e.name === t.me)?.points ?? -1;
       play(mine === last.find((e) => e.name === MASTER)?.points ? "correct" : "miss");
     }
-    if (previous && t.phase === "finished" && previous.phase !== "finished") play(standings(t).find((e) => e.name !== MASTER)?.name === t.me ? "victory" : "game_over");
+    if (previous && t.phase === "finished" && previous.phase !== "finished") this.celebrate(t);
     if (t.phase === "results" && (previous?.phase !== "results" || previous.round !== t.round)) this.resultsDialog();
     if (t.phase === "finished" && previous?.phase !== "finished") this.verdictDialog();
   }
@@ -120,6 +129,7 @@ class RoomView {
       live ? h("button.text-btn", { onclick: () => this.abandon() }, "Abandonar") : null,
       h("span.grow"),
       t.phase !== "playing" || this.watching ? h("button.text-btn", { onclick: () => this.standingsDialog() }, "Posiciones") : null,
+      chatButton(this.chatPanel),
       h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
       h("button.bag-btn", { "aria-label": "Quedan en la bolsa", onclick: () => bagDialog({ unseen: t.unseen }, "Quedan en la bolsa") }, bagIcon(t.unseen.length)),
     );
@@ -129,7 +139,7 @@ class RoomView {
     const p = this.placer;
     const pending = new Map([...p.pending].map(([i, x]) => [i, x.tile]));
     const placement = p.placement();
-    const score = placement ? { index: at(placement, placement.tiles.length - 1), value: placementScore(this.t.cells, placement) } : null;
+    const score = placement && setting("liveScore") ? { index: at(placement, placement.tiles.length - 1), value: placementScore(this.t.cells, placement) } : null;
     this.board.render({ cells: this.t.cells, latest: this.t.latest, pending, arrow: this.canPlay() ? p.arrow : null, score });
   }
 

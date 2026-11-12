@@ -85,7 +85,12 @@
   .lobby { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr); gap: 32px; }
   .lobby-top { max-height: 100%; }
   .lobby-seek { max-width: 420px; margin: 0 auto; }
+  .lobby-buttons { width: 100%; max-width: 420px; margin: 0 auto; }
 }
+
+.lobby-buttons { gap: 8px; }
+
+.lobby-buttons .lobby-seek { flex: 1 1 0; min-width: 0; max-width: none; margin: 0; justify-content: center; }
 
 .offer-card { display: flex; flex-direction: column; gap: 6px; border-color: var(--primary); }
 
@@ -132,3 +137,103 @@
 .panel-top .lobby-status:empty + .account-chip { margin-left: auto; }
 
 .dialog-list { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 2px; }
+
+.player-row.mine { background: var(--primary-container); }
+
+.identity { flex: 1 1 auto; gap: 10px; min-width: 0; padding: 0; border-radius: 0; color: inherit; text-align: left; }
+
+.identity-text { min-width: 0; }
+
+.row-actions { flex: none; gap: 4px; }
+
+.chat-glyph { width: 40px; height: 40px; font-size: 18px; }
+
+.empty-tile { width: 34px; }
+
+.empty-text { font-size: 14px; font-weight: 500; }
+
+.glyph-big { font-size: 34px; line-height: 1; }
+
+.no-profile { background: var(--surface-variant); border: 0; gap: 10px; padding: 18px; }
+
+.invite-card { display: flex; flex-direction: column; gap: 10px; border-radius: 16px; background: var(--c2); box-shadow: 0 4px 14px rgb(0 0 0 / .3); }
+
+.invite-head { gap: 12px; align-items: center; }
+
+.invite-buttons { gap: 8px; }
+
+.messages-btn { position: relative; width: 40px; height: 40px; }
+
+.messages-btn .glyph { font-size: 18px; line-height: 1; }
+
+.msg-badge { position: absolute; top: 0; right: 0; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #B3261E; color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
+
+.msg-title { gap: 8px; }
+
+.msg-form { gap: 6px; }
+
+.msg-field { display: flex; flex-direction: column; gap: 4px; }
+
+.msg-label { font-size: 13px; color: var(--on-surface-variant); padding-left: 4px; }
+
+.msg-input { gap: 4px; padding: 0 4px 0 14px; border: 1px solid var(--outline); border-radius: 10px; background: var(--c2); }
+
+.msg-input:focus-within, .msg-text:focus { border: 2px solid var(--primary); outline: none; }
+
+.msg-to { flex: 1; min-width: 0; min-height: 48px; border: 0; background: none; outline: none; }
+
+.msg-flag:empty { display: none; }
+
+.msg-pick { font-size: 18px; padding: 4px 10px; }
+
+.msg-text { width: 100%; padding: 12px 14px; border: 1px solid var(--outline); border-radius: 10px; background: var(--c2); resize: none; }
+
+.msg-count { align-self: flex-end; }
+
+.contact-row { width: 100%; color: inherit; text-align: left; cursor: pointer; }
+
+.history-list { max-height: min(460px, 60dvh); overflow: auto; gap: 6px; }
+
+.history-bubble { display: flex; gap: 8px; padding: 8px 10px; border-radius: 14px; background: var(--surface-variant); }
+
+.history-bubble.mine { background: var(--primary-container); }
+
+.history-bubble .row { gap: 8px; }
+
+.history-text { overflow-wrap: anywhere; }
+
+.room-avatar { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--primary); font-size: 14px; flex: none; }
+
+.chat-popup { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+.popup-from { align-self: stretch; }
+
+.popup-quote { align-self: stretch; margin: 0; font-size: 18px; font-style: italic; overflow-wrap: anywhere; }
+
+.popup-quote + .small { align-self: stretch; }
+
+.small-link { font-size: 13px; text-align: center; }
+
+.profile-btn { width: 40px; height: 40px; flex: none; }
+
+.profile-btn .avatar, .profile-btn .initial { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+.download-offer { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+
+.download-offer h2 { font-family: var(--title-font); font-weight: 900; font-size: 22px; color: var(--on-surface); }
+
+.download-btn { text-decoration: none; }
+
+.drawer-download { margin-top: 8px; background: var(--primary); color: var(--on-primary); }
+
+.drawer-download:hover { background: var(--primary); filter: brightness(1.08); }
+
+.about-text p { margin: 0; }
+
+.about-link { align-self: flex-start; padding: 0; border: 0; background: none; color: var(--primary); font-size: 14px; text-decoration: underline; cursor: pointer; }
+
+.about-license .small { margin: 0; }
+
+.about-author { gap: 2px; }
+
+.bar-chat { display: none; font-size: 18px; }

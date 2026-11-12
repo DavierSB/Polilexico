@@ -7,6 +7,10 @@ import { online } from "./client.js";
 import { gameView } from "../classic/view.js";
 import { verdict, endDetail } from "../classic/verdict.js";
 import { chatInput, chatLine } from "./tell.js";
+import { endTools } from "../games/endTools.js";
+import { confetti } from "../confetti.js";
+
+const INVALID_MS = 5000;
 
 export function onlineGameScreen(app) {
   if (!account()) return go("cuenta", true);
@@ -36,28 +40,30 @@ function mount(screen, c) {
   screen.stopInvalids?.();
   screen.session = c.session;
   const sides = seats(c);
-  screen.stopInvalids = announceInvalids(c.session, sides, c.room.watching);
+  screen.stopInvalids = announceInvalids(c.session, sides);
   screen.chat = h("div.chat-lines.room-chat");
   screen.watchers = h("p.muted.small");
+  const chat = chatPanel(screen);
   screen.view = gameView(c.session, {
     me: sides.me,
     opponent: sides.opponent,
     watching: c.room.watching,
     exit: () => exit(c),
     resign: c.room.watching ? null : () => (c.leave(), go(lobbyRoute())),
-    onEnd: (state) => endDialog(state, sides, c.room.watching),
-    extra: chatPanel(screen),
+    onEnd: (state) => endDialog(state, sides, c.room.watching, c.session),
+    extra: chat,
+    chat,
   });
   (screen.holder.isConnected ? screen.holder : document.querySelector(".game"))?.replaceWith(screen.view.el);
 }
 
-function announceInvalids(session, sides, watching) {
-  let seen = null;
+function announceInvalids(session, sides) {
+  let seen = session.state?.moves.length ?? 0;
   return session.subscribe((state) => {
-    const fresh = seen !== null && state.moves.length > seen;
+    const fresh = state.moves.length > seen;
     seen = state.moves.length;
     const last = state.moves.at(-1);
-    if (fresh && last.kind === "invalid" && (watching || !last.byMe)) toast(invalidText(last, sides));
+    if (fresh && last.kind === "invalid") toast(invalidText(last, sides), INVALID_MS);
   });
 }
 
@@ -100,12 +106,14 @@ function drawChat(screen, c) {
   if (!c.rivalOnline && !c.finished()) screen.watchers.textContent = "Rival desconectado";
 }
 
-function endDialog(state, sides, watching) {
+function endDialog(state, sides, watching, session) {
   const rival = sides.opponent.name;
+  if (!watching && state.result.outcome === "win") confetti();
   openDialog((close) => [
     h("h2.verdict", {}, verdict(state, rival, watching ? sides.me.name : null)),
     h("p.final-score", {}, `${state.myScore} – ${state.opponentScore}`),
     endDetail(state, rival),
+    watching ? null : endTools(session.recorded, state, { me: sides.me.name, opponent: rival }, () => (close(), online.leave())),
     actions(
       h("button.text-btn", { onclick: close }, "Ver tablero"),
       h("button.text-btn", { onclick: () => (close(), online.leave(), go(lobbyRoute())) }, "Volver al lobby"),

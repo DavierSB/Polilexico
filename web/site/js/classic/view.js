@@ -1,3 +1,4 @@
+import { setting } from "../settings.js";
 import { h, replace } from "../dom.js";
 import { icon, bagIcon } from "../icons.js";
 import { createBoard } from "../board.js";
@@ -9,6 +10,7 @@ import { createRack } from "./rack.js";
 import { playerCard } from "./cards.js";
 import { askBlank, bagDialog, movesDialog, movesTable } from "./moves.js";
 import { dragFrom } from "./drag.js";
+import { chatButton } from "../online/tell.js";
 import { tile } from "../board.js";
 import { bindKeys } from "./keys.js";
 import { lookUp } from "../study/lookup.js";
@@ -142,6 +144,7 @@ class GameView {
       o.resign && !this.state.result ? h("button.text-btn", { onclick: () => this.resign() }, "Abandonar") : null,
       h("span.grow"),
       o.pausable && this.state.clocks && !this.state.result ? h("button.icon-btn", { "aria-label": "Pausa", onclick: () => this.togglePause() }, icon(this.state.paused ? "play" : "pause")) : null,
+      o.chat ? chatButton(o.chat) : null,
       h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
       h("button.text-btn.moves-btn", { onclick: () => movesDialog(this.state, this.names()) }, "Movidas"),
       h("button.bag-btn", { "aria-label": "Fichas por salir", onclick: () => bagDialog(this.state) }, bagIcon(this.state.bag)),
@@ -184,7 +187,7 @@ class GameView {
 
   liveScore() {
     const p = this.placer.placement();
-    this.score = p ? { index: at(p, p.tiles.length - 1), value: placementScore(this.state.cells, p) } : null;
+    this.score = p && setting("liveScore") ? { index: at(p, p.tiles.length - 1), value: placementScore(this.state.cells, p) } : null;
     this.renderBoard();
   }
 

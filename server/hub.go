@@ -126,6 +126,10 @@ func (h *hub) hello(ctx context.Context, c *client, m message) {
 }
 
 func (h *hub) create(c *client, m message, invitee *player) {
+	if h.involved(c.player.ID) {
+		c.send(notice("involved", involvedReason))
+		return
+	}
 	if err := h.canPublish(c); err != "" {
 		c.send(notice("error", err))
 		return
@@ -151,8 +155,6 @@ func (h *hub) seatHost(c *client, r room, code string) {
 
 func (h *hub) canPublish(c *client) string {
 	switch {
-	case h.playing(c):
-		return "Termina tu partida antes de publicar otra."
 	case h.seekCount(c.player.ID) >= maxSeeks:
 		return "Ya tienes " + strconv.Itoa(maxSeeks) + " búsquedas publicadas."
 	}
@@ -213,6 +215,11 @@ func (h *hub) cancel(c *client, code string) {
 
 func (h *hub) playing(c *client) bool {
 	return h.busy(c.player.ID)
+}
+
+func (h *hub) involved(playerID string) bool {
+	r := h.roomOf(playerID)
+	return r != nil && !r.finished()
 }
 
 func (h *hub) busy(playerID string) bool {

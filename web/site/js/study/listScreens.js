@@ -130,9 +130,9 @@ export function studyScreen(app, [id]) {
       const unit = data.lexicon.find(list.members[state.at]);
       replace(body, unit ? wordCard(unit, data.lexicon, (e) => go("diccionario/" + encodeURIComponent(e))) : h("p", {}, "Esta entrada ya no está en el léxico."));
       replace(buttons,
-        h("button.btn.outlined.grow", { onclick: () => move(state.at - 1) }, "Anterior"),
-        h("button.btn.tonal.grow", { onclick: () => ((state.playing = !state.playing), draw()) }, state.playing ? "Pausar" : "▶ Reproducir"),
-        h("button.btn.grow", { onclick: () => move(state.at + 1) }, "Siguiente"),
+        h("button.btn.outlined.grow.study-btn", { onclick: () => move(state.at - 1) }, "Anterior"),
+        h("button.btn.tonal.grow.study-btn", { onclick: () => ((state.playing = !state.playing), draw()) }, state.playing ? "Pausar" : "▶ Reproducir"),
+        h("button.btn.grow.study-btn", { onclick: () => move(state.at + 1) }, "Siguiente"),
       );
     };
     const pace = () => {

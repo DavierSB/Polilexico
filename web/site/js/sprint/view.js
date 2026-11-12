@@ -1,3 +1,4 @@
+import { setting } from "../settings.js";
 import { h, replace } from "../dom.js";
 import { icon } from "../icons.js";
 import { createBoard, tile } from "../board.js";
@@ -183,7 +184,7 @@ class SprintView {
 
   liveScore() {
     const p = this.placer.placement();
-    this.score = p ? { index: at(p, p.tiles.length - 1), value: placementScore(this.state.cells, p) } : null;
+    this.score = p && setting("liveScore") ? { index: at(p, p.tiles.length - 1), value: placementScore(this.state.cells, p) } : null;
     this.renderBoard();
   }
 

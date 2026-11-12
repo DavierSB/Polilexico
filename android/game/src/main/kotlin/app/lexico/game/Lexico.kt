@@ -22,6 +22,7 @@ import app.lexico.game.modes.sprint.SprintSetup
 import app.lexico.game.records.AnagramRecords
 import app.lexico.game.records.DuplicateRecords
 import app.lexico.game.records.FinishedGames
+import app.lexico.game.records.OnlineRecords
 import app.lexico.game.records.RecallRecords
 import app.lexico.game.records.SprintRecords
 import app.lexico.game.scoring.EngineScorer
@@ -42,6 +43,8 @@ class Lexico(private val context: Context) {
   val savedGames = SavedGames(File(context.filesDir, "in_progress"), AbandonedGames(File(context.filesDir, "abandoned.tsv")))
 
   val finishedGames = FinishedGames(File(context.filesDir, "games"))
+
+  val onlineRecords = OnlineRecords(File(context.filesDir, "online_records.txt"))
 
   val analyst = EngineAnalyst()
 

@@ -1,4 +1,4 @@
-import { call, readFile } from "./engine.js";
+import { call, readFile, whenReady } from "./engine.js";
 import { load, save } from "./store.js";
 
 const DB = "lexico-records";
@@ -23,14 +23,23 @@ async function run(mode, work) {
   });
 }
 
-export async function keepRecord(path) {
+export async function keepRecord(path, online = false) {
   const text = await readFile(path);
   if (!text) return null;
+  const gcg = await readFile(path.replace(/-log\.json$/, ".gcg"));
   const game = await call("reviewOpen", text);
   const { Turns, ...summary } = game;
   const id = String(Date.now());
-  await run("readwrite", (s) => s.put({ id, text, finishedAt: Date.now(), summary: { ...summary, turns: Turns.length } }));
+  await run("readwrite", (s) => s.put({ id, text, gcg, online, finishedAt: Date.now(), summary: { ...summary, turns: Turns.length } }));
   return id;
+}
+
+export async function keepMirrorRecord(save) {
+  await whenReady();
+  const match = await call("classicMirror", save, true, false);
+  const raw = await call("classicRead", match).catch(() => null);
+  call("classicClose", match).catch(() => {});
+  return raw?.Result?.RecordPath ? keepRecord(raw.Result.RecordPath, true) : null;
 }
 
 export function listRecords() {

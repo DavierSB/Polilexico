@@ -2,7 +2,7 @@ import { h, svg } from "./dom.js";
 import { SIZE, bonusAt, value } from "./tiles.js";
 import { LABELS } from "./theme.js";
 
-const ARROW = `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 11h12.2l-4.6-4.6L13 5l7 7-7 7-1.4-1.4 4.6-4.6H4z"/></svg>`;
+const ARROW = `<svg viewBox="0 0 100 100"><rect class="frame-edge" x="9.5" y="9.5" width="81" height="81" rx="12" stroke-width="13"/><rect class="frame" x="9.5" y="9.5" width="81" height="81" rx="12" stroke-width="9"/><g class="halo"><line x1="20" y1="50" x2="54" y2="50" stroke-width="19" stroke-linecap="round"/><path d="M80 50L54 29.2V70.8Z" stroke-width="8" stroke-linejoin="round"/></g><g class="shaft"><line x1="20" y1="50" x2="54" y2="50" stroke-width="11" stroke-linecap="round"/><path d="M80 50L54 29.2V70.8Z" stroke="none"/></g></svg>`;
 
 export function createBoard(events = {}) {
   const squares = [];
@@ -54,8 +54,8 @@ function content(i, view) {
   const parts = [];
   if (placed) parts.push(tile(placed, view.latest?.has(i) ? "latest" : ""));
   else if (pending) parts.push(tile(pending, "pending"));
-  else if (view.arrow?.index === i) parts.push(arrow(view.arrow.vertical));
   else parts.push(label(i));
+  if (!placed && !pending && view.arrow?.index === i) parts.push(arrow(view.arrow.vertical));
   if (view.score?.index === i) parts.push(bubble(view.score.value));
   return parts;
 }

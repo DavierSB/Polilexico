@@ -90,7 +90,7 @@ private fun proposal(o: JSONObject, p: Proposal): JSONObject = when (p) {
 private fun event(o: JSONObject): OnlineEvent? = when (o.getString("t")) {
   "welcome" -> OnlineEvent.Welcome
   "refused" -> OnlineEvent.Refused(o.optString("reason"))
-  "error" -> OnlineEvent.Failed(o.optString("reason"))
+  "error", "involved" -> OnlineEvent.Failed(o.optString("reason"))
   "lobby" -> OnlineEvent.LobbyChanged(
     Lobby(
       seeks(o.optJSONArray("seeks")), seeks(o.optJSONArray("invites")), people(o.optJSONArray("people")), games(o.optJSONArray("games")),

@@ -77,7 +77,7 @@ class OnlinePanelActions(
   val resume: () -> Unit, val seekClassic: () -> Unit, val createDuplicate: () -> Unit, val accept: (String) -> Unit,
   val cancel: (String) -> Unit = {}, val start: (String) -> Unit = {}, val watch: (String) -> Unit = {},
   val resumeAdjourned: (String) -> Unit = {}, val seenAdjourned: (String) -> Unit = {},
-  val challenge: (PersonItem) -> Unit = {}, val write: (PersonItem) -> Unit = {},
+  val challenge: (PersonItem) -> Unit = {}, val write: (PersonItem) -> Unit = {}, val finished: () -> Unit = {},
 )
 
 class OnlineTab(
@@ -225,8 +225,11 @@ private const val NOBODY_ONLINE = "No hay nadie en línea."
 
 @Composable
 private fun PublishButton(state: OnlinePanelState, actions: OnlinePanelActions) {
-  if (state.classic) Button(onClick = actions.seekClassic, Modifier.fillMaxWidth()) { ButtonText("Buscar clásica") }
-  else Button(onClick = actions.createDuplicate, Modifier.fillMaxWidth()) { ButtonText("Crear duplicada") }
+  if (!state.classic) return Button(onClick = actions.createDuplicate, Modifier.fillMaxWidth()) { ButtonText("Crear duplicada") }
+  Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Button(onClick = actions.seekClassic, Modifier.weight(1f)) { ButtonText("Buscar clásica") }
+    OutlinedButton(onClick = actions.finished, Modifier.weight(1f)) { ButtonText("Terminadas") }
+  }
 }
 
 @Composable

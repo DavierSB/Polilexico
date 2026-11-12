@@ -2,6 +2,9 @@ import { Link } from "./link.js";
 import { RemoteSession } from "./remote.js";
 import { readTable } from "./table.js";
 import { load, save } from "../store.js";
+import { involvedDialog } from "./involved.js";
+import { recordChat } from "./chatLog.js";
+import { setting } from "../settings.js";
 
 const NOTICE_MS = 5000;
 const CHAT_SIZE = 60;
@@ -16,6 +19,9 @@ class OnlineClient {
     this.link = null;
     this.users = 0;
     this.queued = [];
+    this.inbox = [];
+    this.lastTo = null;
+    this.declined = new Set();
     this.reset();
   }
 
@@ -164,6 +170,7 @@ class OnlineClient {
   }
 
   tell(person, text) {
+    this.lastTo = { name: person.name, country: person.country };
     if (this.send({ t: "tell", name: person.name, country: person.country, text })) this.heard({ from: person.name, country: person.country, text, mine: true, private: true });
   }
 
@@ -188,8 +195,38 @@ class OnlineClient {
   }
 
   heard(line) {
-    this.chat = [...this.chat, { ...line, at: Date.now() }].slice(-CHAT_SIZE);
+    const entry = { ...line, at: Date.now() };
+    this.chat = [...this.chat, entry].slice(-CHAT_SIZE);
+    recordChat(entry);
+    if (entry.private && !entry.mine) this.inbox = [...this.inbox, entry];
     this.changed();
+  }
+
+  closeChat() {
+    this.inbox = [];
+    this.changed();
+  }
+
+  ignoringAll() {
+    return load("ignoreAll", false);
+  }
+
+  ignoreAll(on) {
+    save("ignoreAll", on);
+    if (on) this.inbox = [];
+    this.changed();
+  }
+
+  heardLobby(e) {
+    this.lobby = { seeks: e.seeks ?? [], invites: e.invites ?? [], people: e.people ?? [], games: e.games ?? [], adjourned: e.adjourned ?? [] };
+    if (setting("noChallenges")) this.refuseInvites();
+  }
+
+  refuseInvites() {
+    this.lobby.invites.filter((s) => !s.resume && s.mode !== "duplicate" && !this.declined.has(s.id)).forEach((s) => {
+      this.declined.add(s.id);
+      this.roomAction("decline", s.id);
+    });
   }
 
   async handle(e) {
@@ -232,6 +269,7 @@ class OnlineClient {
   ignore(person) {
     save("ignored", [...this.ignored(), key(person)]);
     this.chat = this.chat.filter((l) => !(l.private && key({ name: l.from, country: l.country }) === key(person)));
+    this.inbox = this.inbox.filter((l) => key({ name: l.from, country: l.country }) !== key(person));
     this.changed();
   }
 }
@@ -245,7 +283,7 @@ const HANDLERS = {
     c.connected = false;
   },
   error: (c, e) => (c.room ? c.flash(e.reason) : (c.ended = e.reason)),
-  lobby: (c, e) => (c.lobby = { seeks: e.seeks ?? [], invites: e.invites ?? [], people: e.people ?? [], games: e.games ?? [], adjourned: e.adjourned ?? [] }),
+  lobby: (c, e) => c.heardLobby(e),
   room: (c, e) => c.seatedIn(e),
   state: (c, e) => c.mirror(e),
   rejected: (c, e) => c.flash(e.reason),
@@ -256,10 +294,11 @@ const HANDLERS = {
   adjournAsk: (c, e) => (c.adjournAsk = e.name),
   closed: (c, e) => c.closed(e.reason),
   chat: (c, e) => c.heard({ from: e.name, text: e.text }),
-  tell: (c, e) => !c.ignored().includes(key(e)) && c.heard({ from: e.name, country: e.country, text: e.text, private: true }),
+  tell: (c, e) => !c.ignoringAll() && !c.ignored().includes(key(e)) && c.heard({ from: e.name, country: e.country, text: e.text, private: true }),
   watchers: (c, e) => (c.watchers = e.people ?? []),
   table: (c, e) => c.room && (c.table = readTable(e.view, c.room.watching ? "" : c.room.me)),
   duplicateOffer: (c, e) => (c.offer = e.code),
+  involved: () => involvedDialog(),
 };
 
 function key(p) {

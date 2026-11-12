@@ -307,6 +307,15 @@ func TestDirectChallengeIsAccepted(t *testing.T) {
 	ana.waitFor("state")
 }
 
+func TestSentChallengeIsListedForItsSender(t *testing.T) {
+	srv := newTestServer(t)
+	ana, _ := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
+	ana.send(message{T: "challenge", Name: "Beto", Country: "ES"})
+	if sent := ana.mySeeks(1)[0]; sent.To != "Beto" {
+		t.Fatalf("reto enviado sin destinatario: %+v", sent)
+	}
+}
+
 func TestDeclinedChallengeClosesTheRoom(t *testing.T) {
 	srv := newTestServer(t)
 	ana, beto := srv.player(t, "Ana", "CU"), srv.player(t, "Beto", "ES")
@@ -408,7 +417,11 @@ func TestNoPublishingDuringAGame(t *testing.T) {
 	beto.send(message{T: "join", Code: ana.mySeeks(1)[0].ID})
 	beto.waitFor("state")
 	beto.send(message{T: "create", Mode: modeClassic})
-	beto.waitFor("error")
+	beto.waitFor("involved")
+	beto.send(message{T: "challenge", Name: "Ana", Country: "CU"})
+	if m := beto.waitFor("involved"); m.Reason != involvedReason {
+		t.Fatal(m.Reason)
+	}
 }
 
 func TestChatIsRelayedWithinLimits(t *testing.T) {

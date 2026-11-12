@@ -224,7 +224,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
   private fun finished(): Boolean =
     _game.value?.state?.value?.result != null || _table.value?.contains(FINISHED_PHASE) == true
 
-  private fun seatedInGame(): Boolean = _room.value?.watching == false && !finished() && _ended.value == null
+  fun seatedInGame(): Boolean = _room.value?.watching == false && !finished() && _ended.value == null
 
   @Synchronized
   fun shutDown() {

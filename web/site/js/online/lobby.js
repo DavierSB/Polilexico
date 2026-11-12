@@ -1,14 +1,17 @@
 import { h, replace } from "../dom.js";
-import { icon } from "../icons.js";
 import { go } from "../router.js";
-import { nameFlag, formatClock } from "../parts.js";
+import { nameFlag, formatClock, flag } from "../parts.js";
 import { openDialog, actions } from "../dialogs.js";
 import { account, logOut } from "./api.js";
 import { online } from "./client.js";
-import { tellDialog } from "./tell.js";
+import { writeMessage } from "./messages.js";
+import { onPresence } from "./presence.js";
+import { setting } from "../settings.js";
+import { face } from "../classic/rack.js";
 import { photoAvatar, profileDialog } from "./profile.js";
 import { load, save } from "../store.js";
-import { fitArea, fullSection } from "./fit.js";
+import { fitArea } from "./fit.js";
+import { blockedByGame } from "./involved.js";
 
 export function lobbyRoute() {
   return load("lobbyTab", "classic") === "duplicate" ? "duplicada" : "clasica";
@@ -20,35 +23,37 @@ export function lobbyScreen() {
 
 export function onlinePanel(duplicate) {
   save("lobbyTab", duplicate ? "duplicate" : "classic");
-  if (!account()) return { el: signInFirst(), destroy: () => {} };
+  if (!account()) return noProfileCard();
   const lower = fitArea();
   const ui = { notice: h("div.stack.lobby-notice"), top: h("section.lobby-col.lobby-top"), lower, status: h("p.muted.lobby-status"), publish: h("div.lobby-publish"), duplicate };
-  const el = h("div.online-panel", {}, h("div.row.panel-top", {}, ui.status, accountChip()), ui.notice, h("div.lobby", {}, ui.top, lower.el), ui.publish);
+  const el = h("div.online-panel", {}, ui.status, ui.notice, h("div.lobby", {}, ui.top, lower.el), ui.publish);
   online.acquire();
   const stop = online.subscribe((c) => draw(c, ui));
   return { el, destroy: () => (stop(), lower.stop(), online.release()) };
 }
 
-function signInFirst() {
-  return h("div.card.empty-card", {}, icon("globe", 40), h("p", {}, "Juega contra personas de todo el mundo."),
-    h("button.btn", { onclick: () => go("cuenta") }, "Entrar o crear cuenta"));
+function noProfileCard() {
+  const count = h("span.muted");
+  const el = h("div.card.empty-card.no-profile", {}, h("span.glyph-big", {}, "👥"), h("b", {}, "Jugar en línea"), count,
+    h("button.btn.block", { onclick: () => go("cuenta") }, "Crear perfil"));
+  const stop = onPresence((n) => (count.textContent = n > 0 ? (n === 1 ? "1 persona conectada" : `${n} personas conectadas`) : ""));
+  return { el, destroy: stop };
 }
 
 export function peopleDialog() {
-  const body = h("div.stack");
+  const body = h("div.stack.dialog-list");
   let stop = null;
   openDialog((close) => {
     online.acquire();
-    stop = online.subscribe((c) => replace(body, fullSection(people(c, false))));
-    return [h("h2", {}, "En línea"), body, actions(h("button.text-btn", { onclick: close }, "Cerrar"))];
+    stop = online.subscribe((c) => replace(body, peopleList(c, others(c), close)));
+    return [h("h2", {}, "Conectados"), body, actions(h("button.text-btn", { onclick: close }, "Cerrar"))];
   }, { onClose: () => (stop?.(), online.release()), wide: true });
 }
 
-function accountChip() {
-  const s = account();
-  return h("button.account-chip", { onclick: () => go("perfil") }, icon("person", 20), nameFlag(s.name, s.country));
+function others(c) {
+  const me = account();
+  return c.lobby.people.filter((p) => !(p.name === me?.name && p.country === me?.country));
 }
-
 
 function draw(c, ui) {
   const room = roomRoute(c);
@@ -58,18 +63,35 @@ function draw(c, ui) {
   ui.status.textContent = c.refused ?? c.status ?? c.ended ?? "";
   replace(ui.notice,
     c.refused ? h("button.btn", { onclick: () => (logOut(), go("cuenta")) }, "Entrar de nuevo") : null,
-    live ? h("button.btn.tonal.back-to-game", { onclick: () => ((c.parked = null), go(room)) }, "Volver a la partida") : null,
+    live ? h("button.btn.back-to-game", { onclick: () => ((c.parked = null), go(room)) }, "Volver a la partida") : null,
     offerCard(c),
     waitingRoom(c),
+    dup ? null : inviteCards(c),
   );
-  replace(ui.top, dup ? null : invites(c), seeks(c, dup), adjourned(c, dup));
-  ui.lower.show([games(c, dup), people(c, dup)]);
+  replace(ui.top, modeOffers(c, dup));
+  ui.lower.show(dup ? [games(c, dup)] : [games(c, dup), challengeable(c)]);
   replace(ui.publish, dup
     ? h("button.btn.block.lobby-seek", { onclick: () => go("crear-duplicada") }, "Crear duplicada")
-    : h("button.btn.block.lobby-seek", { onclick: () => go("buscar") }, "Buscar clásica"));
+    : h("div.row.lobby-buttons", {},
+      h("button.btn.grow.lobby-seek", { onclick: () => go("buscar") }, "Buscar clásica"),
+      h("button.btn.outlined.grow.lobby-seek", { onclick: () => go("terminadas/online") }, "Terminadas")));
 }
 
-function roomRoute(c) {
+function modeOffers(c, dup) {
+  const list = c.lobby.seeks.filter((s) => (s.mode === "duplicate") === dup);
+  const sent = list.filter((s) => s.mine && s.to);
+  const offers = list.filter((s) => !(s.mine && s.to)).sort((a, b) => !!b.mine - !!a.mine);
+  const pending = c.lobby.adjourned.filter((a) => !!a.duplicate === dup && !a.result && (a.online || a.untimed) && !a.busy);
+  const gamesHere = c.lobby.games.some((g) => (g.mode === "duplicate") === dup);
+  return [
+    section("Retos enviados", sent.map((s) => seekRow(c, s, dup))),
+    section("Ofertas de partidas", offers.map((s) => seekRow(c, s, dup))),
+    section("Partidas aplazadas", pending.map((a) => adjournedRow(c, a))),
+    sent.length || offers.length || pending.length || gamesHere ? null : dup ? noDuplicates(c) : emptyState("C", "No hay ofertas ni partidas en curso."),
+  ];
+}
+
+export function roomRoute(c) {
   if (!c.room) return null;
   if (c.room.duplicate) return c.table ? "sala-duplicada" : null;
   return c.session || c.room.watching ? "sala" : null;
@@ -99,21 +121,30 @@ function duplicateDetail(s) {
   return `👥 ${s.players} en la sala · ${formatClock(s.turnMs)} por ronda`;
 }
 
-function section(title, rows, empty = null) {
-  if (!rows.length && !empty) return null;
-  return h("div.lobby-section", {}, h("h3.side-title", {}, title), rows.length ? h("div.stack", {}, rows) : empty);
+function section(title, rows) {
+  if (!rows.length) return null;
+  return h("div.lobby-section", {}, h("h3.side-title", {}, title), h("div.stack", {}, rows));
 }
 
-function emptyState(iconName, text) {
-  return h("div.empty-state", {}, icon(iconName, 32), h("span", {}, text));
+function emptyState(letter, ...text) {
+  return h("div.empty-state", {}, letterTile(letter), h("span.empty-text", {}, text));
 }
 
-function playerRow(name, country, detail, ...buttons) {
-  return h("div.player-row", {},
-    h("button.avatar-btn", { "aria-label": `Perfil de ${name}`, onclick: () => profileDialog({ name, country, playing: false }) }, photoAvatar(name, country, 40)),
-    h("div.grow", {}, h("div", {}, nameFlag(name, country)), detail ? h("div.muted.small.ellipsis", {}, detail) : null),
-    h("div.row", {}, buttons),
+function letterTile(letter) {
+  return h("div.rack-tile.small.empty-tile", {}, face(letter));
+}
+
+function playerRow(name, country, detail, mine, ...buttons) {
+  return h("div", { class: "player-row" + (mine ? " mine" : "") },
+    h("button.avatar-btn.row.grow.identity", { "aria-label": `Perfil de ${name}`, onclick: () => profileDialog({ name, country, playing: false }) },
+      photoAvatar(name, country, 40),
+      h("div.grow.identity-text", {}, h("div", {}, nameFlag(name, country)), detail ? h("div.muted.small.ellipsis", {}, detail) : null)),
+    h("div.row.row-actions", {}, buttons),
   );
+}
+
+function chatButton(p) {
+  return h("button.icon-btn.chat-glyph", { "aria-label": `Escribir a ${p.name}`, onclick: () => writeMessage(p) }, "💬");
 }
 
 function classicTime(s) {
@@ -126,10 +157,8 @@ function seekDetail(s) {
   return `Clásica · ${classicTime(s)} · ${mode}`;
 }
 
-function seeks(c, dup) {
-  const list = c.lobby.seeks.filter((s) => (s.mode === "duplicate") === dup).sort((a, b) => !!b.mine - !!a.mine);
-  const rows = list.map((s) => playerRow(s.host, s.country, dup ? duplicateDetail(s) : seekDetail(s), ...seekButtons(c, s, dup)));
-  return section("Ofertas de partidas", rows, emptyState("globe", dup ? noDuplicates(c) : "No hay clásicas publicadas."));
+function seekRow(c, s, dup) {
+  return playerRow(s.host, s.country, dup ? duplicateDetail(s) : seekDetail(s), s.mine, ...seekButtons(c, s, dup));
 }
 
 function seekButtons(c, s, dup) {
@@ -141,24 +170,25 @@ function seekButtons(c, s, dup) {
 }
 
 function noDuplicates(c) {
-  const idle = c.lobby.people.filter((p) => !p.playing).length - 1;
-  if (idle <= 0) return "No hay duplicadas publicadas.";
-  return `Si creas una duplicada, la recibirá${idle === 1 ? " 1 jugador" : `n ${idle} jugadores`} en línea.`;
+  const idle = others(c).filter((p) => !p.playing).length;
+  if (idle <= 0) return emptyState("D", "No hay duplicadas publicadas.");
+  return emptyState("D", idle === 1 ? "Si creas una duplicada, la recibirá " : "Si creas una duplicada, la recibirán ", h("b", {}, idle === 1 ? "1 jugador" : `${idle} jugadores`), " en línea.");
 }
 
-function invites(c) {
-  const rows = c.lobby.invites.filter((s) => s.mode !== "duplicate").map((s) => playerRow(s.host, s.country, `Te reta · ${classicTime(s)} · ${s.void ? "Void" : "Single"}`,
-    h("button.text-btn", { onclick: () => c.roomAction("decline", s.id) }, "Rechazar"),
-    h("button.btn.small", { onclick: () => c.accept(s) }, "Aceptar"),
+function inviteCards(c) {
+  const shown = c.lobby.invites.filter((s) => s.mode !== "duplicate" && (s.resume || !setting("noChallenges")));
+  return shown.map((s) => h("div.card.invite-card", {},
+    h("div.row.invite-head", {}, photoAvatar(s.host, s.country, 44),
+      h("div.grow", {}, h("b", {}, s.resume ? `${s.host} ${flag(s.country)} quiere retomar la partida aplazada` : `${s.host} ${flag(s.country)} te reta`),
+        h("div.muted.small", {}, `${classicTime(s)} · ${s.void ? "Void" : "Single"}`))),
+    h("div.row.invite-buttons", {},
+      h("button.btn.outlined.grow", { onclick: () => c.roomAction("decline", s.id) }, "Rechazar"),
+      h("button.btn.grow", { onclick: () => c.accept(s) }, "Aceptar")),
   ));
-  return section("Retos", rows);
 }
 
-function adjourned(c, dup) {
-  const rows = c.lobby.adjourned.filter((a) => !!a.duplicate === dup && !a.result).map((a) => playerRow(a.opponent, a.country, "Partida aplazada",
-    h("button.btn.small", { disabled: !(a.online || a.untimed) || a.busy, onclick: () => c.resumeAdjourned(a.id) }, "Retomar"),
-  ));
-  return section("Aplazadas", rows);
+function adjournedRow(c, a) {
+  return playerRow(a.opponent, a.country, "En línea · aplazada", false, h("button.btn.small", { onclick: () => c.resumeAdjourned(a.id) }, "Retomar"));
 }
 
 function games(c, dup) {
@@ -182,12 +212,20 @@ function duplicateGame(c, g) {
   );
 }
 
-function people(c, dup) {
-  const me = account();
-  const items = c.lobby.people.filter((p) => !(p.name === me.name && p.country === me.country));
-  const row = (p) => playerRow(p.name, p.country, p.playing ? "Jugando" : "",
-    h("button.icon-btn", { "aria-label": `Escribir a ${p.name}`, onclick: () => tellDialog(p) }, icon("chat", 22)),
-    p.playing || dup ? null : h("button.btn.small", { onclick: () => go("buscar/" + encodeURIComponent(p.name) + "/" + p.country) }, "Retar"),
-  );
-  return { title: "En línea", items, row, empty: () => emptyState("person", "No hay nadie más en línea.") };
+function challengeable(c) {
+  const items = others(c).filter((p) => !p.playing);
+  return { title: "Retar a", items, row: (p) => personRow(c, p), empty: null };
+}
+
+function peopleList(c, people, close) {
+  if (!people.length) return h("div.empty-state", {}, h("span.glyph-big", {}, "👥"), h("span.empty-text", {}, "No hay nadie en línea."));
+  return people.map((p) => personRow(c, p, close));
+}
+
+function personRow(c, p, close = () => {}) {
+  const game = c.lobby.games.find((g) => g.players?.includes(p.name));
+  const action = p.playing
+    ? h("button.btn.small.outlined", { disabled: !game, onclick: () => (close(), c.watch(game.id)) }, "Ver")
+    : h("button.btn.small", { onclick: () => (close(), blockedByGame() || go("buscar/" + encodeURIComponent(p.name) + "/" + p.country)) }, "Retar");
+  return playerRow(p.name, p.country, null, false, chatButton(p), action);
 }

@@ -4,6 +4,7 @@ import { screenHead, parseDuration, engineGate } from "../parts.js";
 import { load, save } from "../store.js";
 import { toast } from "../dialogs.js";
 import { modeTabs } from "../modeTabs.js";
+import { profileButton } from "../online/profile.js";
 import { choiceRow, sectionTitle, stepper, rulesButton, studySection } from "../classic/options.js";
 import { startDuplicate, currentDuplicate, hasSavedDuplicate } from "./session.js";
 import { savedButtons, keepScroll } from "../savedButtons.js";
@@ -23,7 +24,7 @@ export function duplicateSetupScreen(app) {
   };
   redraw();
   const tabs = modeTabs("duplicate", () => ({ el: body }));
-  app.append(h("div.screen.wide.fit-screen", {}, screenHead("Duplicada"), tabs.el));
+  app.append(h("div.screen.wide.fit-screen", {}, screenHead("Duplicada", "", profileButton()), tabs.el));
   return () => (gates.forEach((stop) => stop()), tabs.destroy());
 }
 

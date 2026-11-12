@@ -42,6 +42,7 @@ import app.lexico.online.Proposal
 import app.lexico.online.RoomInfo
 import app.lexico.online.Seek
 import app.lexico.online.shrunkPhoto
+import app.lexico.ui.games.GameFolder
 import app.lexico.ui.classic.NewOnlineClassicScreen
 import app.lexico.ui.common.AwaitingReconnection
 import app.lexico.ui.common.Disconnected
@@ -102,19 +103,24 @@ internal fun NewOnlineClassicRoute(screen: Screen.OnlineNewClassic, lexico: Lexi
   val client = rememberClient(lexico)
   val rival = screen.rival
   val title = rival?.let { "Retar a ${it.name} ${flagOf(it.country)}" } ?: "Buscar clásica"
-  NewOnlineClassicScreen(title, if (rival == null) "Publicar búsqueda" else "Enviar reto", nav::back) { time, overtime, single, timed ->
-    val proposal = Proposal.Classic(time, overtime, single, timed)
-    if (rival == null) client.publish(proposal) else client.challenge(rival, proposal)
-    nav.back()
+  InvolvedGate(client, nav) {
+    NewOnlineClassicScreen(title, if (rival == null) "Publicar búsqueda" else "Enviar reto", nav::back) { time, overtime, single, timed ->
+      val proposal = Proposal.Classic(time, overtime, single, timed)
+      if (rival == null) client.publish(proposal) else client.challenge(rival, proposal)
+      preferOnline(Mode.CLASSIC)
+      nav.backTo(Screen.NewClassic)
+    }
   }
 }
 
 @Composable
 internal fun NewOnlineDuplicateRoute(lexico: Lexico, nav: Navigator) {
   val client = rememberClient(lexico)
-  NewOnlineDuplicateScreen(nav::back) { turn, rounds, live ->
-    client.publish(Proposal.Duplicate(turn, rounds, live))
-    nav.replace(Screen.OnlinePlay)
+  InvolvedGate(client, nav) {
+    NewOnlineDuplicateScreen(nav::back) { turn, rounds, live ->
+      client.publish(Proposal.Duplicate(turn, rounds, live))
+      nav.replace(Screen.OnlinePlay)
+    }
   }
 }
 
@@ -288,6 +294,7 @@ private fun panelActions(client: OnlineClient, lobby: Lobby, nav: Navigator, com
     seenAdjourned = { id -> lobby.adjourned.find { it.id == id }?.let(client::seen) },
     challenge = { nav.go(Screen.OnlineNewClassic(Person(it.name, it.country, it.busy))) },
     write = { composer.write(ChatContact(it.name, it.country, ContactGroup.OTHERS)) },
+    finished = { nav.go(Screen.FinishedFolder(GameFolder.ONLINE)) },
   )
 }
 
@@ -299,7 +306,9 @@ private fun ClassicOnline(client: OnlineClient, info: RoomInfo, lexico: Lexico, 
   val ended by client.ended.collectAsState()
   val rivalOnline by client.rivalOnline.collectAsState()
   val watchers by client.watchers.collectAsState()
-  val over = game?.state?.collectAsState()?.value?.result != null
+  val result = game?.state?.collectAsState()?.value?.result
+  val over = result != null
+  LaunchedEffect(result?.recordPath) { result?.recordPath?.takeIf { it.isNotEmpty() }?.let(lexico.onlineRecords::add) }
   val away = if (info.timed) RIVAL_AWAY + RIVAL_CLOCK else RIVAL_AWAY
   val shown = status ?: ended ?: away.takeUnless { rivalOnline || over } ?: notice
   var adjourning by remember { mutableStateOf(false) }

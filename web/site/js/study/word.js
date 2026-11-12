@@ -46,8 +46,21 @@ function looseCard(word, lexicon) {
   return h("div.word-card-big", {}, headWord(word), h("p.muted.center", {}, OUTSIDE), meaningLine(word, lexicon));
 }
 
+const HEAD_MAX = 56;
+const HEAD_MIN = 24;
+
 function headWord(key) {
-  return h("h2.head-word", {}, upper(key));
+  const el = h("h2.head-word", {}, upper(key));
+  const observer = new ResizeObserver(() => fitHead(el));
+  observer.observe(el);
+  return el;
+}
+
+function fitHead(el) {
+  if (!el.isConnected) return;
+  let size = HEAD_MAX;
+  el.style.fontSize = size + "px";
+  while (size > HEAD_MIN && el.scrollWidth > el.clientWidth) el.style.fontSize = --size + "px";
 }
 
 function kindText(unit) {

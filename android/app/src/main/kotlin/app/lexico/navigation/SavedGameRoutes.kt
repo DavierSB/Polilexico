@@ -7,7 +7,9 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import app.lexico.game.Lexico
+import app.lexico.game.records.FinishedGame
 import app.lexico.game.records.GameReview
+import app.lexico.game.records.OnlineRecords
 import app.lexico.game.records.ReviewTurn
 import app.lexico.games.export.GameExport
 import app.lexico.game.modes.classic.ClassicGame
@@ -29,6 +31,7 @@ import app.lexico.menu.ThemeState
 import app.lexico.ui.classic.bot
 import app.lexico.ui.games.EndgameSessions
 import app.lexico.ui.games.FinishedGamesScreen
+import app.lexico.ui.games.GameFolder
 import app.lexico.ui.games.InProgressScreen
 import app.lexico.ui.games.PreEndgameAnalyses
 import app.lexico.ui.games.ReviewScreen
@@ -63,10 +66,13 @@ internal fun ContinueRoute(screen: Screen.Continue, lexico: Lexico, nav: Navigat
 @Composable
 internal fun FinishedFolderRoute(screen: Screen.FinishedFolder, lexico: Lexico, nav: Navigator) {
   WhenReady(rememberCreated(screen) { lexico.finishedGames.list() }, "Buscando tus partidas…") { all ->
-    val games = all.filter { folderOf(it.mode) == screen.folder }
+    val games = all.filter { inFolder(it, screen.folder, lexico.onlineRecords) }
     FinishedGamesScreen(screen.folder, games.map(::finishedItem), onBack = nav::back) { path -> nav.go(Screen.Review(path)) }
   }
 }
+
+private fun inFolder(g: FinishedGame, folder: GameFolder, online: OnlineRecords): Boolean =
+  if (folder == GameFolder.ONLINE) online.contains(g.path) else folderOf(g.mode) == folder && !online.contains(g.path)
 
 @Composable
 internal fun StatsRoute(lexico: Lexico, settings: Settings, nav: Navigator) {

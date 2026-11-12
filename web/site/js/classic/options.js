@@ -17,7 +17,7 @@ export function sectionTitle(text, info) {
   return h("div.row.section-title", {}, text, info ? infoButton(text, info) : null);
 }
 
-function infoButton(title, text) {
+export function infoButton(title, text) {
   const open = () => openDialog((close) => [
     h("h2", {}, title),
     text.split("\n\n").map((p) => h("p", {}, p)),

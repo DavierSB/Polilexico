@@ -26,6 +26,13 @@ class Navigator(private val onMove: () -> Unit = {}) {
     stack.removeAt(stack.lastIndex)
   }
 
+  fun backTo(screen: Screen) {
+    onMove()
+    val at = stack.lastIndexOf(screen)
+    if (at < 0) stack[stack.lastIndex] = screen
+    else stack.removeRange(at + 1, stack.size)
+  }
+
   fun home() {
     onMove()
     stack.clear()

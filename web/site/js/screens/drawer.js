@@ -3,6 +3,9 @@ import { icon } from "../icons.js";
 import { go } from "../router.js";
 import { brand } from "../parts.js";
 import { themeDialog } from "../dialogs.js";
+import { optionsDialog } from "./options.js";
+import { aboutDialog } from "./about.js";
+import { DOWNLOAD_URL } from "./download.js";
 
 const layer = () => document.getElementById("layer");
 
@@ -21,12 +24,13 @@ function openDrawer() {
   sheet.append(
     h("div.drawer-brand", {}, brand()),
     item("Inicio", () => go("")),
-    item("Mis partidas", () => go("partidas")),
     item("Mis estadísticas", () => go("estadisticas")),
     h("hr.drawer-rule"),
     item("Tema", themeDialog),
+    item("Opciones", optionsDialog),
     h("hr.drawer-rule"),
-    h("a.drawer-item", { href: "/org/" }, "Poliléxico para Android"),
+    item("Acerca de", aboutDialog),
+    h("a.drawer-item.drawer-download", { href: DOWNLOAD_URL }, "Descargar APK para Android"),
   );
   layer().append(scrim);
 }

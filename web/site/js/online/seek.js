@@ -7,6 +7,7 @@ import { load, save } from "../store.js";
 import { account } from "./api.js";
 import { online } from "./client.js";
 import { challengeSection, timeSection } from "../classic/options.js";
+import { blockedByGame } from "./involved.js";
 
 const DEFAULTS = { single: true, timed: true, time: "20:00", overtime: "1:00" };
 
@@ -31,8 +32,10 @@ function send(form, rival) {
   const timeMs = parseDuration(form.time);
   const overtimeMs = parseDuration(form.overtime);
   if (form.timed && (!timeMs || overtimeMs === null)) return toast("Revisa los tiempos.");
+  if (blockedByGame()) return;
   save("seekForm", form);
   save("lobbyTab", "classic");
+  save("tab.classic", "online");
   const proposal = { single: form.single, timed: form.timed, timeMs: form.timed ? timeMs : 0, overtimeMs: form.timed ? overtimeMs : 0 };
   if (rival) online.challenge(rival, proposal);
   else online.publish(proposal);

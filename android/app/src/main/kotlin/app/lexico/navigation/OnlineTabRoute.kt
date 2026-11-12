@@ -15,6 +15,10 @@ import app.lexico.ui.common.onlineLabel
 
 private val chosenOnline = mutableMapOf<Mode, Boolean>()
 
+internal fun preferOnline(mode: Mode) {
+  chosenOnline[mode] = true
+}
+
 @Composable
 internal fun rememberOnlineTab(mode: Mode, lexico: Lexico, settings: Settings, nav: Navigator): OnlineTab {
   val online = rememberOnline()

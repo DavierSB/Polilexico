@@ -8,6 +8,7 @@ import { icon } from "../icons.js";
 import { savedButtons, keepScroll } from "../savedButtons.js";
 import { toast } from "../dialogs.js";
 import { modeTabs } from "../modeTabs.js";
+import { profileButton } from "../online/profile.js";
 import { timeSection, challengeSection, choiceRow, studySection } from "./options.js";
 
 const DEFAULTS = { bot: "HastyBot", starter: 0, single: true, timed: false, time: "30:00", overtime: "8:00", shared: false, first: "Jugador A", second: "Jugador B" };
@@ -27,7 +28,7 @@ export function classicSetupScreen(app) {
   const choose = (settings) => {
     view.settings = settings;
     replace(step);
-    replace(screen, settings ? stepHead(form, () => choose(false)) : screenHead("Clásica"), settings ? step : tabs.el);
+    replace(screen, settings ? stepHead(form, () => choose(false)) : screenHead("Clásica", "", profileButton()), settings ? step : tabs.el);
     redraw();
   };
   choose(false);

@@ -2,6 +2,8 @@ import { h } from "../dom.js";
 import { openDialog, actions } from "../dialogs.js";
 import { totals } from "./state.js";
 
+const PHONE = "(max-width: 899px)";
+
 export function roundsTable(rounds) {
   if (!rounds.length) return h("p.muted.moves-empty", {}, "Aún no ha terminado ninguna ronda.");
   return h("table.moves.dup-moves", {},
@@ -27,7 +29,22 @@ function playText(play) {
 }
 
 export function movesDialog(rounds) {
-  openDialog((close) => [h("h2", {}, "Movidas"), h("div.moves-scroll", {}, roundsTable(rounds)), actions(h("button.text-btn", { onclick: close }, "Cerrar"))], { wide: true });
+  const body = h("div.moves-scroll", {}, matchMedia(PHONE).matches ? roundLines(rounds) : roundsTable(rounds));
+  openDialog((close) => [h("h2", {}, "Movidas"), body, actions(h("button.text-btn", { onclick: close }, "Cerrar"))], { wide: true });
+  body.scrollTop = body.scrollHeight;
+}
+
+function roundLines(rounds) {
+  if (!rounds.length) return h("p.muted.moves-empty", {}, "Todavía no hay movidas.");
+  return h("div.turns", {},
+    h("div.turn-line.turn-head", {}, h("b.turn-number", {}, "#"), h("b.turn-cell", {}, "Máster"), h("b.turn-cell", {}, "Tú")),
+    rounds.map((r) => h("div.turn-line", {}, h("span.turn-number", {}, r.number), roundCell(r.master, false), roundCell(r.mine, r.hit))),
+  );
+}
+
+function roundCell(play, hit) {
+  return h("span", { class: "turn-cell dup-cell" + (play.bingo ? " bingo" : "") },
+    h("span.turn-text.ellipsis", {}, play.text), h("span", { class: "turn-points" + (hit ? " hit" : "") }, play.score + (hit ? " ✓" : "")));
 }
 
 export function roundDialog(round) {

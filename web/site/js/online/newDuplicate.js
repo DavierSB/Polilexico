@@ -7,6 +7,7 @@ import { toast } from "../dialogs.js";
 import { choiceRow, sectionTitle, stepper } from "../classic/options.js";
 import { account } from "./api.js";
 import { online } from "./client.js";
+import { blockedByGame } from "./involved.js";
 
 const ROUNDS_TEXT = "Cuántas rondas se juegan. A bolsa completa, la partida sigue hasta que ya no se puede formar un atril válido.";
 const LIVE_INFO = "Ver los puntos de todos tras cada ronda.";
@@ -35,6 +36,7 @@ export function newDuplicateScreen(app) {
 function create(form) {
   const turnMs = parseDuration(form.turn);
   if (!turnMs) return toast("Revisa el tiempo por ronda.");
+  if (blockedByGame()) return;
   save("onlineDuplicateForm", form);
   save("lobbyTab", "duplicate");
   online.publish({ duplicate: true, turnMs, rounds: form.fixed ? form.rounds : 0, live: form.live });

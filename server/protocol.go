@@ -47,6 +47,8 @@ type message struct {
 	Resume     bool            `json:"resume,omitempty"`
 }
 
+const involvedReason = "Termina la partida en la que estás involucrado primero."
+
 func notice(kind, reason string) message {
 	return message{T: kind, Reason: reason}
 }

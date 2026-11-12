@@ -1,6 +1,7 @@
 import { normalize } from "../classic/state.js";
 import { parseSave, readSave } from "./mirror.js";
 import { play } from "../sound.js";
+import { keepMirrorRecord } from "../records.js";
 
 const TICK_MS = 250;
 
@@ -21,6 +22,7 @@ export class RemoteSession {
     this.receivedAt = performance.now();
     this.refresh();
     if (before) this.cue(before, this.state);
+    if (this.state.result && !this.watching) this.recorded ??= keepMirrorRecord(text).catch(() => null);
   }
 
   cue(before, after) {

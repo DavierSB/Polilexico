@@ -7,7 +7,7 @@ export function savedButtons(mode, inProgress, route, gates) {
   const resume = h("button.btn.outlined", { onclick: () => go(route) }, `En curso (${inProgress})`);
   if (inProgress) gates.push(engineGate(resume));
   else resume.disabled = true;
-  const finished = h("button.btn.outlined", { onclick: () => (save("gamesTab", mode), go("partidas")) }, "Terminadas");
+  const finished = h("button.btn.outlined", { onclick: () => (save("gamesTab", mode), go("terminadas/" + mode)) }, "Terminadas");
   return h("div.saved-buttons", {}, resume, finished);
 }
 

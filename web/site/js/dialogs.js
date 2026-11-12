@@ -1,6 +1,5 @@
 import { h, append } from "./dom.js";
 import { THEMES, choose, chooseLight, swatches, theme } from "./theme.js";
-import { soundsOn, setSounds } from "./sound.js";
 
 const layer = () => document.getElementById("layer");
 
@@ -53,7 +52,6 @@ export function themeDialog() {
     h("h2", {}, "Tema"),
     h("div.stack", {}, THEMES.map((name) => themeChoice(name, close))),
     lightSwitch(),
-    h("label.row.theme-choice", {}, h("span.grow", {}, "Sonidos"), h("input.switch", { type: "checkbox", checked: soundsOn(), onchange: (e) => setSounds(e.target.checked) })),
     actions(h("button.text-btn", { onclick: close }, "Cerrar")),
   ]);
 }

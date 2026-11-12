@@ -6,7 +6,8 @@ import { openDialog, actions, confirm, toast } from "../dialogs.js";
 import { account, request, token, server, logOut } from "./api.js";
 import { countryName } from "./countries.js";
 import { online } from "./client.js";
-import { tellDialog } from "./tell.js";
+import { writeMessage } from "./messages.js";
+import { blockedByGame } from "./involved.js";
 import { onlineBlock } from "../games/stats.js";
 
 const PHOTO_SIDE = 256;
@@ -19,14 +20,20 @@ export function photoAvatar(name, country, size = 40) {
   return img;
 }
 
+export function profileButton() {
+  const me = account();
+  if (!me) return null;
+  return h("button.icon-btn.profile-btn", { "aria-label": "Perfil en línea", onclick: () => go("perfil") }, photoAvatar(me.name, me.country, 32));
+}
+
 export function profileDialog(person) {
   const body = h("div.stack", {}, h("div.searching.short", {}, h("div.spinner")));
   openDialog((close) => [
     h("div.row.profile-head", {}, photoAvatar(person.name, person.country, 64), h("div.stack", {}, h("h2", {}, nameFlag(person.name, person.country)), h("span.muted", {}, countryName(person.country)))),
     body,
     actions(
-      h("button.text-btn", { onclick: () => (close(), tellDialog(person)) }, "Escribir"),
-      person.playing ? null : h("button.text-btn", { onclick: () => (close(), go("buscar/" + encodeURIComponent(person.name) + "/" + person.country)) }, "Retar"),
+      h("button.text-btn", { onclick: () => (close(), writeMessage(person)) }, "Escribir"),
+      person.playing ? null : h("button.text-btn", { onclick: () => (close(), blockedByGame() || go("buscar/" + encodeURIComponent(person.name) + "/" + person.country)) }, "Retar"),
       h("button.text-btn", { onclick: close }, "Cerrar"),
     ),
   ], { wide: true });

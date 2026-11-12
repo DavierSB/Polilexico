@@ -14,7 +14,9 @@ import app.lexico.ui.common.Header
 
 private val Win = Color(0xFF66BB6A)
 
-enum class GameFolder(val title: String) { CLASSIC("Clásicas terminadas"), DUPLICATE("Duplicadas terminadas"), MINIGAMES("Finales terminados") }
+enum class GameFolder(val title: String) {
+  CLASSIC("Clásicas terminadas"), DUPLICATE("Duplicadas terminadas"), MINIGAMES("Finales terminados"), ONLINE("Partidas en línea terminadas"),
+}
 
 data class FinishedItem(val key: String, val title: String, val detail: String, val score: String, val won: Boolean?)
 

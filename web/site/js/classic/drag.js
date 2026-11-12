@@ -1,6 +1,7 @@
 const THRESHOLD = 6;
 
 export function draggable(el, { ghost, drop, canStart = () => true }) {
+  el.style.touchAction = "none";
   el.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 || !canStart()) return;
     dragFrom(el, e, ghost, drop);

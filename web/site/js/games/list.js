@@ -9,6 +9,11 @@ import { bot } from "../classic/bots.js";
 export const MODES = [["classic", "Clásica"], ["duplicate", "Duplicada"], ["endgame", "Finales"]];
 const DATE = new Intl.DateTimeFormat("es", { day: "numeric", month: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
+const FOLDERS = {
+  classic: ["Clásicas terminadas", "clasica"], duplicate: ["Duplicadas terminadas", "duplicada"], endgame: ["Finales terminados", "finales"],
+  online: ["Partidas en línea terminadas", "clasica"],
+};
+
 export function gamesScreen(app) {
   const body = h("div.stack");
   const tabs = h("div");
@@ -18,10 +23,25 @@ export function gamesScreen(app) {
     const draw = () => {
       replace(tabs, choiceRow(MODES.map(([, l]) => l), MODES.findIndex(([m]) => m === mode), (i) => ((mode = MODES[i][0]), save("gamesTab", mode), draw())));
       const shown = records.filter((r) => r.summary.Mode === mode);
-      replace(body, shown.length ? shown.map(card) : h("div.empty-state", {}, h("b", {}, "Aún no hay partidas."), h("span", {}, "Las partidas terminadas aparecen aquí.")));
+      replace(body, recordCards(shown));
     };
     draw();
   });
+}
+
+export function finishedScreen(app, [mode]) {
+  const [title, back] = FOLDERS[mode] ?? FOLDERS.classic;
+  const body = h("div.stack");
+  app.append(h("div.screen", {}, screenHead(title, back), body));
+  listRecords().then((records) => replace(body, recordCards(records.filter((r) => inFolder(r, mode)))));
+}
+
+function inFolder(r, folder) {
+  return folder === "online" ? !!r.online : r.summary.Mode === folder && !r.online;
+}
+
+function recordCards(shown) {
+  return shown.length ? shown.map(card) : h("div.empty-state", {}, h("b", {}, "Aún no hay partidas."), h("span", {}, "Las partidas terminadas aparecen aquí."));
 }
 
 export function alias(name) {
