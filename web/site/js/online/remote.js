@@ -23,7 +23,6 @@ export class RemoteSession {
     this.receivedAt = performance.now();
     this.refresh();
     if (before) this.cue(before, this.state);
-    if (this.state.result && !this.watching) this.recorded ??= keepMirrorRecord(text).catch(() => null);
   }
 
   watchedRecord() {
@@ -38,6 +37,7 @@ export class RemoteSession {
 
   refresh() {
     this.state = normalize(readSave(this.saved, this.guest, performance.now() - this.receivedAt), this.guest);
+    if (this.state.result && !this.watching) this.recorded ??= keepMirrorRecord(this.text).catch(() => null);
     this.listeners.forEach((fn) => fn(this.state));
     this.tickWhileRunning();
   }

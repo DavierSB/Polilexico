@@ -39,9 +39,10 @@ func (c *Game) Host() string {
 	return c.log.HumanName
 }
 
-func (c *Game) keepRecord() {
+func (c *Game) keepRecord(watched bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	c.watched = watched
 	if c.over() && !core.RecordExists(c.recordPath) {
 		c.finish()
 	}
@@ -55,14 +56,14 @@ func engineBot(botName string, local bool) string {
 }
 
 func LoadMirror(text string, paused bool, l events.Listener) (*Match, error) {
-	return loadMirror(text, paused, l, true)
-}
-
-func LoadWatch(text string, paused bool, l events.Listener) (*Match, error) {
 	return loadMirror(text, paused, l, false)
 }
 
-func loadMirror(text string, paused bool, l events.Listener, keep bool) (*Match, error) {
+func LoadWatch(text string, paused bool, l events.Listener) (*Match, error) {
+	return loadMirror(text, paused, l, true)
+}
+
+func loadMirror(text string, paused bool, l events.Listener, watched bool) (*Match, error) {
 	m, err := LoadMatch(text, l)
 	if err != nil {
 		return nil, err
@@ -70,9 +71,7 @@ func loadMirror(text string, paused bool, l events.Listener, keep bool) (*Match,
 	m.mu.Lock()
 	m.mirror = true
 	m.mu.Unlock()
-	if keep {
-		m.game.keepRecord()
-	}
+	m.game.keepRecord(watched)
 	if !paused {
 		m.Resume()
 	}

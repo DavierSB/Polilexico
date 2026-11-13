@@ -1,12 +1,11 @@
 import { h, replace } from "../dom.js";
 import { go } from "../router.js";
-import { nameFlag, formatClock, flag } from "../parts.js";
+import { nameFlag, formatClock } from "../parts.js";
 import { openDialog, actions } from "../dialogs.js";
 import { account, logOut } from "./api.js";
 import { online } from "./client.js";
 import { writeMessage } from "./messages.js";
 import { onPresence } from "./presence.js";
-import { setting } from "../settings.js";
 import { face } from "../classic/rack.js";
 import { photoAvatar, profileDialog } from "./profile.js";
 import { load, save } from "../store.js";
@@ -64,9 +63,7 @@ function draw(c, ui) {
   replace(ui.notice,
     c.refused ? h("button.btn", { onclick: () => (logOut(), go("cuenta")) }, "Entrar de nuevo") : null,
     live ? h("button.btn.back-to-game", { onclick: () => ((c.parked = null), go(room)) }, "Volver a la partida") : null,
-    offerCard(c),
     waitingRoom(c),
-    dup ? null : inviteCards(c),
   );
   replace(ui.top, modeOffers(c, dup));
   ui.lower.show(dup ? [games(c, dup)] : [games(c, dup), challengeable(c)]);
@@ -97,14 +94,6 @@ export function roomRoute(c) {
   return c.session || c.room.watching ? "sala" : null;
 }
 
-function offerCard(c) {
-  const seek = c.offer && c.lobby.seeks.find((s) => s.id === c.offer);
-  if (!seek || c.room) return null;
-  return h("div.card.offer-card", {},
-    h("b", {}, `${seek.host} creó una duplicada`), h("span.muted.small", {}, duplicateDetail(seek)),
-    h("div.row", {}, h("button.text-btn", { onclick: () => c.dismissOffer() }, "Ahora no"), h("button.btn.small", { onclick: () => (c.dismissOffer(), c.accept(seek)) }, "Unirse")),
-  );
-}
 
 function waitingRoom(c) {
   if (!c.room?.duplicate || c.table || c.room.watching || c.ended) return null;
@@ -116,7 +105,7 @@ function waitingRoom(c) {
   );
 }
 
-function duplicateDetail(s) {
+export function duplicateDetail(s) {
   if (s.resume) return "Partida aplazada · duplicada";
   return `👥 ${s.players} en la sala · ${formatClock(s.turnMs)} por ronda`;
 }
@@ -147,7 +136,7 @@ function chatButton(p) {
   return h("button.icon-btn.chat-glyph", { "aria-label": `Escribir a ${p.name}`, onclick: () => writeMessage(p) }, "💬");
 }
 
-function classicTime(s) {
+export function classicTime(s) {
   return s.untimed ? "Sin tiempo" : `${formatClock(s.timeMs)} + ${formatClock(s.overtimeMs)}`;
 }
 
@@ -175,17 +164,6 @@ function noDuplicates(c) {
   return emptyState("D", idle === 1 ? "Si creas una duplicada, la recibirá " : "Si creas una duplicada, la recibirán ", h("b", {}, idle === 1 ? "1 jugador" : `${idle} jugadores`), " en línea.");
 }
 
-function inviteCards(c) {
-  const shown = c.lobby.invites.filter((s) => s.mode !== "duplicate" && (s.resume || !setting("noChallenges")));
-  return shown.map((s) => h("div.card.invite-card", {},
-    h("div.row.invite-head", {}, photoAvatar(s.host, s.country, 44),
-      h("div.grow", {}, h("b", {}, s.resume ? `${s.host} ${flag(s.country)} quiere retomar la partida aplazada` : `${s.host} ${flag(s.country)} te reta`),
-        h("div.muted.small", {}, `${classicTime(s)} · ${s.void ? "Void" : "Single"}`))),
-    h("div.row.invite-buttons", {},
-      h("button.btn.outlined.grow", { onclick: () => c.roomAction("decline", s.id) }, "Rechazar"),
-      h("button.btn.grow", { onclick: () => c.accept(s) }, "Aceptar")),
-  ));
-}
 
 function adjournedRow(c, a) {
   return playerRow(a.opponent, a.country, "En línea · aplazada", false, h("button.btn.small", { onclick: () => c.resumeAdjourned(a.id) }, "Retomar"));

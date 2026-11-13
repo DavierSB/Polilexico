@@ -1,9 +1,14 @@
 package app.lexico.ui.classic
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.lexico.ui.common.SpreadChart
 import app.lexico.ui.common.VerdictDialog
 import app.lexico.ui.common.VerdictLine
 import app.lexico.ui.common.VerdictTone
@@ -33,7 +39,17 @@ internal fun ResultDialog(view: ClassicView, end: GameEnd, close: () -> Unit) {
     if (end.byTimeout) VerdictLine("por tiempo")
     VerdictLine("${view.myScore} – ${view.opponentScore}", 34.sp, bold = true)
     VerdictLine("${view.me} · ${view.opponent}", 14.sp, faded = true)
+    ResultChart(view)
   }
+}
+
+@Composable
+private fun ResultChart(view: ClassicView) {
+  if (view.moves.isEmpty()) return
+  Box(
+    Modifier.padding(top = 8.dp).widthIn(max = 360.dp).fillMaxWidth(0.88f)
+      .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp)).padding(12.dp),
+  ) { SpreadChart(spread(view), height = 150.dp) }
 }
 
 private fun endingTitle(view: ClassicView, reason: EndingReason): String = when (reason) {

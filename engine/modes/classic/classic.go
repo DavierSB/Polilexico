@@ -35,6 +35,7 @@ type Game struct {
 	timePenalties    [2]int
 	invalidLosesTurn bool
 	recordPath       string
+	watched          bool
 }
 
 func Bots() string {

@@ -30,6 +30,6 @@ function picture(state, names) {
 
 async function withRecord(recorded, use) {
   const id = await (typeof recorded === "function" ? recorded() : recorded);
-  if (!id) return toast("La partida aún se está guardando.");
+  if (!id) return toast("No se pudo guardar la partida.");
   use(id);
 }

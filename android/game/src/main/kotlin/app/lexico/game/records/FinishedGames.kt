@@ -8,6 +8,8 @@ import app.lexico.go.review.Game
 import app.lexico.go.review.Review
 import java.io.File
 
+private const val WATCHED = "watched-"
+
 class FinishedGames internal constructor(private val dir: File) {
   suspend fun list(): List<FinishedGame> = engine {
     logFiles().mapNotNull { f -> runCatching { summary(f.path, Review.open(f.path)).copy(finishedAt = f.lastModified()) }.getOrNull() }
@@ -33,7 +35,7 @@ class FinishedGames internal constructor(private val dir: File) {
   }
 
   private fun logFiles(): List<File> =
-    dir.listFiles { f -> f.name.endsWith("-log.json") }.orEmpty().sortedByDescending { it.name }
+    dir.listFiles { f -> f.name.endsWith("-log.json") && !f.name.startsWith(WATCHED) }.orEmpty().sortedByDescending { it.name }
 
   private fun summary(path: String, g: Game): FinishedGame = FinishedGame(
     path = path, mode = mode(g.mode), startedAt = g.startedAt,

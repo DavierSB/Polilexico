@@ -136,3 +136,35 @@ body { font-size: 15px; }
 .move-row > .btn { min-height: 36px; font-size: 14px; }
 
 .game-buttons .play-btn { min-height: 52px; font-size: 18px; }
+
+.player-card.review-bar { display: flex; align-items: center; min-height: 0; padding: 4px 10px; }
+
+.player-card.review-bar.active { padding: 3px 9px; }
+
+.review-bar .player-name { font-size: 16px; }
+
+.review-bar .score { font-size: 20px; font-weight: 700; }
+
+.review-cell { width: 52px; font-size: 15px; }
+
+.review-header { letter-spacing: .4px; }
+
+.review-header .info-btn { width: 16px; height: 16px; font-size: 10px; }
+
+.review-value-head, .review-line .review-cell:nth-child(4) { width: 66px; }
+
+.review-line .review-cell:nth-child(2) { width: 32px; }
+
+.review-header .review-cell:nth-child(2) { width: 32px; }
+
+.review-move { font-size: 15px; }
+
+.review-actions .icon-btn { width: 36px; height: 36px; }
+
+.review-actions .text-btn { padding: 6px; }
+
+.invite-pop .invite-head b { font-size: 15px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.invite-pop .invite-head .small { font-size: 12px; }
+
+.invite-pop .btn { min-height: 40px; padding: 0 12px; font-size: 14px; }

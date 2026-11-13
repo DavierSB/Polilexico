@@ -54,7 +54,7 @@ function endDialog(state, session, rival) {
     h("h2.verdict", {}, players ? localVerdict(state, players[0], second) : verdict(state, second)),
     h("p.final-score", {}, `${state.myScore} – ${state.opponentScore}`),
     endDetail(state, second),
-    endTools(session.recorded, state, { me: players ? players[0] : "Tú", opponent: second }, close),
+    endTools(() => session.recorded, state, { me: players ? players[0] : "Tú", opponent: second }, close),
     actions(
       h("button.text-btn", { onclick: () => (close(), go("")) }, "Salir"),
       h("button.text-btn", { onclick: close }, "Ver tablero"),

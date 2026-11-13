@@ -1,6 +1,8 @@
 package classic
 
 import (
+	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -106,6 +108,26 @@ func TestMirrorOfAFinishedGameKeepsItsRecord(t *testing.T) {
 	}
 	t.Cleanup(mirror.Close)
 	if r := mirror.Game().Result(); r == nil || r.RecordPath == "" {
+		t.Fatalf("%+v", r)
+	}
+}
+
+func TestWatchKeepsAWatchedRecord(t *testing.T) {
+	m := startMatch(newLocalGame(t, StarterBot), nil, timing.NewFake(), newTestListener(), true)
+	t.Cleanup(m.Close)
+	m.game.LoseOnTime()
+	m.game.recordPath = ""
+	text, err := m.Save()
+	if err != nil {
+		t.Fatal(err)
+	}
+	watch, err := LoadWatch(text, true, newTestListener())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(watch.Close)
+	r := watch.Game().Result()
+	if r == nil || !core.RecordExists(r.RecordPath) || !strings.Contains(filepath.Base(r.RecordPath), WatchedPrefix+"-") {
 		t.Fatalf("%+v", r)
 	}
 }

@@ -122,7 +122,7 @@ function endDialog(state, sides, watching, session) {
     h("h2.verdict", {}, verdict(state, rival, watching ? sides.me.name : null)),
     h("p.final-score", {}, `${state.myScore} – ${state.opponentScore}`),
     endDetail(state, rival),
-    endTools(watching ? () => session.watchedRecord() : session.recorded, state, { me: sides.me.name, opponent: rival }, () => (close(), online.leave())),
+    endTools(() => (watching ? session.watchedRecord() : session.recorded), state, { me: sides.me.name, opponent: rival }, () => (close(), online.leave())),
     actions(
       h("button.text-btn", { onclick: close }, "Ver tablero"),
       h("button.text-btn", { onclick: () => (close(), online.leave(), go(lobbyRoute())) }, "Volver al lobby"),

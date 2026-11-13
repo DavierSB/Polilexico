@@ -3,18 +3,19 @@ import { go } from "../router.js";
 import { screenHead, engineLoading } from "../parts.js";
 import { call, whenReady } from "../engine.js";
 import { createBoard } from "../board.js";
-import { openDialog, actions } from "../dialogs.js";
+import { openDialog, actions, themeDialog } from "../dialogs.js";
 import { parseBoard, tokens } from "../tiles.js";
-import { parsePlacement, spelled, at } from "../placement.js";
+import { at } from "../placement.js";
 import { face } from "../classic/rack.js";
 import { getRecord } from "../records.js";
 import { lookUp } from "../study/lookup.js";
-import { alias, gameTitle, scoreText } from "./list.js";
+import { alias } from "./list.js";
 import { deepView, DEEP_TITLES, BUDGET_MS } from "../study/deep.js";
 import { spreadOf, spreadDialog } from "./spread.js";
 import { exportDialog } from "./export.js";
-
-const WHO = { "Tú": "Tu jugada", "Máster": "Jugada del Máster" };
+import { icon, bagIcon } from "../icons.js";
+import { showBag } from "../classic/moves.js";
+import { movesTable, reviewMovesDialog, turnBag, moveOf } from "./reviewParts.js";
 
 export function reviewScreen(app, [id]) {
   const holder = h("div.screen");
@@ -40,11 +41,11 @@ async function open(holder, id, ui) {
   ui.me = ui.game.Local ? ui.game.Me : "Tú";
   ui.index = Math.max(0, (ui.game.StartTurn ?? 0));
   ui.board = createBoard({ onSquare: (i) => lookUp(turn(ui).cells, i) });
-  ui.top = h("div.stack");
-  ui.bottom = h("div.stack");
+  ui.top = h("div.stack.review-top");
+  ui.bottom = h("div.stack.review-bottom");
+  ui.head = h("div.review-head");
   const el = h("div.review", {},
-    h("div.review-head", {}, screenHead(`${gameTitle(ui.game)} · ${scoreText(ui.game)}`, "partidas",
-      ui.classic ? h("button.text-btn", { onclick: () => chartDialog(ui) }, "Ventaja") : null)),
+    ui.head,
     h("div.review-board", {}, ui.top, ui.board.el),
     h("div.review-side", {}, ui.bottom),
   );
@@ -91,6 +92,7 @@ function draw(ui) {
   const pending = new Map();
   if (p) p.tiles.forEach((tile, i) => tile && !t.cells[at(p, i)] && pending.set(at(p, i), tile));
   ui.board.render({ cells: t.cells, pending });
+  replace(ui.head, screenHead(t.Endgame ? "Análisis del final" : "Análisis", "partidas", headActions(ui, t)));
   replace(ui.top, h("b", {}, `Turno ${t.Number}/${ui.game.Turns.length}${t.Player ? " · " + alias(t.Player) : ""}`), bar(ui.opponent, t.OpponentScore, !mine(ui, t)));
   replace(ui.bottom,
     bar(ui.me, t.MyScore, mine(ui, t)),
@@ -100,7 +102,7 @@ function draw(ui) {
       h("button.text-btn.grow", { onclick: () => listDialog(ui) }, "Ver lista de jugadas"),
       h("button.btn.small.outlined", { disabled: ui.index >= ui.game.Turns.length - 1, onclick: () => move(ui, 1) }, "›"),
     ),
-    lines(ui, t),
+    movesTable(ui, t, (m) => select(ui, m)),
     deepSection(ui, t),
   );
 }
@@ -110,16 +112,20 @@ function deepSection(ui, t) {
   const phase = t.Endgame ? "endgame" : "preendgame";
   const known = ui.deep?.get(ui.index);
   if (known) return h("div.stack", {}, h("b", {}, DEEP_TITLES[phase]), deepView(known, t.cells, (m) => select(ui, { text: m.label, placement: m.placement })));
-  return h("button.btn.block.outlined", { onclick: (e) => analyzeDeep(ui, e.target) }, t.Endgame ? "Analizar final" : "Analizar pre-final");
+  const failed = ui.deepFailed?.has(ui.index);
+  if (!failed) analyzeDeep(ui, ui.index);
+  return h("div.row.deep-status", {}, failed ? null : h("div.spinner.small"), h("span.muted", {}, failed ? "No se pudo analizar" : t.Endgame ? "Analizando el final…" : "Analizando el pre-final…"));
 }
 
-async function analyzeDeep(ui, button) {
-  button.disabled = true;
-  button.textContent = "Analizando…";
-  const view = await call("reviewDeep", ui.text, ui.index, BUDGET_MS).catch(() => null);
-  if (!view) return (button.textContent = "No se pudo analizar");
-  (ui.deep ??= new Map()).set(ui.index, view);
-  draw(ui);
+async function analyzeDeep(ui, index) {
+  ui.deepRunning ??= new Set();
+  if (ui.deepRunning.has(index)) return;
+  ui.deepRunning.add(index);
+  const view = await call("reviewDeep", ui.text, index, BUDGET_MS).catch(() => null);
+  ui.deepRunning.delete(index);
+  if (view) (ui.deep ??= new Map()).set(index, view);
+  else (ui.deepFailed ??= new Set()).add(index);
+  if (ui.index === index) draw(ui);
 }
 
 function mine(ui, t) {
@@ -130,22 +136,14 @@ function bar(name, score, active) {
   return h("div", { class: "player-card review-bar" + (active ? " active" : "") }, h("span.player-name.grow", {}, name), h("span.score", {}, score));
 }
 
-function moveOf(t, m, equity) {
-  const raw = m.Description.replace(/^\(Inválida (\S+ \S+):.*\)$/, "$1");
-  const placement = parsePlacement(raw);
-  return { text: placement ? spelled(placement, t.cells) : m.Description, score: m.Score, equity: m.HasEquity ? m.Equity : equity, placement };
-}
-
-function lines(ui, t) {
-  const best = t.Candidates?.[0];
-  const rows = [];
-  if (best && ui.classic) rows.push(["Mejor jugada", "#1", moveOf(t, best)]);
-  (t.Marks ?? []).forEach((m) => rows.push([WHO[m.Who] ?? `Jugada de ${alias(m.Who)}`, m.Rank >= 0 ? `#${m.Rank + 1}` : "", moveOf(t, m)]));
-  return h("div.stack.review-lines", {}, rows.map(([label, rank, m]) => h("button", { class: "review-line" + (ui.selected?.text === m.text ? " active" : ""), onclick: () => select(ui, m) },
-    h("div.grow.stack", {}, h("span.muted.small", {}, label), h("b", {}, m.text)),
-    rank ? h("span.muted", {}, rank) : null,
-    h("b.review-points", {}, m.score),
-  )));
+function headActions(ui, t) {
+  const bag = turnBag(t, ui.classic);
+  return h("div.row.review-actions", {},
+    h("button.text-btn", { onclick: () => reviewMovesDialog(ui, (i) => goTo(ui, i)) }, "Movidas"),
+    h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
+    ui.classic ? h("button.icon-btn", { "aria-label": "Ventaja", onclick: () => chartDialog(ui) }, icon("chart")) : null,
+    h("button.bag-btn", { "aria-label": "Bolsa", onclick: () => showBag(bag.count, bag.rival, bag.tiles) }, bagIcon(bag.count)),
+  );
 }
 
 function select(ui, m) {

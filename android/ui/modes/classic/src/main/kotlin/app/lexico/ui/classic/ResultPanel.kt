@@ -37,7 +37,7 @@ fun ResultPanel(
 private fun playedWords(view: ClassicView): List<WordSection> =
   listOf(Side.ME to view.me, Side.OPPONENT to view.opponent).map { (side, name) -> WordSection(name, view.moves.filter { it.side == side && it.type == MoveType.PLACEMENT }.map { it.text }) }
 
-private fun spread(view: ClassicView): Spread {
+internal fun spread(view: ClassicView): Spread {
   val totals = listOf(0 to 0) + view.moves.map { it.myTotal to it.opponentTotal } + (view.myScore to view.opponentScore)
   return Spread.of(view.me, view.opponent, view.moves.firstOrNull()?.side != Side.OPPONENT, totals.distinctLast())
 }

@@ -43,6 +43,8 @@ func (c *Game) newTurnRecord(m *move.Move, play core.Play, candidates []core.Can
 	return r
 }
 
+const WatchedPrefix = "watched"
+
 func (c *Game) finishIfOver() {
 	if c.over() {
 		c.finish()
@@ -56,6 +58,9 @@ func (c *Game) finish() {
 }
 
 func (c *Game) recordPrefix() string {
+	if c.watched {
+		return WatchedPrefix
+	}
 	if c.log.Mode == ModeEndgame {
 		return ModeEndgame
 	}

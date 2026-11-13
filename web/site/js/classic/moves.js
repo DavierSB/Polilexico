@@ -114,7 +114,7 @@ export function duplicateBagDialog(tiles) {
   showBag(tiles.length, null, tiles);
 }
 
-function showBag(bag, rival, tiles) {
+export function showBag(bag, rival, tiles) {
   openDialog((close) => [
     h("h2.bag-title", {}, h("span", {}, `Bolsa: ${bag}`), rival === null ? null : h("span", {}, `Atril rival: ${rival}`)),
     tiles ? h("p.small.bag-summary", {}, bagSummary(tiles)) : null,

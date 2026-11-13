@@ -86,7 +86,7 @@ private fun MyBar(view: ClassicView, c: TilePlacer, style: BoardStyle) {
 
 @Composable
 private fun Controls(view: ClassicView, c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs, onNotice: (String) -> Unit) {
-  if (view.watching) return WatchPanel(view)
+  if (view.watching && view.end == null) return WatchPanel(view)
   val end = view.end
   if (end != null) return ResultPanel(
     view, end, onAnalyze = actions::analyze, onAnalyzeEndgame = actions::analyzeEndgame, onExport = actions::export, onMenu = actions::exit,

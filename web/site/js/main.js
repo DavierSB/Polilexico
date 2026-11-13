@@ -34,6 +34,7 @@ import { reviewScreen } from "./games/review.js";
 import { READY_ROUTES } from "./screens/menu.js";
 import { offerDownload } from "./screens/download.js";
 import { watchMessages } from "./online/messages.js";
+import { watchInvites } from "./online/invites.js";
 
 apply();
 ensureFlags();
@@ -79,6 +80,7 @@ start({
 });
 
 watchMessages();
+watchInvites();
 offerDownload();
 screen.orientation?.lock?.("portrait").catch(() => {});
 window.addEventListener("load", () => setTimeout(startEngine, 300));
