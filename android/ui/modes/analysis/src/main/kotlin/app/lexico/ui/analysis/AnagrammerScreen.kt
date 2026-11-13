@@ -24,6 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import app.lexico.model.Letters
@@ -45,18 +47,20 @@ fun AnagrammerScreen(style: BoardStyle, anagrams: Anagrams, onBack: () -> Unit) 
   val rack = remember { AnagramRack() }
   val drag = remember { PinDrag(rack::pin) }
   val found = remember { mutableStateOf<List<String>?>(null) }
+  val focus = remember { FocusRequester() }
   LaunchedEffect(rack.tiles.toList()) { found.value = search(anagrams, rack.tiles.toList()) }
   Box(Modifier.fillMaxSize().onGloballyPositioned { drag.root = it }) {
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
       Header("Anagramador", onBack) { BarTextButton("Vaciar", rack::clear) }
       Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        RackCard(rack, drag, style)
+        RackCard(rack, drag, style) { focus.requestFocus() }
         if (rack.tiles.isNotEmpty()) PinnedCard(rack.tiles, rack.pins, drag, style)
         AnagramResults(rack.tiles.size, found.value, rack.pinnedLetters())
       }
       LetterPalette(style, marked = null, modifier = Modifier.fillMaxWidth(), onLetter = rack::add)
     }
     DraggedPin(drag, rack.tiles, style)
+    SoftKeys(focus, onTile = rack::add) { rack.tiles.lastIndex.takeIf { it >= 0 }?.let(rack::remove) }
   }
 }
 
@@ -103,10 +107,11 @@ private suspend fun search(anagrams: Anagrams, tiles: List<String>): List<String
 }
 
 @Composable
-private fun RackCard(rack: AnagramRack, drag: PinDrag, style: BoardStyle) {
+private fun RackCard(rack: AnagramRack, drag: PinDrag, style: BoardStyle, onType: () -> Unit) {
+  val keyboard = LocalSoftwareKeyboardController.current
   Box(
     Modifier.fillMaxWidth().heightIn(min = 56.dp)
-      .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(14.dp)).padding(10.dp),
+      .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(14.dp)).clickable { onType(); keyboard?.show() }.padding(10.dp),
     contentAlignment = Alignment.CenterStart,
   ) {
     if (rack.tiles.isEmpty()) Text("Atril vacío", color = MaterialTheme.colorScheme.onSurfaceVariant)

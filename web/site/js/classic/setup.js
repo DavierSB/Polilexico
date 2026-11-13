@@ -16,7 +16,7 @@ const NAME_CHARS = 16;
 const LAPTOP = "(min-width: 900px) and (min-aspect-ratio: 1/1)";
 
 export function classicSetupScreen(app) {
-  const form = { ...DEFAULTS, ...load("classicForm", {}) };
+  const form = { ...DEFAULTS, ...load("classicForm", {}), shared: false };
   const gates = [];
   const step = h("div.setup-step");
   const screen = h("div.screen.wide.fit-screen");
@@ -46,7 +46,7 @@ function stepHead(form, back) {
 }
 
 function rivalStep(form, redraw, gates, choose) {
-  if (matchMedia(LAPTOP).matches) return laptopStep(form, redraw, gates, choose);
+  if (matchMedia(LAPTOP).matches) return laptopStep(form, redraw, gates);
   return [
     h("div.setup-scroll", {}, BOTS.map((b) => botCard(b, form, redraw)), localPrompt(form, choose)),
     h("button.btn.block.start", { onclick: () => ((form.shared = false), choose(true)) }, "Seleccionar rival"),
@@ -54,10 +54,13 @@ function rivalStep(form, redraw, gates, choose) {
   ];
 }
 
-function laptopStep(form, redraw, gates, choose) {
-  form.shared = false;
+function laptopStep(form, redraw, gates) {
+  const swap = (shared, text) => h("button.text-btn.switch-prompt", { onclick: () => ((form.shared = shared), (form.starter = 0), redraw()) }, text);
+  const left = form.shared
+    ? h("div.setup-scroll", {}, sharedNames(form, redraw), swap(false, "¿O eres tú solo?"))
+    : h("div.setup-scroll.bot-column", {}, BOTS.map((b) => botCard(b, form, redraw)), swap(true, "¿O son dos jugadores locales?"));
   return h("div.setup-columns", {},
-    h("div.setup-scroll.bot-column", {}, BOTS.map((b) => botCard(b, form, redraw)), localPrompt(form, choose)),
+    left,
     h("div.setup-column", {}, h("div.setup-scroll", {}, settingsFor(form, redraw)), startButton(form, gates), savedGames(gates)),
   );
 }

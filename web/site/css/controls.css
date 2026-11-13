@@ -626,3 +626,7 @@ hr.thick { width: 100%; border: 0; border-top: 2px solid var(--on-surface); marg
 .end-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
 .opening-choices { margin-top: 12px; }
+
+.soft-keys { position: fixed; left: 0; bottom: 0; width: 1px; height: 1px; padding: 0; border: 0; opacity: 0; font-size: 16px; pointer-events: none; }
+
+.rack-card { cursor: text; }
