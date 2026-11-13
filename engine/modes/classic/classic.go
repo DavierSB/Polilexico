@@ -36,6 +36,7 @@ type Game struct {
 	invalidLosesTurn bool
 	recordPath       string
 	watched          bool
+	mirrored         bool
 }
 
 func Bots() string {

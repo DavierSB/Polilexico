@@ -39,6 +39,12 @@ func (c *Game) Host() string {
 	return c.log.HumanName
 }
 
+func (c *Game) markMirrored() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.mirrored = true
+}
+
 func (c *Game) keepRecord(watched bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -72,6 +78,7 @@ func loadMirror(text string, paused bool, l events.Listener, watched bool) (*Mat
 	m.mirror = true
 	m.mu.Unlock()
 	m.game.keepRecord(watched)
+	m.game.markMirrored()
 	if !paused {
 		m.Resume()
 	}

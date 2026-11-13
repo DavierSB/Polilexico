@@ -120,7 +120,7 @@ func (c *Game) playerToMove() bool {
 }
 
 func (c *Game) watcherIdx() int {
-	if c.local && c.botToMove() {
+	if c.local && !c.mirrored && c.botToMove() {
 		return c.botIdx()
 	}
 	return c.humanIdx

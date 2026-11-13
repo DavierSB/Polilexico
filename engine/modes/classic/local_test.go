@@ -82,6 +82,19 @@ func TestMirrorRunsClocksButDecidesNothing(t *testing.T) {
 	}
 }
 
+func TestMirrorBagHidesOnlyTheRivalRack(t *testing.T) {
+	m, err := LoadMirror(savedLocalMatch(t), true, newTestListener())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(m.Close)
+	c := m.Game()
+	want := core.Unseen(c.g, c.g.RackFor(1-c.humanIdx).TilesOn()...)
+	if c.Status().HumanToMove || c.Unseen() != want {
+		t.Fatalf("bolsa desde el rival: %q, quiero %q", c.Unseen(), want)
+	}
+}
+
 func savedLocalMatch(t *testing.T) string {
 	t.Helper()
 	m := startMatch(newLocalGame(t, StarterBot), newClockPair(timing.NewFake(), 60_000, 0, 0, 120_000), timing.NewFake(), newTestListener(), true)
