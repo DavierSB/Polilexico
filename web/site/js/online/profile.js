@@ -45,7 +45,16 @@ function mainAction(person, close) {
   return h("button.btn.small", { onclick: () => (close(), challenge(person)) }, "Retar");
 }
 
-export function profileDialog(person) {
+const SEAT_COUNTRY = /^(.*) \(([A-Z]{2})\)$/;
+
+export function seatProfile(seat) {
+  const found = SEAT_COUNTRY.exec(seat);
+  const name = found?.[1] ?? seat;
+  const country = found?.[2] ?? online.lobby.people.find((p) => p.name === name)?.country ?? "";
+  profileDialog({ name, country, playing: true });
+}
+
+export function profileDialog(person, inGame = !!online.room) {
   const body = h("div.stack.profile-stats", {}, h("div.spinner"));
   const me = account();
   const self = me && me.name === person.name && me.country === person.country;
@@ -55,7 +64,7 @@ export function profileDialog(person) {
     body,
     actions(
       self ? null : h("button.btn.small.outlined", { onclick: () => (close(), writeMessage(person)) }, "💬 Escribir"),
-      self ? h("button.text-btn", { onclick: close }, "Cerrar") : mainAction(person, close),
+      self || inGame ? h("button.text-btn", { onclick: close }, "Cerrar") : mainAction(person, close),
     ),
   ]);
   stats(`/profile?name=${encodeURIComponent(person.name)}&country=${encodeURIComponent(person.country)}`, body, "Aún no tiene partidas en línea.");

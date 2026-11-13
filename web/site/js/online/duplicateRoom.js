@@ -9,7 +9,7 @@ import { confirm, openDialog, actions, themeDialog, toast } from "../dialogs.js"
 import { at } from "../placement.js";
 import { placementScore } from "../score.js";
 import { formatClock, moveButtons, initialAvatar } from "../parts.js";
-import { photoAvatar } from "./profile.js";
+import { photoAvatar, seatProfile } from "./profile.js";
 import { Placer } from "../classic/placer.js";
 import { createRack } from "../classic/rack.js";
 import { askBlank, duplicateBagDialog } from "../classic/moves.js";
@@ -18,6 +18,7 @@ import { dragFrom } from "../classic/drag.js";
 import { bindKeys } from "../classic/keys.js";
 import { account } from "./api.js";
 import { online } from "./client.js";
+import { lookUp } from "../study/lookup.js";
 import { MASTER, standings, placeOf, leftMs } from "./table.js";
 import { chatButton, watchersButton } from "./tell.js";
 import { adjournConfirm, adjournDialog, watchAway, rivalOf, watchingNotice } from "./adjourn.js";
@@ -50,7 +51,7 @@ class RoomView {
     this.away = { waits: 0 };
     this.placer = new Placer(() => this.placerChanged());
     this.placer.askBlank = askBlank;
-    this.board = createBoard({ onSquare: (i) => this.canPlay() && this.placer.clickSquare(i) });
+    this.board = createBoard({ onSquare: (i) => this.tapSquare(i) });
     this.rack = createRack(this.placer);
     this.bar = h("div.game-bar");
     this.panel = h("div.dup-panel");
@@ -157,6 +158,12 @@ class RoomView {
       adjourn ? h("button.icon-btn", { "aria-label": "Movidas", onclick: moves }, icon("moves")) : h("button.text-btn.moves-btn", { onclick: moves }, "Movidas"),
       h("button.bag-btn", { "aria-label": "Quedan en la bolsa", onclick: () => duplicateBagDialog(t.unseen) }, bagIcon(t.unseen.length)),
     );
+  }
+
+  tapSquare(i) {
+    const t = this.t;
+    if (t?.cells[i] && (t.phase === "finished" || this.watching) && this.placer.idle()) return lookUp(t.cells, i);
+    if (this.canPlay()) this.placer.clickSquare(i);
   }
 
   renderBoard() {
@@ -289,11 +296,18 @@ function leaderboard(t, me = null, scroll = false) {
     const place = placeOf(rows, i);
     const tone = e.name === me ? " mine" : place === 1 && e.total > 0 ? " leader" : "";
     return h("div", { class: "leader-card" + tone },
-      h("b.leader-place", {}, place), seatAvatar(e.name),
-      h("div.grow", {}, h("b.ellipsis", {}, e.name), h("div.muted.small.ellipsis", {}, `Ronda ${e.points < 0 ? "—" : "+" + e.points}`)),
+      h("b.leader-place", {}, place), opensSeat(seatAvatar(e.name), e.name),
+      opensSeat(h("div.grow", {}, h("b.ellipsis", {}, e.name), h("div.muted.small.ellipsis", {}, `Ronda ${e.points < 0 ? "—" : "+" + e.points}`)), e.name),
       h("div.leader-total", {}, h("b", {}, e.total < 0 ? "—" : e.total), h("span.muted.small", {}, e.total < 0 || master <= 0 ? "—" : `${((e.total * 100) / master).toLocaleString("es", { maximumFractionDigits: 1, minimumFractionDigits: 1 })} %`)),
     );
   }));
+}
+
+function opensSeat(el, name) {
+  if (name === MASTER) return el;
+  el.classList.add("opens-profile");
+  el.addEventListener("click", () => seatProfile(name));
+  return el;
 }
 
 function seatAvatar(name) {
@@ -315,7 +329,7 @@ function standingsTable(t) {
   return h("div.standings-table", {},
     h("div.standings-row.head", {}, h("span", {}, "#"), h("span", {}, "Jugador"), h("span", {}, "Jugada"), h("span.num", {}, "Pts"), h("span.num", {}, "Total")),
     sorted.map((e, i) => h("div", { class: "standings-row" + (e.name === t.me ? " mine" : "") },
-      h("span", {}, placeOf(sorted, i)), h("span", { class: e.name === t.me || e.name === MASTER ? "bold" : "" }, e.name), h("span", {}, e.text), h("span.num", {}, e.points), h("b.num", {}, e.total))),
+      h("span", {}, placeOf(sorted, i)), opensSeat(h("span", { class: e.name === t.me || e.name === MASTER ? "bold" : "" }, e.name), e.name), h("span", {}, e.text), h("span.num", {}, e.points), h("b.num", {}, e.total))),
   );
 }
 

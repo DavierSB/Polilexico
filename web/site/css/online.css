@@ -260,3 +260,5 @@
 .spread-grid.solid { stroke-dasharray: none; }
 .efficiency-end { width: 8px; height: 8px; margin: -4px 0 0 -4px; background: var(--on-surface); }
 .efficiency-result { position: absolute; margin-right: 6px; font-size: 13px; font-weight: 800; color: var(--on-surface); white-space: nowrap; pointer-events: none; }
+
+.opens-profile { cursor: pointer; }

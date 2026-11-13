@@ -75,6 +75,10 @@ export class Placer {
     return p ? placementText(p) : null;
   }
 
+  idle() {
+    return !this.arrow && this.selected === null && !this.exchanging;
+  }
+
   clickSquare(i) {
     if (this.exchanging) return;
     if (this.pending.has(i)) return this.take(i);

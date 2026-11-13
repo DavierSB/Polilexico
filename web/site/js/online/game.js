@@ -8,7 +8,7 @@ import { online, ADJOURNED, GAME_GONE } from "./client.js";
 import { gameView } from "../classic/view.js";
 import { announceEnd, resultPanel } from "../classic/ending.js";
 import { writeMessage } from "./messages.js";
-import { photoUrl } from "./profile.js";
+import { photoUrl, seatProfile } from "./profile.js";
 import { forget } from "../tabMemory.js";
 
 const INVALID_MS = 5000;
@@ -114,8 +114,8 @@ function seats(c) {
   const [first, second] = c.room.players;
   const me = c.room.watching ? first : c.room.me;
   const other = c.room.watching ? second : c.room.players.find((p) => p !== me) ?? second;
-  const side = (name) => ({ name, country: countryOf(c, name), photo: photoUrl(name, countryOf(c, name)) });
-  return { me: side(me), opponent: side(other) };
+  const side = (name, profile) => ({ name, country: countryOf(c, name), photo: photoUrl(name, countryOf(c, name)), profile });
+  return { me: side(me, c.room.watching ? seatProfile : null), opponent: side(other, seatProfile) };
 }
 
 function countryOf(c, name) {

@@ -3,7 +3,7 @@ import { openDialog, actions } from "../dialogs.js";
 import { flag, nameFlag } from "../parts.js";
 import { account } from "./api.js";
 import { online } from "./client.js";
-import { photoAvatar } from "./profile.js";
+import { photoAvatar, profileDialog } from "./profile.js";
 import { chatRecords } from "./chatLog.js";
 
 const MAX_CHARS = 140;
@@ -130,7 +130,7 @@ function emptyHistory() {
 
 function bubble(r) {
   return h("div", { class: "history-bubble" + (r.mine ? " mine" : "") },
-    r.room && r.mine ? roomAvatar() : photoAvatar(r.who, r.country, 32),
+    r.room && r.mine ? roomAvatar() : h("button.avatar-btn.opens-profile", { "aria-label": `Perfil de ${r.who}`, onclick: () => profileDialog({ name: r.who, country: r.country }) }, photoAvatar(r.who, r.country, 32)),
     h("div.grow", {}, h("div.row", {}, h("b.grow.ellipsis", {}, route(r)), h("span.small.muted", {}, stamp(r.at))), h("div.history-text", {}, r.text)),
   );
 }

@@ -105,7 +105,7 @@ class DuplicateView {
   }
 
   tapSquare(i) {
-    if (this.state?.finished && this.state.cells[i] && !this.placer.pending.size) return lookUp(this.state.cells, i);
+    if (this.state?.cells[i] && this.placer.idle()) return lookUp(this.state.cells, i);
     if (this.canPlay()) this.placer.clickSquare(i);
   }
 

@@ -6,7 +6,7 @@ import { save } from "../store.js";
 import { setting } from "../settings.js";
 import { account } from "./api.js";
 import { online } from "./client.js";
-import { photoAvatar } from "./profile.js";
+import { photoAvatar, profileDialog } from "./profile.js";
 import { classicTime, duplicateDetail } from "./lobby.js";
 import { remindAdjourned } from "./reminders.js";
 
@@ -18,20 +18,23 @@ export function watchInvites() {
   const holder = h("div.invite-pop");
   document.body.append(holder);
   if (account() && !setting("hidden")) online.acquire();
+  const shown = { key: null };
   const draw = () => {
-    replace(holder, current(online));
+    const next = current(online, shown.key);
+    if ((next?.key ?? null) !== shown.key) (replace(holder, next?.el), (shown.key = next?.key ?? null));
     remindAdjourned(online, canInterrupt(online) && !inGame() && !holder.childElementCount);
   };
   online.subscribe(draw);
   window.addEventListener("hashchange", draw);
 }
 
-function current(c) {
+function current(c, kept) {
   if (!canInterrupt(c)) return null;
-  const invite = c.lobby.invites.find((s) => s.mode !== "duplicate" && (s.resume || !setting("noChallenges")));
-  if (invite) return inviteCard(c, invite);
+  const invites = c.lobby.invites.filter((s) => s.mode !== "duplicate" && (s.resume || !setting("noChallenges")));
+  const invite = invites.find((s) => "invite:" + s.id === kept) ?? invites[0];
+  if (invite) return { key: "invite:" + invite.id, el: inviteCard(c, invite) };
   const seek = c.offer && c.lobby.seeks.find((s) => s.id === c.offer);
-  return seek && !inGame() ? offerCard(c, seek) : null;
+  return seek && !inGame() ? { key: "offer:" + seek.id, el: offerCard(c, seek) } : null;
 }
 
 function canInterrupt(c) {
@@ -61,7 +64,7 @@ function offerCard(c, s) {
 
 function card(s, title, detail, [no, onNo], [yes, onYes]) {
   return h("div.card.invite-card", {},
-    h("div.row.invite-head", {}, photoAvatar(s.host, s.country, 44), h("div.grow", {}, h("b", {}, title), h("div.muted.small", {}, detail))),
+    h("div.row.invite-head", {}, h("button.avatar-btn.opens-profile", { "aria-label": `Perfil de ${s.host}`, onclick: () => profileDialog({ name: s.host, country: s.country }, true) }, photoAvatar(s.host, s.country, 44)), h("div.grow", {}, h("b", {}, title), h("div.muted.small", {}, detail))),
     h("div.row.invite-buttons", {}, h("button.btn.outlined.grow", { onclick: onNo }, no), h("button.btn.grow", { onclick: onYes }, yes)),
   );
 }
