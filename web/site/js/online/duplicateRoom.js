@@ -1,4 +1,5 @@
 import { setting } from "../settings.js";
+import { fitAround } from "../fit.js";
 import { h, replace } from "../dom.js";
 import { lobbyRoute } from "./lobby.js";
 import { icon, bagIcon } from "../icons.js";
@@ -18,7 +19,7 @@ import { bindKeys } from "../classic/keys.js";
 import { account } from "./api.js";
 import { online } from "./client.js";
 import { MASTER, standings, placeOf, leftMs } from "./table.js";
-import { chatInput, chatLine, chatButton, watchersButton } from "./tell.js";
+import { chatButton, watchersButton } from "./tell.js";
 import { adjournConfirm, adjournDialog, watchAway, rivalOf, watchingNotice } from "./adjourn.js";
 import { percentChartDialog } from "./percentChart.js";
 import { writeMessage, ROOM_CONTACT } from "./messages.js";
@@ -36,7 +37,7 @@ export function duplicateRoomScreen(app) {
   app.append(waiting);
   online.acquire();
   const stop = online.subscribe((c) => {
-    if (!c.table && c.room && !c.ended) return drawWaiting(waiting, c);
+    if (!c.table && c.room && !c.ended) return c.room.watching ? replace(waiting, h("header.screen-head", {}, h("h1", {}, "Observando")), h("div.row.room-status", {}, h("div.spinner.small"), h("b", {}, "Conectando…"))) : drawWaiting(waiting, c);
     if (waiting.isConnected) waiting.replaceWith(view.el);
     view.update(c);
   });
@@ -56,16 +57,16 @@ class RoomView {
     this.buttons = h("div.game-buttons");
     this.notice = h("div.game-notice");
     this.side = h("div.stack");
-    this.chat = h("div.chat-lines.room-chat");
-    this.chatPanel = h("div.chat-panel", {}, h("h3.side-title", {}, "Chat"), this.chat, chatInput((t) => online.sayInRoom(t)));
     this.el = h("div.game.duplicate-game", {}, this.bar, h("div.game-board", {}, this.board.el), this.panel,
       h("div.game-rack", {}, this.rack.el), this.buttons, this.notice,
-      h("aside.game-side", {}, this.side, this.chatPanel));
+      h("aside.game-side", {}, this.side));
+    this.stopFit = fitAround(this.el, this.el.querySelector(".game-board"));
     this.board.el.addEventListener("pointerdown", (e) => this.dragPending(e));
     this.unbindKeys = bindKeys(this);
   }
 
   destroy() {
+    this.stopFit?.();
     this.unbindKeys();
     clearTimeout(this.away.awayTimer);
   }
@@ -84,7 +85,6 @@ class RoomView {
     this.lastNotice = c.notice;
     if (c.ended && c.ended !== this.lastEnded) closedDialog(c.ended);
     this.lastEnded = c.ended;
-    this.drawChat(c);
     watchingNotice(c);
     if (c.adjournAsk && c.adjournAsk !== this.adjournAsk) adjournDialog(c.adjournAsk);
     this.adjournAsk = c.adjournAsk;
@@ -199,12 +199,6 @@ class RoomView {
 
   exportTable() {
     exportTable(this.t);
-  }
-
-  drawChat(c) {
-    const lines = c.chat.filter((l) => !l.private);
-    replace(this.chat, lines.length ? lines.map((l) => chatLine(l.mine ? "Tú" : l.from, l.text, l.mine)) : h("p.muted.small", {}, "Sin mensajes."));
-    this.chat.scrollTop = this.chat.scrollHeight;
   }
 
   play() {

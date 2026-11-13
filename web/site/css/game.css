@@ -209,7 +209,6 @@ table.moves tr.mine td:nth-child(2) { color: var(--primary); }
 
   .game-board { grid-row: 1 / -1; width: var(--board); }
 
-  .game.watching { --side: clamp(380px, calc(100vw - 100dvh - 64px), 560px); }
 
   .game .player-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "photo name clock" "tiles tiles score"; align-items: center; gap: 4px 10px; }
   .game .player-card > :is(.avatar, .initial) { grid-area: photo; }
@@ -542,13 +541,15 @@ button.word-row { cursor: pointer; }
 @media (min-width: 900px) and (min-aspect-ratio: 1/1) {
   .review {
     --side: clamp(360px, 27vw, 520px);
-    --board: min(calc(100dvh - 90px), calc(100vw - var(--side) - 72px));
+    --board: min(calc(100dvh - 24px), calc(100vw - var(--side) - 72px));
     max-width: none; width: fit-content; padding: 12px 24px;
     grid-template-columns: var(--board) var(--side);
-    grid-template-areas: "board head" "board side";
-    grid-template-rows: auto 1fr; column-gap: 24px; align-items: start;
+    grid-template-areas: "board head" "board top" "board side";
+    grid-template-rows: auto auto 1fr; column-gap: 24px; align-items: start;
   }
-  .review-board { width: var(--board); }
+  .review-board { display: contents; }
+  .review-board > .board { grid-area: board; width: var(--board); }
+  .review-top { grid-area: top; }
 }
 
 .watch-panel { display: flex; flex-direction: column; gap: 4px; padding: 10px; border-radius: 14px; background: var(--surface-variant); }

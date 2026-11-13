@@ -1,14 +1,9 @@
 package app.lexico.ui.classic
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,9 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.lexico.ui.common.SpreadChart
-import app.lexico.ui.common.VerdictDialog
-import app.lexico.ui.common.VerdictLine
 import app.lexico.ui.common.VerdictTone
 
 @Composable
@@ -31,25 +23,6 @@ internal fun EndingDialog(view: ClassicView, ending: Ending, close: () -> Unit) 
     text = { EndingSummary(view, ending) },
     confirmButton = { TextButton(onClick = close) { Text("Continuar") } },
   )
-}
-
-@Composable
-internal fun ResultDialog(view: ClassicView, end: GameEnd, close: () -> Unit) {
-  VerdictDialog(verdictText(view, end), verdictTone(view, end), close, verdictSize(view), celebrate = won(view, end)) {
-    if (end.byTimeout) VerdictLine("por tiempo")
-    VerdictLine("${view.myScore} – ${view.opponentScore}", 34.sp, bold = true)
-    VerdictLine("${view.me} · ${view.opponent}", 14.sp, faded = true)
-    ResultChart(view)
-  }
-}
-
-@Composable
-private fun ResultChart(view: ClassicView) {
-  if (view.moves.isEmpty()) return
-  Box(
-    Modifier.padding(top = 8.dp).widthIn(max = 360.dp).fillMaxWidth(0.88f)
-      .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp)).padding(12.dp),
-  ) { SpreadChart(spread(view), height = 150.dp) }
 }
 
 private fun endingTitle(view: ClassicView, reason: EndingReason): String = when (reason) {
@@ -81,12 +54,12 @@ private fun DeltaLine(name: String, delta: Int) {
   }
 }
 
-private fun won(view: ClassicView, end: GameEnd): Boolean =
+internal fun won(view: ClassicView, end: GameEnd): Boolean =
   if (view.local || view.watching) end.winner != null else end.winner == Side.ME && !end.byTimeout
 
-private fun verdictSize(view: ClassicView) = if (view.local || view.watching) 40.sp else 52.sp
+internal fun verdictSize(view: ClassicView) = if (view.local || view.watching) 40.sp else 52.sp
 
-private fun verdictText(view: ClassicView, end: GameEnd): String = when {
+internal fun verdictText(view: ClassicView, end: GameEnd): String = when {
   view.watching -> winnerName(view, end)?.let { "$it ganó" } ?: "Empate"
   view.local -> "¡${localVerdict(view, end)}!".takeIf { end.winner != null } ?: "Empate"
   won(view, end) -> "¡Ganaste!"
@@ -100,7 +73,7 @@ internal fun winnerName(view: ClassicView, end: GameEnd): String? = when (end.wi
   null -> null
 }
 
-private fun verdictTone(view: ClassicView, end: GameEnd): VerdictTone = when {
+internal fun verdictTone(view: ClassicView, end: GameEnd): VerdictTone = when {
   won(view, end) -> VerdictTone.WIN
   end.byTimeout || end.winner == Side.OPPONENT -> VerdictTone.LOSS
   else -> VerdictTone.NEUTRAL

@@ -128,7 +128,7 @@
 
 .field label { font-size: 13px; color: var(--on-surface-variant); padding-left: 4px; }
 
-.field input, .field select, .chat-input {
+.field input, .field select {
   min-height: 52px;
   padding: 0 16px;
   border-radius: 10px;
@@ -141,7 +141,7 @@
 
 .field select option { background: var(--c2); }
 
-.field input:focus, .field select:focus, .chat-input:focus { outline: none; border: 2px solid var(--primary); padding: 0 15px; }
+.field input:focus, .field select:focus { outline: none; border: 2px solid var(--primary); padding: 0 15px; }
 
 .error { color: #FF8A7A; font-size: 14px; }
 

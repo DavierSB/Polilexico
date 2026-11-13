@@ -7,8 +7,8 @@ import { account } from "./api.js";
 import { online, ADJOURNED, GAME_GONE } from "./client.js";
 import { gameView } from "../classic/view.js";
 import { announceEnd, resultPanel } from "../classic/ending.js";
-import { chatInput, chatLine } from "./tell.js";
 import { writeMessage } from "./messages.js";
+import { photoUrl } from "./profile.js";
 import { forget } from "../tabMemory.js";
 
 const INVALID_MS = 5000;
@@ -43,7 +43,6 @@ function update(screen, c) {
   screen.ended = c.ended;
   if (c.adjournAsk && c.adjournAsk !== screen.adjournAsk) adjournDialog(c.adjournAsk);
   screen.adjournAsk = c.adjournAsk;
-  screen.chat && drawChat(screen, c);
   screen.view?.setWatchers(c.watchers);
   drawCover(screen, c);
   watchingNotice(c);
@@ -79,20 +78,18 @@ function mount(screen, c) {
   screen.session = c.session;
   const sides = seats(c);
   screen.stopInvalids = c.room.watching ? announceInvalids(c.session, sides) : null;
-  screen.chat = h("div.chat-lines.room-chat");
-  const chat = chatPanel(screen);
   screen.memory = c.room.watching ? null : `online.${c.room.id}.${c.room.players.join(".")}`;
   screen.view = gameView(c.session, {
     me: sides.me,
     opponent: sides.opponent,
     watching: c.room.watching,
+    thinkingText: "pensando…",
     memory: screen.memory,
     exit: () => exit(c),
     resign: c.room.watching ? null : () => (c.leave(), go(lobbyRoute())),
     adjourn: c.room.watching ? null : () => adjournConfirm(rivalOf(online), online.rivalOnline),
-    onEnd: (state, names) => announceEnd(state, names, { watching: c.room.watching }),
+    onEnd: (state, names) => announceEnd(state, names, { watching: c.room.watching }, { recorded: () => (c.room.watching ? c.session.watchedRecord() : c.session.recorded) }),
     endPanel: (state, names) => resultPanel(state, names, { watching: c.room.watching }, { recorded: () => (c.room.watching ? c.session.watchedRecord() : c.session.recorded), menu: () => (online.leave(), go(lobbyRoute())) }),
-    extra: chat,
     chat: () => writeMessage(),
   });
   (screen.holder.isConnected ? screen.holder : document.querySelector(".game"))?.replaceWith(screen.view.el);
@@ -117,7 +114,8 @@ function seats(c) {
   const [first, second] = c.room.players;
   const me = c.room.watching ? first : c.room.me;
   const other = c.room.watching ? second : c.room.players.find((p) => p !== me) ?? second;
-  return { me: { name: me, country: countryOf(c, me) }, opponent: { name: other, country: countryOf(c, other) } };
+  const side = (name) => ({ name, country: countryOf(c, name), photo: photoUrl(name, countryOf(c, name)) });
+  return { me: side(me), opponent: side(other) };
 }
 
 function countryOf(c, name) {
@@ -129,20 +127,6 @@ function exit(c) {
   if (c.room?.watching || c.finished() || c.ended) c.leave();
   else c.parked = c.room?.id;
   go(lobbyRoute());
-}
-
-function chatPanel(screen) {
-  return h("div.chat-panel", {},
-    h("h3.side-title", {}, "Chat"),
-    screen.chat,
-    chatInput((text) => online.sayInRoom(text)),
-  );
-}
-
-function drawChat(screen, c) {
-  const lines = c.chat.filter((l) => !l.private);
-  replace(screen.chat, lines.length ? lines.map((l) => chatLine(l.mine ? "Tú" : l.from, l.text, l.mine)) : h("p.muted.small", {}, "Sin mensajes."));
-  screen.chat.scrollTop = screen.chat.scrollHeight;
 }
 
 function closedDialog(reason) {

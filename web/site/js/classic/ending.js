@@ -9,10 +9,12 @@ import { lookUpWord } from "../study/lookup.js";
 
 const TONES = { win: "win", loss: "loss", neutral: "neutral" };
 
-export function announceEnd(state, names, who) {
+const CONFETTI_LEAD_MS = 1500;
+
+export function announceEnd(state, names, who, tools) {
   const reason = state.result.endReason;
-  if (reason === "out" || reason === "passes" || reason === "neutral") return endingDialog(state, names, who, () => verdictOverlay(state, names, who));
-  verdictOverlay(state, names, who);
+  if (reason === "out" || reason === "passes" || reason === "neutral") return endingDialog(state, names, who, () => resultPopup(state, names, who, tools));
+  resultPopup(state, names, who, tools);
 }
 
 export function resultPanel(state, names, who, tools) {
@@ -64,22 +66,31 @@ function deltaLine(name, delta) {
   return h("div.row.delta-line", {}, h("span.grow", {}, name), h("b", {}, (delta > 0 ? "+" : "") + (delta ?? 0)));
 }
 
-function verdictOverlay(state, names, who) {
-  const r = state.result;
+function resultPopup(state, names, who, tools) {
   const won = wonBy(state, who);
-  const tone = won ? TONES.win : r.lostOnTime || r.outcome === "loss" ? TONES.loss : TONES.neutral;
-  const big = who.local || who.watching ? " small" : "";
-  const layer = h("div.verdict-layer", { onclick: () => layer.remove() },
-    h("div.verdict-content", {},
-      h("div", { class: `verdict-title ${tone}${big}` }, verdictText(state, names, who)),
-      r.lostOnTime || r.rivalLostOnTime ? h("div.verdict-line", {}, "por tiempo") : null,
-      h("div.verdict-line.verdict-score", {}, `${state.myScore} – ${state.opponentScore}`),
-      h("div.verdict-line.faded", {}, `${names.me} · ${names.opponent}`),
-      state.moves.length ? h("div.verdict-chart", {}, spreadChart(classicSpread(state, names))) : null,
-    ),
-  );
-  document.getElementById("layer").append(layer);
   if (won) confetti();
+  setTimeout(() => openResult(state, names, who, tools), won ? CONFETTI_LEAD_MS : 0);
+}
+
+function openResult(state, names, who, tools) {
+  const r = state.result;
+  const tone = wonBy(state, who) ? TONES.win : r.lostOnTime || r.outcome === "loss" ? TONES.loss : TONES.neutral;
+  const words = playedWords(state, names);
+  openDialog((close) => [
+    h("div", { class: `result-verdict ${tone}${who.local || who.watching ? " small" : ""}` }, verdictText(state, names, who)),
+    r.lostOnTime || r.rivalLostOnTime ? h("div.result-line", {}, "por tiempo") : null,
+    h("div.result-line.result-score", {}, `${state.myScore} – ${state.opponentScore}`),
+    h("div.result-line.muted.small", {}, `${names.me} · ${names.opponent}`),
+    state.moves.length ? spreadChart(classicSpread(state, names)) : null,
+    h("div.stack.result-buttons", {},
+      h("button.btn.block", { onclick: () => (close(), withRecord(tools.recorded, (id) => go("partida-revision/" + id))) }, "Analizar partida"),
+      state.bag === 0 ? h("button.btn.block", { onclick: () => (close(), withRecord(tools.recorded, (id) => go(`partida-revision/${id}/final`))) }, "Analizar final") : null,
+      h("div.row.two-buttons", {},
+        words.some((s) => s.words.length) ? h("button.btn.outlined.grow", { onclick: () => wordsDialog(words) }, "Palabras") : null,
+        h("button.btn.outlined.grow", { onclick: () => (close(), withRecord(tools.recorded, async (id) => exportDialog(picture(state, names), await getRecord(id)))) }, "Exportar")),
+    ),
+    actions(h("button.text-btn", { onclick: close }, "Cerrar")),
+  ]);
 }
 
 function wonBy(state, who) {

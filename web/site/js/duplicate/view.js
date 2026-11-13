@@ -1,4 +1,5 @@
 import { setting } from "../settings.js";
+import { fitAround } from "../fit.js";
 import { h, replace } from "../dom.js";
 import { icon, bagIcon } from "../icons.js";
 import { createBoard, tile } from "../board.js";
@@ -35,6 +36,7 @@ class DuplicateView {
     this.board = createBoard({ onSquare: (i) => this.tapSquare(i) });
     this.rack = createRack(this.placer);
     this.el = this.layout();
+    this.stopFit = fitAround(this.el, this.el.querySelector(".game-board"));
     this.board.el.addEventListener("pointerdown", (e) => this.dragPending(e));
     this.unbindKeys = bindKeys(this);
     this.unsubscribe = session.subscribe((s) => this.show(s));
@@ -59,6 +61,7 @@ class DuplicateView {
   }
 
   destroy() {
+    this.stopFit?.();
     this.unsubscribe();
     this.unbindKeys();
   }

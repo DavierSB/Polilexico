@@ -89,6 +89,17 @@ function modeOffers(c, dup) {
   ];
 }
 
+export function watchGame(c, id) {
+  c.watch(id);
+  online.acquire();
+  const done = () => (clearTimeout(timer), stop(), online.release());
+  const timer = setTimeout(done, 15000);
+  const stop = c.subscribe((cc) => {
+    const route = cc.room?.watching ? roomRoute(cc) : null;
+    if (route) (done(), go(route));
+  });
+}
+
 export function roomRoute(c) {
   if (!c.room) return null;
   if (c.room.duplicate) return c.table || !c.room.watching ? "sala-duplicada" : null;
@@ -198,9 +209,9 @@ function games(c, dup) {
 }
 
 function classicGame(c, g) {
-  if (g.players?.length !== 2) return h("button.compact-game", { onclick: () => c.watch(g.id) }, h("span.grow.ellipsis", {}, (g.players ?? []).join("  vs  ")));
+  if (g.players?.length !== 2) return h("button.compact-game", { onclick: () => watchGame(c, g.id) }, h("span.grow.ellipsis", {}, (g.players ?? []).join("  vs  ")));
   const side = (i, end) => h("span", { class: "game-side-cell" + (end ? " end" : "") }, nameFlag(g.players[i], g.countries?.[i]));
-  return h("button.compact-game", { onclick: () => c.watch(g.id) },
+  return h("button.compact-game", { onclick: () => watchGame(c, g.id) },
     side(0, false),
     h("b.game-score-cell", {}, g.scores?.length === 2 ? `${g.scores[0]} – ${g.scores[1]}` : "vs"),
     side(1, true),
@@ -213,7 +224,7 @@ function duplicateGame(c, g) {
   const summary = !round ? [h("b", {}, "Ronda 1"), `  ·  ${g.players.length} jugadores`]
     : g.tied > 1 ? [h("b", {}, `Ronda ${round}`), "  ·  ", h("b.accent", {}, `${g.tied} empatados`)]
     : [h("b", {}, `Ronda ${round}`), "  ·  gana ", h("b.accent.ellipsis.leader-name", {}, g.leader), ` ${flag(g.countries?.[i] ?? "")}`];
-  return h("button.compact-game", { onclick: () => c.watch(g.id) },
+  return h("button.compact-game", { onclick: () => watchGame(c, g.id) },
     h("span.grow.dup-summary", {}, summary),
     h("b.dup-efficiency", {}, round ? `${g.efficiency} %` : "–"),
   );
@@ -236,7 +247,7 @@ function peopleList(c, people, close) {
 function personRow(c, p, close = () => {}) {
   const game = c.lobby.games.find((g) => g.players?.includes(p.name));
   const action = p.playing
-    ? h("button.btn.small.outlined", { disabled: !game, onclick: () => (close(), c.watch(game.id)) }, "Ver")
+    ? h("button.btn.small.outlined", { disabled: !game, onclick: () => (close(), watchGame(c, game.id)) }, "Ver")
     : challengeButton(c, p, close);
   return playerRow(p.name, p.country, null, false, chatButton(p), action);
 }

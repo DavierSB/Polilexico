@@ -34,7 +34,7 @@ fun ResultPanel(
   if (charting) SpreadDialog(spread(view), close = { charting = false })
 }
 
-private fun playedWords(view: ClassicView): List<WordSection> =
+internal fun playedWords(view: ClassicView): List<WordSection> =
   listOf(Side.ME to view.me, Side.OPPONENT to view.opponent).map { (side, name) -> WordSection(name, view.moves.filter { it.side == side && it.type == MoveType.PLACEMENT }.map { it.text }) }
 
 internal fun spread(view: ClassicView): Spread {

@@ -19,7 +19,11 @@ export function playerCard({ name, country, photo, mine }) {
 
 function avatar(name, photo, mine) {
   if (mine) return null;
-  if (photo) return h("img.avatar", { src: photo, alt: "", width: 44, height: 44 });
+  if (photo) {
+    const img = h("img.avatar", { src: photo, alt: "", width: 44, height: 44 });
+    img.addEventListener("error", () => img.replaceWith(initialAvatar(name, 44)), { once: true });
+    return img;
+  }
   return initialAvatar(name, 44);
 }
 

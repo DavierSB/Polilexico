@@ -43,7 +43,7 @@ async function open(holder, id, shown) {
     thinkingText: players ? null : "pensando…",
     exit: () => go(""),
     resign: () => (session.resign(), go("")),
-    onEnd: (state, names) => announceEnd(state, names, { local: !!players }),
+    onEnd: (state, names) => announceEnd(state, names, { local: !!players }, { recorded: () => session.recorded }),
     endPanel: (state, names) => resultPanel(state, names, { local: !!players }, { recorded: () => session.recorded, menu: () => go("") }),
   });
   shown.view = view;

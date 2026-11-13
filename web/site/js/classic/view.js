@@ -1,4 +1,5 @@
 import { setting } from "../settings.js";
+import { fitAround } from "../fit.js";
 import { h, replace } from "../dom.js";
 import { icon, bagIcon } from "../icons.js";
 import { createBoard } from "../board.js";
@@ -40,6 +41,7 @@ class GameView {
     this.rack = createRack(this.placer);
     this.cards = { opponent: playerCard(options.opponent), me: playerCard({ ...options.me, mine: !options.watching }) };
     this.el = this.layout();
+    this.stopFit = fitAround(this.el, this.el.querySelector(".game-board"));
     this.cover = h("div.handoff.hidden");
     this.el.append(this.cover);
     this.board.el.addEventListener("pointerdown", (e) => this.dragPending(e));
@@ -67,6 +69,7 @@ class GameView {
   }
 
   destroy() {
+    this.stopFit?.();
     this.unsubscribe();
     this.unbindKeys();
   }

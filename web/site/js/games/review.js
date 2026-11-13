@@ -12,6 +12,7 @@ import { lookUp } from "../study/lookup.js";
 import { alias, folderOf } from "./list.js";
 const BUDGET_MS = 30000;
 import { endgamePage } from "./endgamePage.js";
+import { fitBoard } from "./boardFit.js";
 import { spreadOf, spreadDialog } from "./spread.js";
 import { efficiencyOf, efficiencyDialog } from "./efficiency.js";
 import { exportDialog } from "./export.js";
@@ -42,7 +43,7 @@ function reviewOf(app, open) {
   const ui = { index: 0, selected: null, ranked: new Map(), ranking: new Set(), pre: new Map(), preRunning: new Set(), back: "" };
   const onKey = (e) => keys(ui, e);
   open(holder, ui).then((el) => el && document.addEventListener("keydown", onKey));
-  return () => (document.removeEventListener("keydown", onKey), closeExplorer(ui));
+  return () => (document.removeEventListener("keydown", onKey), closeExplorer(ui), ui.stopFit?.());
 }
 
 async function openRecord(holder, id, ui, atEndgame) {
@@ -102,6 +103,7 @@ function mount(holder, ui) {
   );
   holder.replaceWith(el);
   draw(ui);
+  ui.stopFit = fitBoard(el, ui.board.el, [ui.head, ui.top], [ui.bottom]);
   return el;
 }
 

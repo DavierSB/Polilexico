@@ -61,7 +61,7 @@ internal class ClassicDialogs {
 internal fun ClassicDialogsShown(view: ClassicView, c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs, style: BoardStyle) {
   val end = view.end
   if (dialogs.ending && end?.ending != null) EndingDialog(view, end.ending, dialogs::closeEnding)
-  if (dialogs.result && end != null) ResultDialog(view, end) { dialogs.result = false }
+  if (dialogs.result && end != null) ResultPopup(view, end, actions) { dialogs.result = false }
   if (dialogs.moves) MovesDialog(view) { dialogs.moves = false }
   if (dialogs.bag) UnseenDialog(view) { dialogs.bag = false }
   if (dialogs.pass) PassDialog(c, actions, dialogs)

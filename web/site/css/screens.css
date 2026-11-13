@@ -136,7 +136,6 @@
 .cover-card p { margin: 0; }
 .reconnecting { gap: 10px; align-items: center; }
 .game-message { margin: 0; font-weight: 700; text-align: center; }
-@media (max-width: 899px) { .game .chat-panel { display: none; } }
 .room-lobby { gap: 12px; }
 .room-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .room-tile { display: flex; align-items: center; gap: 10px; height: 60px; min-width: 0; padding: 0 10px; border-radius: 14px; background: var(--surface-variant); }
@@ -201,3 +200,12 @@
 .move-row > .chat-small { flex: 0 0 48px; padding: 0; font-size: 16px; }
 .room-status .spinner { flex: none; }
 .next-hand { min-height: 48px !important; font-weight: 700; }
+.review-board .board { margin-inline: auto; }
+.result-verdict { font-size: 52px; font-weight: 900; line-height: 1.1; text-align: center; }
+.result-verdict.small { font-size: 40px; }
+.result-verdict.win { color: #66BB6A; }
+.result-verdict.loss { color: #E5484D; }
+.result-verdict.neutral { color: var(--on-surface); }
+.result-line { text-align: center; font-size: 18px; }
+.result-score { font-size: 34px; font-weight: 700; }
+.result-buttons { gap: 8px; }

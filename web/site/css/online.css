@@ -69,18 +69,6 @@
 
 .account-form { max-width: 480px; }
 
-.chat-panel { display: flex; flex-direction: column; gap: 8px; }
-
-.chat-lines { display: flex; flex-direction: column; gap: 4px; max-height: 240px; overflow: auto; font-size: 15px; }
-
-.chat-line { overflow-wrap: anywhere; }
-
-.chat-line.mine b { color: var(--primary); }
-
-.chat-form { display: flex; gap: 4px; align-items: center; }
-
-.chat-input { min-height: 44px !important; }
-
 @media (min-width: 900px) {
   .lobby { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr); gap: 32px; }
   .lobby-top { max-height: 100%; }
@@ -250,7 +238,7 @@
 
 .about-author { gap: 2px; }
 
-.bar-chat { display: none; font-size: 18px; }
+.bar-chat { font-size: 18px; }
 
 .resume-icon { display: flex; justify-content: center; }
 

@@ -52,8 +52,6 @@
 
 .bar-chat { display: inline-grid; }
 
-.game-side > .chat-panel { display: none; }
-
 .letter-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 
 .letter-chip { display: inline-flex; align-items: center; justify-content: center; gap: 2px; min-width: 52px; height: 36px; padding: 0 8px; border-radius: 10px; background: var(--surface-variant); }
@@ -119,7 +117,7 @@ body { font-size: 15px; }
 
 .mode-tab { min-height: 44px; font-size: 15px; }
 
-.field input, .field select, .chat-input { min-height: 48px; font-size: 16px; }
+.field input, .field select { min-height: 48px; font-size: 16px; }
 
 .home-menu { gap: 12px; }
 
@@ -209,7 +207,7 @@ body { font-size: 16px; }
 
 .dialog .dialog-actions .text-btn { font-size: 14px; }
 
-.field input, .field select, .chat-input { min-height: 56px; font-size: 16px; }
+.field input, .field select { min-height: 56px; font-size: 16px; }
 
 .game-buttons .play-btn { min-height: 52px; font-size: 18px; font-weight: 700; }
 
