@@ -418,6 +418,32 @@ a.btn, a.text-btn { text-decoration: none; }
 
 .word-groups { display: flex; flex-direction: column; gap: 14px; align-self: center; max-width: 100%; }
 
+.word-groups:empty { display: none; }
+
+.word-groups .word-groups { align-self: stretch; }
+
+.word-main { display: flex; flex-direction: column; align-items: center; gap: 14px; align-self: stretch; }
+
+.meaning-panel { display: none; }
+
+@media (min-width: 900px) and (min-aspect-ratio: 1/1) {
+  .screen.word-screen { max-width: 1240px; }
+
+  .word-card-big { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) minmax(0, 1fr); grid-template-areas: "family main similar"; align-items: start; align-content: start; gap: 28px; }
+
+  .word-main { grid-area: main; }
+
+  .word-card-big > .word-groups { display: contents; }
+
+  .word-family { grid-area: family; align-self: start; justify-self: start; }
+
+  .word-similar { grid-area: similar; align-self: start; justify-self: end; }
+
+  .word-main:has(.meaning-panel) .meaning-line { display: none; }
+
+  .meaning-panel { display: flex; align-self: stretch; padding: 14px 16px; border-radius: 14px; background: var(--c2); }
+}
+
 .word-group { display: flex; flex-direction: column; gap: 6px; }
 
 .word-group .list-label { padding: 8px 10px 0; }

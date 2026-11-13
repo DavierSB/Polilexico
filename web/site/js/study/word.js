@@ -31,15 +31,22 @@ export function dictionaryScreen(app, [given]) {
 
 export function wordCard(unit, lexicon, onOpen) {
   const traits = unit.traits(unit.head).map((t) => t.label);
+  const openSimilar = (w) => {
+    const f = lexicon.familyOf(w);
+    if (f) onOpen(f.key);
+  };
   return h("div.word-card-big", {},
-    headWord(unit.head),
-    chips(kindText(unit), ...traits),
-    meaningLine(unit.head, lexicon),
-    h("div.word-groups", {}, details(unit, lexicon, onOpen), group("Similares", lexicon.similar(unit), lexicon, (w) => {
-      const f = lexicon.familyOf(w);
-      if (f) onOpen(f.key);
-    })),
+    h("div.word-main", {}, headWord(unit.head), chips(kindText(unit), ...traits), meaningLine(unit.head, lexicon), meaningPanel(unit.head, lexicon)),
+    h("div.word-groups", {},
+      h("div.word-groups.word-family", {}, details(unit, lexicon, onOpen)),
+      h("div.word-groups.word-similar", {}, group("Similares", lexicon.similar(unit), lexicon, openSimilar))),
   );
+}
+
+function meaningPanel(word, lexicon) {
+  const meanings = lexicon.meanings(word);
+  if (!meanings.length) return null;
+  return h("div.stack.meanings.meaning-panel", {}, meanings.map((m) => meaningBlock(m, word)));
 }
 
 function looseCard(word, lexicon) {
