@@ -3,7 +3,7 @@ import { call, exit, write, argv, JS, rackText, bestInput } from "./harness.mjs"
 
 const { readSave, parseSave } = await import(path.join(JS, "online", "mirror.js"));
 const { normalize } = await import(path.join(JS, "classic", "state.js"));
-const { tokens } = await import(path.join(JS, "tiles.js"));
+const { tokens, fullBag, BLANK } = await import(path.join(JS, "tiles.js"));
 
 const GAMES = Number(argv[2] ?? 6);
 const fails = [];
@@ -30,7 +30,15 @@ async function compare(m, first, label) {
   views++;
   for (const k of Object.keys(a)) if (a[k] !== b[k]) fails.push({ label, first, k, engine: a[k], js: b[k] });
   if (engine.clocks && Math.abs(engine.clocks.myMs - js.clocks.myMs) > 2000) fails.push({ label, first, k: "clocks" });
-  if (engine.myTurn && !engine.over && sorted(engine.unseen) !== sorted(js.unseen)) fails.push({ label, first, k: "unseen" });
+  if (sorted(js.unseen) !== sorted(unseenOf(js))) fails.push({ label, first, k: "unseen", js: sorted(js.unseen) });
+}
+
+function unseenOf(s) {
+  const left = fullBag();
+  const take = (t) => left.splice(left.indexOf(t), 1);
+  s.cells.forEach((t) => t && take(t.blank ? BLANK : t.letter));
+  s.rack.forEach(take);
+  return left;
 }
 
 async function nextInput(s) {

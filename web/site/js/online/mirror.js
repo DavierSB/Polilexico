@@ -11,7 +11,7 @@ export function parseSave(text) {
   return { match, game, history };
 }
 
-export function readSave(saved, guest, elapsedMs = 0) {
+export function readSave(saved, guest, elapsedMs = 0, watching = false) {
   const { match, game, history } = saved;
   const human = game.HumanIdx;
   const moves = game.Moves ?? [];
@@ -30,7 +30,7 @@ export function readSave(saved, guest, elapsedMs = 0) {
   return {
     Opponent: game.BotName, Host: game.Log?.human_name ?? "", Local: true,
     Board: boardText(cells), Rack: racks[human].join(" "), OpponentRack: racks[1 - human].join(" "),
-    Unseen: unseen(cells, racks.flat()).join(" "),
+    Unseen: unseen(cells, watching ? racks.flat() : known).join(" "),
     Status: {
       Over: over, HumanToMove: humanToMove, HumanScore: scores[0], BotScore: scores[1],
       BagCount: 100 - onBoard - counts[0] - counts[1], OpponentTiles: counts[1 - human], HumanTiles: counts[human],

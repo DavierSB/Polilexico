@@ -28,7 +28,7 @@ internal class ClassicReader(private val match: Match, private val seat: Seat = 
       bag = status.bagCount.toInt(), unseen = rackTiles(game.unseen()),
       moves = moves, clocks = clocks(false),
       paused = match.paused(), result = game.result()?.let(::result), botError = match.botError().ifEmpty { null },
-    ).let { if (seenByRival(game, status)) it.flipped() else it }
+    ).let { if (seenByRival(game, status)) it.flipped() else it }.let { it.copy(unseen = unseenBy(it.board, it.rack)) }
   }
 
   fun clocks(flipped: Boolean): ClassicClocks? = match.clocks()?.let(::clocks)?.let { if (flipped) it.flipped() else it }
