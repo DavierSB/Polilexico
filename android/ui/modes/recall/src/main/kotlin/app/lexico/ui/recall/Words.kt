@@ -38,7 +38,7 @@ object Words {
       .map { (tiles, score) -> toRecall(tiles, score, random, isWord) }
 
   private fun toRecall(tiles: List<String>, score: Int, random: Random, isWord: (String) -> Boolean): WordToRecall {
-    val fixed = FixedTiles.choose(tiles, random, isWord)
+    val fixed = FixedTiles.choose(tiles, random, isWord = isWord)
     val rack = tiles.filterIndexed { i, _ -> i !in fixed }
     return WordToRecall(tiles, score, fixed, scramble(rack, random))
   }

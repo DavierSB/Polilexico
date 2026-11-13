@@ -20,6 +20,22 @@ class FixedTilesTest {
     }
   }
 
+  @Test fun requiredTilesStayFixedEvenWhenTheRackFits() {
+    assertEquals(setOf(0, 5), FixedTiles.choose(tiles("CASAMOS"), Random(1), required = setOf(0, 5)))
+  }
+
+  @Test fun requiredTilesAreKeptAndOnlyTheRestIsAdded() {
+    repeat(20) { seed ->
+      val fixed = FixedTiles.choose(tiles("ELEFANTES"), Random(seed), required = setOf(7, 8))
+      assertEquals(setOf(7, 8), fixed)
+    }
+    repeat(20) { seed ->
+      val fixed = FixedTiles.choose(tiles("ELEFANTES"), Random(seed), required = setOf(1))
+      assertEquals(2, fixed.size)
+      assertTrue(1 in fixed)
+    }
+  }
+
   @Test fun fifteenTilesFixEveryOtherOne() {
     val fixed = FixedTiles.choose(tiles("ABCDEFGHIJKLMNO"), Random(1))
     assertEquals((0..14 step 2).toSet(), fixed)
@@ -30,7 +46,7 @@ class FixedTilesTest {
     val isWord = { w: String -> asked += w; w == "FA" }
     repeat(50) { seed ->
       val word = tiles("ELEFANTES")
-      val runs = FixedTiles.runs(FixedTiles.choose(word, Random(seed), isWord))
+      val runs = FixedTiles.runs(FixedTiles.choose(word, Random(seed), isWord = isWord))
       assertTrue(runs.all { it.size == 1 || it.joinToString("") { i -> word[i] } == "FA" })
     }
     assertTrue("FA" in asked)

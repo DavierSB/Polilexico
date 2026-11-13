@@ -24,6 +24,12 @@ data class Filter(
 
   fun matches(word: String): Boolean = word.length in minLength..maxLength && shapeMatches(word)
 
+  fun requiredFixed(size: Int): Set<Int> {
+    val fromEnd = { i: Int -> size - 1 - i }
+    val all = fixed.keys + fixedEnd.keys.map(fromEnd) + start.indices + end.indices.map(fromEnd)
+    return all.filter { it in 0 until size }.toSet().takeIf { it.size < size }.orEmpty()
+  }
+
   private fun shortest(family: Family): Int = family.words.minOf { it.length } - if (family.verbal && !family.isWord) 1 else 0
 
   private fun shapeMatches(word: String): Boolean = affixesMatch(word) && positionsMatch(word) && countsMatch(word) && lettersMatch(word)

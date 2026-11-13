@@ -21,7 +21,7 @@ object Hands {
     val tiles = WordKeys.tiles(form(lexicon.forms(unit), filter, random) ?: return null)
     val all = source.anagrams(tiles).distinct()
     if (tiles !in all) return null
-    val fixed = runCatching { FixedTiles.choose(tiles, random, source::isWord) }.getOrNull() ?: return null
+    val fixed = runCatching { FixedTiles.choose(tiles, random, filter.requiredFixed(tiles.size), source::isWord) }.getOrNull() ?: return null
     val answers = all.filter { answer -> fixed.all { answer[it] == tiles[it] } }
     return Hand(unit, tiles, fixed, Words.scramble(tiles.filterIndexed { i, _ -> i !in fixed }, random), answers)
   }

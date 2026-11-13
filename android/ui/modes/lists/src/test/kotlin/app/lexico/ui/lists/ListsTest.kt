@@ -150,4 +150,12 @@ class ListsTest {
     assertTrue(qAndSimple.matches("queso"))
     assertFalse(qAndSimple.matches("quemar"))
   }
+
+  @Test
+  fun filterPositionsBecomeRequiredFixedTiles() {
+    val filter = Filter(fixed = mapOf(1 to 'a'), fixedEnd = mapOf(1 to 'f'), start = "", end = "s")
+    assertEquals(setOf(1, 4, 5), filter.requiredFixed(6))
+    assertEquals(setOf(0, 1), Filter(start = "ca").requiredFixed(5))
+    assertEquals(emptySet<Int>(), Filter(start = "casa").requiredFixed(4))
+  }
 }

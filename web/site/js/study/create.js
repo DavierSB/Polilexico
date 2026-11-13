@@ -37,17 +37,17 @@ function update(ui, spec) {
 
 function filterCard(ui) {
   if (ui.spec.isEmpty) return null;
-  return h("div.stack", {}, label("Filtros"), FILTER_TYPES.filter((t) => t.line(ui.spec)).map((t) => h("div.row.filter-row", {},
+  return h("div.stack", {}, label("Filtros"), h("div.stack.filter-rows", {}, FILTER_TYPES.filter((t) => t.line(ui.spec)).map((t) => h("div.row.filter-row", {},
     h("button.grow.filter-edit", { onclick: () => editor(ui, t) }, dotted(t.line(ui.spec))),
     h("button.text-btn", { "aria-label": "Quitar filtro", onclick: () => update(ui, ui.spec.with(t.clear)) }, "✕"),
-  )));
+  ))));
 }
 
 function addDialog(ui) {
   const available = FILTER_TYPES.filter((t) => !t.line(ui.spec));
   openDialog((close) => [
     h("h2", {}, "Añadir filtro"),
-    available.length ? h("div.stack", {}, available.map((t) => h("button.filter-choice", { onclick: () => (close(), editor(ui, t)) }, h("b.grow", {}, t.title), h("span.muted.small", {}, t.info)))) : h("p", {}, "Ya están puestos todos los filtros. Toca uno para cambiarlo."),
+    available.length ? h("div.stack.filter-choices", {}, available.map((t) => h("button.filter-choice", { onclick: () => (close(), editor(ui, t)) }, h("b.grow", {}, t.title), h("span.muted.small", {}, t.info)))) : h("p", {}, "Ya están puestos todos los filtros. Toca uno para cambiarlo."),
     actions(h("button.text-btn", { onclick: close }, "Cancelar")),
   ]);
 }

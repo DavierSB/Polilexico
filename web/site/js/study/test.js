@@ -71,11 +71,20 @@ async function handOf(unit, ui) {
   const all = unique(tokens(await call("anagramTiles", dictionaryText(tiles))).map((w) => readWord(w).filter(Boolean).map((t) => t.letter)));
   if (!all.some((a) => a.join() === tiles.join())) return null;
   const count = Math.max(0, tiles.length - 7);
-  const options = await fixedOptions(tiles, count);
+  const options = await fixedOptions(tiles, count, requiredFixed(ui.filter, tiles.length));
   if (!options.length) return null;
   const fixed = options[Math.floor(Math.random() * options.length)];
   const answers = all.filter((a) => [...fixed].every((i) => a[i] === tiles[i]));
   return { unit, tiles, fixed, rack: scramble(tiles.filter((_, i) => !fixed.has(i))), answers };
+}
+
+function requiredFixed(filter, n) {
+  const out = new Set();
+  for (const [i] of filter.fixed ?? []) if (i < n) out.add(i);
+  for (const [i] of filter.fixedEnd ?? []) if (i < n) out.add(n - 1 - i);
+  for (let i = 0; i < Math.min(filter.start?.length ?? 0, n); i++) out.add(i);
+  for (let i = 0; i < Math.min(filter.end?.length ?? 0, n); i++) out.add(n - 1 - i);
+  return out.size < n ? out : new Set();
 }
 
 function pickForm(forms, filter) {

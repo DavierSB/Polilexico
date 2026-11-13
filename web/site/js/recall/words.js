@@ -44,9 +44,9 @@ async function chooseFixed(tiles) {
   return options.length ? options[Math.floor(Math.random() * options.length)] : new Set();
 }
 
-export async function fixedOptions(tiles, count) {
-  const candidates = subsets(tiles.length, count);
-  const runsOf = (fixed) => runs(fixed).filter((r) => r.length > 1).map((r) => dictionaryText(r.map((i) => tiles[i])));
+export async function fixedOptions(tiles, count, required = new Set()) {
+  const candidates = subsets(tiles.length, Math.max(count, required.size)).filter((s) => [...required].every((i) => s.has(i)));
+  const runsOf = (fixed) => runs(fixed).filter((r) => r.length > 1 && !r.some((i) => required.has(i))).map((r) => dictionaryText(r.map((i) => tiles[i])));
   const all = [...new Set(candidates.flatMap(runsOf))];
   const valid = new Map(all.map((w, i) => [w, false]));
   if (all.length) (await call("areWords", all)).forEach((ok, i) => valid.set(all[i], ok));
