@@ -258,8 +258,8 @@ internal fun OnlinePanelHost(session: OnlineSession, mode: Mode, online: Online,
   ProvidePhotos(online, lobby) {
     ProfileHost(online, ProfileContext(client, composer, nav::go)) {
       AwaitingReconnection(rememberOffline(client) && refused == null) { OnlinePanel(state, panelActions(client, lobby, nav, composer)) }
+      if (room == null) MessageDialogs(client, contacts(lobby, emptyList(), emptyList()), null, composer)
     }
-    if (room == null) MessageDialogs(client, contacts(lobby, emptyList(), emptyList()), null, composer)
   }
 }
 
@@ -375,8 +375,9 @@ private fun WithChat(client: OnlineClient, info: RoomInfo, content: @Composable 
   val list = listOfNotNull(ROOM_CONTACT.takeIf { info.duplicate && rivals.isNotEmpty() }) + contacts(lobby, rivals, watchers)
   val fallback = remember(info.id, list.isEmpty()) { list.filter { it.group == ContactGroup.RIVALS }.randomOrNull() }
   val entry = remember { ChatEntry { composer.write() } }
-  CompositionLocalProvider(LocalChat provides entry) { ProfileHost(rememberOnline(), ProfileContext(client, composer, {}, inGame = true), content) }
-  MessageDialogs(client, list, fallback, composer)
+  CompositionLocalProvider(LocalChat provides entry) {
+    ProfileHost(rememberOnline(), ProfileContext(client, composer, {}, inGame = true)) { content(); MessageDialogs(client, list, fallback, composer) }
+  }
 }
 
 private class PhotoActions(val change: () -> Unit, val remove: () -> Unit)

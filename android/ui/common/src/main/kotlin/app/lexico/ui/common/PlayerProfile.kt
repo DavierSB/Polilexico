@@ -33,6 +33,14 @@ fun Modifier.opensProfile(name: String, country: String): Modifier {
 }
 
 @Composable
+fun Modifier.opensSeatProfile(seatName: String): Modifier {
+  val found = SEAT_COUNTRY.matchEntire(seatName)
+  return opensProfile(found?.groupValues?.get(1) ?: seatName, found?.groupValues?.get(2).orEmpty())
+}
+
+private val SEAT_COUNTRY = Regex("^(.*) \\(([A-Z]{2})\\)$")
+
+@Composable
 fun PlayerProfileDialog(name: String, country: String, sections: List<StatsSection>?, error: String?, buttons: ProfileButtons, close: () -> Unit) {
   AlertDialog(
     onDismissRequest = close,

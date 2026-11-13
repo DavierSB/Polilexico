@@ -67,7 +67,7 @@ private fun RecordBubble(r: ChatRecord) {
     Modifier.fillMaxWidth().background(fill, RoundedCornerShape(14.dp)).padding(horizontal = 10.dp, vertical = 8.dp),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    if (r.room && r.mine) RoomAvatar(32.dp) else PersonAvatar(r.who, r.country, size = 32.dp)
+    if (r.room && r.mine) RoomAvatar(32.dp) else Box(Modifier.opensProfile(r.who, r.country)) { PersonAvatar(r.who, r.country, size = 32.dp) }
     Column(Modifier.weight(1f)) {
       RecordHeader(r)
       Text(r.text)

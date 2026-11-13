@@ -52,8 +52,10 @@ private fun SignedIn(online: Online, client: OnlineClient, presence: Int?, compa
   MessagesButton(inbox.size) { composer.write() }
   OnlineChip(presence, compact) { showingPeople = true }
   ProvidePhotos(online, lobby) {
-    ProfileHost(online, ProfileContext(client, composer, go)) { ChipPeople(client, lobby, composer, showingPeople, go) { showingPeople = false } }
-    MessageDialogs(client, contacts(lobby, emptyList(), emptyList()), null, composer)
+    ProfileHost(online, ProfileContext(client, composer, go)) {
+      ChipPeople(client, lobby, composer, showingPeople, go) { showingPeople = false }
+      MessageDialogs(client, contacts(lobby, emptyList(), emptyList()), null, composer)
+    }
   }
 }
 

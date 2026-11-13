@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import app.lexico.online.Lobby
 import app.lexico.online.Online
 import app.lexico.online.OnlineClient
 import app.lexico.online.RoomInfo
@@ -30,7 +31,7 @@ private fun Invites(online: Online, client: OnlineClient, nav: Navigator, refuse
   val invite = lobby.invites.firstOrNull() ?: return DuplicateOffer(online, client, nav, refuse, modifier)
   if (refuse && !invite.resume) return LaunchedEffect(invite.id) { client.decline(invite) }
   if (!canInterrupt(nav.current, room)) return
-  ProvidePhotos(online, lobby) { Invite(client, invite, nav, modifier) }
+  ProvidePhotos(online, lobby) { InviteProfiles(online, client, lobby, nav) { Invite(client, invite, nav, modifier) } }
 }
 
 @Composable
@@ -50,10 +51,21 @@ private fun DuplicateOffer(online: Online, client: OnlineClient, nav: Navigator,
   if (refuse || !canInterrupt(nav.current, room) || nav.current.isGame) return
   val join = { client.dismissOffer(); client.accept(seek); nav.go(Screen.OnlinePlay) }
   ProvidePhotos(online, lobby) {
-    InviteCard(
-      seekItem(seek), onAccept = join, onDecline = client::dismissOffer, modifier,
-      title = "${seek.host} ${flagOf(seek.country)} creó una duplicada", labels = "Ahora no" to "Unirse",
-    )
+    InviteProfiles(online, client, lobby, nav) {
+      InviteCard(
+        seekItem(seek), onAccept = join, onDecline = client::dismissOffer, modifier,
+        title = "${seek.host} ${flagOf(seek.country)} creó una duplicada", labels = "Ahora no" to "Unirse",
+      )
+    }
+  }
+}
+
+@Composable
+private fun InviteProfiles(online: Online, client: OnlineClient, lobby: Lobby, nav: Navigator, content: @Composable () -> Unit) {
+  val composer = remember { Composer() }
+  ProfileHost(online, ProfileContext(client, composer, nav::go, inGame = true)) {
+    content()
+    ComposerDialogs(client, contacts(lobby, emptyList(), emptyList()), null, composer)
   }
 }
 

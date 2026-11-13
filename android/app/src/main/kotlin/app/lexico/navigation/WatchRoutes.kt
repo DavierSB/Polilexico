@@ -56,8 +56,9 @@ private fun WatchChat(client: OnlineClient, info: RoomInfo, content: @Composable
   val fallback = list.find { it.group == ContactGroup.RIVALS && it.name == onTurn } ?: list.firstOrNull { it.group == ContactGroup.RIVALS }
   val latest by rememberUpdatedState(fallback)
   val entry = remember { ChatEntry { composer.write(latest) } }
-  CompositionLocalProvider(LocalChat provides entry, content = content)
-  MessageDialogs(client, list, fallback, composer)
+  CompositionLocalProvider(LocalChat provides entry) {
+    ProfileHost(rememberOnline(), ProfileContext(client, composer, {}, inGame = true)) { content(); MessageDialogs(client, list, fallback, composer) }
+  }
 }
 
 @Composable

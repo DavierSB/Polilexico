@@ -1,6 +1,7 @@
 package app.lexico.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,7 +36,7 @@ fun InviteCard(
 @Composable
 private fun InviteHeader(invite: SeekItem, title: String) {
   Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-    PersonAvatar(invite.host, invite.country, size = 44.dp)
+    Box(Modifier.opensProfile(invite.host, invite.country)) { PersonAvatar(invite.host, invite.country, size = 44.dp) }
     Column {
       Text(title, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
       Text(invite.detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

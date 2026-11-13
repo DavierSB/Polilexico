@@ -3,6 +3,7 @@ package app.lexico.ui.duplicate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.lexico.ui.common.SeatAvatar
+import app.lexico.ui.common.opensSeatProfile
 
 private const val UNKNOWN = "—"
 
@@ -53,7 +55,7 @@ private fun PlainRow(place: Int, e: SeatEntry, mine: Boolean) {
   val color = if (mine) MaterialTheme.colorScheme.primary else Color.Unspecified
   Row(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
     Cell("$place", Modifier.width(PLACE_W), color = color)
-    Cell(e.name, Modifier.weight(NAME_WEIGHT), bold = mine || e.name == MASTER_NAME, color = color)
+    Cell(e.name, Modifier.weight(NAME_WEIGHT).then(if (e.name == MASTER_NAME) Modifier else Modifier.opensSeatProfile(e.name)), bold = mine || e.name == MASTER_NAME, color = color)
     Cell(e.text, Modifier.weight(1f), color = color)
     Cell("${e.points}", Modifier.width(POINTS_W), end = true, color = color)
     Cell("${e.total}", Modifier.width(TOTAL_W), bold = true, end = true, color = color)
@@ -112,8 +114,8 @@ private fun EntryCard(place: String, name: String, detail: String, total: String
     horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically,
   ) {
     Text(place, fontWeight = FontWeight.Bold, modifier = Modifier.width(18.dp))
-    if (tone != CardTone.MASTER) SeatAvatar(name, 32.dp)
-    Column(Modifier.weight(1f)) {
+    if (tone != CardTone.MASTER) Box(Modifier.opensSeatProfile(name)) { SeatAvatar(name, 32.dp) }
+    Column(Modifier.weight(1f).then(if (tone == CardTone.MASTER) Modifier else Modifier.opensSeatProfile(name))) {
       Text(name, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
       Text(detail, style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }

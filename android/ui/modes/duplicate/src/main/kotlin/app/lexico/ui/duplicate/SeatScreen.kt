@@ -65,7 +65,7 @@ fun SeatScreen(
   var results by remember { mutableStateOf(false) }
   BoardColumn(
     top = { bar() },
-    board = { PlacingBoard(c, style, enabled = view.phase == SeatPhase.PLAYING && !view.watching, lookUpWhenIdle = view.phase == SeatPhase.FINISHED) },
+    board = { PlacingBoard(c, style, enabled = view.phase == SeatPhase.PLAYING && !view.watching, lookUpWhenIdle = view.phase == SeatPhase.FINISHED || view.watching) },
     bottom = { SeatBottom(view, c, style, actions, message, onExport, { results = true }) { message = it } },
     footer = {
       if (view.phase == SeatPhase.PLAYING && !view.watching) {

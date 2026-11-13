@@ -2,6 +2,7 @@ package app.lexico.ui.classic
 
 import app.lexico.ui.common.ClockAlarm
 import app.lexico.ui.common.ClockChip
+import app.lexico.ui.common.opensSeatProfile
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -60,7 +61,7 @@ private fun RowScope.Identity(
   Column(Modifier.weight(1f)) {
     Row(verticalAlignment = Alignment.CenterVertically) {
       photo?.let { it(); Spacer(Modifier.width(6.dp)) }
-      Text(name, nameFit(tilesBeside), fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+      Text(name, nameFit(tilesBeside).then(if (photo != null) Modifier.opensSeatProfile(name) else Modifier), fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
       if (thinking) Text("  pensando…", style = MaterialTheme.typography.labelSmall)
       if (tilesBeside) Row(Modifier.padding(start = 10.dp), Arrangement.spacedBy(2.dp)) { tiles() }
     }
