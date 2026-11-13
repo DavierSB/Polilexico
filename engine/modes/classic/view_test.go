@@ -171,3 +171,20 @@ func TestSpectatorSeesBothRacks(t *testing.T) {
 		}
 	}
 }
+
+func TestSpectatorAtTheEndGetsTheRecord(t *testing.T) {
+	m := viewMatch(t)
+	m.Forfeit(true)
+	view, err := m.SpectatorView()
+	if err != nil {
+		t.Fatal(err)
+	}
+	watched, err := LoadWatch(view, true, newTestListener())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(watched.Close)
+	if got, want := len(watched.game.log.Turns), len(m.game.log.Turns); got == 0 || got != want {
+		t.Fatalf("el registro trae %d turnos, quería %d", got, want)
+	}
+}

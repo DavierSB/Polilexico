@@ -45,11 +45,13 @@
 
 .player-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 
+.watchers-btn { display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; }
+
 .player-name { font-weight: 700; font-size: 19px; }
 
 .player-status { font-size: 13px; font-style: italic; }
 
-.mini-tiles { display: flex; gap: 4px; }
+.mini-tiles { display: flex; flex-wrap: wrap; gap: 4px; }
 
 .mini-tiles:empty { display: none; }
 
@@ -206,6 +208,8 @@ table.moves tr.mine td:nth-child(2) { color: var(--primary); }
   }
 
   .game-board { grid-row: 1 / -1; width: var(--board); }
+
+  .game.watching { --side: clamp(380px, calc(100vw - 100dvh - 64px), 560px); }
 
   .game-side { height: 100%; }
 
@@ -390,8 +394,8 @@ button.word-row { cursor: pointer; }
   .recall-screen[data-stage="watching"] :is(.watch-head, .recall-body > p, .recall-lives) { grid-column: 2; }
   .recall-screen:is([data-stage="round_done"], [data-stage="series_done"]) { max-width: 1000px; height: 100dvh; min-height: 0; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto auto 1fr; }
   .recall-screen:is([data-stage="round_done"], [data-stage="series_done"]) :is(.result-card, .result-buttons, .recall-lives) { grid-column: 1; }
-  .recall-screen:is([data-stage="round_done"], [data-stage="series_done"]) .result-section { grid-column: 2; grid-row: 2; }
-  .recall-screen:is([data-stage="round_done"], [data-stage="series_done"]) .answer-list { grid-column: 2; grid-row: 3 / -1; min-height: 0; overflow-y: auto; align-content: start; }
+  .recall-screen:is([data-stage="round_done"], [data-stage="series_done"]) .answer-panel { grid-column: 2; grid-row: 2 / -1; min-height: 0; }
+  .recall-screen:is([data-stage="round_done"], [data-stage="series_done"]) .answer-list { min-height: 0; overflow-y: auto; }
 }
 
 .watch-head { display: flex; flex-direction: column; gap: 6px; }
@@ -437,6 +441,8 @@ button.word-row { cursor: pointer; }
 .result-progress { width: 100%; margin-top: 6px; }
 
 .answer-list { gap: 4px; }
+
+.answer-panel { display: flex; flex-direction: column; gap: 8px; }
 
 .reply-error { color: #FF8A7A; }
 

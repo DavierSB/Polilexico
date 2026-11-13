@@ -25,7 +25,7 @@ export function chatButton(open) {
 
 export function watchersButton(watchers) {
   if (!watchers?.length) return null;
-  return h("button.text-btn", { onclick: () => watchersDialog(watchers) }, `👁 ${watchers.length}`);
+  return h("button.text-btn.watchers-btn", { "aria-label": "Observando", onclick: () => watchersDialog(watchers) }, icon("eye"), String(watchers.length));
 }
 
 function watchersDialog(watchers) {

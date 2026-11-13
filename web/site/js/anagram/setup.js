@@ -1,6 +1,6 @@
 import { h, replace } from "../dom.js";
 import { go } from "../router.js";
-import { screenHead, parseDuration, engineGate } from "../parts.js";
+import { screenHead, parseDuration, engineGate, setupColumns, recordCard } from "../parts.js";
 import { load, save } from "../store.js";
 import { toast } from "../dialogs.js";
 import { choiceRow, sectionTitle, stepper, rulesButton } from "../classic/options.js";
@@ -39,7 +39,7 @@ function fields(form, redraw, gates) {
   gates.push(engineGate(start));
   const config = configOf(form);
   const best = config ? load(recordKey(config), 0) : 0;
-  return [
+  return setupColumns([
     rulesButton("Reglas de Anagrama", ANAGRAM_RULES),
     sectionTitle("Dificultad", DIFFICULTY_INFO),
     choiceRow(LABELS, KEYS.indexOf(form.difficulty), (i) => ((form.difficulty = KEYS[i]), redraw())),
@@ -47,9 +47,7 @@ function fields(form, redraw, gates) {
     h("div.field", {}, h("label", { for: "anagram-total" }, "Tiempo de la serie"), h("input", { id: "anagram-total", value: form.total, inputmode: "numeric", oninput: (e) => (form.total = e.target.value) })),
     sectionTitle("Vidas", "Una palabra no válida o rendirse cuesta una vida. Sin vidas, se acaba la serie."),
     stepper(form.lives, 1, 5, (n) => ((form.lives = n), redraw())),
-    best ? h("div.card.record-card", {}, h("span.record-label", {}, "TU RÉCORD"), h("b", {}, `${best} ${best === 1 ? "mano" : "manos"}`)) : null,
-    start,
-  ];
+  ], [recordCard(best, "mano", "manos"), start]);
 }
 
 function begin(form) {

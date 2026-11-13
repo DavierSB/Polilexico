@@ -1,6 +1,6 @@
 import { h, replace } from "../dom.js";
 import { go } from "../router.js";
-import { screenHead, parseDuration, engineGate } from "../parts.js";
+import { screenHead, parseDuration, engineGate, setupColumns, recordCard } from "../parts.js";
 import { load, save } from "../store.js";
 import { toast } from "../dialogs.js";
 import { choiceRow, sectionTitle, stepper, rulesButton } from "../classic/options.js";
@@ -33,7 +33,7 @@ function fields(form, redraw, gates) {
   gates.push(engineGate(start));
   const setup = setupOf(form);
   const best = setup ? load(recordKey(setup), 0) : 0;
-  return [
+  return setupColumns([
     rulesButton("Reglas de Scrabble Sprint", SPRINT_RULES),
     sectionTitle("Dificultad", DIFFICULTY_INFO),
     choiceRow(DIFFICULTIES.map(([, l]) => l), DIFFICULTIES.findIndex(([d]) => d === form.difficulty), (i) => ((form.difficulty = DIFFICULTIES[i][0]), redraw())),
@@ -43,9 +43,7 @@ function fields(form, redraw, gates) {
     stepper(form.lives, 1, 5, (n) => ((form.lives = n), redraw())),
     sectionTitle("Comprobación de jugadas", CHALLENGE_INFO),
     choiceRow(["Void", "Single"], form.single ? 1 : 0, (i) => ((form.single = i === 1), redraw())),
-    best ? h("div.card.record-card", {}, h("span.record-label", {}, "TU RÉCORD"), h("b", {}, `${best} ${best === 1 ? "scrabble" : "scrabbles"}`)) : null,
-    start,
-  ];
+  ], [recordCard(best, "scrabble", "scrabbles"), start]);
 }
 
 async function begin(form, button) {

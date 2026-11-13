@@ -32,31 +32,36 @@ export function profileButton() {
   return h("button.icon-btn.profile-btn", { "aria-label": "Perfil en línea", onclick: () => go("perfil") }, photoAvatar(me.name, me.country, 32));
 }
 
-function challengeAction(person, close) {
-  const game = adjournedWith(online, person);
-  if (game) return h("button.text-btn", { disabled: !!game.busy, onclick: () => (close(), resumeWith(online, game)) }, "Retomar");
-  return h("button.text-btn", { onclick: () => (close(), challenge(person)) }, "Retar");
+function mainAction(person, close) {
+  const game = person.playing ? online.lobby.games.find((g) => g.players?.includes(person.name)) : null;
+  if (game) return h("button.btn.small", { onclick: () => (close(), online.watch(game.id)) }, "Ver");
+  if (person.playing) return h("button.text-btn", { onclick: close }, "Cerrar");
+  const adjourned = adjournedWith(online, person);
+  if (adjourned) return h("button.btn.small", { disabled: !!adjourned.busy, onclick: () => (close(), resumeWith(online, adjourned)) }, "Retomar");
+  return h("button.btn.small", { onclick: () => (close(), challenge(person)) }, "Retar");
 }
 
 export function profileDialog(person) {
-  const body = h("div.stack", {}, h("div.searching.short", {}, h("div.spinner")));
+  const body = h("div.stack.profile-stats", {}, h("div.spinner"));
+  const me = account();
+  const self = me && me.name === person.name && me.country === person.country;
   openDialog((close) => [
-    h("div.row.profile-head", {}, photoAvatar(person.name, person.country, 64), h("div.stack", {}, h("h2", {}, nameFlag(person.name, person.country)), h("span.muted", {}, countryName(person.country)))),
+    h("div.dialog-icon", {}, photoAvatar(person.name, person.country, 72)),
+    h("h2.center", {}, `${person.name}  ${flag(person.country)}`),
     body,
     actions(
-      h("button.text-btn", { onclick: () => (close(), writeMessage(person)) }, "Escribir"),
-      person.playing ? null : challengeAction(person, close),
-      h("button.text-btn", { onclick: close }, "Cerrar"),
+      self ? null : h("button.btn.small.outlined", { onclick: () => (close(), writeMessage(person)) }, "💬 Escribir"),
+      self ? h("button.text-btn", { onclick: close }, "Cerrar") : mainAction(person, close),
     ),
-  ], { wide: true });
-  stats(`/profile?name=${encodeURIComponent(person.name)}&country=${encodeURIComponent(person.country)}`, body);
+  ]);
+  stats(`/profile?name=${encodeURIComponent(person.name)}&country=${encodeURIComponent(person.country)}`, body, "Aún no tiene partidas en línea.");
 }
 
-async function stats(path, body) {
+async function stats(path, body, empty = "Aún no hay partidas en línea.") {
   try {
     const data = await request("GET", path, null, await token());
-    const rows = data.rows ?? [];
-    replace(body, rows.length ? rows.map(onlineBlock) : h("p.muted", {}, "Aún no hay partidas en línea."));
+    const rows = [...(data.rows ?? [])].sort((a, b) => (a.mode === "duplicate") - (b.mode === "duplicate"));
+    replace(body, rows.length ? rows.map(onlineBlock) : h("p", {}, empty));
   } catch (e) {
     replace(body, h("p.error", {}, e.message));
   }

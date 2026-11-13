@@ -181,7 +181,7 @@ class DuplicateView {
     if (s.phase !== "playing") return replace(this.buttons);
     replace(this.buttons, moveButtons(
       h("button.btn", { disabled: !this.canPlay() || !p.pending.size, onclick: () => this.play() }, "Jugar"),
-      p.pending.size ? h("button.btn.small.tonal", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.tonal", { onclick: () => p.shuffle() }, "Mezclar"),
+      p.pending.size ? h("button.btn.small.outlined", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.outlined", { onclick: () => p.shuffle() }, "Mezclar"),
     ));
   }
 

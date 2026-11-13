@@ -56,10 +56,10 @@ fun SeatScreen(
   val openStandings = { if (online && !view.watching) standings = true else chart = true }
   val bar: @Composable () -> Unit = {
     GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = { abandoning = true }.takeIf { canAbandon },
-      onStandings = openStandings.takeIf { view.watching || view.phase != SeatPhase.PLAYING }, watchers = view.watchers,
+      onStandings = openStandings.takeIf { !view.watching && view.phase != SeatPhase.PLAYING }, watchers = view.watchers,
       onAdjourn = onAdjourn.takeIf { view.phase != SeatPhase.FINISHED && !view.watching },
       onChat = LocalChat.current?.onOpen?.takeIf { view.watching },
-      onChart = { coloredChart = true }.takeIf { online && !view.watching },
+      onChart = if (view.watching) ({ chart = true }) else ({ coloredChart = true }).takeIf { online },
     )
   }
   var results by remember { mutableStateOf(false) }

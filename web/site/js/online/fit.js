@@ -1,73 +1,69 @@
 import { h, replace } from "../dom.js";
 import { openDialog, actions } from "../dialogs.js";
 
-const ROW = 70;
-const TITLE = 36;
-const EMPTY = 110;
-const MORE = 48;
-const GAP = 16;
+const FULL_ROW = 64;
+const COMPACT_ROW = 40;
+const GAME_ROW = 42;
+const TITLE = 28;
+const TOP_PAD = 8;
 
 export function fitArea() {
   const el = h("section.lobby-col.lobby-lower");
-  let specs = [];
-  const draw = () => replace(el, layout(specs, el.clientHeight));
+  let spec = null;
+  const draw = () => spec && replace(el, layout(spec, el.clientHeight - TOP_PAD));
   const observer = new ResizeObserver(draw);
   observer.observe(el);
   const show = (next) => {
-    specs = next.filter((s) => s.items.length || s.empty);
-    el.style.flexBasis = reserve(specs) + "px";
-    el.classList.toggle("hidden", !specs.length);
+    spec = next;
+    const games = next.games.items.length > 0;
+    const people = !!next.people?.items.length;
+    el.style.flexBasis = (games ? TITLE + GAME_ROW * 2 : 0) + (people ? TITLE + FULL_ROW : 0) + TOP_PAD + "px";
+    el.classList.toggle("hidden", !games && !people);
     draw();
   };
   return { el, show, stop: () => observer.disconnect() };
 }
 
-export function fullSection(spec) {
-  if (!spec.items.length && !spec.empty) return null;
-  return h("div.lobby-section", {}, h("h3.side-title", {}, spec.title), spec.items.length ? h("div.stack", {}, spec.items.map(spec.row)) : spec.empty());
+function layout(spec, height) {
+  const games = spec.games.items;
+  const people = spec.people?.items ?? [];
+  const gamesHeight = !people.length ? height : Math.min(TITLE + GAME_ROW * games.length, Math.max(height / 2, height - (TITLE + FULL_ROW * people.length)));
+  return [
+    games.length ? h("div.lower-games", { style: { height: gamesHeight + "px" } }, ongoing(spec.games, gamesHeight)) : null,
+    people.length ? h("div.lower-people", {}, h("h3.lower-title", {}, spec.people.title), fittedPeople(spec.people, height - (games.length ? gamesHeight : 0) - TITLE - TOP_PAD)) : null,
+  ];
 }
 
-function reserve(specs) {
-  return specs.reduce((sum, s) => sum + TITLE + Math.min(s.items.length, 1) * ROW + (s.items.length ? 0 : EMPTY), 0);
+function ongoing(spec, height) {
+  const fit = Math.max(1, Math.floor((height - TITLE) / GAME_ROW));
+  const shown = spec.items.length <= fit ? spec.items.length : Math.max(1, fit - 1);
+  return [
+    h("h3.lower-title", {}, spec.title),
+    h("div.lower-rows", {}, spec.items.slice(0, shown).map(spec.row)),
+    shown < spec.items.length ? moreButton(spec.items.length - shown, () => listDialog(spec.title, spec.items.map(spec.row))) : null,
+  ];
 }
 
-function layout(specs, height) {
-  const counts = allot(specs, height);
-  return specs.map((s, i) => fitted(s, counts[i]));
+function fittedPeople(spec, height) {
+  const people = spec.items;
+  if (FULL_ROW * people.length <= height) return h("div.stack.people-full", {}, people.map(spec.row));
+  if (COMPACT_ROW * Math.ceil(people.length / 2) <= height) return compactGrid(people, spec.compact);
+  const shown = Math.max(0, Math.floor((height - COMPACT_ROW) / COMPACT_ROW)) * 2;
+  return [compactGrid(people.slice(0, shown), spec.compact), moreButton(people.length - shown, () => listDialog(spec.title, people.map(spec.row)))];
 }
 
-function allot(specs, height) {
-  const counts = specs.map((s) => s.items.length);
-  const fixed = specs.reduce((sum, s) => sum + TITLE + (s.items.length ? 0 : EMPTY), 0) + GAP * (specs.length - 1);
-  let shown = counts;
-  for (let pass = 0, mores = 0; pass < 3; pass++) {
-    shown = split(counts, Math.floor((height - fixed - mores * MORE) / ROW));
-    mores = shown.filter((n, i) => n < counts[i]).length;
-  }
-  return shown;
+function compactGrid(people, compact) {
+  return h("div.compact-grid", {}, people.map(compact));
 }
 
-function split(counts, rows) {
-  if (counts.length < 2) return counts.map((n) => Math.min(n, Math.max(1, rows)));
-  const [a, b] = counts;
-  const first = Math.min(a, Math.max(Math.ceil(rows / 2), rows - b));
-  return [Math.max(Math.min(a, 1), first), Math.max(Math.min(b, 1), Math.min(b, rows - first))];
+function moreButton(hidden, onclick) {
+  return h("button.text-btn.more-btn", { onclick }, `${hidden} más`);
 }
 
-function fitted(spec, shown) {
-  if (!spec.items.length) return fullSection(spec);
-  const hidden = spec.items.length - shown;
-  return h("div.lobby-section", {},
-    h("h3.side-title", {}, spec.title),
-    h("div.stack", {}, spec.items.slice(0, shown).map(spec.row)),
-    hidden ? h("button.text-btn.more-btn", { onclick: () => listDialog(spec) }, `Mostrar ${hidden} más`) : null,
-  );
-}
-
-function listDialog(spec) {
+export function listDialog(title, rows) {
   openDialog((close) => {
-    const list = h("div.stack.dialog-list", {}, spec.items.map(spec.row));
+    const list = h("div.stack.dialog-list", {}, rows);
     list.addEventListener("click", (e) => e.target.closest("button") && close());
-    return [h("h2", {}, spec.title), list, actions(h("button.text-btn", { onclick: close }, "Cerrar"))];
+    return [h("h2", {}, title), list, actions(h("button.text-btn", { onclick: close }, "Cerrar"))];
   }, { wide: true });
 }

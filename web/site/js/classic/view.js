@@ -54,7 +54,7 @@ class GameView {
     this.pauseCover = h("div.pause-cover.hidden", {}, h("div.card.pause-card", {}, h("p", {}, "En pausa"), h("button.btn", { onclick: () => this.session.resume() }, "Seguir")));
     this.top = h("div.game-opponent", {}, this.cards.opponent.el);
     this.bottom = h("div.game-me", {}, this.cards.me.el);
-    return h("div.game", {},
+    return h("div", { class: "game" + (this.options.watching ? " watching" : "") },
       this.bar,
       this.top,
       h("div.game-board", {}, this.board.el, this.pauseCover),
@@ -209,9 +209,9 @@ class GameView {
       o.resign && !this.state.result ? h("button.text-btn", { onclick: () => this.resign() }, "Abandonar") : null,
       h("span.grow"),
       o.pausable && this.state.clocks && !this.state.result ? h("button.icon-btn", { "aria-label": "Pausa", onclick: () => this.togglePause() }, icon(this.state.paused ? "play" : "pause")) : null,
-      this.watchers?.length ? null : h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
+      h("button", { class: "icon-btn palette-btn" + (this.watchers?.length ? " crowded" : ""), "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
       watchersButton(this.watchers),
-      o.chat ? chatButton(o.chat) : null,
+      o.chat && o.watching ? chatButton(o.chat) : null,
       o.adjourn && !this.state.result ? h("button.icon-btn", { "aria-label": "Movidas", onclick: () => movesDialog(this.state, this.names()) }, icon("moves")) : h("button.text-btn.moves-btn", { onclick: () => movesDialog(this.state, this.names()) }, "Movidas"),
       h("button.bag-btn", { "aria-label": "Fichas por salir", onclick: () => bagDialog(this.state) }, bagIcon(this.state.bag)),
     );
@@ -230,9 +230,10 @@ class GameView {
     const enabled = this.canPlay();
     replace(this.buttons, moveButtons(
       h("button.btn", { disabled: !enabled || !p.pending.size, onclick: () => this.play() }, "Jugar"),
-      p.pending.size ? h("button.btn.small.tonal", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.tonal", { onclick: () => p.shuffle() }, "Mezclar"),
-      h("button.btn.small.outlined", { disabled: !enabled || !this.state.bag, onclick: () => p.startExchange(this.state.bag) }, "Cambiar"),
+      this.options.chat ? h("button.btn.small.outlined.chat-small", { "aria-label": "Mensaje", onclick: this.options.chat }, "💬") : null,
       h("button.btn.small.outlined", { disabled: !enabled, onclick: () => this.pass() }, "Pasar"),
+      p.pending.size ? h("button.btn.small.outlined", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.outlined", { onclick: () => p.shuffle() }, "Mezclar"),
+      h("button.btn.small.outlined", { disabled: !enabled || !this.state.bag, onclick: () => p.startExchange(this.state.bag) }, "Cambiar"),
     ));
   }
 

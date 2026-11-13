@@ -1,6 +1,6 @@
 import { h } from "../dom.js";
 import { openDialog, actions, toast } from "../dialogs.js";
-import { SIZE, bonusAt, blankFace, value, parseBoard } from "../tiles.js";
+import { SIZE, bonusAt, blankFace, value, parseBoard, emptyBoard } from "../tiles.js";
 import { parsePlacement, applyPlacement, spelled } from "../placement.js";
 import { call, whenReady } from "../engine.js";
 import { encodeGif } from "./gif.js";
@@ -32,6 +32,44 @@ export function exportDialog(picture, record) {
   ]);
 }
 
+export function exportTable(t) {
+  openDialog((close) => [
+    h("h2", {}, "Exportar partida"),
+    h("div.stack", {},
+      h("button.btn.block", { onclick: () => (close(), exporting(() => tableJpg(t))) }, "Imagen (.jpg)"),
+      h("button.btn.block", { onclick: () => (close(), exporting(() => tableGif(t))) }, "Animación (.gif)"),
+    ),
+    actions(h("button.text-btn", { onclick: close }, "Cancelar")),
+  ]);
+}
+
+function tableStills(t) {
+  let board = emptyBoard();
+  const rounds = t.rounds.map((r) => {
+    const top = r.entries.find((e) => e.name === "Máster");
+    if (top?.placement) board = applyPlacement(board, top.placement);
+    return { cells: board, score: "Duplicada", caption: top ? `Ronda ${r.number} · Máster: ${top.text} (${top.points})` : `Ronda ${r.number}`, podium: podiumOf(r.entries) };
+  });
+  const players = t.players.filter((p) => p !== "Máster").length;
+  return [...rounds, { cells: t.cells, score: "Duplicada", caption: `${t.rounds.length} rondas · ${players} jugadores`, podium: podiumOf(t.rounds.at(-1)?.entries ?? []) }];
+}
+
+function podiumOf(entries) {
+  const master = entries.find((e) => e.name === "Máster")?.total ?? 0;
+  const places = entries.filter((e) => e.name !== "Máster").sort((a, b) => b.total - a.total).slice(0, 3);
+  return { master, places: places.map((e) => ({ name: e.name, total: e.total, percent: master > 0 ? Math.trunc((e.total * 100) / master) : 0 })) };
+}
+
+async function tableJpg(t) {
+  const canvas = await stillCanvas(tableStills(t).at(-1));
+  const blob = await new Promise((r) => canvas.toBlob(r, "image/jpeg", JPG_QUALITY));
+  download(blob, `polilexico-${stamp(Date.now())}.jpg`);
+}
+
+async function tableGif(t) {
+  await gifOf(tableStills(t), `polilexico-${stamp(Date.now())}.gif`);
+}
+
 async function exporting(work) {
   const close = openDialog(() => [h("div.row.exporting", {}, h("div.spinner.small"), h("div.stack", {}, h("span", {}, "Exportando la partida…"), h("span.small.muted", {}, "Esto podría tardar un poco.")))], { dismissable: false });
   await new Promise((r) => setTimeout(r, 50));
@@ -52,14 +90,19 @@ async function recordJpg(record) {
 }
 
 async function recordGif(record) {
-  const stills = await stillsOf(record);
+  await gifOf(await stillsOf(record), `polilexico-${stamp(record.finishedAt)}.gif`);
+}
+
+async function gifOf(stills, name) {
   const frames = [];
+  let height = STILL_HEIGHT;
   for (const [i, still] of stills.entries()) {
     const canvas = await stillCanvas(still);
-    frames.push({ pixels: canvas.getContext("2d").getImageData(0, 0, STILL_WIDTH, STILL_HEIGHT).data, delayCs: i === stills.length - 1 ? LAST_DELAY_CS : DELAY_CS });
+    height = canvas.height;
+    frames.push({ pixels: canvas.getContext("2d").getImageData(0, 0, STILL_WIDTH, canvas.height).data, delayCs: i === stills.length - 1 ? LAST_DELAY_CS : DELAY_CS });
     if (i % 5 === 4) await new Promise((r) => setTimeout(r));
   }
-  download(encodeGif(STILL_WIDTH, STILL_HEIGHT, frames), `polilexico-${stamp(record.finishedAt)}.gif`);
+  download(encodeGif(STILL_WIDTH, height, frames), name);
 }
 
 async function stillsOf(record) {
@@ -83,6 +126,43 @@ async function stillsOf(record) {
   })];
 }
 
+const PODIUM_HEIGHT = 200;
+const MEDALS = ["#D4AF37", "#C0C0C0", "#CD7F32"];
+
+function podium(ctx, p, top, color) {
+  const margin = 24, row = 40, gap = 16, medal = 14, left = margin + medal * 2 + 12, right = STILL_WIDTH - margin;
+  const line = (name, value, y, px) => {
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = color("b-bonus-text");
+    ctx.font = "700 20px Mulish, sans-serif";
+    ctx.textAlign = "right";
+    ctx.fillText(value, right, y);
+    const valueWidth = ctx.measureText(value).width;
+    ctx.font = `700 ${px}px Mulish, sans-serif`;
+    ctx.textAlign = "left";
+    ctx.fillText(name, left, y, right - valueWidth - 16 - left);
+  };
+  p.places.forEach((place, i) => {
+    const y = top + 12 + row * i + row / 2;
+    ctx.fillStyle = MEDALS[i];
+    ctx.beginPath();
+    ctx.arc(margin + medal, y, medal, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#2B2B2B";
+    ctx.font = "700 16px Mulish, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(String(i + 1), margin + medal, y);
+    line(place.name, `${place.total} · ${place.percent} %`, y, 22);
+  });
+  const masterY = top + 12 + row * MEDALS.length + gap + row / 2;
+  ctx.globalAlpha = 0.35;
+  ctx.fillStyle = color("b-bonus-text");
+  ctx.fillRect(margin, masterY - row / 2 - gap / 2, STILL_WIDTH - margin * 2, 1.5);
+  ctx.globalAlpha = 1;
+  line("Máster", String(p.master), masterY, 20);
+}
+
 let logo = null;
 
 async function stillCanvas(still) {
@@ -93,11 +173,12 @@ async function stillCanvas(still) {
     img.src = "img/logo.svg";
   });
   const image = await logo;
-  const canvas = Object.assign(document.createElement("canvas"), { width: STILL_WIDTH, height: STILL_HEIGHT });
+  const canvas = Object.assign(document.createElement("canvas"), { width: STILL_WIDTH, height: STILL_HEIGHT + (still.podium ? PODIUM_HEIGHT : 0) });
   const ctx = canvas.getContext("2d");
   const color = palette();
   ctx.fillStyle = color("bg");
-  ctx.fillRect(0, 0, STILL_WIDTH, STILL_HEIGHT);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  if (still.podium) podium(ctx, still.podium, STILL_HEIGHT, color);
   if (image) ctx.drawImage(image, LOGO_MARGIN, (CAPTION - LOGO_HEIGHT) / 2, LOGO_HEIGHT * 1.16, LOGO_HEIGHT);
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";

@@ -198,5 +198,5 @@ function chartGame(g) {
 }
 
 export function onlineBlock(r) {
-  return h("div.stack", {}, h("h3.side-title", {}, r.mode === "duplicate" ? "Duplicada" : "Clásica"), statsTable(onlineRows(r)));
+  return h("div.stack.stats-card", {}, h("b", {}, r.mode === "duplicate" ? "Duplicada" : "Clásica"), onlineRows(r).map(([k, v]) => h("div.row", {}, h("span.grow", {}, k), h("b", {}, v))));
 }

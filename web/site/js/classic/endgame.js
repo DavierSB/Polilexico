@@ -1,6 +1,6 @@
 import { h, replace } from "../dom.js";
 import { go } from "../router.js";
-import { screenHead, parseDuration, engineGate } from "../parts.js";
+import { screenHead, parseDuration, engineGate, setupColumns } from "../parts.js";
 import { load, save } from "../store.js";
 import { openDialog, actions, toast } from "../dialogs.js";
 import { challengeSection, timeSection, rulesButton } from "./options.js";
@@ -36,7 +36,7 @@ export function endgameSetupScreen(app) {
 function fields(form, redraw, gates) {
   const start = h("button.btn.block.start", { onclick: () => begin(form, start) }, "Empezar");
   gates.push(engineGate(start));
-  return [
+  return setupColumns([
     rulesButton("Reglas de Finales", RULES),
     h("div.stack.app-settings", {},
       h("b.app-settings-title", {}, "Ajustes"),
@@ -47,8 +47,7 @@ function fields(form, redraw, gates) {
     ),
     challengeSection(form, redraw),
     timeSection(form, redraw),
-    start,
-  ];
+  ], [start]);
 }
 
 function settingRow(text, highlight, open) {
@@ -93,8 +92,15 @@ function rangeDialog(title, text, form, key, lo, hi, step, label, names, redraw)
   const draft = { min: form["min" + key], max: form["max" + key] };
   const lowText = h("b.range-label"), highText = h("b.range-label");
   const shown = h("div.row.range-labels", {}, lowText, highText);
-  const show = () => ((lowText.textContent = `${names[0]}: ${label(draft.min)}`), (highText.textContent = `${names[1]}: ${label(draft.max)}`));
-  const slider = (side) => h("input.range", {
+  const track = h("div.dual-range");
+  const at = (v) => `${((v - lo) / (hi - lo)) * 100}%`;
+  const show = () => {
+    lowText.textContent = `${names[0]}: ${label(draft.min)}`;
+    highText.textContent = `${names[1]}: ${label(draft.max)}`;
+    track.style.setProperty("--lo", at(draft.min));
+    track.style.setProperty("--hi", at(draft.max));
+  };
+  const slider = (side) => h("input", {
     type: "range", min: lo, max: hi, step, value: draft[side], "aria-label": side === "min" ? "Mínimo" : "Máximo",
     oninput: (e) => {
       draft[side] = Number(e.target.value);
@@ -103,10 +109,11 @@ function rangeDialog(title, text, form, key, lo, hi, step, label, names, redraw)
       show();
     },
   });
+  track.append(slider("min"), slider("max"));
   show();
   openDialog((close) => [
     h("h2", {}, title), h("p.muted", {}, text), shown,
-    h("div.dual-range", {}, slider("min"), slider("max")),
+    track,
     h("div.row.range-scale", {}, [lo, (lo + hi) / 2, hi].map((v) => h("span", {}, label(v)))),
     actions(h("button.text-btn", { onclick: close }, "Cancelar"), h("button.text-btn", { onclick: () => ((form["min" + key] = draft.min), (form["max" + key] = draft.max), close(), redraw()) }, "Aceptar")),
   ]);

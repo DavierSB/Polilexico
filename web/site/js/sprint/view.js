@@ -5,7 +5,7 @@ import { createBoard, tile } from "../board.js";
 import { confirm, themeDialog, toast } from "../dialogs.js";
 import { at, applyPlacement, parsePlacement, placedSquares } from "../placement.js";
 import { placementScore } from "../score.js";
-import { formatClock } from "../parts.js";
+import { formatClock, moveButtons } from "../parts.js";
 import { Placer } from "../classic/placer.js";
 import { createRack } from "../classic/rack.js";
 import { askBlank } from "../classic/moves.js";
@@ -147,16 +147,16 @@ class SprintView {
   renderButtons() {
     const p = this.placer;
     if (this.state.phase !== "solving") return replace(this.buttons);
-    replace(this.buttons,
-      h("button.btn.small", { disabled: !this.canPlay() || !p.pending.size, onclick: () => this.play() }, "Jugar"),
-      p.pending.size ? h("button.btn.small.tonal", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.tonal", { onclick: () => p.shuffle() }, "Mezclar"),
+    replace(this.buttons, moveButtons(
+      h("button.btn", { disabled: !this.canPlay() || !p.pending.size, onclick: () => this.play() }, "Jugar"),
       h("button.btn.small.outlined", { disabled: !this.canPlay(), onclick: () => this.giveUp() }, "Rendirse"),
-    );
+      p.pending.size ? h("button.btn.small.outlined", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.outlined", { onclick: () => p.shuffle() }, "Mezclar"),
+    ));
   }
 
   renderResults() {
     const s = this.state;
-    if (s.phase === "revealed") return replace(this.results, banner(s), h("button.btn.block", { onclick: () => this.session.next() }, "Siguiente mano"), this.bingoList(s.bingos.length === 1 ? "Había 1 scrabble" : `Había ${s.bingos.length} scrabbles`));
+    if (s.phase === "revealed") return replace(this.results, banner(s), h("button.btn.block.next-hand", { onclick: () => this.session.next() }, "Siguiente mano"), this.bingoList(s.bingos.length === 1 ? "Había 1 scrabble" : `Había ${s.bingos.length} scrabbles`));
     if (s.phase === "finished") return replace(this.results, this.finished(s));
     replace(this.results);
   }

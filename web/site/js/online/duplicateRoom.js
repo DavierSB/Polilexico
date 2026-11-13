@@ -23,6 +23,7 @@ import { adjournConfirm, adjournDialog, watchAway, rivalOf, watchingNotice } fro
 import { percentChartDialog } from "./percentChart.js";
 import { writeMessage, ROOM_CONTACT } from "./messages.js";
 import { confetti } from "../confetti.js";
+import { exportTable } from "../games/export.js";
 import { play } from "../sound.js";
 
 const LOW_ROUND_MS = 10000;
@@ -72,7 +73,7 @@ class RoomView {
   celebrate(t) {
     const won = standings(t).find((e) => e.name !== MASTER)?.name === t.me;
     play(won ? "victory" : "game_over");
-    if (won && !this.watching) confetti();
+    if (won || (this.watching && standings(t).filter((e) => e.name !== MASTER).filter((e, i, all) => e.total === all[0].total).length === 1)) confetti();
   }
 
   update(c) {
@@ -151,8 +152,8 @@ class RoomView {
       watchers.length ? null : h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
       watchersButton(watchers),
       this.watching ? chatButton(() => writeMessage()) : null,
-      this.watching ? null : h("button.icon-btn", { "aria-label": "Evolución", onclick: () => percentChartDialog(t, t.me, true) }, icon("chart")),
-      t.phase !== "playing" || this.watching ? h("button.text-btn", { onclick: () => this.openStandings() }, "Posiciones") : null,
+      h("button.icon-btn", { "aria-label": "Evolución", onclick: () => percentChartDialog(t, t.me, true) }, icon("chart")),
+      t.phase !== "playing" && !this.watching ? h("button.text-btn", { onclick: () => this.standingsDialog() }, "Posiciones") : null,
       adjourn ? h("button.icon-btn", { "aria-label": "Movidas", onclick: moves }, icon("moves")) : h("button.text-btn.moves-btn", { onclick: moves }, "Movidas"),
       h("button.bag-btn", { "aria-label": "Quedan en la bolsa", onclick: () => duplicateBagDialog(t.unseen) }, bagIcon(t.unseen.length)),
     );
@@ -169,12 +170,13 @@ class RoomView {
   renderPanel() {
     const t = this.t;
     if (t.phase === "playing") {
-      const proposal = !this.watching ? h("div.proposal-card", {}, t.proposal ? [h("span.muted.small", {}, "Tu jugada"), h("div.row", {}, h("b.grow", {}, t.proposal.text), h("b", {}, t.proposal.points))] : h("span.muted", {}, "Aún no has jugado")) : null;
+      const proposal = !this.watching ? proposalCard(t.proposal) : null;
       return replace(this.panel, h("div.round-bar", {}, h("span.grow", {}, `Ronda ${t.round}`), h("span.round-clock", {}, formatClock(leftMs(t) ?? 0))), proposal);
     }
-    if (t.phase === "finished") return replace(this.panel, h("p.section-title", {}, "Partida terminada"), h("button.btn.block", { onclick: () => this.exit() }, "Salir"));
+    if (t.phase === "finished") return replace(this.panel, h("b.phase-title", {}, "Partida terminada"), this.watching ? leaderboard(t) : standingsTable(t),
+      h("button.btn.outlined.block", { onclick: () => this.exportTable() }, "Exportar"), h("button.btn.block", { onclick: () => this.exit() }, "Salir"));
     replace(this.panel,
-      h("b", {}, `Resultados de la ronda ${t.round}`),
+      h("b.phase-title", {}, `Resultados de la ronda ${t.round}`),
       h("button.btn.outlined.block", { onclick: () => this.resultsDialog() }, "Ver resultados"),
       this.watching ? null : t.iAmReady ? h("span.muted", {}, `Esperando la nueva ronda: ${t.ready} de ${t.waiting} listos`) : h("button.btn.block", { onclick: () => online.ready() }, "Comenzar nueva ronda"),
     );
@@ -185,13 +187,18 @@ class RoomView {
     const p = this.placer;
     replace(this.buttons, moveButtons(
       h("button.btn", { disabled: !p.pending.size, onclick: () => this.play() }, "Jugar"),
-      p.pending.size ? h("button.btn.small.tonal", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.tonal", { onclick: () => p.shuffle() }, "Mezclar"),
+      h("button.btn.small.outlined.chat-small", { "aria-label": "Mensaje", onclick: () => writeMessage() }, "💬"),
+      p.pending.size ? h("button.btn.small.outlined", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.outlined", { onclick: () => p.shuffle() }, "Mezclar"),
+      h("button.btn.small.outlined", { onclick: () => this.standingsDialog() }, "Posiciones"),
     ));
   }
 
   renderSide() {
-    const showTable = this.t.phase !== "playing" || this.t.live;
-    replace(this.side, showTable && this.t.rounds.length ? [h("h3.side-title", {}, "Posiciones"), leaderboard(this.t)] : null);
+    replace(this.side, this.watching && this.t.phase === "playing" && this.t.live ? leaderboard(this.t) : null);
+  }
+
+  exportTable() {
+    exportTable(this.t);
   }
 
   drawChat(c) {
@@ -209,11 +216,6 @@ class RoomView {
 
   exchange() {}
 
-  openStandings() {
-    if (this.watching) return percentChartDialog(this.t, this.t.me, true);
-    this.standingsDialog();
-  }
-
   async abandon() {
     if (await confirm("¿Seguro que quieres abandonar la partida?", "Abandonar", "Seguir")) (online.leave(), go(lobbyRoute()));
   }
@@ -230,13 +232,13 @@ class RoomView {
     const canStart = !this.watching && !t.iAmReady && t.phase === "results";
     openDialog((close) => [
       h("h2", {}, `Resultados de la ronda ${t.round}`),
-      leaderboard(t),
-      actions(h("button.text-btn", { onclick: close }, "Cerrar"), canStart ? h("button.text-btn", { onclick: () => (close(), online.ready()) }, "Comenzar nueva ronda") : null),
+      this.watching ? leaderboard(t, null, true) : standingsTable(t),
+      actions(canStart ? h("button.text-btn", { onclick: close }, "Cerrar") : null, canStart ? h("button.btn.small", { onclick: () => (close(), online.ready()) }, "Comenzar nueva ronda") : h("button.text-btn", { onclick: close }, "Cerrar")),
     ], { wide: true });
   }
 
   standingsDialog() {
-    openDialog((close) => [h("h2", {}, "Posiciones"), leaderboard(this.t), actions(h("button.text-btn", { onclick: close }, "Cerrar"))], { wide: true });
+    openDialog((close) => [h("h2", {}, "Posiciones"), leaderboard(this.t, this.t.me, true), actions(h("button.text-btn", { onclick: close }, "Cerrar"))], { wide: true });
   }
 
   verdictDialog() {
@@ -246,11 +248,15 @@ class RoomView {
     if (!top) return;
     const winners = players.filter((e) => e.total === top.total);
     const title = winners.length !== 1 ? "Empate" : !this.watching && winners[0].name === t.me ? "¡Ganaste!" : `${winners[0].name} ganó`;
-    openDialog((close) => [
-      h("h2.verdict", {}, title),
-      leaderboard(t),
-      actions(h("button.text-btn", { onclick: close }, "Ver tablero"), h("button.text-btn", { onclick: () => (close(), online.leave(), go(lobbyRoute())) }, "Volver al lobby")),
-    ], { wide: true });
+    const tone = winners.length === 1 && (this.watching || winners[0].name === t.me) ? "win" : "neutral";
+    const layer = h("div.verdict-layer", { onclick: (e) => e.target === layer && layer.remove() },
+      h("div.verdict-content.final-standings", {},
+        h("div", { class: `verdict-title small ${tone}` }, title),
+        h("div.final-table", {}, leaderboard(t, this.watching ? null : t.me, true)),
+        h("button.btn.block", { onclick: () => (layer.remove(), online.leave(), go(lobbyRoute())) }, "Volver al lobby"),
+      ),
+    );
+    document.getElementById("layer").append(layer);
   }
 
   dragPending(e) {
@@ -280,20 +286,43 @@ function bestOf(r) {
   return r.entries.filter((e) => e.name !== MASTER).reduce((best, e) => (!best || e.points > best.points ? e : best), null);
 }
 
-function leaderboard(t) {
+function leaderboard(t, me = null, scroll = false) {
   const sorted = standings(t);
   const master = sorted.find((e) => e.name === MASTER)?.total ?? 0;
   const known = sorted.filter((e) => e.name !== MASTER);
   const rows = known.length ? known : t.players.map((name) => ({ name, text: "", points: -1, total: -1 }));
-  return h("div.stack.leaderboard", {}, rows.map((e, i) => {
+  return h("div", { class: "stack leaderboard" + (scroll ? " scrolls" : "") }, rows.map((e, i) => {
     const place = placeOf(rows, i);
-    const tone = e.name === t.me ? " mine" : place === 1 && e.total > 0 ? " leader" : "";
+    const tone = e.name === me ? " mine" : place === 1 && e.total > 0 ? " leader" : "";
     return h("div", { class: "leader-card" + tone },
-      h("b.leader-place", {}, place), photoAvatar(e.name, "", 32),
-      h("div.grow", {}, h("b.ellipsis", {}, e.name), h("div.muted.small.ellipsis", {}, `Ronda ${e.points < 0 ? "—" : "+" + e.points}${e.text ? " · " + e.text : ""}`)),
+      h("b.leader-place", {}, place), seatAvatar(e.name),
+      h("div.grow", {}, h("b.ellipsis", {}, e.name), h("div.muted.small.ellipsis", {}, `Ronda ${e.points < 0 ? "—" : "+" + e.points}`)),
       h("div.leader-total", {}, h("b", {}, e.total < 0 ? "—" : e.total), h("span.muted.small", {}, e.total < 0 || master <= 0 ? "—" : `${((e.total * 100) / master).toLocaleString("es", { maximumFractionDigits: 1, minimumFractionDigits: 1 })} %`)),
     );
-  }), master ? h("div.leader-card.master", {}, h("b.leader-place", {}, "·"), h("div.grow", {}, h("b", {}, MASTER)), h("div.leader-total", {}, h("b", {}, master))) : null);
+  }));
+}
+
+function seatAvatar(name) {
+  const country = online.lobby.people.find((p) => p.name === name)?.country ?? "";
+  return photoAvatar(name, country, 32);
+}
+
+function proposalCard(p) {
+  if (!p) return h("div.app-proposal", {}, h("span.muted", {}, "Aún no has jugado"));
+  const space = p.text.indexOf(" ");
+  const coords = space > 0 ? p.text.slice(0, space) : "";
+  return h("div.app-proposal", {},
+    h("div.grow.stack", {}, h("span.small.muted", {}, "Tu jugada"), h("div.row.proposal-play", {}, coords ? h("span.muted", {}, coords) : null, h("b", {}, p.text.slice(space + 1)))),
+    h("b.points-pill", {}, `${p.points} pts`));
+}
+
+function standingsTable(t) {
+  const sorted = standings(t);
+  return h("div.standings-table", {},
+    h("div.standings-row.head", {}, h("span", {}, "#"), h("span", {}, "Jugador"), h("span", {}, "Jugada"), h("span.num", {}, "Pts"), h("span.num", {}, "Total")),
+    sorted.map((e, i) => h("div", { class: "standings-row" + (e.name === t.me ? " mine" : "") },
+      h("span", {}, placeOf(sorted, i)), h("span", { class: e.name === t.me || e.name === MASTER ? "bold" : "" }, e.name), h("span", {}, e.text), h("span.num", {}, e.points), h("b.num", {}, e.total))),
+  );
 }
 
 function closedDialog(reason) {

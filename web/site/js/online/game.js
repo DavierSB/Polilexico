@@ -80,7 +80,6 @@ function mount(screen, c) {
   const sides = seats(c);
   screen.stopInvalids = c.room.watching ? announceInvalids(c.session, sides) : null;
   screen.chat = h("div.chat-lines.room-chat");
-  screen.watchers = h("p.muted.small");
   const chat = chatPanel(screen);
   screen.memory = c.room.watching ? null : `online.${c.room.id}.${c.room.players.join(".")}`;
   screen.view = gameView(c.session, {
@@ -134,7 +133,7 @@ function exit(c) {
 
 function chatPanel(screen) {
   return h("div.chat-panel", {},
-    h("div.row", {}, h("h3.side-title.grow", {}, "Chat"), screen.watchers),
+    h("h3.side-title", {}, "Chat"),
     screen.chat,
     chatInput((text) => online.sayInRoom(text)),
   );
@@ -144,7 +143,6 @@ function drawChat(screen, c) {
   const lines = c.chat.filter((l) => !l.private);
   replace(screen.chat, lines.length ? lines.map((l) => chatLine(l.mine ? "Tú" : l.from, l.text, l.mine)) : h("p.muted.small", {}, "Sin mensajes."));
   screen.chat.scrollTop = screen.chat.scrollHeight;
-  screen.watchers.textContent = c.watchers.length ? `${c.watchers.length} mirando` : "";
 }
 
 function closedDialog(reason) {

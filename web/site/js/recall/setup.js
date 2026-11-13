@@ -1,6 +1,6 @@
 import { h, replace } from "../dom.js";
 import { go } from "../router.js";
-import { screenHead, engineGate } from "../parts.js";
+import { screenHead, engineGate, setupColumns, recordCard } from "../parts.js";
 import { load, save } from "../store.js";
 import { choiceRow, sectionTitle, stepper, rulesButton } from "../classic/options.js";
 import { RecallSession, recordKey } from "./session.js";
@@ -31,7 +31,7 @@ function fields(form, redraw, gates) {
   gates.push(engineGate(start));
   const best = load(recordKey(form), 0);
   const shown = h("b", {}, seconds(form.intervalMs));
-  return [
+  return setupColumns([
     rulesButton("Reglas de ¿Cuántas recuerdas?", RECALL_RULES),
     h("div.row", {}, h("div.grow", {}, sectionTitle("Tiempo entre jugadas", "Menos tiempo, más difícil recordar.")), shown),
     intervalSlider(form, shown, redraw),
@@ -39,9 +39,7 @@ function fields(form, redraw, gates) {
     stepper(form.lives, 1, 5, (n) => ((form.lives = n), redraw())),
     sectionTitle("Comprobación de jugadas", CHALLENGE_INFO),
     choiceRow(["Void", "Single"], form.single ? 1 : 0, (i) => ((form.single = i === 1), redraw())),
-    best ? h("div.card.record-card", {}, h("span.record-label", {}, "TU RÉCORD"), h("b", {}, `${best} ${best === 1 ? "palabra" : "palabras"}`)) : null,
-    start,
-  ];
+  ], [recordCard(best, "palabra", "palabras"), start]);
 }
 
 function intervalSlider(form, shown, redraw) {

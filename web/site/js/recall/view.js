@@ -212,13 +212,13 @@ function seriesDone(ui) {
 }
 
 function answerList(answers, unanswered) {
-  return [
+  return h("div.answer-panel", {},
     resultSection("Las palabras de la partida"),
     h("div.stack.answer-list", {},
       [...answers].sort((a, b) => b.word.score - a.word.score).map((x) => wordRow(x.word.text, { score: x.word.score, mark: x.hit ? "hit" : "miss" })),
       [...unanswered].sort((a, b) => b.score - a.score).map((w) => wordRow(w.text, { score: w.score, mark: "none" })),
     ),
-  ];
+  );
 }
 
 function wait(ms) {

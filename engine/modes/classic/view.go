@@ -55,6 +55,9 @@ func (c *Game) viewFor(first bool) (string, error) {
 func (c *Game) openView() (string, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	if c.over() {
+		return c.fullSave()
+	}
 	history, err := core.HistoryJSON(c.g)
 	if err != nil {
 		return "", err

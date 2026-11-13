@@ -67,7 +67,7 @@ function draw(c, ui) {
   );
   replace(ui.top, modeOffers(c, dup));
   verdictNotice(c);
-  ui.lower.show(dup ? [games(c, dup)] : [games(c, dup), challengeable(c)]);
+  ui.lower.show({ games: games(c, dup), people: dup ? null : challengeable(c) });
   replace(ui.publish, dup
     ? h("button.btn.block.lobby-seek", { onclick: () => go("crear-duplicada") }, "Crear duplicada")
     : h("div.row.lobby-buttons", {},
@@ -198,24 +198,34 @@ function games(c, dup) {
 }
 
 function classicGame(c, g) {
-  return h("div.player-row.game-row", {},
-    h("div.grow", {}, h("div.row", {}, nameFlag(g.players[0], g.countries?.[0]), h("b", {}, g.scores?.length === 2 ? `${g.scores[0]} – ${g.scores[1]}` : "–"), nameFlag(g.players[1], g.countries?.[1])),
-      h("div.muted.small", {}, `${g.bag} en la bolsa${g.watchers ? ` · ${g.watchers} mirando` : ""}`)),
-    h("button.btn.small.outlined", { onclick: () => c.watch(g.id) }, "Ver"),
+  if (g.players?.length !== 2) return h("button.compact-game", { onclick: () => c.watch(g.id) }, h("span.grow.ellipsis", {}, (g.players ?? []).join("  vs  ")));
+  const side = (i, end) => h("span", { class: "game-side-cell" + (end ? " end" : "") }, nameFlag(g.players[i], g.countries?.[i]));
+  return h("button.compact-game", { onclick: () => c.watch(g.id) },
+    side(0, false),
+    h("b.game-score-cell", {}, g.scores?.length === 2 ? `${g.scores[0]} – ${g.scores[1]}` : "vs"),
+    side(1, true),
   );
 }
 
 function duplicateGame(c, g) {
-  const detail = !g.round ? `Duplicada · ${g.players.length} jugadores` : g.efficiency ? `Ronda ${g.round} · líder ${g.efficiency} %` : `Ronda ${g.round}`;
-  return h("div.player-row.game-row", {},
-    h("div.grow", {}, h("b.ellipsis", {}, g.players.join(", ")), h("div.muted.small", {}, detail + (g.watchers ? ` · ${g.watchers} mirando` : ""))),
-    h("button.btn.small.outlined", { onclick: () => c.watch(g.id) }, "Ver"),
+  const round = g.leader ? g.round : 0;
+  const i = g.players.indexOf(g.leader);
+  const summary = !round ? [h("b", {}, "Ronda 1"), `  ·  ${g.players.length} jugadores`]
+    : g.tied > 1 ? [h("b", {}, `Ronda ${round}`), "  ·  ", h("b.accent", {}, `${g.tied} empatados`)]
+    : [h("b", {}, `Ronda ${round}`), "  ·  gana ", h("b.accent.ellipsis.leader-name", {}, g.leader), ` ${flag(g.countries?.[i] ?? "")}`];
+  return h("button.compact-game", { onclick: () => c.watch(g.id) },
+    h("span.grow.dup-summary", {}, summary),
+    h("b.dup-efficiency", {}, round ? `${g.efficiency} %` : "–"),
   );
+}
+
+function compactPerson(p) {
+  return h("button.compact-person", { onclick: () => profileDialog(p) }, nameFlag(p.name, p.country));
 }
 
 function challengeable(c) {
   const items = others(c).filter((p) => !p.playing);
-  return { title: "Retar a", items, row: (p) => personRow(c, p), empty: null };
+  return { title: "Retar a", items, row: (p) => personRow(c, p), compact: compactPerson };
 }
 
 function peopleList(c, people, close) {

@@ -27,7 +27,7 @@ export function leftMs(t) {
 }
 
 function entry(p, cells) {
-  return { name: p.Name, text: playText(p.Kind, p.Coords, p.Tiles, cells), points: p.Points, total: p.Total };
+  return { name: p.Name, text: playText(p.Kind, p.Coords, p.Tiles, cells), points: p.Points, total: p.Total, placement: p.Kind === "play" ? parsePlacement(`${p.Coords} ${p.Tiles}`) : null };
 }
 
 function proposal(a, cells) {

@@ -18,6 +18,15 @@ export function moveButtons(play, ...small) {
   return h("div.move-buttons", {}, h("div.move-row", {}, small), play);
 }
 
+export function recordCard(best, one, many) {
+  if (!best) return null;
+  return h("div.card.record-card", {}, h("span.record-label", {}, "TU RÉCORD"), h("b", {}, `${best} ${best === 1 ? one : many}`));
+}
+
+export function setupColumns(options, side) {
+  return [h("div.stack.setup-main", {}, options), h("div.stack.setup-side", {}, side)];
+}
+
 export function brand() {
   return h("a.brand", { href: "#/" },
     h("img", { src: "img/logo.svg", alt: "", width: 48, height: 41 }),
