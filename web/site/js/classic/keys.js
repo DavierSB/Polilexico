@@ -17,8 +17,8 @@ function typing(target) {
 
 function handle(view, e) {
   const p = view.placer;
-  if (!view.canPlay()) return false;
-  if (e.key === "Enter") return p.exchanging ? view.exchange() || true : view.play() || true;
+  if (!view.canArrange()) return false;
+  if (e.key === "Enter") return view.canPlay() && (p.exchanging ? view.exchange() || true : view.play() || true);
   if (e.key === "Escape") return escape(p);
   if (e.key === "Backspace") return p.backspace();
   if (e.key === " ") return turnArrow(p);

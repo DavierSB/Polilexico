@@ -23,7 +23,7 @@ import app.lexico.ui.common.rememberNotice
 @Composable
 fun ClassicScreen(view: ClassicView, style: BoardStyle, actions: ClassicActions, onTheme: (() -> Unit)? = null, onAdjourn: (() -> Unit)? = null) {
   val c = rememberTilePlacer()
-  LaunchedEffect(view.board, view.rack) { c.reset(view.board, view.rack) }
+  LaunchedEffect(view.board, view.rack, view.moves.size) { c.reset(view.board, view.rack) }
   val dialogs = rememberClassicDialogs(view)
   var message by rememberNotice(view.notice)
   Pausable(view.paused, actions::resume.takeIf { view.status == null }, view.status) {
@@ -68,7 +68,7 @@ private fun OpponentBar(view: ClassicView, style: BoardStyle) {
 private fun BoardWithBanner(view: ClassicView, c: TilePlacer, style: BoardStyle) {
   Box(contentAlignment = Alignment.Center) {
     PlacingBoard(
-      c, style, enabled = view.canPlace, latestScore = view.latestScore, showScore = true, lookUpWhenIdle = true,
+      c, style, enabled = view.canArrange, latestScore = view.latestScore, showScore = true, lookUpWhenIdle = true,
       landing = view.moves.lastOrNull()?.side == Side.OPPONENT,
     )
     OpponentBanner(view.moves, view.opponent)
@@ -81,7 +81,7 @@ private fun MyBar(view: ClassicView, c: TilePlacer, style: BoardStyle) {
     name = view.me, points = view.myScore, clock = view.myClock, onTurn = view.turn == Side.ME,
     photo = if (view.watching) ({ OpponentPhoto(view.me, 24.dp) }) else null,
   )
-  PlacingRack(c, style, enabled = view.canPlace)
+  PlacingRack(c, style, enabled = view.canArrange)
 }
 
 @Composable

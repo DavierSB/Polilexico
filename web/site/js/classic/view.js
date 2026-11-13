@@ -86,6 +86,7 @@ class GameView {
     this.lastPaused = state.paused;
     const kept = first ? this.keptPlacement() : null;
     this.placer.sync(state.cells, state.rack);
+    if (moved && !first) this.placer.clear();
     if (kept) this.placer.restore(kept);
     this.renderAll();
     if (moved && this.freshMove(first)) this.announceMove(first);
@@ -163,7 +164,7 @@ class GameView {
   renderAll() {
     this.renderBar();
     this.renderBoard();
-    this.rack.render(this.canPlay());
+    this.rack.render(this.canArrange());
     this.renderButtons();
     this.renderNotice();
     this.pauseCover.classList.toggle("hidden", !this.state.paused);
@@ -173,13 +174,17 @@ class GameView {
     if (!this.state) return;
     this.keepPlacement();
     this.renderBoard();
-    this.rack.render(this.canPlay());
+    this.rack.render(this.canArrange());
     this.renderButtons();
     this.liveScore();
   }
 
   canPlay() {
-    return !!this.state && this.state.myTurn && !this.state.result && !this.state.paused && !this.options.watching;
+    return this.canArrange() && this.state.myTurn;
+  }
+
+  canArrange() {
+    return !!this.state && !this.state.result && !this.state.paused && !this.options.watching;
   }
 
   names() {
@@ -222,7 +227,7 @@ class GameView {
 
   renderBoard() {
     const p = this.placer;
-    this.board.render({ cells: this.state.cells, latest: this.state.latest, pending: new Map([...p.pending].map(([i, x]) => [i, x.tile])), arrow: this.canPlay() ? p.arrow : null, score: this.score });
+    this.board.render({ cells: this.state.cells, latest: this.state.latest, pending: new Map([...p.pending].map(([i, x]) => [i, x.tile])), arrow: this.canArrange() ? p.arrow : null, score: this.score });
   }
 
   renderButtons() {
