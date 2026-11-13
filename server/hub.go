@@ -33,6 +33,8 @@ type hub struct {
 	mu        sync.Mutex
 	store     store
 	rooms     map[string]room
+	opened    map[string]uint64
+	nextRoom  uint64
 	seats     map[string]room
 	online    map[string]*client
 	adjourned map[string]adjourned
@@ -40,7 +42,7 @@ type hub struct {
 }
 
 func newHub(st store) *hub {
-	return &hub{store: st, rooms: map[string]room{}, seats: map[string]room{}, online: map[string]*client{}, adjourned: map[string]adjourned{}, missed: map[string]bool{}}
+	return &hub{store: st, rooms: map[string]room{}, opened: map[string]uint64{}, seats: map[string]room{}, online: map[string]*client{}, adjourned: map[string]adjourned{}, missed: map[string]bool{}}
 }
 
 func (h *hub) serve(w http.ResponseWriter, r *http.Request) {
@@ -138,7 +140,7 @@ func (h *hub) create(c *client, m message, invitee *player) {
 	h.mu.Lock()
 	code := h.freeCode()
 	r := newRoom(h, code, c.player, m, invitee)
-	h.rooms[code] = r
+	h.register(code, r)
 	h.mu.Unlock()
 	if m.Mode == modeDuplicate {
 		h.seatHost(c, r, code)
@@ -333,11 +335,18 @@ func (h *hub) unseat(playerID string, r room) {
 	}
 }
 
+func (h *hub) register(code string, r room) {
+	h.nextRoom++
+	h.rooms[code] = r
+	h.opened[code] = h.nextRoom
+}
+
 func (h *hub) release(code string, r room) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	if h.rooms[code] == r {
 		delete(h.rooms, code)
+		delete(h.opened, code)
 	}
 	for id, seated := range h.seats {
 		if seated == r {

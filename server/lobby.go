@@ -109,9 +109,14 @@ func (h *hub) lobbyFor(p player) message {
 
 func (h *hub) liveGames() []liveGame {
 	h.mu.Lock()
-	rooms := make([]room, 0, len(h.rooms))
-	for _, r := range h.rooms {
-		rooms = append(rooms, r)
+	codes := make([]string, 0, len(h.rooms))
+	for code := range h.rooms {
+		codes = append(codes, code)
+	}
+	sort.Slice(codes, func(i, j int) bool { return h.opened[codes[i]] < h.opened[codes[j]] })
+	rooms := make([]room, len(codes))
+	for i, code := range codes {
+		rooms[i] = h.rooms[code]
 	}
 	h.mu.Unlock()
 	games := []liveGame{}
@@ -147,9 +152,14 @@ func (h *hub) people() []person {
 
 func (h *hub) listings() []listing {
 	h.mu.Lock()
-	rooms := make([]room, 0, len(h.rooms))
-	for _, r := range h.rooms {
-		rooms = append(rooms, r)
+	codes := make([]string, 0, len(h.rooms))
+	for code := range h.rooms {
+		codes = append(codes, code)
+	}
+	sort.Slice(codes, func(i, j int) bool { return h.opened[codes[i]] < h.opened[codes[j]] })
+	rooms := make([]room, len(codes))
+	for i, code := range codes {
+		rooms[i] = h.rooms[code]
 	}
 	h.mu.Unlock()
 	var out []listing

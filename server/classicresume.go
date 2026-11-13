@@ -80,7 +80,7 @@ func (h *hub) openResumed(a adjourned, clients ...*client) {
 	h.mu.Lock()
 	code := h.freeCode()
 	r := newResumed(h, code, a)
-	h.rooms[code] = r
+	h.register(code, r)
 	h.mu.Unlock()
 	r.resumeWith(present)
 	h.changed()
