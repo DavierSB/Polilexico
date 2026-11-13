@@ -8,8 +8,10 @@ BUILD=build/site
 [ -f "$SITE/version.json" ] && [ -d "$SITE/org" ] || { echo "$SITE no parece el repo del sitio" >&2; exit 1; }
 
 for entry in "$BUILD"/*; do
-  rm -rf "$SITE/$(basename "$entry")"
+  [ "$(basename "$entry")" = app ] || rm -rf "$SITE/$(basename "$entry")"
 done
 cp -r "$BUILD"/. "$SITE"/
+rm -rf "$SITE/js" "$SITE/css"
+ls -1t "$SITE/app" | tail -n +4 | while read -r old; do rm -rf "$SITE/app/$old"; done
 touch "$SITE/.nojekyll"
 git -C "$SITE" status --short | head -20

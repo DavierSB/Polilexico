@@ -14,6 +14,11 @@ PART_SIZE=1M
 rm -rf "$OUT" "$WORK"
 mkdir -p "$OUT" "$WORK/data/lexica/gaddag" "$WORK/data/letterdistributions" "$WORK/data/strategy/default"
 cp -r site/. "$OUT/"
+STAMP=$(cd site && find js css -type f | sort | xargs cat | sha256sum | cut -c1-10)
+mkdir -p "$OUT/app/$STAMP"
+mv "$OUT/js" "$OUT/css" "$OUT/app/$STAMP/"
+sed -i 's#url("../fonts/#url("../../../fonts/#g' "$OUT/app/$STAMP/css/base.css"
+sed -i "s#href=\"css/#href=\"app/$STAMP/css/#g; s#src=\"js/#src=\"app/$STAMP/js/#g" "$OUT/index.html"
 
 cp "$LEXICA"/FILE2017.{kwg,klv2} "$WORK/data/lexica/gaddag/"
 cp "$MACONDO"/data/letterdistributions/spanish "$WORK/data/letterdistributions/"

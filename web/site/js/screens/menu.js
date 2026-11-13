@@ -1,6 +1,7 @@
 import { h } from "../dom.js";
 import { go } from "../router.js";
 import { screenHead, engineGate } from "../parts.js";
+import { homeFrame } from "./home.js";
 
 const MENUS = {
   minijuegos: {
@@ -20,8 +21,8 @@ export function menuScreen(name) {
   return (app) => {
     const menu = MENUS[name];
     const gates = [];
-    app.append(h("div.screen.menu-screen", {}, screenHead(menu.title), h("nav.stack.menu-list", {}, menu.entries.map(([label, route]) => entry(label, route, gates)))));
-    return () => gates.forEach((stop) => stop());
+    const done = homeFrame(app, screenHead(menu.title), menu.entries.map(([label, route]) => entry(label, route, gates)));
+    return () => (done(), gates.forEach((stop) => stop()));
   };
 }
 

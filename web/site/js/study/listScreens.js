@@ -6,6 +6,7 @@ import { load, save } from "../store.js";
 import { withStudy, label, chips, dotted, big, progressBar } from "./shell.js";
 import { ListCatalog, MINE, savedLists, saveList, deleteList, folderOf } from "./lists.js";
 import { wordCard } from "./word.js";
+import { homeFrame } from "../screens/home.js";
 
 const LISTS_INFO = "Aquí aparecen listas ya confeccionadas, con las palabras ordenadas por su importancia para el Scrabble. Se dejaron fuera las palabras de uso más común en español, para que no estorben a la hora de estudiar.\n\nAdemás, en «Crear lista» se pueden armar listas propias con los filtros que se quieran.";
 const PACES = [2, 3, 5, 8];
@@ -26,20 +27,17 @@ export function listsMenuScreen(app) {
   const gates = [];
   const entry = (text, route, main = true, enabled = true) => {
     const b = h("button", { class: "btn block" + (main ? "" : " outlined"), disabled: !enabled, onclick: () => go(route) }, text);
-    gates.push(engineGate(b, "study"));
+    if (enabled) gates.push(engineGate(b, "study"));
     return b;
   };
   const unfinished = savedLists().filter((l) => l.inProgress(Date.now())).length;
-  app.append(h("div.screen.menu-screen", {},
-    screenHead("Listas", "estudiar", infoButton()),
-    h("nav.stack.menu-list", {},
-      entry("Estudiar listas", "listas-catalogo"),
-      entry("Crear lista", "crear-lista"),
-      entry(`Estudios a medias (${unfinished})`, "estudios-medias", false),
-      entry("Estudios culminados", "estudios-culminados", false),
-    ),
-  ));
-  return () => gates.forEach((stop) => stop());
+  const done = homeFrame(app, screenHead("Listas", "estudiar", infoButton()), [
+    entry("Estudiar listas", "listas-catalogo"),
+    entry("Crear lista", "crear-lista"),
+    entry(`Estudios a medias (${unfinished})`, "estudios-medias", false, unfinished > 0),
+    entry("Estudios culminados", "estudios-culminados", false),
+  ]);
+  return () => (done(), gates.forEach((stop) => stop()));
 }
 
 function infoButton() {

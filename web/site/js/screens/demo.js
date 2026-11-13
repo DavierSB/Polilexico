@@ -6,12 +6,21 @@ import { emptyBoard } from "../tiles.js";
 const PAUSE_MS = 1600;
 const FINAL_PAUSE_MS = 6000;
 
+const shared = { board: null, users: 0, looping: false };
+
 export function startDemo() {
+  shared.board ??= createDemoBoard();
+  shared.users++;
+  if (!shared.looping) readyLater.then(() => loop(shared.board, () => shared.users > 0));
+  shared.looping = true;
+  let stopped = false;
+  return { el: shared.board.el, stop: () => stopped || ((stopped = true), shared.users--) };
+}
+
+function createDemoBoard() {
   const board = createBoard();
-  let running = true;
   board.render({ cells: emptyBoard() });
-  readyLater.then(() => loop(board, () => running));
-  return { el: board.el, stop: () => (running = false) };
+  return board;
 }
 
 async function loop(board, running) {
@@ -21,6 +30,7 @@ async function loop(board, running) {
     next = call("demo");
     await replay(board, game, running);
   }
+  shared.looping = false;
 }
 
 async function replay(board, game, running) {

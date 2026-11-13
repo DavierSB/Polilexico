@@ -11,17 +11,22 @@ import { messagesButton } from "../online/messages.js";
 import { setting } from "../settings.js";
 
 export function homeScreen(app) {
-  const demo = startDemo();
   const chip = onlineChip();
   const messages = account() ? messagesButton() : null;
   const stay = stayOnline();
+  const done = homeFrame(app, [drawerButton(), brand(), h("div.row.head-actions", {}, messages?.el, chip.el)], menu());
+  return () => (done(), chip.stop(), messages?.stop(), stay());
+}
+
+export function homeFrame(app, head, buttons) {
+  const demo = startDemo();
   app.append(h("div.home", {},
     h("aside.home-side", {}, h("div.drawer-brand", {}, brand()), h("nav.home-drawer", { "aria-label": "Menú" }, drawerItems())),
-    h("header.home-head", {}, drawerButton(), brand(), h("div.row.head-actions", {}, messages?.el, chip.el)),
+    h("header.home-head", {}, head),
     h("div.home-board", {}, demo.el),
-    h("nav.home-menu", {}, menu()),
+    h("nav.home-menu", {}, buttons),
   ));
-  return () => (demo.stop(), chip.stop(), messages?.stop(), stay());
+  return () => demo.stop();
 }
 
 function stayOnline() {
