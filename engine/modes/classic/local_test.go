@@ -110,6 +110,25 @@ func TestMirrorOfAFinishedGameKeepsItsRecord(t *testing.T) {
 	}
 }
 
+func TestMirrorRewritesARecordFromAnotherDevice(t *testing.T) {
+	m := startMatch(newLocalGame(t, StarterBot), nil, timing.NewFake(), newTestListener(), true)
+	t.Cleanup(m.Close)
+	m.game.LoseOnTime()
+	m.game.recordPath = "/elsewhere/classic-20260101-000000-log.json"
+	text, err := m.Save()
+	if err != nil {
+		t.Fatal(err)
+	}
+	mirror, err := LoadMirror(text, true, newTestListener())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(mirror.Close)
+	if r := mirror.Game().Result(); r == nil || !core.RecordExists(r.RecordPath) {
+		t.Fatalf("%+v", r)
+	}
+}
+
 func TestLocalEndgameSeatsTheChosenStarter(t *testing.T) {
 	for starter, humanToMove := range map[int]bool{StarterHuman: true, StarterBot: false} {
 		testenv.Init(t)

@@ -42,7 +42,7 @@ func (c *Game) Host() string {
 func (c *Game) keepRecord() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if c.over() && c.recordPath == "" {
+	if c.over() && !core.RecordExists(c.recordPath) {
 		c.finish()
 	}
 }

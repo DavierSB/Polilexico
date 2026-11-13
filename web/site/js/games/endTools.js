@@ -2,15 +2,17 @@ import { h } from "../dom.js";
 import { go } from "../router.js";
 import { toast } from "../dialogs.js";
 import { getRecord } from "../records.js";
-import { spreadOf, spreadDialog } from "./spread.js";
+import { spreadOf, spreadChart } from "./spread.js";
 import { exportDialog } from "./export.js";
 
 export function endTools(recorded, state, names, close) {
-  return h("div.end-tools", {},
-    h("button.btn.small", { onclick: () => withRecord(recorded, (id) => (close(), go("partida-revision/" + id))) }, "Analizar"),
-    h("button.btn.small.outlined", { onclick: () => spreadDialog(classicSpread(state, names)) }, "Ventaja"),
-    h("button.btn.small.outlined", { onclick: () => withRecord(recorded, async (id) => exportDialog(picture(state, names), await getRecord(id))) }, "Exportar"),
-  );
+  return [
+    spreadChart(classicSpread(state, names)),
+    h("div.end-tools", {},
+      h("button.btn.small", { onclick: () => withRecord(recorded, (id) => (close(), go("partida-revision/" + id))) }, "Analizar"),
+      h("button.btn.small.outlined", { onclick: () => withRecord(recorded, async (id) => exportDialog(picture(state, names), await getRecord(id))) }, "Exportar"),
+    ),
+  ];
 }
 
 export function classicSpread(state, names) {

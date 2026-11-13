@@ -20,6 +20,14 @@ func WriteRecord(prefix string, log any, g *game.Game) string {
 	return base + "-log.json"
 }
 
+func RecordExists(path string) bool {
+	if path == "" {
+		return false
+	}
+	_, err := os.Stat(path)
+	return err == nil
+}
+
 func recordBase(prefix string) string {
 	stamp := time.Now().Format("20060102-150405")
 	return filepath.Join(savesDir, fmt.Sprintf("%s-%s", prefix, stamp))
