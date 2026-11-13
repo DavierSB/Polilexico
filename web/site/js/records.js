@@ -23,27 +23,27 @@ async function run(mode, work) {
   });
 }
 
-export async function keepRecord(path, online = false) {
+export async function keepRecord(path, online = false, watched = false) {
   const text = await readFile(path);
   if (!text) return null;
   const gcg = await readFile(path.replace(/-log\.json$/, ".gcg"));
   const game = await call("reviewOpen", text);
   const { Turns, ...summary } = game;
   const id = String(Date.now());
-  await run("readwrite", (s) => s.put({ id, text, gcg, online, finishedAt: Date.now(), summary: { ...summary, turns: Turns.length } }));
+  await run("readwrite", (s) => s.put({ id, text, gcg, online, watched, finishedAt: Date.now(), summary: { ...summary, turns: Turns.length } }));
   return id;
 }
 
-export async function keepMirrorRecord(save) {
+export async function keepMirrorRecord(save, watched = false) {
   await whenReady();
   const match = await call("classicMirror", save, true, false);
   const raw = await call("classicRead", match).catch(() => null);
   call("classicClose", match).catch(() => {});
-  return raw?.Result?.RecordPath ? keepRecord(raw.Result.RecordPath, true) : null;
+  return raw?.Result?.RecordPath ? keepRecord(raw.Result.RecordPath, true, watched) : null;
 }
 
 export function listRecords() {
-  return run("readonly", (s) => s.getAll()).then((all) => all.sort((a, b) => b.finishedAt - a.finishedAt)).catch(() => []);
+  return run("readonly", (s) => s.getAll()).then((all) => all.filter((r) => !r.watched).sort((a, b) => b.finishedAt - a.finishedAt)).catch(() => []);
 }
 
 export function getRecord(id) {
