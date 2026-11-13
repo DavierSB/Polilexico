@@ -47,7 +47,7 @@
 .word-menu-item:hover { background: var(--c3, rgba(255, 255, 255, .06)); }
 .dialog.full { width: 100%; max-width: 100%; height: 100%; max-height: 100%; border-radius: 0; overflow: auto; }
 @media (min-width: 900px) { .dialog.full { width: min(100%, 900px); height: min(100%, 92vh); border-radius: var(--radius, 24px); } }
-.word-dialog-body { min-width: 0; }
+.word-dialog-body { min-width: 0; flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .result-panel { gap: 6px; }
 .result-title { font-size: 17px; }
 .end-buttons { gap: 6px; flex-wrap: wrap; }

@@ -46,7 +46,27 @@ export function wordCard(unit, lexicon, onOpen) {
 function meaningPanel(word, lexicon) {
   const meanings = lexicon.meanings(word);
   if (!meanings.length) return null;
-  return h("div.stack.meanings.meaning-panel", {}, meanings.map((m) => meaningBlock(m, word)));
+  const text = h("div.stack.meanings.meaning-text", {}, meanings.map((m) => meaningBlock(m, word)));
+  const more = h("button.text-btn.hidden", { onclick: () => meaningsDialog(word, meanings) }, "Ver más");
+  watchClip(text, more);
+  return h("div.meaning-panel", {}, text, h("div.meaning-foot", {}, sourceLine(meanings), h("div.row.meaning-links", {}, more, raeLink(word))));
+}
+
+function watchClip(text, more) {
+  const check = () => {
+    const clipped = text.scrollHeight > text.clientHeight + 1;
+    text.classList.toggle("clipped", clipped);
+    more.classList.toggle("hidden", !clipped);
+  };
+  new ResizeObserver(check).observe(text);
+}
+
+function sourceLine(meanings) {
+  return h("p.muted.small", {}, "Fuente: " + [...new Set(meanings.flatMap((m) => m.senses.map((s) => sourceLabel(s.source))))].join(", "));
+}
+
+function raeLink(word) {
+  return h("a.text-btn", { href: RAE_URL + encodeURIComponent(show(word)), target: "_blank", rel: "noopener" }, "Consultar en la RAE");
 }
 
 export function looseCard(word, lexicon) {
@@ -99,11 +119,8 @@ export function meaningLine(word, lexicon) {
 function meaningsDialog(word, meanings) {
   openDialog((close) => [
     h("h2", {}, upper(word)),
-    h("div.stack.meanings", {}, meanings.map((m) => meaningBlock(m, word)), h("p.muted.small", {}, "Fuente: " + [...new Set(meanings.flatMap((m) => m.senses.map((s) => sourceLabel(s.source))))].join(", "))),
-    actions(
-      h("a.text-btn", { href: RAE_URL + encodeURIComponent(show(word)), target: "_blank", rel: "noopener" }, "Consultar en la RAE"),
-      h("button.text-btn", { onclick: close }, "Cerrar"),
-    ),
+    h("div.stack.meanings", {}, meanings.map((m) => meaningBlock(m, word)), sourceLine(meanings)),
+    actions(raeLink(word), h("button.text-btn", { onclick: close }, "Cerrar")),
   ], { wide: true });
 }
 
