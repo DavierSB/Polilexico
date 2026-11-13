@@ -211,6 +211,15 @@ table.moves tr.mine td:nth-child(2) { color: var(--primary); }
 
   .game.watching { --side: clamp(380px, calc(100vw - 100dvh - 64px), 560px); }
 
+  .game .player-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "photo name clock" "tiles tiles score"; align-items: center; gap: 4px 10px; }
+  .game .player-card > :is(.avatar, .initial) { grid-area: photo; }
+  .game .player-card .player-main { display: contents; }
+  .game .player-card .player-main > .row { grid-area: name; min-width: 0; }
+  .game .player-card .mini-tiles { grid-area: tiles; }
+  .game .player-card > .score { grid-area: score; line-height: 1; }
+  .game .player-card > .clock { grid-area: clock; }
+  .game .player-card:not(:has(.avatar, .initial)) .player-main > .row { grid-column: 1 / 3; }
+
   .game-side { height: 100%; }
 
   .rack { gap: 6px; }
