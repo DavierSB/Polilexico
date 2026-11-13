@@ -2,6 +2,7 @@ package classic
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/domino14/macondo/game"
 	"github.com/domino14/macondo/move"
@@ -140,7 +141,7 @@ func moveOf(p core.Play, byHuman bool, humanTotal, botTotal int) *Move {
 		p = hideExchange(p)
 	}
 	return &Move{ByHuman: byHuman, Kind: p.Kind, Coords: p.Coords, Tiles: p.Tiles,
-		TileCount: p.TileCount, Score: p.Score, HumanTotal: humanTotal, BotTotal: botTotal}
+		TileCount: p.TileCount, Score: p.Score, HumanTotal: humanTotal, BotTotal: botTotal, Words: strings.Join(p.Words, " ")}
 }
 
 func hideExchange(p core.Play) core.Play {

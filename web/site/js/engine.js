@@ -78,7 +78,7 @@ function send(name, args) {
 
 function receive(data) {
   if (data.id) return settle(data);
-  if (data.changed) return watchers.get(data.changed)?.();
+  if (data.changed) return watchers.get(data.changed)?.(data.value);
   if (data.files) return packFiles.get(data.pack + ":resolve")?.(data.files);
   if (data.readFile) return reads.get(data.readFile)?.(data.text);
   const p = progress[data.pack];

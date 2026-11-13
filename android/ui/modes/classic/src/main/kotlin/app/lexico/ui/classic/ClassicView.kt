@@ -25,6 +25,8 @@ data class Move(
   val points: Int = 0,
   val myTotal: Int,
   val opponentTotal: Int,
+  val words: List<String> = emptyList(),
+  val letters: List<String> = emptyList(),
 ) {
   val isBingo: Boolean get() = type == MoveType.PLACEMENT && tiles == BINGO_TILES
 }

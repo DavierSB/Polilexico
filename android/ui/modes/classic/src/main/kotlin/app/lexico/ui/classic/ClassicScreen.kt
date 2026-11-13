@@ -29,7 +29,7 @@ fun ClassicScreen(view: ClassicView, style: BoardStyle, actions: ClassicActions,
   Pausable(view.paused, actions::resume.takeIf { view.status == null }, view.status) {
     HandOff(view) { ClassicLayout(view, c, style, actions, dialogs, message, onTheme, onAdjourn) { message = it } }
   }
-  ClassicDialogsShown(view, c, actions, dialogs)
+  ClassicDialogsShown(view, c, actions, dialogs, style)
 }
 
 @Composable

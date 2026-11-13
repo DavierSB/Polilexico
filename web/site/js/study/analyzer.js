@@ -9,19 +9,22 @@ import { applyPlacement, parsePlacement, at, spelled } from "../placement.js";
 import { face } from "../classic/rack.js";
 import { askBlank } from "../classic/moves.js";
 import { choiceRow, sectionTitle } from "../classic/options.js";
-import { deepView, DEEP_TITLES, BUDGET_MS } from "./deep.js";
+import { reviewPosition } from "../games/review.js";
 
 const MAX_RACK = 7;
 const BEST = 15;
 const EQUITY_INFO = "El valor de la jugada, considerando su puntuación y lo que queda en la mano.";
 const TARGET_INFO = "Tablero: toca una casilla para poner la flecha (otra vez: vertical) y luego letras; o elige una letra y toca casillas. Toca una ficha del tablero para quitarla.\n\nAtril: toca letras para añadirlas (máx. 7).";
 
+let kept = null;
+
 export function analyzerScreen(app) {
-  const ed = { cells: emptyBoard(), rack: [], target: "board", letter: null, arrow: null, result: null, selected: null, running: false, message: null, scores: null, deep: null };
+  const ed = kept ?? { cells: emptyBoard(), rack: [], target: "board", letter: null, arrow: null, result: null, selected: null, running: false, message: null, scores: null, };
   const board = createBoard({ onSquare: (i) => tapSquare(ui, i) });
   const rackRow = h("div.analysis-rack");
   const notice = h("p.muted.small");
   const panel = h("div.analysis-panel");
+  kept = ed;
   const ui = { ed, board, rackRow, notice, panel };
   ui.redraw = () => draw(ui);
   app.append(h("div.analyzer", {},
@@ -48,8 +51,8 @@ function draw(ui) {
     h("button.btn.small", { disabled: !ed.rack.length || ed.running, onclick: () => analyze(ui) }, ed.running ? "…" : "Analizar"),
   );
   ui.notice.textContent = ed.message ?? "";
-  ui.panel.classList.toggle("editing", !ed.deep && !ed.result);
-  replace(ui.panel, ed.deep ? deepPanel(ui) : ed.result ? results(ui) : editPanel(ui));
+  ui.panel.classList.toggle("editing", !ed.result);
+  replace(ui.panel, ed.result ? results(ui) : editPanel(ui));
 }
 
 function keyFace(letter) {
@@ -145,25 +148,18 @@ function removeFromRack(ui, i) {
   resetAnalysis(ui);
 }
 
-function deepPanel(ui) {
-  return [
-    h("div.row", {}, h("b.grow", {}, DEEP_TITLES[ui.ed.deep.phase]), h("button.text-btn", { onclick: () => edit(ui) }, "Editar")),
-    deepView(ui.ed.deep.view, ui.ed.cells, (m) => ((ui.ed.selected = m.placement ? { placement: m.placement } : null), ui.redraw())),
-  ];
-}
-
 function scoreDialog(ui) {
   const s = ui.ed.scores ?? { mine: 0, theirs: 0 };
-  const field = (label, key) => h("div.field", {}, h("label", {}, label), h("input", { type: "number", min: 0, max: 9999, value: s[key], oninput: (e) => (s[key] = Number(e.target.value) || 0) }));
+  const field = (label, key) => h("div.field", {}, h("label", {}, label), h("input", { type: "number", min: 0, max: 9999, value: s[key], oninput: (e) => ((s[key] = Number(e.target.value) || 0), (s.touched = true)) }));
   openDialog((close) => [
     h("h2", {}, "Marcador"), field("Tú", "mine"), field("Rival", "theirs"),
     h("p.muted.small", {}, "Con marcador, en el pre-final y en el final se analiza esa fase (pasar o el scrabble pueden ganar). Sin marcador, solo equity."),
-    actions(h("button.text-btn", { onclick: () => ((ui.ed.scores = null), close(), resetAnalysis(ui)) }, "Quitar"), h("button.text-btn", { onclick: () => ((ui.ed.scores = s), close(), resetAnalysis(ui)) }, "Listo")),
-  ]);
+    actions(h("button.text-btn", { onclick: close }, "Listo")),
+  ], { onClose: () => ((ui.ed.scores = s.touched ? s : ui.ed.scores), resetAnalysis(ui)) });
 }
 
 function resetAnalysis(ui) {
-  Object.assign(ui.ed, { result: null, selected: null, message: null, deep: null });
+  Object.assign(ui.ed, { result: null, selected: null, message: null });
   ui.redraw();
 }
 
@@ -208,10 +204,8 @@ async function deepAnalysis(ui, boardText, rackText) {
   const ed = ui.ed;
   const phase = await call("positionPhase", boardText, rackText, ed.scores.mine, ed.scores.theirs);
   if (phase === "midgame") return false;
-  const view = await call("positionDeep", boardText, rackText, ed.scores.mine, ed.scores.theirs, BUDGET_MS);
-  ed.deep = { phase, view };
   ed.running = false;
-  ui.redraw();
+  reviewPosition({ board: boardText, rack: rackText, mine: ed.scores.mine, theirs: ed.scores.theirs });
   return true;
 }
 

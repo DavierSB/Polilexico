@@ -42,6 +42,7 @@ func registerDuplicate() {
 	handlers["duplicatePause"] = duplicatePause
 	handlers["duplicateResume"] = duplicateResume
 	handlers["duplicateSave"] = duplicateSave
+	handlers["duplicateProgress"] = duplicateProgress
 	handlers["duplicateClose"] = closeAny
 }
 
@@ -81,6 +82,10 @@ func duplicateResume(args []json.RawMessage) (any, error) {
 
 func duplicateSave(args []json.RawMessage) (any, error) {
 	return act(args, func(m duplicateMatch) (any, error) { return m.Save() })
+}
+
+func duplicateProgress(args []json.RawMessage) (any, error) {
+	return duplicate.ReadProgress(text(args, 0))
 }
 
 func readDuplicate(m duplicateMatch) duplicateState {

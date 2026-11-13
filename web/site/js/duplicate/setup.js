@@ -6,7 +6,7 @@ import { toast } from "../dialogs.js";
 import { modeTabs } from "../modeTabs.js";
 import { accountButtons } from "../online/profile.js";
 import { choiceRow, sectionTitle, stepper, rulesButton } from "../classic/options.js";
-import { startDuplicate, currentDuplicate, hasSavedDuplicate } from "./session.js";
+import { startDuplicate } from "./session.js";
 import { savedButtons, keepScroll } from "../savedButtons.js";
 import { DUPLICATE_RULES, ROUNDS_TEXT, VOID_HINT, SINGLE_HINT, AT_END_HINT } from "./rules.js";
 
@@ -20,17 +20,13 @@ export function duplicateSetupScreen(app) {
   const gates = [];
   const redraw = () => {
     gates.splice(0).forEach((stop) => stop());
-    keepScroll(body, () => replace(body, h("div.setup-scroll", {}, fields(form, redraw)), startButton(form, gates), savedButtons("duplicate", inProgress(), "duplicada-partida", gates)));
+    keepScroll(body, () => replace(body, h("div.setup-scroll", {}, fields(form, redraw)), startButton(form, gates), savedButtons("duplicate", gates)));
   };
   redraw();
   const tabs = modeTabs("duplicate", () => ({ el: body }));
   const account = accountButtons();
   app.append(h("div.screen.wide.fit-screen", {}, screenHead("Duplicada", "", account.el), tabs.el));
   return () => (gates.forEach((stop) => stop()), tabs.destroy(), account.stop());
-}
-
-function inProgress() {
-  return currentDuplicate()?.live() || hasSavedDuplicate() ? 1 : 0;
 }
 
 function startButton(form, gates) {
@@ -65,8 +61,8 @@ async function begin(form, button) {
   save("duplicateForm", form);
   button.disabled = true;
   try {
-    await startDuplicate({ turnMs, single: form.check !== 0, atEnd: form.check === 2, rounds: form.fixed ? form.rounds : 0 });
-    go("duplicada-partida");
+    const session = await startDuplicate({ turnMs, single: form.check !== 0, atEnd: form.check === 2, rounds: form.fixed ? form.rounds : 0 });
+    go("duplicada-partida/" + session.id);
   } catch (e) {
     toast(e.message);
     button.disabled = false;

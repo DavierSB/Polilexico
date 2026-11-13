@@ -21,7 +21,13 @@ function playedMove(m, cells) {
     byMe: m.ByHuman, kind: m.Kind, coords: m.Coords, tiles: m.Tiles, count: m.TileCount, score: m.Score,
     myTotal: m.HumanTotal, opponentTotal: m.BotTotal, placement: p,
     word: p ? spelled(p, cells).split(" ")[1] : m.Tiles.replace(/[[\]]/g, ""),
+    words: (m.Words ?? "").split(" ").filter(Boolean), letters: m.Kind === "invalid" ? usedLetters(m) : [],
   };
+}
+
+function usedLetters(m) {
+  const p = parsePlacement(`${m.Coords} ${m.Tiles}`);
+  return (p?.tiles ?? []).filter(Boolean).map((t) => (t.blank ? "?" : t.letter));
 }
 
 function latestSquares(moves) {

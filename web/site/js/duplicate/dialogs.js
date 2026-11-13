@@ -26,6 +26,7 @@ export function roundDialog(round) {
     h("h2", {}, `Ronda ${round.number}`),
     playLine("Máster", round.master),
     playLine("Tú", round.mine),
+    round.hit ? h("p.hit-label", {}, "¡Acierto!") : null,
     actions(h("button.text-btn", { autofocus: true, onclick: close }, "Seguir")),
   ]);
 }
@@ -44,7 +45,7 @@ function invalidsDialog(state) {
   openDialog((close) => [
     h("h2", {}, "Jugadas inválidas"),
     plays.length ? h("p", {}, `${plays.length} de tus jugadas no eran válidas y valen 0 puntos:`) : h("p", {}, "No hubo jugadas inválidas."),
-    plays.map((p) => h("div.row.invalid-play", {}, h("span.muted", {}, p.number), h("span.grow", {}, p.text), h("b.error", {}, p.score))),
+    plays.map((p) => h("div.row.invalid-play", {}, h("span.muted", {}, p.number), h("span.grow", {}, p.text), h("b.error.struck", {}, p.score))),
     actions(h("button.text-btn", { onclick: close }, "Ver resultados")),
   ], { onClose: () => summaryDialog(state) });
 }

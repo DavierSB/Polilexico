@@ -49,7 +49,7 @@ function meaningPanel(word, lexicon) {
   return h("div.stack.meanings.meaning-panel", {}, meanings.map((m) => meaningBlock(m, word)));
 }
 
-function looseCard(word, lexicon) {
+export function looseCard(word, lexicon) {
   return h("div.word-card-big", {}, headWord(word), h("p.muted.center", {}, OUTSIDE), meaningLine(word, lexicon));
 }
 

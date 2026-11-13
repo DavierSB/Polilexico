@@ -21,6 +21,7 @@ func registerClassic() {
 	handlers["classicPause"] = classicPause
 	handlers["classicResume"] = classicResume
 	handlers["classicSave"] = classicSave
+	handlers["classicProgress"] = classicProgress
 	handlers["classicView"] = classicView
 	handlers["classicClose"] = closeAny
 	handlers["endgameNew"] = endgameNew
@@ -85,6 +86,10 @@ func classicResume(args []json.RawMessage) (any, error) {
 
 func classicSave(args []json.RawMessage) (any, error) {
 	return act(args, func(m classicMatch) (any, error) { return m.Save() })
+}
+
+func classicProgress(args []json.RawMessage) (any, error) {
+	return classic.ReadProgress(text(args, 0))
 }
 
 func classicView(args []json.RawMessage) (any, error) {

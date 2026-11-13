@@ -17,6 +17,7 @@ const Q_PLACES = [
   ["yours", "Está en tu atril", "está en tu atril"],
   ["hidden", "No se ha jugado y no está en tu atril", "no se ha jugado y no está en tu atril"],
 ];
+const LEAD_LIMIT = 200;
 const DEFAULTS = { minBag: 2, maxBag: 8, minLead: -40, maxLead: 0, q: "anywhere", single: true, timed: false, time: "5:00", overtime: "1:00" };
 
 export function endgameSetupScreen(app) {
@@ -37,10 +38,12 @@ function fields(form, redraw, gates) {
   gates.push(engineGate(start));
   return [
     rulesButton("Reglas de Finales", RULES),
-    h("div.settings-list", {},
-      settingRow(bagText(form), () => rangeDialog("Fichas en la bolsa", "Cuántas fichas quedan en la bolsa cuando tomas el control de la partida.", form, "Bag", 0, 20, 1, String, redraw)),
-      settingRow(leadText(form), () => rangeDialog("Tu ventaja al empezar", "Tus puntos menos los de Gitana al empezar: negativa si vas perdiendo.", form, "Lead", -200, 200, 5, signed, redraw)),
-      settingRow(`La Q ${Q_PLACES.find(([k]) => k === form.q)[2]}`, () => qDialog(form, redraw)),
+    h("div.stack.app-settings", {},
+      h("b.app-settings-title", {}, "Ajustes"),
+      h("span.muted.small", {}, "Toca un ajuste para cambiarlo"),
+      settingRow(bagText(form), bagHighlight(form), () => rangeDialog("Fichas en la bolsa", "Cuántas fichas quedan en la bolsa cuando tomas el control de la partida.", form, "Bag", 0, 20, 1, String, ["Mínimo", "Máximo"], redraw)),
+      settingRow(leadText(form), leadHighlight(form), () => rangeDialog("Tu ventaja al empezar", "Tus puntos menos los de Gitana al empezar: negativa si vas perdiendo.", form, "Lead", -LEAD_LIMIT, LEAD_LIMIT, 5, signed, ["Mínima", "Máxima"], redraw)),
+      settingRow(`La Q ${qSummary(form)}`, qSummary(form), () => qDialog(form, redraw)),
     ),
     challengeSection(form, redraw),
     timeSection(form, redraw),
@@ -48,8 +51,26 @@ function fields(form, redraw, gates) {
   ];
 }
 
-function settingRow(text, open) {
-  return h("button.setting-row", { onclick: open }, h("span.grow", {}, text), h("span.muted", {}, "›"));
+function settingRow(text, highlight, open) {
+  const at = highlight ? text.indexOf(highlight) : -1;
+  const parts = at < 0 ? [text] : [text.slice(0, at), h("b.setting-strong", {}, highlight), text.slice(at + highlight.length)];
+  return h("button.app-setting", { onclick: open }, h("span.setting-dot"), h("span.grow", {}, parts));
+}
+
+function qSummary(form) {
+  return Q_PLACES.find(([k]) => k === form.q)[2];
+}
+
+function bagHighlight({ minBag: min, maxBag: max }) {
+  if (min !== max) return `${min} y ${max} fichas`;
+  return max === 0 ? "bolsa vacía" : max === 1 ? "1 ficha" : `${max} fichas`;
+}
+
+function leadHighlight({ minLead: min, maxLead: max }) {
+  const range = (a, b) => (a === b ? `${a}` : `entre ${a} y ${b}`);
+  if (max <= 0) return `${range(-max, -min)} puntos`;
+  if (min >= 0) return `${range(min, max)} puntos`;
+  return null;
 }
 
 function bagText({ minBag: min, maxBag: max }) {
@@ -68,10 +89,11 @@ function signed(n) {
   return n > 0 ? `+${n}` : String(n);
 }
 
-function rangeDialog(title, text, form, key, lo, hi, step, label, redraw) {
+function rangeDialog(title, text, form, key, lo, hi, step, label, names, redraw) {
   const draft = { min: form["min" + key], max: form["max" + key] };
-  const shown = h("b.range-shown");
-  const show = () => (shown.textContent = `${label(draft.min)} … ${label(draft.max)}`);
+  const lowText = h("b.range-label"), highText = h("b.range-label");
+  const shown = h("div.row.range-labels", {}, lowText, highText);
+  const show = () => ((lowText.textContent = `${names[0]}: ${label(draft.min)}`), (highText.textContent = `${names[1]}: ${label(draft.max)}`));
   const slider = (side) => h("input.range", {
     type: "range", min: lo, max: hi, step, value: draft[side], "aria-label": side === "min" ? "Mínimo" : "Máximo",
     oninput: (e) => {
@@ -84,7 +106,8 @@ function rangeDialog(title, text, form, key, lo, hi, step, label, redraw) {
   show();
   openDialog((close) => [
     h("h2", {}, title), h("p.muted", {}, text), shown,
-    h("div.stack.range-pair", {}, h("label.muted.small", {}, "Mínimo"), slider("min"), h("label.muted.small", {}, "Máximo"), slider("max")),
+    h("div.dual-range", {}, slider("min"), slider("max")),
+    h("div.row.range-scale", {}, [lo, (lo + hi) / 2, hi].map((v) => h("span", {}, label(v)))),
     actions(h("button.text-btn", { onclick: close }, "Cancelar"), h("button.text-btn", { onclick: () => ((form["min" + key] = draft.min), (form["max" + key] = draft.max), close(), redraw()) }, "Aceptar")),
   ]);
 }
@@ -107,8 +130,8 @@ async function begin(form, button) {
   button.firstChild.textContent = "Buscando un final…";
   const endgame = { minBag: form.minBag, maxBag: form.maxBag, minLead: form.minLead, maxLead: form.maxLead, q: form.q };
   try {
-    await startEndgame({ bot: "HastyBot", starter: 0, single: form.single, timeMs, overtimeMs, endgame });
-    go("partida");
+    const session = await startEndgame({ bot: "HastyBot", starter: 0, single: form.single, timeMs, overtimeMs, endgame });
+    go("partida/" + session.id);
   } catch (e) {
     toast(e.message);
     button.disabled = false;

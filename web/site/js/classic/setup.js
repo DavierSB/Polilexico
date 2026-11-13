@@ -3,7 +3,7 @@ import { go } from "../router.js";
 import { screenHead, parseDuration, engineGate } from "../parts.js";
 import { load, save } from "../store.js";
 import { BOTS, bot, botPhoto } from "./bots.js";
-import { startLocal, currentSession, hasSaved } from "./session.js";
+import { startLocal } from "./session.js";
 import { icon } from "../icons.js";
 import { savedButtons, keepScroll } from "../savedButtons.js";
 import { toast } from "../dialogs.js";
@@ -41,7 +41,7 @@ export function classicSetupScreen(app) {
 function stepHead(form, back) {
   return h("header.screen-head", {},
     h("button.icon-btn", { "aria-label": "Volver", onclick: back }, icon("back")),
-    h("h1", {}, form.shared ? "Dos jugadores" : "Clásica contra " + bot(form.bot).alias),
+    h("h1", {}, form.shared ? "Dos jugadores" : "Clásica"),
   );
 }
 
@@ -70,13 +70,13 @@ function localPrompt(form, choose) {
 }
 
 function savedGames(gates) {
-  const live = currentSession()?.live() || hasSaved();
-  return savedButtons("classic", live ? 1 : 0, "partida", gates);
+  return savedButtons("classic", gates);
 }
 
-function settingsStep(form, redraw, gates) {
+function settingsStep(form, redraw, gates, back) {
+  const rival = form.shared ? null : [h("p.section-title", {}, "Rival"), botCard(bot(form.bot), form, back)];
   return [
-    h("div.setup-scroll", {}, form.shared ? sharedNames(form, redraw) : null, settingsFor(form, redraw)),
+    h("div.setup-scroll", {}, form.shared ? sharedNames(form, redraw) : rival, settingsFor(form, redraw)),
     startButton(form, gates),
   ];
 }
@@ -132,8 +132,8 @@ async function begin(form, button) {
     timeMs: form.timed ? parseDuration(form.time) : 0, overtimeMs: form.timed ? parseDuration(form.overtime) : 0,
   };
   try {
-    await startLocal(setup);
-    go("partida");
+    const session = await startLocal(setup);
+    go("partida/" + session.id);
   } catch (e) {
     toast(e.message);
     button.disabled = false;

@@ -45,7 +45,7 @@ internal class ClassicReader(private val match: Match, private val seat: Seat = 
   private fun playedMove(board: Board, m: Move): PlayedMove = PlayedMove(
     byMe = m.byHuman, kind = moveKind(m.kind), coords = m.coords, tiles = m.tiles, tileCount = m.tileCount.toInt(),
     score = m.score.toInt(), myTotal = m.humanTotal.toInt(), opponentTotal = m.botTotal.toInt(),
-    text = moveText(board, "${m.coords} ${m.tiles}"),
+    text = moveText(board, "${m.coords} ${m.tiles}"), words = m.words.split(" ").filter { it.isNotEmpty() },
   )
 
   private fun clocks(c: Clocks): ClassicClocks =

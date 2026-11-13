@@ -9,7 +9,8 @@ import { setting } from "../settings.js";
 const NOTICE_MS = 5000;
 const CHAT_SIZE = 60;
 const LINGER_MS = 15000;
-const ADJOURNED = "Partida aplazada.";
+export const ADJOURNED = "Partida aplazada.";
+export const GAME_GONE = "La partida ya no está disponible.";
 
 const EMPTY_LOBBY = { seeks: [], invites: [], people: [], games: [], adjourned: [] };
 
@@ -141,6 +142,10 @@ class OnlineClient {
     this.sendWhenOnline({ t: "challenge", name: person.name, country: person.country, ...proposalFields(proposal) });
   }
 
+  seen(id) {
+    this.roomAction("seen", id);
+  }
+
   roomAction(t, code) {
     this.sendWhenOnline({ t, code });
   }
@@ -172,7 +177,7 @@ class OnlineClient {
   }
 
   sayInRoom(text) {
-    if (this.send({ t: "chat", text })) this.heard({ from: "", text, mine: true });
+    if (this.send({ t: "chat", text })) this.heard({ from: "", text, mine: true, room: true });
   }
 
   tell(person, text) {
@@ -204,7 +209,7 @@ class OnlineClient {
     const entry = { ...line, at: Date.now() };
     this.chat = [...this.chat, entry].slice(-CHAT_SIZE);
     recordChat(entry);
-    if (entry.private && !entry.mine) this.inbox = [...this.inbox, entry];
+    if ((entry.private || entry.room) && !entry.mine) this.inbox = [...this.inbox, entry];
     this.changed();
   }
 
@@ -225,6 +230,8 @@ class OnlineClient {
 
   heardLobby(e) {
     this.lobby = { seeks: e.seeks ?? [], invites: e.invites ?? [], people: e.people ?? [], games: e.games ?? [], adjourned: e.adjourned ?? [] };
+    if (this.awaitingRoom && this.seated()) this.ended = GAME_GONE;
+    this.awaitingRoom = false;
     if (setting("noChallenges")) this.refuseInvites();
   }
 
@@ -244,12 +251,14 @@ class OnlineClient {
   welcomed() {
     this.refused = null;
     this.connected = true;
+    this.awaitingRoom = true;
     if (this.room?.watching) this.send({ t: "watch", code: this.room.id });
     const due = [...(this.link?.takeUnconfirmed() ?? []), ...this.queued.splice(0)];
     new Map(due.map((m) => [JSON.stringify(m), m])).forEach((m) => this.sendWhenOnline(m));
   }
 
   seatedIn(e) {
+    this.awaitingRoom = false;
     if (this.room?.id !== e.code) this.forgetRoom();
     this.room = { id: e.code, duplicate: e.mode === "duplicate", me: e.name, host: e.host, players: e.players ?? [], first: !!e.first, watching: !!e.watching, timed: !e.untimed };
   }
@@ -300,7 +309,7 @@ const HANDLERS = {
   },
   adjournAsk: (c, e) => (c.adjournAsk = e.name),
   closed: (c, e) => c.closed(e.reason),
-  chat: (c, e) => c.heard({ from: e.name, text: e.text }),
+  chat: (c, e) => !c.ignoringAll() && c.heard({ from: e.name, text: e.text, room: true }),
   tell: (c, e) => !c.ignoringAll() && !c.ignored().includes(key(e)) && c.heard({ from: e.name, country: e.country, text: e.text, private: true }),
   watchers: (c, e) => (c.watchers = e.people ?? []),
   table: (c, e) => c.room && (c.table = readTable(e.view, c.room.watching ? "" : c.room.me)),

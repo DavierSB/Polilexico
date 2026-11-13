@@ -65,6 +65,9 @@ func TestInvalidPlayLosesTurn(t *testing.T) {
 	if err != nil || played.Kind != core.KindInvalid || played.Coords != "H8" || played.HumanTotal != 0 {
 		t.Fatalf("%+v %v", played, err)
 	}
+	if played.Words != "TPN" {
+		t.Fatalf("palabras formadas: %q", played.Words)
+	}
 	if c.Status().HumanToMove {
 		t.Fatal("no perdió el turno")
 	}

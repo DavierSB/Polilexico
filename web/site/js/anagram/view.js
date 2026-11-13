@@ -9,7 +9,7 @@ import { resultCard, outcomeBanner, resultSection, livesRow } from "../results.j
 import { ANAGRAM_RULES } from "./rules.js";
 
 const LOW_TIME_MS = 30000;
-const REPLIES = { invalid: ["No es válida: pierdes una vida.", "error"], repeated: ["Esa ya la encontraste.", "muted"], found: ["¡Bien! Sigue buscando.", "hit"] };
+const REPLIES = { invalid: ["No es válida: pierdes una vida.", "error"], repeated: ["Esa ya la encontraste.", "muted"], found: ["✓  ¡Esa es! Busca otra.", "hit"] };
 const BANNERS = {
   solved: ["¡RESUELTA!", "Mano completa", true],
   gave_up: ["TE RENDISTE", "Pierdes una vida", false],

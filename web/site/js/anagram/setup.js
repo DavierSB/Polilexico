@@ -47,7 +47,7 @@ function fields(form, redraw, gates) {
     h("div.field", {}, h("label", { for: "anagram-total" }, "Tiempo de la serie"), h("input", { id: "anagram-total", value: form.total, inputmode: "numeric", oninput: (e) => (form.total = e.target.value) })),
     sectionTitle("Vidas", "Una palabra no válida o rendirse cuesta una vida. Sin vidas, se acaba la serie."),
     stepper(form.lives, 1, 5, (n) => ((form.lives = n), redraw())),
-    best ? h("div.card.record-card", {}, h("span.muted", {}, "Récord"), h("b", {}, `${best} ${best === 1 ? "mano" : "manos"}`)) : null,
+    best ? h("div.card.record-card", {}, h("span.record-label", {}, "TU RÉCORD"), h("b", {}, `${best} ${best === 1 ? "mano" : "manos"}`)) : null,
     start,
   ];
 }

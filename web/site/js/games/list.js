@@ -1,8 +1,6 @@
 import { h, replace } from "../dom.js";
 import { go } from "../router.js";
 import { screenHead } from "../parts.js";
-import { load, save } from "../store.js";
-import { choiceRow } from "../classic/options.js";
 import { listRecords } from "../records.js";
 import { bot } from "../classic/bots.js";
 
@@ -13,21 +11,6 @@ const FOLDERS = {
   classic: ["Clásicas terminadas", "clasica"], duplicate: ["Duplicadas terminadas", "duplicada"], endgame: ["Finales terminados", "finales"],
   online: ["Partidas en línea terminadas", "clasica"],
 };
-
-export function gamesScreen(app) {
-  const body = h("div.stack");
-  const tabs = h("div");
-  app.append(h("div.screen", {}, screenHead("Mis partidas", "", h("button.text-btn", { onclick: () => go("estadisticas") }, "Estadísticas")), tabs, body));
-  let mode = load("gamesTab", "classic");
-  listRecords().then((records) => {
-    const draw = () => {
-      replace(tabs, choiceRow(MODES.map(([, l]) => l), MODES.findIndex(([m]) => m === mode), (i) => ((mode = MODES[i][0]), save("gamesTab", mode), draw())));
-      const shown = records.filter((r) => r.summary.Mode === mode);
-      replace(body, recordCards(shown));
-    };
-    draw();
-  });
-}
 
 export function finishedScreen(app, [mode]) {
   const [title, back] = FOLDERS[mode] ?? FOLDERS.classic;
@@ -41,7 +24,11 @@ function inFolder(r, folder) {
 }
 
 function recordCards(shown) {
-  return shown.length ? shown.map(card) : h("div.empty-state", {}, h("b", {}, "Aún no hay partidas."), h("span", {}, "Las partidas terminadas aparecen aquí."));
+  return shown.length ? h("div.game-rows", {}, shown.map(card)) : h("p.stats-empty", {}, "Todavía no has terminado ninguna partida de este tipo.");
+}
+
+export function folderOf(record) {
+  return record.online ? "online" : record.summary?.Mode ?? "classic";
 }
 
 export function alias(name) {
@@ -64,10 +51,8 @@ function card(r) {
   const s = r.summary;
   const won = s.Mode === "duplicate" ? null : s.Outcome === "win" ? true : s.Outcome === "loss" ? false : null;
   const detail = DATE.format(new Date(r.finishedAt)) + (s.Mode === "duplicate" ? ` · ${s.Hits} aciertos` : "");
-  return h("button.list-card", { onclick: () => go("partida-revision/" + r.id) },
-    h("div.row", {},
-      h("div.grow.stack", {}, h("b.list-name", {}, gameTitle(s)), h("span.muted.small", {}, detail)),
-      h("div.stack.center", {}, h("b.list-percent", {}, scoreText(s)), won === null ? null : h("span", { class: "result-chip" + (won ? " on" : "") }, won ? "Ganada" : "Perdida")),
-    ),
+  return h("button.finished-row", { onclick: () => go("partida-revision/" + r.id) },
+    h("div.grow.stack", {}, h("b", {}, gameTitle(s)), h("span.muted.small", {}, detail)),
+    h("b", { class: "game-score" + (won === true ? " won" : won === false ? " lost" : "") }, scoreText(s)),
   );
 }

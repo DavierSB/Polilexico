@@ -25,6 +25,15 @@ type reviewGame struct {
 func registerReview() {
 	handlers["reviewOpen"] = reviewOpen
 	handlers["reviewRank"] = reviewRank
+	handlers["positionReview"] = positionReview
+}
+
+func positionReview(args []json.RawMessage) (any, error) {
+	t, err := positionTurn(args)
+	if err != nil {
+		return nil, err
+	}
+	return turnOf(t), nil
 }
 
 func reviewOpen(args []json.RawMessage) (any, error) {

@@ -2,25 +2,36 @@ import { h, replace } from "../dom.js";
 import { go } from "../router.js";
 import { overrideWith } from "../theme.js";
 import { engineLoading } from "../parts.js";
-import { openDialog, actions } from "../dialogs.js";
 import { bot, botPhoto } from "./bots.js";
-import { currentSession, resumeSaved, startAgain, hasSaved } from "./session.js";
+import { currentSession, openSaved } from "./session.js";
 import { gameView } from "./view.js";
-import { verdict, endDetail, localVerdict } from "./verdict.js";
-import { endTools } from "../games/endTools.js";
-import { confetti } from "../confetti.js";
+import { announceEnd, resultPanel } from "./ending.js";
 
-export function classicGameScreen(app) {
+export function classicGameScreen(app, [id]) {
   const holder = h("div.screen");
   app.append(holder);
-  let view = null;
-  open(holder, (v) => (view = v));
-  return () => view?.destroy();
+  const shown = { view: null, session: null, left: false };
+  open(holder, id, shown);
+  return () => leave(shown);
 }
 
-async function open(holder, keep) {
-  const session = currentSession() ?? (hasSaved() ? await waitFor(holder, resumeSaved()) : null);
+function leave(shown) {
+  shown.left = true;
+  shown.view?.destroy();
+  shown.session?.close();
+}
+
+async function sessionFor(holder, id) {
+  const live = currentSession();
+  if (live && (!id || live.id === id)) return live;
+  return id ? waitFor(holder, openSaved(id)) : null;
+}
+
+async function open(holder, id, shown) {
+  const session = await sessionFor(holder, id);
+  if (shown.left) return session?.close();
   if (!session) return go("clasica", true);
+  shown.session = session;
   const players = session.setup.players;
   const rival = bot(session.setup.bot) ?? bot("HastyBot");
   if (!players) overrideWith(rival.theme);
@@ -32,9 +43,10 @@ async function open(holder, keep) {
     thinkingText: players ? null : "pensando…",
     exit: () => go(""),
     resign: () => (session.resign(), go("")),
-    onEnd: (state) => endDialog(state, session, rival),
+    onEnd: (state, names) => announceEnd(state, names, { local: !!players }),
+    endPanel: (state, names) => resultPanel(state, names, { local: !!players }, { recorded: () => session.recorded, menu: () => go("") }),
   });
-  keep(view);
+  shown.view = view;
   holder.replaceWith(view.el);
 }
 
@@ -44,26 +56,4 @@ async function waitFor(holder, promise) {
   const result = await promise.catch(() => null);
   loading.stop();
   return result;
-}
-
-function endDialog(state, session, rival) {
-  const players = session.setup.players;
-  const second = players ? players[1] : rival.alias;
-  if (!players && state.result.outcome === "win") confetti();
-  openDialog((close) => [
-    h("h2.verdict", {}, players ? localVerdict(state, players[0], second) : verdict(state, second)),
-    h("p.final-score", {}, `${state.myScore} – ${state.opponentScore}`),
-    endDetail(state, second),
-    endTools(() => session.recorded, state, { me: players ? players[0] : "Tú", opponent: second }, close),
-    actions(
-      h("button.text-btn", { onclick: () => (close(), go("")) }, "Salir"),
-      h("button.text-btn", { onclick: close }, "Ver tablero"),
-      h("button.text-btn", { onclick: () => (close(), rematch(session)) }, session.setup.endgame ? "Otro final" : "Revancha"),
-    ),
-  ]);
-}
-
-async function rematch(session) {
-  await startAgain(session.setup);
-  go("partida", true);
 }

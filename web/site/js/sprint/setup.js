@@ -43,7 +43,7 @@ function fields(form, redraw, gates) {
     stepper(form.lives, 1, 5, (n) => ((form.lives = n), redraw())),
     sectionTitle("Comprobación de jugadas", CHALLENGE_INFO),
     choiceRow(["Void", "Single"], form.single ? 1 : 0, (i) => ((form.single = i === 1), redraw())),
-    best ? h("div.card.record-card", {}, h("span.muted", {}, "Récord"), h("b", {}, `${best} ${best === 1 ? "scrabble" : "scrabbles"}`)) : null,
+    best ? h("div.card.record-card", {}, h("span.record-label", {}, "TU RÉCORD"), h("b", {}, `${best} ${best === 1 ? "scrabble" : "scrabbles"}`)) : null,
     start,
   ];
 }

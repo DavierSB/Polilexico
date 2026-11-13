@@ -7,6 +7,8 @@ import app.lexico.game.modes.classic.EndReason
 import app.lexico.game.modes.classic.MoveKind
 import app.lexico.game.Outcome
 import app.lexico.game.modes.classic.PlayedMove
+import app.lexico.model.Letters
+import app.lexico.model.Placement
 import app.lexico.ui.classic.Clock
 import app.lexico.ui.classic.ClassicView
 import app.lexico.ui.classic.Ending
@@ -29,9 +31,6 @@ fun classicView(state: ClassicState, opponent: String, notice: String?, host: St
   notice = notice ?: state.botError, paused = state.paused && state.result == null,
 )
 
-fun withRivalInvalid(view: ClassicView, state: ClassicState): ClassicView =
-  view.copy(notice = view.notice ?: invalidNotice(state) { m -> view.opponent.takeUnless { m.byMe } })
-
 fun invalidNotice(state: ClassicState, mover: (PlayedMove) -> String?): String? {
   val last = state.moves.lastOrNull()?.takeIf { it.kind == MoveKind.INVALID } ?: return null
   return mover(last)?.let { "$it jugó una inválida: ${last.text}" }
@@ -52,7 +51,11 @@ private fun turn(state: ClassicState): Side? = when {
 private fun move(m: PlayedMove): Move = Move(
   side = if (m.byMe) Side.ME else Side.OPPONENT, type = moveType(m.kind), text = m.text, tiles = m.tileCount,
   points = m.score, myTotal = m.myTotal, opponentTotal = m.opponentTotal,
+  words = m.words, letters = if (m.kind == MoveKind.INVALID) usedLetters(m) else emptyList(),
 )
+
+private fun usedLetters(m: PlayedMove): List<String> =
+  Placement.parseOrNull("${m.coords} ${m.tiles}")?.placed?.values.orEmpty().map { if (it.blank) Letters.BLANK else it.letter }
 
 private fun moveType(kind: MoveKind): MoveType = when (kind) {
   MoveKind.PLACEMENT -> MoveType.PLACEMENT

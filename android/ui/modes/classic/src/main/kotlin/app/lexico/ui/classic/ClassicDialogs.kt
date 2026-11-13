@@ -8,10 +8,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.TilePlacer
 import app.lexico.ui.common.BagDialog
 import app.lexico.ui.common.ConfirmDialog
-import app.lexico.ui.common.InfoDialog
 import app.lexico.ui.common.ResignDialog
 
 @Composable
@@ -32,12 +32,10 @@ private fun WatchInvalid(view: ClassicView, dialogs: ClassicDialogs) {
   var seen by remember { mutableIntStateOf(-1) }
   val moves = view.moves
   LaunchedEffect(moves.size) {
-    if (seen >= 0 && moves.drop(seen).any { isMyInvalid(it, view.local) }) dialogs.invalid = true
+    if (seen >= 0 && !view.watching) moves.drop(seen).lastOrNull { it.type == MoveType.INVALID }?.let { dialogs.invalid = it }
     seen = moves.size
   }
 }
-
-private fun isMyInvalid(move: Move, local: Boolean): Boolean = (move.side == Side.ME || local) && move.type == MoveType.INVALID
 
 @Stable
 internal class ClassicDialogs {
@@ -45,7 +43,7 @@ internal class ClassicDialogs {
   var bag by mutableStateOf(false)
   var pass by mutableStateOf(false)
   var resign by mutableStateOf(false)
-  var invalid by mutableStateOf(false)
+  var invalid by mutableStateOf<Move?>(null)
   var ending by mutableStateOf(false)
   var result by mutableStateOf(false)
 
@@ -60,7 +58,7 @@ internal class ClassicDialogs {
 }
 
 @Composable
-internal fun ClassicDialogsShown(view: ClassicView, c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs) {
+internal fun ClassicDialogsShown(view: ClassicView, c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs, style: BoardStyle) {
   val end = view.end
   if (dialogs.ending && end?.ending != null) EndingDialog(view, end.ending, dialogs::closeEnding)
   if (dialogs.result && end != null) ResultDialog(view, end) { dialogs.result = false }
@@ -68,7 +66,7 @@ internal fun ClassicDialogsShown(view: ClassicView, c: TilePlacer, actions: Clas
   if (dialogs.bag) UnseenDialog(view) { dialogs.bag = false }
   if (dialogs.pass) PassDialog(c, actions, dialogs)
   if (dialogs.resign) ResignDialog(onResign = actions::resign, onContinue = { dialogs.resign = false })
-  if (dialogs.invalid) InfoDialog("Jugada incorrecta", "La jugada no es válida: pierdes el turno.") { dialogs.invalid = false }
+  dialogs.invalid?.let { InvalidMoveDialog(it, style) { dialogs.invalid = null } }
 }
 
 @Composable

@@ -15,6 +15,7 @@ type Move struct {
 	Score      int
 	HumanTotal int
 	BotTotal   int
+	Words      string
 }
 
 type Status struct {

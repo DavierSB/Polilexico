@@ -9,13 +9,15 @@ import { drawerButton, drawerItems } from "./drawer.js";
 import { online } from "../online/client.js";
 import { messagesButton } from "../online/messages.js";
 import { setting } from "../settings.js";
+import { offerProfile } from "./profileOffer.js";
 
 export function homeScreen(app) {
   const chip = onlineChip();
   const messages = account() ? messagesButton() : null;
   const stay = stayOnline();
-  const done = homeFrame(app, [drawerButton(), brand(), h("div.row.head-actions", {}, messages?.el, chip.el)], menu());
-  return () => (done(), chip.stop(), messages?.stop(), stay());
+  const offer = offerProfile();
+  const done = homeFrame(app, [drawerButton(), brand(), h("div.row.head-actions", {}, messages?.el, chip.el)], menu(offer.go));
+  return () => (done(), chip.stop(), messages?.stop(), stay(), offer.stop());
 }
 
 export function homeFrame(app, head, buttons) {
@@ -46,10 +48,10 @@ function onlineChip() {
   return { el, stop };
 }
 
-function menu() {
+function menu(offered) {
   return [
-    h("button.btn.block", { onclick: () => go("clasica") }, "Clásica"),
-    h("button.btn.block", { onclick: () => go("duplicada") }, "Duplicada"),
+    h("button.btn.block", { onclick: () => offered("clasica") }, "Clásica"),
+    h("button.btn.block", { onclick: () => offered("duplicada") }, "Duplicada"),
     h("button.btn.block", { onclick: () => go("minijuegos") }, "Minijuegos"),
     h("button.btn.block", { onclick: () => go("estudiar") }, "Estudiar"),
   ];

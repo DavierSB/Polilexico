@@ -7,7 +7,7 @@ import { createBoard, tile } from "../board.js";
 import { confirm, openDialog, actions, themeDialog, toast } from "../dialogs.js";
 import { at } from "../placement.js";
 import { placementScore } from "../score.js";
-import { formatClock, moveButtons } from "../parts.js";
+import { formatClock, moveButtons, initialAvatar } from "../parts.js";
 import { photoAvatar } from "./profile.js";
 import { Placer } from "../classic/placer.js";
 import { createRack } from "../classic/rack.js";
@@ -18,7 +18,10 @@ import { bindKeys } from "../classic/keys.js";
 import { account } from "./api.js";
 import { online } from "./client.js";
 import { MASTER, standings, placeOf, leftMs } from "./table.js";
-import { chatInput, chatLine, chatButton } from "./tell.js";
+import { chatInput, chatLine, chatButton, watchersButton } from "./tell.js";
+import { adjournConfirm, adjournDialog, watchAway, rivalOf, watchingNotice } from "./adjourn.js";
+import { percentChartDialog } from "./percentChart.js";
+import { writeMessage, ROOM_CONTACT } from "./messages.js";
 import { confetti } from "../confetti.js";
 import { play } from "../sound.js";
 
@@ -28,15 +31,21 @@ const TICK_MS = 250;
 export function duplicateRoomScreen(app) {
   if (!account()) return go("cuenta", true);
   const view = new RoomView();
-  app.append(view.el);
+  const waiting = h("div.screen.room-lobby");
+  app.append(waiting);
   online.acquire();
-  const stop = online.subscribe((c) => view.update(c));
+  const stop = online.subscribe((c) => {
+    if (!c.table && c.room && !c.ended) return drawWaiting(waiting, c);
+    if (waiting.isConnected) waiting.replaceWith(view.el);
+    view.update(c);
+  });
   const ticker = setInterval(() => view.tick(), TICK_MS);
   return () => (stop(), clearInterval(ticker), view.destroy(), online.release());
 }
 
 class RoomView {
   constructor() {
+    this.away = { waits: 0 };
     this.placer = new Placer(() => this.placerChanged());
     this.placer.askBlank = askBlank;
     this.board = createBoard({ onSquare: (i) => this.canPlay() && this.placer.clickSquare(i) });
@@ -57,6 +66,7 @@ class RoomView {
 
   destroy() {
     this.unbindKeys();
+    clearTimeout(this.away.awayTimer);
   }
 
   celebrate(t) {
@@ -74,6 +84,10 @@ class RoomView {
     if (c.ended && c.ended !== this.lastEnded) closedDialog(c.ended);
     this.lastEnded = c.ended;
     this.drawChat(c);
+    watchingNotice(c);
+    if (c.adjournAsk && c.adjournAsk !== this.adjournAsk) adjournDialog(c.adjournAsk);
+    this.adjournAsk = c.adjournAsk;
+    if (c.room?.players.length === 2) watchAway(this.away, c);
     if (!c.table || c.table === this.t) return;
     const previous = this.t;
     this.t = c.table;
@@ -125,14 +139,21 @@ class RoomView {
   renderBar() {
     const t = this.t;
     const live = t.phase !== "finished" && !this.watching;
+    const pair = (this.client?.room?.players.length ?? 0) === 2;
+    const adjourn = live && pair;
+    const watchers = this.client?.watchers ?? [];
+    const moves = () => movesDialog(roundsOf(t, this.watching), this.watching ? "Mejor" : "Tú");
     replace(this.bar,
       h("button.text-btn", { onclick: () => this.exit() }, "Salir"),
-      live ? h("button.text-btn", { onclick: () => this.abandon() }, "Abandonar") : null,
+      adjourn ? h("button.text-btn", { onclick: () => adjournConfirm(rivalOf(online), online.rivalOnline) }, "Aplazar") : null,
+      live && !pair ? h("button.text-btn", { onclick: () => this.abandon() }, "Abandonar") : null,
       h("span.grow"),
-      h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
-      chatButton(this.chatPanel),
-      t.phase !== "playing" || this.watching ? h("button.text-btn", { onclick: () => this.standingsDialog() }, "Posiciones") : null,
-      h("button.text-btn.moves-btn", { onclick: () => movesDialog(roundsOf(t, this.watching), this.watching ? "Mejor" : "Tú") }, "Movidas"),
+      watchers.length ? null : h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
+      watchersButton(watchers),
+      this.watching ? chatButton(() => writeMessage()) : null,
+      this.watching ? null : h("button.icon-btn", { "aria-label": "Evolución", onclick: () => percentChartDialog(t, t.me, true) }, icon("chart")),
+      t.phase !== "playing" || this.watching ? h("button.text-btn", { onclick: () => this.openStandings() }, "Posiciones") : null,
+      adjourn ? h("button.icon-btn", { "aria-label": "Movidas", onclick: moves }, icon("moves")) : h("button.text-btn.moves-btn", { onclick: moves }, "Movidas"),
       h("button.bag-btn", { "aria-label": "Quedan en la bolsa", onclick: () => duplicateBagDialog(t.unseen) }, bagIcon(t.unseen.length)),
     );
   }
@@ -187,6 +208,11 @@ class RoomView {
   }
 
   exchange() {}
+
+  openStandings() {
+    if (this.watching) return percentChartDialog(this.t, this.t.me, true);
+    this.standingsDialog();
+  }
 
   async abandon() {
     if (await confirm("¿Seguro que quieres abandonar la partida?", "Abandonar", "Seguir")) (online.leave(), go(lobbyRoute()));
@@ -272,4 +298,32 @@ function leaderboard(t) {
 
 function closedDialog(reason) {
   openDialog((close) => [h("p", {}, reason), actions(h("button.text-btn", { onclick: () => (close(), online.leave(), go(lobbyRoute())) }, "Volver al lobby"))], { dismissable: false });
+}
+
+const CANCEL_ROOM = ["Cancelar partida", "¿Seguro que quieres cancelar la partida?"];
+const LEAVE_ROOM = ["Salir de la sala", "¿Seguro que quieres salir de la sala?"];
+
+function drawWaiting(el, c) {
+  const host = !!c.room.first;
+  const players = c.room.players ?? [];
+  const tiles = [...players.map((p) => playerTile(p, p === c.room.host, p === c.room.me)), host ? h("div.room-tile.waiting", {}, h("div.spinner.small"), h("span", {}, "Esperando…")) : null].filter(Boolean);
+  const [label, question] = host ? CANCEL_ROOM : LEAVE_ROOM;
+  const exit = async () => {
+    if (!(await confirm(question, label, "Seguir en la sala"))) return;
+    c.leave();
+    go(lobbyRoute(), true);
+  };
+  replace(el,
+    h("header.screen-head", {}, h("h1", {}, `Sala de ${c.room.host}`)),
+    h("p.section-title", {}, `Jugadores · ${players.length}`),
+    h("div.room-grid", {}, tiles),
+    host ? h("button.btn.block.room-start", { disabled: players.length < 2, onclick: () => c.startSeek({ id: c.room.id }) }, "Empezar la partida")
+      : h("div.row.room-status", {}, h("div.spinner.small"), h("b", {}, c.notice ?? `${c.room.host} empezará la partida en breve`)),
+    h("button.btn.outlined.block", { onclick: () => writeMessage(ROOM_CONTACT) }, "💬  Mensaje a la sala"),
+    h("button.text-btn.block.danger", { onclick: exit }, label),
+  );
+}
+
+function playerTile(name, host, mine) {
+  return h("div", { class: "room-tile" + (mine ? " mine" : "") }, initialAvatar(name, 40), h("div.stack", {}, h("b.ellipsis", {}, name), h("span.small.muted", {}, host ? "Crea la sala" : "Conectado")));
 }

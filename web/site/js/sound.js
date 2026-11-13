@@ -12,6 +12,18 @@ const SOUNDS = {
   game_over: ["material_hero_simple_celebration_01", 1],
 };
 
+const VIBRATIONS = {
+  warning: [80],
+  last_seconds: [60, 80, 60, 80, 60],
+  time_up: [400],
+  correct: [40],
+  wrong: [60, 60, 60],
+  miss: [120],
+  opponent: [30],
+  victory: [60, 40, 60, 40, 60, 80, 300],
+  game_over: [60, 60, 60, 60, 200],
+};
+
 let context = null;
 const buffers = new Map();
 
@@ -23,7 +35,16 @@ export function setSounds(on) {
   save("sounds", on);
 }
 
+export function vibrationOn() {
+  return load("vibration", true);
+}
+
+export function setVibration(on) {
+  save("vibration", on);
+}
+
 export function play(cue) {
+  vibrate(cue);
   const sound = SOUNDS[cue];
   if (!sound || !soundsOn()) return;
   audio()?.resume().catch(() => {});
@@ -36,6 +57,10 @@ export function cueWatcher() {
     if (seen !== null && count > seen && cue) play(cue);
     seen = count;
   };
+}
+
+function vibrate(cue) {
+  if (vibrationOn() && VIBRATIONS[cue]) navigator.vibrate?.(VIBRATIONS[cue]);
 }
 
 function audio() {

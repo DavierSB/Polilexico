@@ -27,7 +27,7 @@ export function recallView(session, exit) {
     ),
     body, lives,
   );
-  const ui = { session, body, exit, stageKey: null, attempt: null, timer: null };
+  const ui = { session, el, body, exit, stageKey: null, attempt: null, timer: null };
   const stop = session.subscribe(() => draw(ui, lives));
   const onKey = (e) => keys(ui, e);
   document.addEventListener("keydown", onKey);
@@ -40,6 +40,7 @@ function draw(ui, lives) {
   const key = JSON.stringify([s.round, s.stage.name, s.stage.index, s.stage.verdict]);
   if (key === ui.stageKey) return;
   ui.stageKey = key;
+  ui.el.dataset.stage = s.stage.name;
   const stages = { loading, watching, solving, round_done: roundDone, series_done: seriesDone, failed };
   replace(ui.body, stages[s.stage.name](ui));
 }

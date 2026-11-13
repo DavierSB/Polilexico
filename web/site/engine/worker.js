@@ -16,7 +16,7 @@ globalThis.lexicoReady = () => {
 
 globalThis.lexicoReply = (id, ok, value) => postMessage({ id, ok, value: JSON.parse(value) });
 
-globalThis.lexicoChanged = (match) => postMessage({ changed: match });
+globalThis.lexicoChanged = (match, value) => postMessage({ changed: match, value: value === undefined ? undefined : JSON.parse(value) });
 
 globalThis.onmessage = (e) => {
   if (e.data.pack) return deliver(e.data.pack);

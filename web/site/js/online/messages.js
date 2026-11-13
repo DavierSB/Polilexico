@@ -33,9 +33,19 @@ export function writeMessage(to = null) {
   openDialog((close) => composer(to, close, subscription), { wide: true, onClose: () => (subscription.stop?.(), (composing.open = false), online.release()) });
 }
 
+const WHOLE_ROOM = "Toda la sala";
+const GROUPS = [["room", "Sala"], ["rivals", "Rivales"], ["watchers", "Observando"], ["others", "Conectados"]];
+export const ROOM_CONTACT = { name: WHOLE_ROOM, country: "", group: "room" };
+
 function contacts(c) {
   const me = account();
-  return c.lobby.people.filter((p) => !(p.name === me?.name && p.country === me?.country)).sort((a, b) => a.name.localeCompare(b.name));
+  const rivals = new Set((c.room?.players ?? []).filter((p) => p !== c.room.me));
+  const watching = (p) => (c.watchers ?? []).some((w) => w.name === p.name && w.country === p.country);
+  const people = c.lobby.people.filter((p) => !(p.name === me?.name && p.country === me?.country))
+    .map((p) => ({ ...p, group: rivals.has(p.name) ? "rivals" : watching(p) ? "watchers" : "others" }));
+  const room = c.room?.duplicate && rivals.size && !c.room.watching ? [ROOM_CONTACT] : [];
+  const order = (g) => GROUPS.findIndex(([k]) => k === g);
+  return [...room, ...people.sort((a, b) => order(a.group) - order(b.group) || a.name.toLowerCase().localeCompare(b.name.toLowerCase()))];
 }
 
 function find(c, nick) {
@@ -79,7 +89,8 @@ function composer(preset, close, subscription) {
 function send(nick, text, close) {
   const to = find(online, nick);
   if (!to || !text.trim()) return;
-  online.tell(to, text.trim());
+  if (to.group === "room") online.sayInRoom(text.trim());
+  else online.tell(to, text.trim());
   close();
 }
 
@@ -89,7 +100,10 @@ function pickContact(chosen) {
     return [
       h("h2", {}, "Escribir a"),
       h("div.stack.dialog-list", {},
-        people.length ? [h("h3.side-title", {}, "Conectados"), people.map((p) => contactRow(p, () => (close(), chosen(p))))] : h("p", {}, "No hay nadie más conectado."),
+        people.length ? GROUPS.map(([g, title]) => {
+          const list = people.filter((p) => p.group === g);
+          return list.length ? [h("h3.side-title", {}, title), list.map((p) => contactRow(p, () => (close(), chosen(p))))] : null;
+        }) : h("p", {}, "No hay nadie más conectado."),
       ),
       actions(h("button.text-btn", { onclick: close }, "Cerrar")),
     ];
@@ -97,6 +111,7 @@ function pickContact(chosen) {
 }
 
 function contactRow(p, onclick) {
+  if (p.group === "room") return h("button.player-row.contact-row", { onclick }, roomAvatar(), h("span.grow", {}, WHOLE_ROOM));
   return h("button.player-row.contact-row", { onclick }, photoAvatar(p.name, p.country, 40), h("span.grow", {}, nameFlag(p.name, p.country)));
 }
 
@@ -150,10 +165,10 @@ function popupBody(c) {
   const last = c.inbox[c.inbox.length - 1];
   const older = c.inbox.length - 1;
   return [
-    h("b.popup-from", {}, `${last.from} dice:`),
+    h("b.popup-from", {}, last.room ? `${last.from} dice a la sala:` : `${last.from} dice:`),
     h("p.popup-quote", {}, `“${last.text}”`),
     older ? h("span.small.muted", {}, older === 1 ? "+1 anterior" : `+${older} anteriores`) : null,
-    h("button.btn.block", { onclick: () => (c.closeChat(), writeMessage({ name: last.from, country: last.country })) }, "Responder"),
+    last.room || last.country ? h("button.btn.block", { onclick: () => (c.closeChat(), writeMessage(last.room ? ROOM_CONTACT : { name: last.from, country: last.country })) }, "Responder") : null,
     h("button.btn.block.outlined", { onclick: () => c.closeChat() }, "Cerrar"),
     h("button.text-btn.small-link", { onclick: () => c.ignore({ name: last.from, country: last.country }) }, `Ignorar mensajes de ${last.from}`),
     h("button.text-btn.small-link", { onclick: () => c.ignoreAll(true) }, "Ignorar todos los mensajes"),

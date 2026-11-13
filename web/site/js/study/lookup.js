@@ -1,15 +1,9 @@
 import { h } from "../dom.js";
-import { openDialog, actions } from "../dialogs.js";
+import { openDialog } from "../dialogs.js";
+import { icon } from "../icons.js";
 import { SIZE } from "../tiles.js";
 import { studyData } from "./data.js";
-import { keyOf, upper, show } from "./keys.js";
-import { summary, sourceLabel } from "./dictionary.js";
-
-const RAE_URL = "https://dle.rae.es/";
-const STUDY_INFO = "Con el Modo Estudio activado, durante la partida se puede tocar una palabra ya jugada en el tablero para ver su significado en el diccionario.";
-
-export const STUDY_TITLE = "Modo Estudio";
-export { STUDY_INFO };
+import { keyOf, upper, wordEntry, entry } from "./keys.js";
 
 export function wordsAt(cells, i) {
   if (!cells[i]) return [];
@@ -25,23 +19,39 @@ function wordThrough(cells, i, dr, dc) {
   return tiles;
 }
 
-export async function lookUp(cells, i) {
+export function lookUp(cells, i) {
   const words = wordsAt(cells, i);
   if (!words.length) return;
-  const { dictionary } = await studyData();
-  openDialog((close) => [
-    ...words.map((w) => wordBlock(w, dictionary.meanings(w))),
-    actions(h("button.text-btn", { onclick: close }, "Cerrar")),
-  ], { wide: true });
+  const anchor = [...document.querySelectorAll(`.square[data-index="${i}"]`)].at(-1);
+  wordMenu(words, anchor);
 }
 
-function wordBlock(word, meanings) {
-  const sources = [...new Set(meanings.flatMap((m) => m.senses.map((s) => sourceLabel(s.source))))];
-  return h("div.stack.lookup-word", {},
-    h("h2", {}, upper(word)),
-    meanings.length
-      ? [meanings.slice(0, 2).map((m) => h("div.stack", {}, m.relation ? h("b.small", {}, m.relation) : null, m.senses.slice(0, 3).map((s, n) => h("p.sense", {}, h("b.sense-n", {}, `${n + 1}. `), s.text)))), h("span.muted.small", {}, "Fuente: " + sources.join(", "))]
-      : h("p.muted", {}, summary(meanings) ?? "No está en el diccionario sin conexión."),
-    h("a.text-btn", { href: RAE_URL + encodeURIComponent(show(word)), target: "_blank", rel: "noopener" }, "Consultar en la RAE"),
-  );
+export function lookUpWord(word) {
+  openWord(entry(word));
+}
+
+function wordMenu(words, anchor) {
+  const box = anchor?.getBoundingClientRect() ?? { left: innerWidth / 2, bottom: innerHeight / 2 };
+  const menu = h("div.word-menu", { role: "menu" }, words.map((w) => h("button.word-menu-item", { role: "menuitem", onclick: () => (close(), openWord(wordEntry(w))) }, icon("lookup"), `Ver ${upper(w)} en el diccionario`)));
+  const scrim = h("div.menu-scrim", {}, menu);
+  const close = () => scrim.remove();
+  scrim.addEventListener("click", (e) => e.target === scrim && close());
+  document.getElementById("layer").append(scrim);
+  const width = menu.offsetWidth, height = menu.offsetHeight;
+  menu.style.left = Math.max(8, Math.min(box.left, innerWidth - width - 8)) + "px";
+  menu.style.top = (box.bottom + height + 8 > innerHeight ? Math.max(8, box.top - height) : box.bottom) + "px";
+}
+
+export async function openWord(entry) {
+  const [{ lexicon }, { wordCard, looseCard }] = await Promise.all([studyData(), import("./word.js")]);
+  let close = null;
+  const body = h("div.word-dialog-body");
+  const show = (e) => {
+    const unit = lexicon.resolve(e);
+    body.replaceChildren(unit ? wordCard(unit, lexicon, show) : looseCard(e.replace(/^\w:/, ""), lexicon));
+    head.replaceChildren(h("button.icon-btn", { "aria-label": "Volver", onclick: () => close() }, icon("back")), h("h1", {}, upper(unit?.head ?? e.replace(/^\w:/, ""))));
+  };
+  const head = h("header.screen-head");
+  close = openDialog(() => [head, body], { wide: true, full: true });
+  show(entry);
 }

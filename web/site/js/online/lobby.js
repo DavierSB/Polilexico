@@ -1,6 +1,6 @@
 import { h, replace } from "../dom.js";
 import { go } from "../router.js";
-import { nameFlag, formatClock } from "../parts.js";
+import { nameFlag, formatClock, flag } from "../parts.js";
 import { openDialog, actions } from "../dialogs.js";
 import { account, logOut } from "./api.js";
 import { online } from "./client.js";
@@ -66,6 +66,7 @@ function draw(c, ui) {
     waitingRoom(c),
   );
   replace(ui.top, modeOffers(c, dup));
+  verdictNotice(c);
   ui.lower.show(dup ? [games(c, dup)] : [games(c, dup), challengeable(c)]);
   replace(ui.publish, dup
     ? h("button.btn.block.lobby-seek", { onclick: () => go("crear-duplicada") }, "Crear duplicada")
@@ -78,7 +79,7 @@ function modeOffers(c, dup) {
   const list = c.lobby.seeks.filter((s) => (s.mode === "duplicate") === dup);
   const sent = list.filter((s) => s.mine && s.to);
   const offers = list.filter((s) => !(s.mine && s.to)).sort((a, b) => !!b.mine - !!a.mine);
-  const pending = c.lobby.adjourned.filter((a) => !!a.duplicate === dup && !a.result && (a.online || a.untimed) && !a.busy);
+  const pending = c.lobby.adjourned.filter((a) => !!a.duplicate === dup && !a.result);
   const gamesHere = c.lobby.games.some((g) => (g.mode === "duplicate") === dup);
   return [
     section("Retos enviados", sent.map((s) => seekRow(c, s, dup))),
@@ -90,7 +91,7 @@ function modeOffers(c, dup) {
 
 export function roomRoute(c) {
   if (!c.room) return null;
-  if (c.room.duplicate) return c.table ? "sala-duplicada" : null;
+  if (c.room.duplicate) return c.table || !c.room.watching ? "sala-duplicada" : null;
   return c.session || c.room.watching ? "sala" : null;
 }
 
@@ -166,7 +167,29 @@ function noDuplicates(c) {
 
 
 function adjournedRow(c, a) {
-  return playerRow(a.opponent, a.country, "En línea · aplazada", false, h("button.btn.small", { onclick: () => c.resumeAdjourned(a.id) }, "Retomar"));
+  const detail = !a.online ? "Desconectado · aplazada" : a.busy ? "Jugando otra partida · aplazada" : "En línea · aplazada";
+  const available = (a.online || a.untimed) && !a.busy;
+  return playerRow(a.opponent, a.country, detail, false, h("button.btn.small", { disabled: !available, onclick: () => c.resumeAdjourned(a.id) }, "Retomar"));
+}
+
+const VERDICTS = {
+  win: ["¡Ganaste!", "se adjudicó a tu favor."],
+  loss: ["Perdiste", "se adjudicó en tu contra."],
+  void: ["Partida anulada", "se anuló al pasar los 3 días."],
+};
+let verdictShown = null;
+
+function verdictNotice(c) {
+  const a = c.lobby.adjourned.find((x) => x.result);
+  if (!a || verdictShown === a.id) return;
+  verdictShown = a.id;
+  const [title, text] = VERDICTS[a.result] ?? VERDICTS.void;
+  openDialog((close) => [
+    h("div.resume-icon", {}, photoAvatar(a.opponent, a.country, 56)),
+    h("h2.resume-title", {}, title),
+    h("p", {}, `Tu partida aplazada con ${a.opponent} ${flag(a.country)} ${text}`),
+    actions(h("button.text-btn", { onclick: close }, "Entendido")),
+  ], { onClose: () => c.seen(a.id) });
 }
 
 function games(c, dup) {

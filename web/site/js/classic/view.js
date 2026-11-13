@@ -11,19 +11,21 @@ import { playerCard } from "./cards.js";
 import { askBlank, bagDialog, movesDialog, movesTable, turnsTable } from "./moves.js";
 import { flip } from "./state.js";
 import { dragFrom } from "./drag.js";
-import { chatButton } from "../online/tell.js";
+import { chatButton, watchersButton } from "../online/tell.js";
 import { tile } from "../board.js";
 import { moveButtons } from "../parts.js";
 import { bindKeys } from "./keys.js";
 import { lookUp } from "../study/lookup.js";
 import { floatScore, landTiles } from "../motion.js";
 import { recall, remember } from "../tabMemory.js";
+import { invalidDialog } from "./invalid.js";
 
+const BANNER_MS = 2200;
 const RESIGN_TEXT = "¿Abandonar la partida? Se borra de partidas en curso y cuenta como abandonada en tus estadísticas.";
 
 export function gameView(session, options) {
   const view = new GameView(session, options);
-  return { el: view.el, destroy: () => view.destroy() };
+  return { el: view.el, destroy: () => view.destroy(), setNotice: (text) => view.setNotice(text), setWatchers: (list) => view.setWatchers(list) };
 }
 
 class GameView {
@@ -83,8 +85,24 @@ class GameView {
     this.placer.sync(state.cells, state.rack);
     if (kept) this.placer.restore(kept);
     this.renderAll();
-    if (moved && this.freshMove(first)) this.animateMove();
+    if (moved && this.freshMove(first)) this.announceMove(first);
     if (state.result && !this.ended) this.end();
+  }
+
+  announceMove(first) {
+    this.animateMove();
+    const last = this.state.moves.at(-1);
+    const unseen = !first || this.options.memory;
+    if (last?.kind === "invalid" && unseen && !this.options.watching) invalidDialog(last);
+    if (!first) this.banner(last);
+  }
+
+  banner(last) {
+    const text = !last || last.byMe ? null : last.kind === "pass" ? `${this.names().opponent} pasó` : last.kind === "exchange" ? `${this.names().opponent} cambió ${last.count} fichas` : null;
+    if (!text) return;
+    const el = h("div.opponent-banner", {}, text);
+    this.board.el.parentElement?.append(el);
+    setTimeout(() => el.remove(), BANNER_MS);
   }
 
   freshMove(first) {
@@ -187,12 +205,14 @@ class GameView {
     const o = this.options;
     replace(this.bar,
       h("button.text-btn", { onclick: () => o.exit() }, "Salir"),
+      o.adjourn && !this.state.result ? h("button.text-btn", { onclick: () => o.adjourn() }, "Aplazar") : null,
       o.resign && !this.state.result ? h("button.text-btn", { onclick: () => this.resign() }, "Abandonar") : null,
       h("span.grow"),
       o.pausable && this.state.clocks && !this.state.result ? h("button.icon-btn", { "aria-label": "Pausa", onclick: () => this.togglePause() }, icon(this.state.paused ? "play" : "pause")) : null,
+      this.watchers?.length ? null : h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
+      watchersButton(this.watchers),
       o.chat ? chatButton(o.chat) : null,
-      h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
-      h("button.text-btn.moves-btn", { onclick: () => movesDialog(this.state, this.names()) }, "Movidas"),
+      o.adjourn && !this.state.result ? h("button.icon-btn", { "aria-label": "Movidas", onclick: () => movesDialog(this.state, this.names()) }, icon("moves")) : h("button.text-btn.moves-btn", { onclick: () => movesDialog(this.state, this.names()) }, "Movidas"),
       h("button.bag-btn", { "aria-label": "Fichas por salir", onclick: () => bagDialog(this.state) }, bagIcon(this.state.bag)),
     );
   }
@@ -204,6 +224,7 @@ class GameView {
 
   renderButtons() {
     const p = this.placer;
+    if (this.state.result && this.options.endPanel) return replace(this.buttons, this.options.endPanel(this.state, this.names()));
     if (this.options.watching) return this.watchPanel();
     if (p.exchanging) return replace(this.buttons, this.exchangeButtons());
     const enabled = this.canPlay();
@@ -237,7 +258,22 @@ class GameView {
   }
 
   renderNotice() {
-    replace(this.notice, this.state.botError ? h("p.error", {}, this.state.botError) : null);
+    const text = this.state.botError ?? this.noticeText;
+    replace(this.notice, text ? h("p", { class: this.state.botError ? "error" : "game-message" }, text) : null);
+  }
+
+  setWatchers(list) {
+    const key = (list ?? []).map((w) => w.name + w.country).join("|");
+    if (key === this.watchersKey) return;
+    this.watchersKey = key;
+    this.watchers = list ?? [];
+    if (this.state) this.renderBar();
+  }
+
+  setNotice(text) {
+    if (this.noticeText === text) return;
+    this.noticeText = text;
+    if (this.state) this.renderNotice();
   }
 
   liveScore() {
@@ -291,6 +327,6 @@ class GameView {
 
   end() {
     this.ended = true;
-    this.options.onEnd?.(this.state);
+    this.options.onEnd?.(this.state, this.names());
   }
 }

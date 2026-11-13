@@ -2,9 +2,11 @@ import { h } from "./dom.js";
 import { go } from "./router.js";
 import { save } from "./store.js";
 import { engineGate } from "./parts.js";
+import { countSaved } from "./savedGames.js";
 
-export function savedButtons(mode, inProgress, route, gates) {
-  const resume = h("button.btn.outlined", { onclick: () => go(route) }, `En curso (${inProgress})`);
+export function savedButtons(mode, gates) {
+  const inProgress = countSaved(mode);
+  const resume = h("button.btn.outlined", { onclick: () => go("en-curso/" + mode) }, `En curso (${inProgress})`);
   if (inProgress) gates.push(engineGate(resume));
   else resume.disabled = true;
   const finished = h("button.btn.outlined", { onclick: () => (save("gamesTab", mode), go("terminadas/" + mode)) }, "Terminadas");

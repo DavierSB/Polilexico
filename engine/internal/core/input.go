@@ -107,7 +107,7 @@ func checkWords(g *game.Game, m *move.Move) error {
 		return placementError(err)
 	}
 	if bad := invalidWords(g, words); len(bad) > 0 {
-		return &InvalidWordsError{Play: invalidPlay(m), Words: bad, Score: m.Score()}
+		return &InvalidWordsError{Play: invalidPlay(m, visibleWords(g, words)), Words: bad, Score: m.Score()}
 	}
 	return nil
 }
@@ -116,14 +116,26 @@ func invalidWords(g *game.Game, words []tilemapping.MachineWord) []string {
 	var bad []string
 	for _, w := range words {
 		if !IsWord(g, w) {
-			bad = append(bad, withoutBrackets(w.UserVisible(g.Alphabet())))
+			bad = append(bad, visibleWord(g, w))
 		}
 	}
 	return bad
 }
 
-func invalidPlay(m *move.Move) Play {
+func visibleWords(g *game.Game, words []tilemapping.MachineWord) []string {
+	out := make([]string, len(words))
+	for i, w := range words {
+		out[i] = visibleWord(g, w)
+	}
+	return out
+}
+
+func visibleWord(g *game.Game, w tilemapping.MachineWord) string {
+	return withoutBrackets(w.UserVisible(g.Alphabet()))
+}
+
+func invalidPlay(m *move.Move, formed []string) Play {
 	p := PlayOf(m)
-	p.Kind, p.Score = KindInvalid, 0
+	p.Kind, p.Score, p.Words = KindInvalid, 0, formed
 	return p
 }

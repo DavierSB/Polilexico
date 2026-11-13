@@ -3,8 +3,8 @@ import { THEMES, choose, chooseLight, swatches, theme } from "./theme.js";
 
 const layer = () => document.getElementById("layer");
 
-export function openDialog(build, { wide = false, dismissable = true, onClose = null } = {}) {
-  const box = h("div", { class: "dialog" + (wide ? " wide" : ""), role: "dialog", "aria-modal": "true" });
+export function openDialog(build, { wide = false, full = false, dismissable = true, onClose = null } = {}) {
+  const box = h("div", { class: "dialog" + (wide ? " wide" : "") + (full ? " full" : ""), role: "dialog", "aria-modal": "true" });
   const scrim = h("div.scrim", {}, box);
   const close = () => {
     if (!scrim.isConnected) return;

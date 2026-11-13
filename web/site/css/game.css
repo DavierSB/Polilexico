@@ -375,6 +375,25 @@ button.word-row { cursor: pointer; }
 
 .recall-body { display: flex; flex-direction: column; gap: 12px; flex: 1; }
 
+@media (min-width: 900px) and (min-aspect-ratio: 1/1) {
+  .recall-screen:is([data-stage="watching"], [data-stage="round_done"], [data-stage="series_done"]) { display: grid; column-gap: 32px; row-gap: 12px; align-content: start; }
+  .recall-screen:is([data-stage="watching"], [data-stage="round_done"], [data-stage="series_done"]) > .screen-head { grid-column: 1 / -1; }
+  .recall-screen:is([data-stage="watching"], [data-stage="round_done"], [data-stage="series_done"]) > .recall-body { display: contents; }
+  .recall-screen[data-stage="watching"] {
+    --side: 360px;
+    --board: min(calc(100dvh - 100px), calc(100vw - var(--side) - 88px));
+    max-width: none; width: fit-content; min-height: 0; padding-bottom: 12px;
+    grid-template-columns: var(--board) var(--side);
+    grid-template-rows: auto auto auto auto 1fr;
+  }
+  .recall-screen[data-stage="watching"] .recall-board { grid-column: 1; grid-row: 2 / -1; width: var(--board); }
+  .recall-screen[data-stage="watching"] :is(.watch-head, .recall-body > p, .recall-lives) { grid-column: 2; }
+  .recall-screen:is([data-stage="round_done"], [data-stage="series_done"]) { max-width: 1000px; height: 100dvh; min-height: 0; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto auto auto 1fr; }
+  .recall-screen:is([data-stage="round_done"], [data-stage="series_done"]) :is(.result-card, .result-buttons, .recall-lives) { grid-column: 1; }
+  .recall-screen:is([data-stage="round_done"], [data-stage="series_done"]) .result-section { grid-column: 2; grid-row: 2; }
+  .recall-screen:is([data-stage="round_done"], [data-stage="series_done"]) .answer-list { grid-column: 2; grid-row: 3 / -1; min-height: 0; overflow-y: auto; align-content: start; }
+}
+
 .watch-head { display: flex; flex-direction: column; gap: 6px; }
 
 .memorize { font-family: var(--title-font); font-weight: 900; font-size: 13px; letter-spacing: 2px; color: var(--primary); }
@@ -526,3 +545,7 @@ button.word-row { cursor: pointer; }
 .spinner.small { width: 18px; height: 18px; border-width: 3px; }
 
 .deep-status { gap: 10px; padding: 8px; }
+
+.invalid-words { display: flex; flex-wrap: wrap; gap: 6px 14px; font-weight: 700; font-size: 18px; letter-spacing: .04em; }
+
+.still-tile { cursor: default; }

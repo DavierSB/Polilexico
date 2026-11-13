@@ -1,6 +1,7 @@
 import { h } from "../dom.js";
 import { icon } from "../icons.js";
 import { openDialog, actions } from "../dialogs.js";
+import { nameFlag } from "../parts.js";
 
 export function chatLine(who, text, mine) {
   return h("div", { class: "chat-line" + (mine ? " mine" : "") }, h("b", {}, who + ": "), text);
@@ -18,12 +19,17 @@ export function chatInput(send) {
   return h("form.chat-form", { onsubmit: submit }, input, h("button.icon-btn", { type: "submit", "aria-label": "Enviar" }, icon("send", 22)));
 }
 
-export function chatButton(panel) {
-  return h("button.icon-btn.bar-chat", { "aria-label": "Chat", onclick: () => chatDialog(panel) }, "💬");
+export function chatButton(open) {
+  return h("button.icon-btn.bar-chat", { "aria-label": "Chat", onclick: open }, "💬");
 }
 
-function chatDialog(panel) {
-  const home = panel.parentNode;
-  const next = panel.nextSibling;
-  openDialog((close) => [panel, actions(h("button.text-btn", { onclick: close }, "Cerrar"))], { onClose: () => home?.insertBefore(panel, next) });
+export function watchersButton(watchers) {
+  if (!watchers?.length) return null;
+  return h("button.text-btn", { onclick: () => watchersDialog(watchers) }, `👁 ${watchers.length}`);
 }
+
+function watchersDialog(watchers) {
+  openDialog((close) => [h("h2", {}, "Observando"), h("div.stack", {}, watchers.map((w) => h("div.player-row", {}, nameFlag(w.name, w.country)))), actions(h("button.text-btn", { onclick: close }, "Cerrar"))]);
+}
+
+

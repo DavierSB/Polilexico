@@ -33,6 +33,7 @@ data class PlayedMove(
   val myTotal: Int,
   val opponentTotal: Int,
   val text: String,
+  val words: List<String> = emptyList(),
 )
 
 enum class Side { ME, OPPONENT }

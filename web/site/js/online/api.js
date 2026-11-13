@@ -38,6 +38,11 @@ export async function logIn(form) {
   return keep(await request("POST", "/login", form));
 }
 
+export function renamed(name, country) {
+  const s = account();
+  if (s) save("session", { ...s, name, country });
+}
+
 export function logOut() {
   save("session", null);
 }

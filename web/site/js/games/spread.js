@@ -14,6 +14,13 @@ export function spreadOf(me, opponent, meStarts, totals) {
   return meStarts ? { top: me, bottom: opponent, points: lead } : { top: opponent, bottom: me, points: lead.map((v) => -v) };
 }
 
+export function classicSpread(state, names) {
+  const totals = [[0, 0], ...state.moves.map((m) => [m.myTotal, m.opponentTotal]), [state.myScore, state.opponentScore]];
+  const last = totals.at(-1), before = totals.at(-2);
+  const points = totals.length > 1 && last[0] === before[0] && last[1] === before[1] ? totals.slice(0, -1) : totals;
+  return spreadOf(names.me, names.opponent, state.moves[0]?.byMe !== false, points);
+}
+
 export function spreadDialog(spread, { selected = null, pick = null, extra = null } = {}) {
   openDialog((close) => [
     h("h2", {}, "Ventaja"),

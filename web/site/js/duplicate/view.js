@@ -2,7 +2,8 @@ import { setting } from "../settings.js";
 import { h, replace } from "../dom.js";
 import { icon, bagIcon } from "../icons.js";
 import { createBoard, tile } from "../board.js";
-import { confirm, themeDialog, toast } from "../dialogs.js";
+import { confirm, themeDialog, toast, openDialog } from "../dialogs.js";
+import { endButtons, wordsOf } from "../classic/ending.js";
 import { at } from "../placement.js";
 import { placementScore } from "../score.js";
 import { formatClock, moveButtons } from "../parts.js";
@@ -153,19 +154,30 @@ class DuplicateView {
     const panels = {
       waiting: () => h("button.btn.block", { onclick: () => this.session.showRack() }, `Ver atril y arrancar el reloj (${formatClock(s.turnMs)})`),
       invalid_rack: () => invalidRack("¡Mano inválida!", s.invalidRack),
-      many_invalid: () => invalidRack("Tras varias manos inválidas se obtiene el atril válido siguiente:", s.rack),
+      many_invalid: () => this.manyInvalid(s.rack),
       playing: () => roundBar(s.round, s.remainingMs),
       confirming: () => roundBar(s.round, s.remainingMs),
-      finished: () => h("p.section-title", {}, "Partida terminada"),
     };
+    if (s.phase !== "many_invalid") this.closeManyInvalid?.();
     replace(this.panel, panels[s.phase]?.() ?? null);
+  }
+
+  manyInvalid(rack) {
+    if (this.closeManyInvalid) return null;
+    const close = openDialog(() => [
+      h("h2", {}, "Manos inválidas"),
+      h("p", {}, "Tras varias manos inválidas se obtiene el atril válido siguiente:"),
+      h("div.row.invalid-tiles", {}, rack.map((l) => h("div.rack-tile.small", {}, face(l)))),
+    ], { dismissable: false, onClose: () => (this.closeManyInvalid = null) });
+    this.closeManyInvalid = close;
+    return null;
   }
 
   renderButtons() {
     const p = this.placer;
     const s = this.state;
     if (s.phase === "confirming") return replace(this.buttons, confirming(s, () => this.session.cancel()));
-    if (s.phase === "finished") return replace(this.buttons, h("button.btn.small", { onclick: () => endDialogs(s, true) }, "Resultados"), h("button.btn.small.outlined", { onclick: () => this.options.exit() }, "Salir"));
+    if (s.phase === "finished") return replace(this.buttons, h("div.row.end-buttons", {}, endButtons({ recorded: () => this.session.recorded, words: playedWords(s), menu: () => this.options.exit() })));
     if (s.phase !== "playing") return replace(this.buttons);
     replace(this.buttons, moveButtons(
       h("button.btn", { disabled: !this.canPlay() || !p.pending.size, onclick: () => this.play() }, "Jugar"),
@@ -227,4 +239,12 @@ function invalidRack(title, rack) {
 function confirming(s, cancel) {
   const left = Math.min(s.remainingMs, s.cancelMs);
   return h("div.stack.confirming", {}, h("b", {}, `Vas a jugar: ${s.proposal ?? ""}`), h("button.btn.block", { onclick: cancel }, `Cancelar (${formatClock(left)})`));
+}
+
+function playedWords(s) {
+  return [{ title: "Máster", words: wordsOf(s.rounds.map((r) => wordOf(r.master.text))) }, { title: "Tú", words: wordsOf(s.rounds.map((r) => wordOf(r.mine.text))) }];
+}
+
+function wordOf(text) {
+  return (text ?? "").trim().split(/\s+/)[1];
 }

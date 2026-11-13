@@ -34,14 +34,30 @@ function fields(form, redraw, gates) {
   return [
     rulesButton("Reglas de ¿Cuántas recuerdas?", RECALL_RULES),
     h("div.row", {}, h("div.grow", {}, sectionTitle("Tiempo entre jugadas", "Menos tiempo, más difícil recordar.")), shown),
-    h("input.range", { type: "range", min: 500, max: 3000, step: 100, value: form.intervalMs, "aria-label": "Tiempo entre jugadas", oninput: (e) => ((form.intervalMs = Number(e.target.value)), (shown.textContent = seconds(form.intervalMs))), onchange: redraw }),
+    intervalSlider(form, shown, redraw),
     sectionTitle("Vidas", "Cada palabra que no recuerdas cuesta una vida. Sin vidas, se acaba la serie."),
     stepper(form.lives, 1, 5, (n) => ((form.lives = n), redraw())),
     sectionTitle("Comprobación de jugadas", CHALLENGE_INFO),
     choiceRow(["Void", "Single"], form.single ? 1 : 0, (i) => ((form.single = i === 1), redraw())),
-    best ? h("div.card.record-card", {}, h("span.muted", {}, "Récord"), h("b", {}, `${best} ${best === 1 ? "palabra" : "palabras"}`)) : null,
+    best ? h("div.card.record-card", {}, h("span.record-label", {}, "TU RÉCORD"), h("b", {}, `${best} ${best === 1 ? "palabra" : "palabras"}`)) : null,
     start,
   ];
+}
+
+function intervalSlider(form, shown, redraw) {
+  const slider = h("input.slider", { type: "range", min: 500, max: 3000, step: 100, value: form.intervalMs, "aria-label": "Tiempo entre jugadas", oninput: () => update(), onchange: redraw });
+  const update = () => {
+    form.intervalMs = Number(slider.value);
+    shown.textContent = seconds(form.intervalMs);
+    paintFill(slider);
+  };
+  paintFill(slider);
+  return slider;
+}
+
+function paintFill(slider) {
+  const fill = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+  slider.style.setProperty("--fill", `${fill}%`);
 }
 
 function seconds(ms) {

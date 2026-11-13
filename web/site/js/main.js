@@ -28,9 +28,10 @@ import { dictionaryScreen } from "./study/word.js";
 import { listsMenuScreen, catalogScreen, listScreen, studyScreen, unfinishedScreen, completedScreen } from "./study/listScreens.js";
 import { testScreen } from "./study/test.js";
 import { createListScreen } from "./study/create.js";
-import { gamesScreen, finishedScreen } from "./games/list.js";
+import { finishedScreen } from "./games/list.js";
 import { statsScreen } from "./games/stats.js";
-import { reviewScreen } from "./games/review.js";
+import { inProgressScreen } from "./games/inProgress.js";
+import { reviewScreen, positionReviewScreen } from "./games/review.js";
 import { READY_ROUTES } from "./screens/menu.js";
 import { offerDownload } from "./screens/download.js";
 import { watchMessages } from "./online/messages.js";
@@ -71,10 +72,11 @@ start({
   "crear-lista": createListScreen,
   "estudios-medias": unfinishedScreen,
   "estudios-culminados": completedScreen,
-  partidas: gamesScreen,
   terminadas: finishedScreen,
+  "en-curso": inProgressScreen,
   estadisticas: statsScreen,
   "partida-revision": reviewScreen,
+  "analisis-posicion": positionReviewScreen,
   minijuegos: menuScreen("minijuegos"),
   estudiar: menuScreen("estudiar"),
 });

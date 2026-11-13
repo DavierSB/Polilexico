@@ -20,6 +20,7 @@ type Play struct {
 	Tiles     string
 	TileCount int
 	Score     int
+	Words     []string
 }
 
 type Candidate struct {
