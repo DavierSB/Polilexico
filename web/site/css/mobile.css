@@ -168,3 +168,9 @@ body { font-size: 15px; }
 .invite-pop .invite-head .small { font-size: 12px; }
 
 .invite-pop .btn { min-height: 40px; padding: 0 12px; font-size: 14px; }
+
+.analysis-tiles .rack-tile.palette-key { width: 30px; }
+
+.analysis-tiles .palette-key .rack-letter { font-size: 17px; }
+
+.analysis-tiles .palette-key .rack-letter.digraph { font-size: 12px; }

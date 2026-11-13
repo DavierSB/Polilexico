@@ -1,4 +1,5 @@
 import { h, replace } from "../dom.js";
+import { typedTile } from "./typing.js";
 import { screenHead } from "../parts.js";
 import { call, whenReady } from "../engine.js";
 import { createBoard } from "../board.js";
@@ -25,8 +26,9 @@ export function analyzerScreen(app) {
   ui.redraw = () => draw(ui);
   app.append(h("div.analyzer", {},
     h("div.analyzer-head", {}, screenHead("Analizador", "estudiar", h("button.text-btn", { onclick: () => scoreDialog(ui) }, "Marcador"), h("button.text-btn", { onclick: () => clearAll(ui) }, "Vaciar"))),
+    h("div.analyzer-rack", {}, rackRow, notice),
     h("div.analyzer-board", {}, board.el),
-    h("div.analyzer-side", {}, rackRow, notice, panel),
+    h("div.analyzer-panel", {}, panel),
   ));
   const onKey = (e) => keys(ui, e);
   document.addEventListener("keydown", onKey);
@@ -46,6 +48,7 @@ function draw(ui) {
     h("button.btn.small", { disabled: !ed.rack.length || ed.running, onclick: () => analyze(ui) }, ed.running ? "…" : "Analizar"),
   );
   ui.notice.textContent = ed.message ?? "";
+  ui.panel.classList.toggle("editing", !ed.deep && !ed.result);
   replace(ui.panel, ed.deep ? deepPanel(ui) : ed.result ? results(ui) : editPanel(ui));
 }
 
@@ -220,11 +223,12 @@ function candidate(c, cells) {
 
 function keys(ui, e) {
   if (e.ctrlKey || e.metaKey || e.altKey || e.target instanceof HTMLInputElement || document.querySelector(".scrim") || ui.ed.result) return;
-  const letter = e.key === "?" ? BLANK : e.key.toUpperCase();
   if (e.key === "Enter" && ui.ed.rack.length) return analyze(ui);
   if (e.key === "Escape") return ((ui.ed.arrow = null), ui.redraw());
-  if (LETTERS.includes(letter) || letter === BLANK) {
-    e.preventDefault();
-    tapLetter(ui, letter);
-  }
+  if (e.key === "Backspace" && !ui.ed.arrow && ui.ed.rack.length) return (e.preventDefault(), removeFromRack(ui, ui.ed.rack.length - 1));
+  const letter = typedTile(e);
+  if (!letter) return;
+  e.preventDefault();
+  if (ui.ed.arrow && ui.ed.target === "board") return put(ui, letter, ui.ed.arrow.index, true);
+  addToRack(ui, letter);
 }

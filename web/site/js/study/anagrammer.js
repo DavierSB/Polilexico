@@ -1,4 +1,5 @@
 import { h, replace } from "../dom.js";
+import { typedTile } from "./typing.js";
 import { screenHead } from "../parts.js";
 import { call, whenReady } from "../engine.js";
 import { BLANK, LETTERS, blankFace, readWord, tokens } from "../tiles.js";
@@ -17,9 +18,10 @@ export function anagrammerScreen(app) {
   const ui = { state, rackCard, pinCard, results };
   ui.redraw = () => draw(ui);
   const palette = h("div.palette", {}, [...LETTERS, BLANK].map((l) => h("button.rack-tile.palette-key", { onclick: () => add(ui, l) }, keyFace(l))));
-  app.append(h("div.screen.study-screen", {},
+  app.append(h("div.screen.study-screen.anagrammer-screen", {},
     screenHead("Anagramador", "estudiar", h("button.text-btn", { onclick: () => clear(ui) }, "Vaciar")),
-    rackCard, pinCard, results, palette,
+    h("div.anagrammer-scroll", {}, rackCard, pinCard, results),
+    palette,
   ));
   const onKey = (e) => keys(ui, e);
   document.addEventListener("keydown", onKey);
@@ -111,6 +113,6 @@ export function wordText(tiles) {
 function keys(ui, e) {
   if (e.ctrlKey || e.metaKey || e.altKey || document.querySelector(".scrim")) return;
   if (e.key === "Backspace" && ui.state.tiles.length) return remove(ui, ui.state.tiles.length - 1);
-  const letter = e.key === "?" ? BLANK : e.key.toUpperCase();
-  if (LETTERS.includes(letter) || letter === BLANK) add(ui, letter);
+  const letter = typedTile(e);
+  if (letter) add(ui, letter);
 }
