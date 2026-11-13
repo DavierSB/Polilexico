@@ -3,7 +3,7 @@ package app.lexico.online
 import org.json.JSONArray
 import org.json.JSONObject
 
-internal const val ONLINE_PROTOCOL = 4
+internal const val ONLINE_PROTOCOL = 5
 
 data class RoomInfo(
   val id: String, val duplicate: Boolean, val me: String, val host: String, val players: List<String>, val first: Boolean,

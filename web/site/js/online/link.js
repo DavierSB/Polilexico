@@ -5,7 +5,7 @@ const CHECK_MS = 2000;
 const PING_MS = 8000;
 const SILENCE_MS = 16000;
 const OPEN_MS = 10000;
-const PROTOCOL = 4;
+const PROTOCOL = 5;
 const LINK_DOWN = "Sin conexión. Reconectando…";
 
 export class Link {

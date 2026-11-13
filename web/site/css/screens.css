@@ -209,3 +209,7 @@
 .result-line { text-align: center; font-size: 18px; }
 .result-score { font-size: 34px; font-weight: 700; }
 .result-buttons { gap: 8px; }
+.claim-words { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.claim-word { font-size: 22px; font-weight: 700; letter-spacing: .7px; }
+.claim-word.good { color: #66BB6A; }
+.claim-word.bad { color: #E5484D; text-decoration: line-through; text-decoration-thickness: 2px; }

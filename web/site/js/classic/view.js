@@ -20,6 +20,7 @@ import { lookUp } from "../study/lookup.js";
 import { floatScore, landTiles } from "../motion.js";
 import { recall, remember } from "../tabMemory.js";
 import { invalidDialog } from "./invalid.js";
+import { claimDialog } from "./claim.js";
 
 const BANNER_MS = 2200;
 const RESIGN_TEXT = "¿Abandonar la partida? Se borra de partidas en curso y cuenta como abandonada en tus estadísticas.";
@@ -78,7 +79,8 @@ class GameView {
     const state = this.seen(raw);
     const first = !this.state;
     const moved = this.state?.moves.length !== state.moves.length;
-    const turnChanged = moved || this.state?.result !== state.result;
+    const claimed = !first && this.state.claim?.seq !== state.claim?.seq;
+    const turnChanged = moved || claimed || this.state?.result !== state.result || this.state?.claimable !== state.claimable;
     this.state = state;
     this.updateCards();
     this.handOff();
@@ -86,10 +88,11 @@ class GameView {
     this.lastPaused = state.paused;
     const kept = first ? this.keptPlacement() : null;
     this.placer.sync(state.cells, state.rack);
-    if (moved && !first) this.placer.clear();
+    if ((moved || claimed) && !first) this.placer.clear();
     if (kept) this.placer.restore(kept);
     this.renderAll();
     if (moved && this.freshMove(first)) this.announceMove(first);
+    if (claimed && state.claim && !this.options.watching) claimDialog(state.claim, this.names().opponent);
     if (state.result && !this.ended) this.end();
   }
 
@@ -236,13 +239,29 @@ class GameView {
     if (this.options.watching) return this.watchPanel();
     if (p.exchanging) return replace(this.buttons, this.exchangeButtons());
     const enabled = this.canPlay();
+    const open = enabled && !this.finalPass();
     replace(this.buttons, moveButtons(
-      h("button.btn", { disabled: !enabled || !p.pending.size, onclick: () => this.play() }, "Jugar"),
+      h("button.btn", { disabled: !open || !p.pending.size, onclick: () => this.play() }, "Jugar"),
       this.options.chat ? h("button.btn.small.outlined.chat-small", { "aria-label": "Mensaje", onclick: this.options.chat }, "💬") : null,
-      h("button.btn.small.outlined", { disabled: !enabled, onclick: () => this.pass() }, "Pasar"),
+      h("button.btn.small.outlined", { disabled: !enabled, onclick: () => this.pass() }, this.finalPass() ? "Aceptar" : "Pasar"),
       p.pending.size ? h("button.btn.small.outlined", { onclick: () => p.recall() }, "Recoger") : h("button.btn.small.outlined", { onclick: () => p.shuffle() }, "Mezclar"),
-      h("button.btn.small.outlined", { disabled: !enabled || !this.state.bag, onclick: () => p.startExchange(this.state.bag) }, "Cambiar"),
+      h("button.btn.small.outlined", { disabled: !open || !this.state.bag, onclick: () => p.startExchange(this.state.bag) }, "Cambiar"),
     ));
+    this.claimButton();
+  }
+
+  claimButton() {
+    const word = this.claimWord();
+    if (word) this.buttons.querySelector(".move-row")?.after(h("button.btn.small.outlined.claim-btn", { onclick: () => this.claim() }, `Reclamar ${word}`));
+  }
+
+  claimWord() {
+    const s = this.state;
+    return s.claimable && s.myTurn && !s.result ? s.moves.at(-1)?.word ?? null : null;
+  }
+
+  finalPass() {
+    return this.state.finalPass && this.state.myTurn && !this.state.result;
   }
 
   watchPanel() {
@@ -307,8 +326,15 @@ class GameView {
   }
 
   async pass() {
-    if (!(await confirm("¿Pasar el turno?", "Pasar"))) return;
+    const [question, yes] = this.finalPass() ? ["¿Aceptar la jugada y terminar?", "Aceptar"] : ["¿Pasar el turno?", "Pasar"];
+    if (!(await confirm(question, yes))) return;
     const error = await this.session.play("pasar");
+    if (error) toast(error);
+  }
+
+  async claim() {
+    this.placer.recall();
+    const error = await this.session.play("reclamar");
     if (error) toast(error);
   }
 

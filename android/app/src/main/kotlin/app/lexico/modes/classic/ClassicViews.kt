@@ -1,5 +1,6 @@
 package app.lexico.modes.classic
 
+import app.lexico.game.modes.classic.ClaimNews
 import app.lexico.game.modes.classic.ClassicEnding
 import app.lexico.game.modes.classic.ClassicResult
 import app.lexico.game.modes.classic.ClassicState
@@ -9,6 +10,7 @@ import app.lexico.game.Outcome
 import app.lexico.game.modes.classic.PlayedMove
 import app.lexico.model.Letters
 import app.lexico.model.Placement
+import app.lexico.ui.classic.ClaimVerdict
 import app.lexico.ui.classic.Clock
 import app.lexico.ui.classic.ClassicView
 import app.lexico.ui.classic.Ending
@@ -29,7 +31,14 @@ fun classicView(state: ClassicState, opponent: String, notice: String?, host: St
   bag = state.bag, unseen = state.unseen,
   moves = state.moves.map(::move), end = state.result?.let(::gameEnd),
   notice = notice ?: state.botError, paused = state.paused && state.result == null,
+  claimWord = claimWord(state), finalPass = state.finalPass && state.myTurn && state.result == null,
+  claim = state.claim?.let(::claimVerdict),
 )
+
+private fun claimWord(state: ClassicState): String? =
+  state.moves.lastOrNull()?.text?.takeIf { state.claimable && state.myTurn && state.result == null }
+
+private fun claimVerdict(c: ClaimNews): ClaimVerdict = ClaimVerdict(c.seq, c.upheld, c.byMe, c.words, c.invalid, c.score)
 
 fun invalidNotice(state: ClassicState, mover: (PlayedMove) -> String?): String? {
   val last = state.moves.lastOrNull()?.takeIf { it.kind == MoveKind.INVALID } ?: return null

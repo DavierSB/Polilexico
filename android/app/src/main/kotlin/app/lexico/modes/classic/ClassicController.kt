@@ -26,6 +26,8 @@ class ClassicController(
 
   override fun pass() = act { game.pass() }
 
+  override fun claim() = act { game.claim() }
+
   override fun analyze() = review(game.state.value.result?.recordPath) { onReview(it, false) }
 
   override fun analyzeEndgame() = review(game.state.value.result?.recordPath) { onReview(it, true) }

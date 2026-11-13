@@ -11,6 +11,7 @@ export function normalize(raw, flipped) {
     bag: raw.Status.BagCount, unseen: tokens(raw.Unseen), moves, clocks: clocks(raw.Clocks),
     paused: raw.Paused, result: result(raw.Result), botError: raw.BotError || null,
     opponent: raw.Opponent, host: raw.Host, local: raw.Local, over: raw.Status.Over,
+    claimable: !!raw.Claimable, finalPass: !!raw.FinalPass, claim: claim(raw.Claim),
   };
   return flipped ? flip(state) : state;
 }
@@ -46,6 +47,12 @@ function running(side) {
   return null;
 }
 
+function claim(c) {
+  if (!c) return null;
+  const words = (text) => (text ?? "").split(" ").filter(Boolean);
+  return { seq: c.Seq, upheld: !!c.Upheld, byMe: !!c.ByHuman, words: words(c.Words), invalid: words(c.Invalid), points: c.Score ?? 0 };
+}
+
 function result(r) {
   if (!r) return null;
   return {
@@ -58,7 +65,7 @@ export function flip(s) {
   return {
     ...s, rack: s.opponentRack, opponentRack: s.rack, myTiles: s.opponentTiles, opponentTiles: s.myTiles, myScore: s.opponentScore,
     opponentScore: s.myScore, myTurn: !s.myTurn, moves: s.moves.map(flipMove), clocks: flipClocks(s.clocks),
-    result: flipResult(s.result), opponent: s.host, host: s.opponent,
+    result: flipResult(s.result), opponent: s.host, host: s.opponent, claim: s.claim && { ...s.claim, byMe: !s.claim.byMe },
   };
 }
 

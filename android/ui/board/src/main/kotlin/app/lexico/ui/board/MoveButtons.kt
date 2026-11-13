@@ -21,13 +21,16 @@ import app.lexico.ui.common.LocalChat
 import app.lexico.ui.common.ButtonText
 
 @Composable
-fun MoveButtons(c: TilePlacer, playEnabled: Boolean, onPlay: () -> Unit, small: @Composable RowScope.() -> Unit) {
+fun MoveButtons(
+  c: TilePlacer, playEnabled: Boolean, onPlay: () -> Unit, middle: (@Composable () -> Unit)? = null, small: @Composable RowScope.() -> Unit,
+) {
   val chat = LocalChat.current
   Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
       chat?.let { ChatButton(it.onOpen) }
       small()
     }
+    middle?.invoke()
     PlayButton(playEnabled && c.hasPlaced, onPlay)
   }
 }

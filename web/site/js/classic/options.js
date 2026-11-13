@@ -6,6 +6,7 @@ const TIME_INFO = "Cuando se te acaba el tiempo empieza el descuento. Por cada m
 const CHALLENGE_INTRO = "Cómo se tratan las jugadas con palabras que no existen.";
 const VOID_HINT = "si intentas colocar una jugada inválida, no se te permite y continúas tu turno.";
 const SINGLE_HINT = "si colocas una jugada inválida, obtienes 0 puntos, vuelven las fichas a tu atril y pierdes el turno.";
+export const ONLINE_SINGLE_HINT = "una jugada inválida cuenta, salvo que el rival la reclame antes de jugar. Reclamar no tiene castigo.";
 
 export function choiceRow(labels, selected, choose) {
   return h("div.chips", {}, labels.map((label, i) =>
@@ -26,11 +27,11 @@ export function infoButton(title, text) {
   return h("button.info-btn", { "aria-label": "Más información", onclick: open }, "i");
 }
 
-export function challengeSection(form, redraw, voidOnlyBot = null) {
+export function challengeSection(form, redraw, voidOnlyBot = null, singleHint = SINGLE_HINT) {
   if (voidOnlyBot) {
     return [sectionTitle("Comprobación de jugadas", `${voidOnlyBot} solo juega en modo void: una jugada con palabras no válidas se rechaza y puedes volver a intentarlo.`), h("p", {}, "Void")];
   }
-  const info = [CHALLENGE_INTRO, "Void: " + VOID_HINT, "Single: " + SINGLE_HINT].join("\n\n");
+  const info = [CHALLENGE_INTRO, "Void: " + VOID_HINT, "Single: " + singleHint].join("\n\n");
   return [
     sectionTitle("Comprobación de jugadas", info),
     choiceRow(["Void", "Single"], form.single ? 1 : 0, (i) => ((form.single = i === 1), redraw())),

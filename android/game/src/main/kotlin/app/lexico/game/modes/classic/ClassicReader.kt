@@ -5,6 +5,7 @@ import app.lexico.game.engine.moveText
 import app.lexico.game.engine.parseBoard
 import app.lexico.game.engine.placedSquares
 import app.lexico.game.engine.rackTiles
+import app.lexico.go.classic.Claim
 import app.lexico.go.classic.Classic
 import app.lexico.go.classic.Clocks
 import app.lexico.go.classic.Game
@@ -28,6 +29,7 @@ internal class ClassicReader(private val match: Match, private val seat: Seat = 
       bag = status.bagCount.toInt(), unseen = rackTiles(game.unseen()),
       moves = moves, clocks = clocks(false),
       paused = match.paused(), result = game.result()?.let(::result), botError = match.botError().ifEmpty { null },
+      claimable = game.claimable(), finalPass = game.finalPass(), claim = game.lastClaim()?.let(::claimNews),
     ).let { if (seenByRival(game, status)) it.flipped() else it }.let { it.copy(unseen = unseenBy(it.board, it.rack)) }
   }
 
@@ -47,6 +49,11 @@ internal class ClassicReader(private val match: Match, private val seat: Seat = 
     score = m.score.toInt(), myTotal = m.humanTotal.toInt(), opponentTotal = m.botTotal.toInt(),
     text = moveText(board, "${m.coords} ${m.tiles}"), words = m.words.split(" ").filter { it.isNotEmpty() },
   )
+
+  private fun claimNews(c: Claim): ClaimNews =
+    ClaimNews(c.seq.toInt(), c.upheld, c.byHuman, words(c.words), words(c.invalid), c.score.toInt())
+
+  private fun words(text: String): List<String> = text.split(" ").filter { it.isNotEmpty() }
 
   private fun clocks(c: Clocks): ClassicClocks =
     ClassicClocks(c.humanMs, c.humanOvertimeMs, c.botMs, c.botOvertimeMs, running(c.running))

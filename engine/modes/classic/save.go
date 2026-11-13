@@ -15,6 +15,10 @@ type savedGame struct {
 	RivalLostOnTime  bool `json:",omitempty"`
 	Ending           *Ending
 	InvalidLosesTurn bool
+	Claims           bool   `json:",omitempty"`
+	ClaimedAt        int    `json:",omitempty"`
+	FinalPass        bool   `json:",omitempty"`
+	LastClaim        *Claim `json:",omitempty"`
 	RecordPath       string
 	History          json.RawMessage
 }
@@ -40,7 +44,7 @@ func Load(text string) (*Game, error) {
 func (c *Game) saved(history json.RawMessage) savedGame {
 	return savedGame{HumanIdx: c.humanIdx, BotName: c.botName, Log: c.log, Moves: c.moves,
 		LostOnTime: c.lostOnTime, RivalLostOnTime: c.rivalLostOnTime, Ending: c.ending, InvalidLosesTurn: c.invalidLosesTurn, RecordPath: c.recordPath,
-		History: history}
+		Claims: c.claims, ClaimedAt: c.claimedAt, FinalPass: c.finalPass, LastClaim: c.lastClaim, History: history}
 }
 
 func (s savedGame) resume() (*Game, error) {
@@ -63,5 +67,7 @@ func (c *Game) restore(s savedGame) {
 	c.ending = s.Ending
 	c.invalidLosesTurn = s.InvalidLosesTurn
 	c.recordPath = s.RecordPath
+	c.claims, c.claimedAt, c.finalPass, c.lastClaim = s.Claims, s.ClaimedAt, s.FinalPass, s.LastClaim
+	c.resumeClaims()
 	c.applyEnding()
 }

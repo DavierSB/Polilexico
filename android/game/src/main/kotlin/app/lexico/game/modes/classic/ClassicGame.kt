@@ -43,6 +43,8 @@ class ClassicGame private constructor(
 
   suspend fun pass(): String? = move("pasar")
 
+  suspend fun claim(): String? = move("reclamar")
+
   suspend fun guestMove(input: String): String? = playAs(rival = true, input)
 
   suspend fun snapshot(): String = engine { match.save() }

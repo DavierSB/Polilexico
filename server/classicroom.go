@@ -228,6 +228,7 @@ func (r *classicRoom) attach(s *seat, c *client) {
 	s.client, c.room = c, r
 	s.awayAt = time.Time{}
 	c.send(r.roomMessage(s))
+	r.keepClaimsFor(c)
 	if r.match != nil {
 		r.sendState(s)
 		r.awayChanged(s)
@@ -244,6 +245,25 @@ func (r *classicRoom) start() {
 	}
 	r.match, r.started = m, time.Now()
 	r.timer.Stop()
+	m.SetClaims(r.claimsAllowed())
+}
+
+func (r *classicRoom) claimsAllowed() bool {
+	if r.voidMode {
+		return false
+	}
+	for _, s := range r.seats {
+		if c := r.hub.clientOf(s.player.ID); c == nil || c.version < claimProtocol {
+			return false
+		}
+	}
+	return true
+}
+
+func (r *classicRoom) keepClaimsFor(c *client) {
+	if r.match != nil && c.version < claimProtocol {
+		r.match.SetClaims(false)
+	}
 }
 
 func (r *classicRoom) changed() {

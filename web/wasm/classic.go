@@ -18,6 +18,7 @@ func registerClassic() {
 	handlers["classicRead"] = classicRead
 	handlers["classicClocks"] = classicClocks
 	handlers["classicPlay"] = classicPlay
+	handlers["classicClaims"] = classicClaims
 	handlers["classicPause"] = classicPause
 	handlers["classicResume"] = classicResume
 	handlers["classicSave"] = classicSave
@@ -74,6 +75,10 @@ func classicPlay(args []json.RawMessage) (any, error) {
 		_, err := m.Play(text(args, 1))
 		return true, err
 	})
+}
+
+func classicClaims(args []json.RawMessage) (any, error) {
+	return act(args, func(m classicMatch) (any, error) { m.SetClaims(flag(args, 1)); return true, nil })
 }
 
 func classicPause(args []json.RawMessage) (any, error) {

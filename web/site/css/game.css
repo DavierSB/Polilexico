@@ -26,6 +26,8 @@
 
 .move-row > .btn { flex: 1; min-width: 0; min-height: 40px; }
 
+.game-buttons .claim-btn { min-height: 40px; border-color: var(--primary); background: var(--c4); color: var(--primary); font-weight: 700; }
+
 .game-buttons .play-btn { min-height: 54px; font-size: 19px; font-weight: 800; }
 
 .bag-btn { background: none; border: 0; color: var(--on-surface); cursor: pointer; padding: 0 4px; display: grid; place-items: center; }

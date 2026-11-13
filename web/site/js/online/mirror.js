@@ -37,7 +37,12 @@ export function readSave(saved, guest, elapsedMs = 0, watching = false) {
     },
     Moves: moves, Clocks: clocks?.view ?? null, Paused: false,
     Result: over ? result(game, scores, penalties) : null, BotError: "",
+    Claimable: claimable(game, moves, over), FinalPass: !over && !!game.FinalPass, Claim: game.LastClaim ?? null,
   };
+}
+
+function claimable(game, moves, over) {
+  return !!game.Claims && !over && moves.at(-1)?.Kind === "play" && (game.ClaimedAt ?? 0) !== moves.length;
 }
 
 function rackTokens(text) {

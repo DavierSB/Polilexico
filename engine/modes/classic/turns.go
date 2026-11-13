@@ -25,6 +25,12 @@ func (c *Game) Play(input string) (*Move, error) {
 	if !c.playerToMove() {
 		return nil, errNotYourTurn
 	}
+	if core.IsClaim(input) {
+		return c.claim()
+	}
+	if err := c.checkFinalPass(input); err != nil {
+		return nil, err
+	}
 	m, play, err := c.humanMove(input)
 	if err != nil {
 		return nil, err
@@ -94,9 +100,24 @@ func (c *Game) LoseOnTime() {
 
 func (c *Game) humanMove(input string) (*move.Move, core.Play, error) {
 	m, err := core.ParseInput(c.g, c.g.PlayerOnTurn(), input)
-	if invalid, ok := core.AsInvalidWords(err); ok && c.invalidLosesTurn {
-		return c.loseTurn(invalid.Play)
+	if invalid, ok := core.AsInvalidWords(err); ok && (c.claims || c.invalidLosesTurn) {
+		return c.acceptInvalid(input, invalid.Play)
 	}
+	if err != nil {
+		return nil, core.Play{}, err
+	}
+	return m, core.PlayOf(m), nil
+}
+
+func (c *Game) acceptInvalid(input string, attempt core.Play) (*move.Move, core.Play, error) {
+	if c.claims {
+		return c.unchecked(input)
+	}
+	return c.loseTurn(attempt)
+}
+
+func (c *Game) unchecked(input string) (*move.Move, core.Play, error) {
+	m, err := core.PlacementMove(c.g, c.g.PlayerOnTurn(), input)
 	if err != nil {
 		return nil, core.Play{}, err
 	}
@@ -114,6 +135,9 @@ func (c *Game) apply(m *move.Move, play core.Play, candidates []core.Candidate) 
 	record := c.newTurnRecord(m, play, candidates)
 	c.g.SetMaxScorelessTurns(noScorelessEnd)
 	if err := c.g.PlayMove(m, true, 0); err != nil {
+		return nil, err
+	}
+	if err := c.settleFinalPass(); err != nil {
 		return nil, err
 	}
 	c.dropOutBonus()

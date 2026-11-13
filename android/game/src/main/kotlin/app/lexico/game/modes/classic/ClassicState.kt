@@ -19,6 +19,13 @@ data class ClassicState(
   val result: ClassicResult?,
   val botError: String?,
   val flipped: Boolean = false,
+  val claimable: Boolean = false,
+  val finalPass: Boolean = false,
+  val claim: ClaimNews? = null,
+)
+
+data class ClaimNews(
+  val seq: Int, val upheld: Boolean, val byMe: Boolean, val words: List<String>, val invalid: List<String>, val score: Int,
 )
 
 enum class MoveKind { PLACEMENT, PASS, EXCHANGE, INVALID }

@@ -6,6 +6,7 @@ internal fun ClassicState.flipped(): ClassicState = copy(
   rack = opponentRack, opponentRack = rack, opponentTiles = rack.size,
   myScore = opponentScore, opponentScore = myScore, myTurn = !myTurn,
   moves = moves.map { it.flipped() }, clocks = clocks?.flipped(), result = result?.flipped(), flipped = !flipped,
+  claim = claim?.let { it.copy(byMe = !it.byMe) },
 )
 
 internal fun ClassicClocks.flipped(): ClassicClocks = ClassicClocks(

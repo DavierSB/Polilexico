@@ -43,6 +43,10 @@ data class GameEnd(
   val timePenalized: Boolean get() = myTimePenalty != 0 || opponentTimePenalty != 0
 }
 
+data class ClaimVerdict(
+  val seq: Int, val upheld: Boolean, val mine: Boolean, val words: List<String>, val invalid: List<String>, val points: Int,
+)
+
 enum class EndingReason { WENT_OUT, PASSES, NEUTRAL_TURNS }
 
 data class Ending(val reason: EndingReason, val myDelta: Int, val opponentDelta: Int)
@@ -72,6 +76,9 @@ data class ClassicView(
   val pausable: Boolean = true,
   val watching: Boolean = false,
   val watchers: List<PersonItem> = emptyList(),
+  val claimWord: String? = null,
+  val finalPass: Boolean = false,
+  val claim: ClaimVerdict? = null,
 ) {
   val canArrange: Boolean get() = end == null && !watching
   val latestScore: Int? get() = moves.lastOrNull { it.type == MoveType.PLACEMENT }?.points
@@ -81,6 +88,7 @@ interface ClassicActions {
   fun play(placement: Placement)
   fun exchange(tiles: List<String>)
   fun pass()
+  fun claim() {}
   fun resign()
   fun exit()
   fun analyze()

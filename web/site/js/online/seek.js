@@ -6,7 +6,7 @@ import { toast } from "../dialogs.js";
 import { load, save } from "../store.js";
 import { account } from "./api.js";
 import { online } from "./client.js";
-import { challengeSection, timeSection } from "../classic/options.js";
+import { challengeSection, timeSection, ONLINE_SINGLE_HINT } from "../classic/options.js";
 import { blockedByGame } from "./involved.js";
 
 const DEFAULTS = { single: true, timed: true, time: "20:00", overtime: "1:00" };
@@ -16,7 +16,7 @@ export function seekScreen(app, [name, country]) {
   const rival = name ? { name, country } : null;
   const form = { ...DEFAULTS, ...load("seekForm", {}) };
   const body = h("div.stack");
-  const redraw = () => replace(body, challengeSection(form, redraw), timeSection(form, redraw), sendButton(form, rival));
+  const redraw = () => replace(body, challengeSection(form, redraw, null, ONLINE_SINGLE_HINT), timeSection(form, redraw), sendButton(form, rival));
   redraw();
   const title = rival ? `Retar a ${rival.name} ${flag(rival.country)}` : "Buscar clásica";
   app.append(h("div.screen", {}, screenHead(title, lobbyRoute()), body));

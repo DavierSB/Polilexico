@@ -1,9 +1,10 @@
 package main
 
 const (
-	protocolVersion = 4
+	protocolVersion = 5
 	minProtocol     = 3
 	tellProtocol    = 4
+	claimProtocol   = 5
 )
 
 const (

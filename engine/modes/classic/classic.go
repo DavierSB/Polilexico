@@ -34,6 +34,10 @@ type Game struct {
 	ending           *Ending
 	timePenalties    [2]int
 	invalidLosesTurn bool
+	claims           bool
+	claimedAt        int
+	finalPass        bool
+	lastClaim        *Claim
 	recordPath       string
 	watched          bool
 	mirrored         bool

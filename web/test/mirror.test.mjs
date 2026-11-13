@@ -17,6 +17,7 @@ function summary(s) {
     opponentScore: s.opponentScore, myTurn: s.myTurn, bag: s.bag, over: s.over, opponent: s.opponent, host: s.host,
     moves: JSON.stringify(s.moves.map((m) => [m.byMe, m.kind, m.coords, m.tiles, m.score, m.myTotal, m.opponentTotal])),
     result: JSON.stringify(s.result), running: s.clocks?.running ?? null,
+    claimable: s.claimable, finalPass: s.finalPass, claim: JSON.stringify(s.claim),
   };
 }
 
@@ -44,15 +45,24 @@ function unseenOf(s) {
 async function nextInput(s) {
   const rack = s.Status.HumanToMove ? s.Rack : s.OpponentRack;
   const r = Math.random();
+  if (s.FinalPass) return r < 0.5 ? "reclamar" : "pasar";
+  if (s.Claimable && r < 0.3) return "reclamar";
+  if (r < 0.2) return phony(await bestInput(s.Board, rack, tokens));
   if (r < 0.06 && s.Status.BagCount >= 7) return "cambiar " + rackText(rack, tokens).slice(0, 2);
   if (r < 0.1) return "pasar";
   if (r < 0.14) return "H8 ZZZQ";
   return bestInput(s.Board, rack, tokens);
 }
 
+function phony(input) {
+  const [coords, word] = input.split(" ");
+  return word ? `${coords} ${word.match(/\[[^\]]+\]|./g).reverse().join("")}` : input;
+}
+
 for (let g = 0; g < GAMES; g++) {
   const timed = g % 2 === 1;
   const m = await call("classicNewLocal", "Ana", "Beto", 0, timed ? 1500000 : 0, timed ? 600000 : 0, g % 3 === 0);
+  if (g % 3 === 0) await call("classicClaims", m, true);
   for (let turn = 0; turn < 80; turn++) {
     await compare(m, true, `p${g}t${turn}`);
     await compare(m, false, `p${g}t${turn}`);

@@ -24,7 +24,18 @@ internal fun rememberClassicDialogs(view: ClassicView): ClassicDialogs {
     wasOver = end != null
   }
   WatchInvalid(view, dialogs)
+  WatchClaim(view, dialogs)
   return dialogs
+}
+
+@Composable
+private fun WatchClaim(view: ClassicView, dialogs: ClassicDialogs) {
+  var seen by remember { mutableStateOf<Int?>(null) }
+  val claim = view.claim
+  LaunchedEffect(claim?.seq) {
+    if (seen != null && claim != null && claim.seq != seen && !view.watching) dialogs.claim = claim
+    seen = claim?.seq ?: 0
+  }
 }
 
 @Composable
@@ -44,6 +55,7 @@ internal class ClassicDialogs {
   var pass by mutableStateOf(false)
   var resign by mutableStateOf(false)
   var invalid by mutableStateOf<Move?>(null)
+  var claim by mutableStateOf<ClaimVerdict?>(null)
   var ending by mutableStateOf(false)
   var result by mutableStateOf(false)
 
@@ -64,9 +76,10 @@ internal fun ClassicDialogsShown(view: ClassicView, c: TilePlacer, actions: Clas
   if (dialogs.result && end != null) ResultPopup(view, end, actions) { dialogs.result = false }
   if (dialogs.moves) MovesDialog(view) { dialogs.moves = false }
   if (dialogs.bag) UnseenDialog(view) { dialogs.bag = false }
-  if (dialogs.pass) PassDialog(c, actions, dialogs)
+  if (dialogs.pass) PassDialog(c, actions, dialogs, view.finalPass)
   if (dialogs.resign) ResignDialog(onResign = actions::resign, onContinue = { dialogs.resign = false })
   dialogs.invalid?.let { InvalidMoveDialog(it, style) { dialogs.invalid = null } }
+  dialogs.claim?.let { ClaimDialog(it, view.opponent) { dialogs.claim = null } }
 }
 
 @Composable
@@ -75,9 +88,9 @@ private fun UnseenDialog(view: ClassicView, close: () -> Unit) {
 }
 
 @Composable
-private fun PassDialog(c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs) {
+private fun PassDialog(c: TilePlacer, actions: ClassicActions, dialogs: ClassicDialogs, finalPass: Boolean) {
   ConfirmDialog(
-    "¿Pasar el turno?", yes = "Pasar", no = "No",
+    if (finalPass) "¿Aceptar la jugada y terminar?" else "¿Pasar el turno?", yes = if (finalPass) "Aceptar" else "Pasar", no = "No",
     onYes = { dialogs.pass = false; c.recall(); actions.pass() },
     onNo = { dialogs.pass = false },
   )

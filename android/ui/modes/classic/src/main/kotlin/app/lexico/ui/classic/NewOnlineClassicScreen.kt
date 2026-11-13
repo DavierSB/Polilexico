@@ -24,10 +24,12 @@ fun NewOnlineClassicScreen(title: String, action: String, onBack: () -> Unit, on
   val valid = !form.timed || (time != null && overtime != null)
   FitColumn(10.dp) {
     Header(title, onBack)
-    ChallengeModeSelector(form.single, { form.single = it }, singleHint = SINGLE_HINT)
+    ChallengeModeSelector(form.single, { form.single = it }, singleHint = ONLINE_SINGLE_HINT)
     TimeSection(form)
     Button(modifier = Modifier.fillMaxWidth(), enabled = valid, onClick = { onCreate.create(time ?: 0, overtime ?: 0, form.single, form.timed) }) {
       Text(action)
     }
   }
 }
+
+private const val ONLINE_SINGLE_HINT = "una jugada inválida cuenta, salvo que el rival la reclame antes de jugar. Reclamar no tiene castigo."
