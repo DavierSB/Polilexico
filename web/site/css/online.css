@@ -206,6 +206,24 @@
 
 .popup-quote + .small { align-self: stretch; }
 
+.chat-banner { position: fixed; top: calc(8px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 25; width: min(calc(100% - 16px), 520px); display: flex; align-items: center; gap: 10px; padding: 8px 4px 10px 10px; border: 1px solid var(--outline-variant); border-radius: 14px; background: var(--c3); box-shadow: 0 10px 30px rgb(0 0 0 / .5); animation: banner-in .2s ease-out; overflow: hidden; }
+
+.banner-text { min-width: 0; }
+
+.banner-title { gap: 6px; align-items: center; }
+
+.banner-quote { font-style: italic; color: var(--on-surface-variant); }
+
+.banner-count { padding: 0 6px; border-radius: var(--pill); background: var(--primary); color: var(--on-primary); font-size: 12px; font-weight: 700; }
+
+.banner-close { color: var(--on-surface-variant); font-size: 16px; }
+
+.banner-timer { position: absolute; left: 20px; right: 20px; bottom: 3px; height: 2px; border-radius: 1px; background: var(--primary); transform-origin: left; animation: banner-timer linear forwards; }
+
+@keyframes banner-in { from { opacity: 0; transform: translate(-50%, -12px); } }
+
+@keyframes banner-timer { to { transform: scaleX(0); } }
+
 .small-link { font-size: 13px; text-align: center; }
 
 .profile-btn { width: 40px; height: 40px; flex: none; }

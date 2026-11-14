@@ -10,9 +10,19 @@ const MAX_CHARS = 140;
 const GLYPH = "💬";
 const composing = { open: false };
 const popup = { close: null, draw: null };
+const BANNER_MS = 6000;
+const notice = { expanded: false, hidden: null, el: null, timer: 0 };
 
 export function watchMessages() {
-  online.subscribe((c) => (c.inbox.length && !composing.open ? showPopup(c) : popup.close?.()));
+  online.subscribe(incoming);
+}
+
+function incoming(c) {
+  const last = c.inbox[c.inbox.length - 1];
+  if (!last) notice.expanded = false;
+  if (!last || composing.open) return hideBanner(), popup.close?.();
+  if (notice.expanded) return showPopup(c);
+  if (last !== notice.hidden) showBanner(c, last);
 }
 
 export function messagesButton() {
@@ -151,6 +161,28 @@ function stamp(at) {
   const d = new Date(at);
   const day = new Intl.DateTimeFormat("es", { day: "numeric", month: "short" }).format(d).replace(".", "");
   return `${day} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+function showBanner(c, last) {
+  if (notice.el?.last === last) return;
+  hideBanner();
+  const count = c.inbox.length > 1 ? h("span.banner-count", {}, String(c.inbox.length)) : null;
+  notice.el = h("div.chat-banner", { role: "status" },
+    photoAvatar(last.from, last.country, 36),
+    h("div.grow.banner-text", {}, h("div.row.banner-title", {}, h("b.ellipsis", {}, last.room ? `${last.from} → sala` : last.from), count), h("div.ellipsis.banner-quote", {}, `“${last.text}”`)),
+    h("button.btn.small", { onclick: () => ((notice.expanded = true), hideBanner(), showPopup(online)) }, "Ver"),
+    h("button.icon-btn.banner-close", { "aria-label": "Cerrar", onclick: () => online.closeChat() }, "✕"),
+    h("span.banner-timer", { style: `animation-duration:${BANNER_MS}ms` }),
+  );
+  notice.el.last = last;
+  document.body.append(notice.el);
+  notice.timer = setTimeout(() => ((notice.hidden = last), hideBanner()), BANNER_MS);
+}
+
+function hideBanner() {
+  clearTimeout(notice.timer);
+  notice.el?.remove();
+  notice.el = null;
 }
 
 function showPopup(c) {

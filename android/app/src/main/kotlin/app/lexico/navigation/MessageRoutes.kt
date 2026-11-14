@@ -1,6 +1,7 @@
 package app.lexico.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -10,6 +11,7 @@ import androidx.compose.runtime.setValue
 import app.lexico.online.Lobby
 import app.lexico.online.OnlineClient
 import app.lexico.online.Person
+import app.lexico.ui.common.ChatBanner
 import app.lexico.ui.common.ChatComposer
 import app.lexico.ui.common.ChatHistoryDialog
 import app.lexico.ui.common.ROOM_CONTACT
@@ -34,11 +36,27 @@ internal class Composer {
 @Composable
 internal fun MessageDialogs(client: OnlineClient, contacts: List<ChatContact>, fallback: ChatContact?, composer: Composer) {
   val inbox by client.inbox.collectAsState()
-  if (!composer.open) ChatPopup(
+  val notice = remember { ChatNotice() }
+  LaunchedEffect(inbox.isEmpty()) { if (inbox.isEmpty()) notice.expanded = false }
+  if (!composer.open) Incoming(client, inbox, notice, contacts, composer)
+  ComposerDialogs(client, contacts, fallback, composer)
+}
+
+@Stable
+private class ChatNotice {
+  var expanded by mutableStateOf(false)
+  var hidden by mutableStateOf<ChatLine?>(null)
+
+  fun banner(inbox: List<ChatLine>): Boolean = !expanded && inbox.lastOrNull().let { it != null && it !== hidden }
+}
+
+@Composable
+private fun Incoming(client: OnlineClient, inbox: List<ChatLine>, notice: ChatNotice, contacts: List<ChatContact>, composer: Composer) {
+  if (notice.banner(inbox)) ChatBanner(inbox, { notice.expanded = true }, client::closeChat) { notice.hidden = inbox.lastOrNull() }
+  if (notice.expanded) ChatPopup(
     inbox, client::closeChat, onReply = { line -> client.closeChat(); composer.write(replyTo(line, contacts)) },
     onIgnoreUser = { client.ignorePerson(it.from, it.country) }, onIgnoreAll = { client.ignore(true) },
   )
-  ComposerDialogs(client, contacts, fallback, composer)
 }
 
 @Composable
