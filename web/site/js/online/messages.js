@@ -197,7 +197,7 @@ function popupBody(c) {
   const last = c.inbox[c.inbox.length - 1];
   const older = c.inbox.length - 1;
   return [
-    h("b.popup-from", {}, last.room ? `${last.from} dice a la sala:` : `${last.from} dice:`),
+    h("div.row.msg-title.popup-from", {}, h("b.grow", {}, last.room ? `${last.from} dice a la sala:` : `${last.from} dice:`), h("button.text-btn", { onclick: historyDialog }, "Historial")),
     h("p.popup-quote", {}, `“${last.text}”`),
     older ? h("span.small.muted", {}, older === 1 ? "+1 anterior" : `+${older} anteriores`) : null,
     last.room || last.country ? h("button.btn.block", { onclick: () => (c.closeChat(), writeMessage(last.room ? ROOM_CONTACT : { name: last.from, country: last.country })) }, "Responder") : null,

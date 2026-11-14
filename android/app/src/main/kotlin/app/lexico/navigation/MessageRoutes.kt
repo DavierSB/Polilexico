@@ -26,6 +26,7 @@ private val WITH_COUNTRY = Regex("^(.*) \\(([A-Z]{2})\\)$")
 internal class Composer {
   var open by mutableStateOf(false)
   var preset by mutableStateOf<ChatContact?>(null)
+  var history by mutableStateOf(false)
 
   fun write(to: ChatContact? = null) {
     preset = to
@@ -55,15 +56,14 @@ private fun Incoming(client: OnlineClient, inbox: List<ChatLine>, notice: ChatNo
   if (notice.banner(inbox)) ChatBanner(inbox, { notice.expanded = true }, client::closeChat) { notice.hidden = inbox.lastOrNull() }
   if (notice.expanded) ChatPopup(
     inbox, client::closeChat, onReply = { line -> client.closeChat(); composer.write(replyTo(line, contacts)) },
-    onIgnoreUser = { client.ignorePerson(it.from, it.country) }, onIgnoreAll = { client.ignore(true) },
+    onIgnoreUser = { client.ignorePerson(it.from, it.country) }, onIgnoreAll = { client.ignore(true) }, onHistory = { composer.history = true },
   )
 }
 
 @Composable
 internal fun ComposerDialogs(client: OnlineClient, contacts: List<ChatContact>, fallback: ChatContact?, composer: Composer) {
-  var history by remember { mutableStateOf(false) }
-  if (composer.open) Composing(client, contacts, fallback, composer) { history = true }
-  if (history) ChatHistoryDialog(rememberOnline().chatLog.records.collectAsState().value) { history = false }
+  if (composer.open) Composing(client, contacts, fallback, composer) { composer.history = true }
+  if (composer.history) ChatHistoryDialog(rememberOnline().chatLog.records.collectAsState().value) { composer.history = false }
 }
 
 @Composable

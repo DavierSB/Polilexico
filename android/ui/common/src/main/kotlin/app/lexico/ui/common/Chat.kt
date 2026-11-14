@@ -62,12 +62,14 @@ const val WHOLE_ROOM = "Toda la sala"
 val ROOM_CONTACT = ChatContact(WHOLE_ROOM, "", ContactGroup.ROOM)
 
 @Composable
-fun ChatPopup(lines: List<ChatLine>, onClose: () -> Unit, onReply: (ChatLine) -> Unit, onIgnoreUser: (ChatLine) -> Unit, onIgnoreAll: () -> Unit) {
+fun ChatPopup(
+  lines: List<ChatLine>, onClose: () -> Unit, onReply: (ChatLine) -> Unit, onIgnoreUser: (ChatLine) -> Unit, onIgnoreAll: () -> Unit, onHistory: () -> Unit,
+) {
   val last = lines.lastOrNull() ?: return
   Dialog(onDismissRequest = onClose) {
     Surface(shape = RoundedCornerShape(20.dp), tonalElevation = 6.dp) {
       Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(if (last.room) "${last.from} dice a la sala:" else "${last.from} dice:", Modifier.fillMaxWidth(), fontWeight = FontWeight.Bold)
+        PopupTitle(last, onHistory)
         Text("“${last.text}”", Modifier.fillMaxWidth(), fontSize = 18.sp, fontStyle = FontStyle.Italic)
         if (lines.size > 1) OlderCount(lines.size - 1)
         if (last.country.isNotEmpty() || last.room) Button(onClick = { onReply(last) }, Modifier.fillMaxWidth()) { Text("Responder") }
@@ -76,6 +78,14 @@ fun ChatPopup(lines: List<ChatLine>, onClose: () -> Unit, onReply: (ChatLine) ->
         TextButton(onClick = onIgnoreAll) { Text("Ignorar todos los mensajes", fontSize = 13.sp, textAlign = TextAlign.Center) }
       }
     }
+  }
+}
+
+@Composable
+private fun PopupTitle(last: ChatLine, onHistory: () -> Unit) {
+  Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Text(if (last.room) "${last.from} dice a la sala:" else "${last.from} dice:", Modifier.weight(1f), fontWeight = FontWeight.Bold)
+    TextButton(onClick = onHistory) { Text("Historial") }
   }
 }
 
