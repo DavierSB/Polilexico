@@ -26,6 +26,12 @@ export function lookUp(cells, i) {
   wordMenu(words, anchor);
 }
 
+export function openAt(cells, i) {
+  const words = wordsAt(cells, i);
+  if (words.length === 1) openWord(wordEntry(words[0]));
+  else lookUp(cells, i);
+}
+
 export function lookUpWord(word) {
   openWord(entry(word));
 }
