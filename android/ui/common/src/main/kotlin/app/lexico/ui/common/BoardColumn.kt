@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.ime
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
@@ -29,14 +28,14 @@ fun BoardColumn(
   bottom: @Composable ColumnScope.() -> Unit,
   footer: @Composable ColumnScope.() -> Unit = {},
 ) {
-  val scale = remember { mutableFloatStateOf(1f) }
+  val fit = remember { Refit() }
   val keyboard = WindowInsets.ime.getBottom(LocalDensity.current)
-  CompositionLocalProvider(LocalDensity provides scaled(LocalDensity.current, scale.floatValue, MAX_FONT_SCALE)) {
+  CompositionLocalProvider(LocalDensity provides scaled(LocalDensity.current, fit.scale.floatValue, MAX_FONT_SCALE)) {
     Layout(listOf({ Stack(top) }, { Box { board() } }, { Stack(bottom) }, { Stack(footer) }), Modifier.fillMaxSize()) { slots, constraints ->
       val loose = Constraints(maxWidth = constraints.maxWidth)
       val (t, b, m, f) = slots.map { it.first().measure(loose) }
       val gap = GAP.roundToPx()
-      if (keyboard == 0) refit(scale, constraints.maxHeight - b.height, t.height + m.height + f.height + gap * 3)
+      if (keyboard == 0) fit.update(constraints.maxHeight - b.height, t.height + m.height + f.height + gap * 3)
       layout(constraints.maxWidth, constraints.maxHeight) { stack(listOf(t, b, m), gap, f, constraints.maxHeight) }
     }
   }

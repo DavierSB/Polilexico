@@ -25,6 +25,8 @@ private const val MIN_SCALE = 0.6f
 
 private const val SCALE_STEP = 0.01f
 
+private const val BOUNCE_MS = 1000L
+
 @Composable
 fun FitColumn(gap: Dp, content: @Composable ColumnScope.() -> Unit) {
   val scale = remember { mutableFloatStateOf(1f) }
@@ -43,10 +45,30 @@ fun FitColumn(gap: Dp, content: @Composable ColumnScope.() -> Unit) {
 internal fun scaled(density: Density, scale: Float, maxFontScale: Float = density.fontScale): Density =
   Density(density.density * scale, minOf(density.fontScale, maxFontScale))
 
-internal fun refit(scale: MutableFloatState, room: Int, needed: Int) {
-  if (needed <= 0) return
-  val wanted = (scale.floatValue * room / needed).coerceIn(MIN_SCALE, 1f)
-  if (abs(scale.floatValue - wanted) > SCALE_STEP) scale.floatValue = wanted
+internal class Refit {
+  val scale = mutableFloatStateOf(1f)
+  private var room = 0
+  private var ceiling = 1f
+  private var grewAt = 0L
+
+  fun update(room: Int, needed: Int) {
+    if (needed <= 0) return
+    if (room != this.room) reset(room)
+    val wanted = (scale.floatValue * room / needed).coerceIn(MIN_SCALE, ceiling)
+    if (abs(scale.floatValue - wanted) > SCALE_STEP) apply(wanted)
+  }
+
+  private fun reset(room: Int) {
+    this.room = room
+    ceiling = 1f
+  }
+
+  private fun apply(wanted: Float) {
+    val now = System.currentTimeMillis()
+    if (wanted > scale.floatValue) grewAt = now
+    else if (now - grewAt < BOUNCE_MS) ceiling = wanted
+    scale.floatValue = wanted
+  }
 }
 
 internal fun fit(scale: MutableFloatState, room: Int, needed: Int) {
