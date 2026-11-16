@@ -242,6 +242,7 @@ table.moves tr.mine td:nth-child(2) { color: var(--primary); }
 .duplicate-game { grid-template-areas: "bar" "board" "panel" "rack" "buttons" "notice" "score" "side"; }
 
 .dup-panel { grid-area: panel; }
+.dup-panel > * + .btn, .dup-panel > .btn + * { margin-top: 8px; }
 
 .dup-score {
   grid-area: score;
