@@ -7,7 +7,7 @@ internal const val ONLINE_PROTOCOL = 6
 
 data class RoomInfo(
   val id: String, val duplicate: Boolean, val me: String, val host: String, val players: List<String>, val first: Boolean,
-  val watching: Boolean = false, val timed: Boolean = true,
+  val watching: Boolean = false, val timed: Boolean = true, val hostAway: Boolean = false,
 )
 
 data class LiveGame(
@@ -115,7 +115,7 @@ private fun event(o: JSONObject): OnlineEvent? = when (o.getString("t")) {
 
 private fun roomInfo(o: JSONObject): RoomInfo = RoomInfo(
   o.getString("code"), o.optString("mode") == "duplicate", o.optString("name"), o.optString("host"), strings(o.optJSONArray("players")),
-  o.optBoolean("first"), o.optBoolean("watching"), !o.optBoolean("untimed"),
+  o.optBoolean("first"), o.optBoolean("watching"), !o.optBoolean("untimed"), o.optBoolean("hostAway"),
 )
 
 private fun games(a: JSONArray?): List<LiveGame> = objects(a).map {

@@ -22,6 +22,15 @@ func TestTableRecordFollowsEachPlayer(t *testing.T) {
 	}
 }
 
+func TestSameSpotOtherWordKeepsThePlayersWord(t *testing.T) {
+	r := turnRecord{MasterPlay: core.Candidate{Coords: "H8", Description: "H8 PELDE (20 pts)", Score: 20}}
+	var log gameLog
+	got := log.withPlay(r, core.Play{Kind: core.KindPlay, Coords: "H8", Tiles: "PERDE", Score: 20})
+	if got.HumanPlay.Description != "H8 PERDE (20 pts)" || !got.Hit {
+		t.Fatalf("%+v", got)
+	}
+}
+
 func TestTableRecordWaitsForTheEnd(t *testing.T) {
 	table, _ := newTestTable(t, true)
 	if _, err := table.Record("Ana"); err == nil {

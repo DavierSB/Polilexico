@@ -9,22 +9,23 @@ import (
 )
 
 type duplicateRoom struct {
-	mu       sync.Mutex
-	hub      *hub
-	code     string
-	turnMs   int64
-	rounds   int
-	live     bool
-	seats    []*seat
-	table    *duplicate.Table
-	started  time.Time
-	recorded bool
-	timer    *time.Timer
-	watchers spectators
-	asker    *seat
-	askTimer *time.Timer
-	resumed  *adjourned
-	idle     *time.Timer
+	mu        sync.Mutex
+	hub       *hub
+	code      string
+	turnMs    int64
+	rounds    int
+	live      bool
+	seats     []*seat
+	table     *duplicate.Table
+	started   time.Time
+	recorded  bool
+	timer     *time.Timer
+	watchers  spectators
+	asker     *seat
+	askTimer  *time.Timer
+	resumed   *adjourned
+	idle      *time.Timer
+	hostTimer *time.Timer
 }
 
 func newDuplicateRoom(h *hub, code string, host player, m message) *duplicateRoom {
@@ -76,19 +77,27 @@ func (r *duplicateRoom) drop(c *client) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if s := r.seatOf(c.player.ID); s != nil && s.client == c {
-		s.client = nil
-		s.awayAt = time.Now()
-		r.setPresent(s, false)
-		r.awayChanged(s)
-		r.sendPresence()
-		r.watchAbandon()
-		if nobodyOnline(r.seats) {
-			r.watchers.dismiss(playersGone)
-		}
+		r.seatDropped(s)
 		return
 	}
 	if r.watchers.remove(c) {
 		r.watchers.countFor(r.seats)
+	}
+}
+
+func (r *duplicateRoom) seatDropped(s *seat) {
+	s.client = nil
+	s.awayAt = time.Now()
+	if r.table == nil {
+		r.waitingDrop(s)
+		return
+	}
+	r.setPresent(s, false)
+	r.awayChanged(s)
+	r.sendPresence()
+	r.watchAbandon()
+	if nobodyOnline(r.seats) {
+		r.watchers.dismiss(playersGone)
 	}
 }
 
@@ -201,6 +210,7 @@ func (r *duplicateRoom) attach(s *seat, c *client) {
 	s.client, c.room = c, r
 	c.send(r.roomMessage(s))
 	if r.table == nil {
+		r.hostBack(s)
 		r.broadcastRoom()
 		return
 	}
@@ -275,7 +285,7 @@ func (r *duplicateRoom) leave(s *seat) {
 		return
 	}
 	if s == r.seats[0] {
-		r.closeAll("El anfitrión cerró la sala.")
+		r.closeAll(hostClosed)
 		return
 	}
 	r.seats = without(r.seats, s)
@@ -313,6 +323,7 @@ func (r *duplicateRoom) expireIn(d time.Duration) {
 
 func (r *duplicateRoom) closeAll(reason string) {
 	stopTimer(r.askTimer)
+	stopTimer(r.hostTimer)
 	for _, s := range r.seats {
 		s.send(notice("closed", reason))
 		if s.client != nil {
@@ -341,7 +352,7 @@ func (r *duplicateRoom) broadcastRoom() {
 
 func (r *duplicateRoom) roomMessage(s *seat) message {
 	return message{T: "room", Mode: modeDuplicate, Code: r.code, Name: s.name, Host: r.seats[0].name, Players: r.names(),
-		First: s == r.seats[0], TurnMs: r.turnMs, Rounds: r.rounds, Live: r.live}
+		First: s == r.seats[0], TurnMs: r.turnMs, Rounds: r.rounds, Live: r.live, HostAway: r.hostAway()}
 }
 
 func (r *duplicateRoom) names() []string {

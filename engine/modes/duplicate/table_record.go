@@ -72,7 +72,7 @@ func playOrMaster(plays map[int]core.Play, r turnRecord) core.Play {
 
 func (l *gameLog) withPlay(r turnRecord, play core.Play) turnRecord {
 	r.HumanPlay, r.HumanScore, r.HumanStatus = core.CandidateOf(play, 0), play.Score, play.Kind
-	if play.Kind == core.KindPlay && play.Coords == r.MasterPlay.Coords && play.Score == r.MasterPlay.Score {
+	if matchesMaster(play, r.MasterPlay) {
 		r.HumanPlay = r.MasterPlay
 	}
 	r.Hit = play.Kind == core.KindPlay && play.Score == r.MasterPlay.Score
@@ -82,4 +82,11 @@ func (l *gameLog) withPlay(r turnRecord, play core.Play) turnRecord {
 	}
 	r.HumanTotal, r.Hits = l.FinalHuman, l.FinalHits
 	return r
+}
+
+func matchesMaster(play core.Play, master core.Candidate) bool {
+	if play.Kind != core.KindPlay || play.Coords != master.Coords || play.Score != master.Score {
+		return false
+	}
+	return play.Tiles == "" || core.SameCandidate(core.CandidateOf(play, 0), master)
 }

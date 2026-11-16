@@ -58,7 +58,7 @@ func (h *hub) serve(w http.ResponseWriter, r *http.Request) {
 		c.room.drop(c)
 	}
 	if h.goOffline(c) {
-		h.withdrawSeeksOf(c.player.ID, "")
+		h.withdrawSeeksOf(c.player.ID, h.waitingRoomOf(c.player.ID))
 	}
 	h.changed()
 }
@@ -211,7 +211,7 @@ func (h *hub) joinable(r room, c *client) bool {
 
 func (h *hub) cancel(c *client, code string) {
 	if r := h.roomByCode(code); r != nil {
-		r.cancel(c.player.ID, "El anfitrión cerró la sala.")
+		r.cancel(c.player.ID, hostClosed)
 	}
 }
 

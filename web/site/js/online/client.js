@@ -41,6 +41,7 @@ class OnlineClient {
     this.table = null;
     this.record = null;
     this.room = null;
+    this.rejoining = false;
     this.notice = null;
     this.ended = null;
     this.rivalOnline = true;
@@ -260,9 +261,11 @@ class OnlineClient {
   }
 
   seatedIn(e) {
+    const back = this.awaitingRoom && !e.watching;
     this.awaitingRoom = false;
     if (this.room?.id !== e.code) this.forgetRoom();
-    this.room = { id: e.code, duplicate: e.mode === "duplicate", me: e.name, host: e.host, players: e.players ?? [], first: !!e.first, watching: !!e.watching, timed: !e.untimed };
+    this.room = { id: e.code, duplicate: e.mode === "duplicate", me: e.name, host: e.host, players: e.players ?? [], first: !!e.first, watching: !!e.watching, timed: !e.untimed, hostAway: !!e.hostAway };
+    if (back) this.rejoining = true;
   }
 
   mirror(e) {

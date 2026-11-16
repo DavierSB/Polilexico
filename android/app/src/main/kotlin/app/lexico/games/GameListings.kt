@@ -130,7 +130,7 @@ private fun mine(player: String, opponent: String): Boolean? = when (player) {
 }
 
 private fun candidates(t: ReviewTurn, equity: Boolean): List<RankedMove> =
-  t.candidates.mapIndexed { i, m -> rankedMove(m, equity, t.marks.filter { it.rank == i }.joinToString(" ") { alias(it.who) }) }
+  t.candidates.mapIndexed { i, m -> rankedMove(m, equity, t.marks.filter { it.rank == i && it.who != MASTER }.joinToString(" ") { alias(it.who) }) }
 
 private fun markView(m: ReviewMark, t: ReviewTurn, equity: Boolean): MarkView {
   val ranked = m.rank?.let { t.candidates.getOrNull(it) }

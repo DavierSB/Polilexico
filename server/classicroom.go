@@ -308,7 +308,7 @@ func (r *classicRoom) leave(s *seat) {
 	r.hub.unseat(s.player.ID, r)
 	switch {
 	case r.match == nil:
-		r.closeAll("El anfitrión cerró la sala.")
+		r.closeAll(hostClosed)
 	case r.nobodyLeft():
 		r.closeAll("")
 	default:

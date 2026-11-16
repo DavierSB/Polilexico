@@ -360,8 +360,10 @@ private fun LockedLobby(content: @Composable () -> Unit) {
 @Composable
 private fun OnlineLobby(client: OnlineClient, info: RoomInfo, status: String?, leave: () -> Unit) {
   if (info.first) HostLobbyScreen(info.me, info.players, null, client::start, null, wifi = false, exit = LobbyExit(CANCEL_ROOM, CANCEL_ASK, leave))
-  else GuestLobbyScreen(info.host, info.players, status, info.me, LobbyExit(LEAVE_ROOM, LEAVE_ASK, leave), null)
+  else GuestLobbyScreen(info.host, info.players, status ?: hostAwayNotice(info), info.me, LobbyExit(LEAVE_ROOM, LEAVE_ASK, leave), null)
 }
+
+private fun hostAwayNotice(info: RoomInfo): String? = "${info.host} se desconectó · esperando que vuelva".takeIf { info.hostAway }
 
 private const val CANCEL_ROOM = "Cancelar partida"
 private const val CANCEL_ASK = "¿Seguro que quieres cancelar la partida?"

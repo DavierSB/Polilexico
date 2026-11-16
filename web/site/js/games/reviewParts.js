@@ -26,7 +26,12 @@ export function pageOf(t, classic) {
   const candidates = (t.Candidates ?? []).map((c) => moveOf(t, c));
   if (!classic) candidates.forEach((c) => (c.equity = null));
   const marks = (t.Marks ?? []).map((m) => ({ who: m.Who, rank: m.Rank >= 0 ? m.Rank : null, move: { ...moveOf(t, m), ...(classic ? {} : { equity: null }) } }));
+  candidates.forEach((c, i) => (c.playedBy = playersAt(marks, i)));
   return { candidates, marks };
+}
+
+function playersAt(marks, rank) {
+  return marks.filter((m) => m.rank === rank && m.who !== "Máster").map((m) => alias(m.who)).join(" ");
 }
 
 export function valueColumn(moves) {

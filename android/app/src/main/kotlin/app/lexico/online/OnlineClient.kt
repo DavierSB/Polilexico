@@ -339,6 +339,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
   private fun seated(info: RoomInfo) {
     if (_room.value?.id != info.id) forget()
     _room.value = info
+    if (awaitingRoom && info.duplicate && !info.watching) _rejoined.tryEmit(Unit)
     awaitingRoom = false
     awaitingGame = !info.watching
   }

@@ -367,10 +367,14 @@ function drawWaiting(el, c) {
     h("p.section-title", {}, `Jugadores · ${players.length}`),
     h("div.room-grid", {}, tiles),
     host ? h("button.btn.block.room-start", { disabled: players.length < 2, onclick: () => c.startSeek({ id: c.room.id }) }, "Empezar la partida")
-      : h("div.row.room-status", {}, h("div.spinner.small"), h("b", {}, c.notice ?? `${c.room.host} empezará la partida en breve`)),
+      : h("div.row.room-status", {}, h("div.spinner.small"), h("b", {}, c.notice ?? guestStatus(c.room))),
     h("button.btn.outlined.block", { onclick: () => writeMessage(ROOM_CONTACT) }, "💬  Mensaje a la sala"),
     h("button.text-btn.block.danger", { onclick: exit }, label),
   );
+}
+
+function guestStatus(room) {
+  return room.hostAway ? `${room.host} se desconectó · esperando que vuelva` : `${room.host} empezará la partida en breve`;
 }
 
 function playerTile(name, host, mine) {

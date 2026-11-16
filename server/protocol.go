@@ -34,6 +34,7 @@ type message struct {
 	View       string          `json:"view,omitempty"`
 	First      bool            `json:"first,omitempty"`
 	Host       string          `json:"host,omitempty"`
+	HostAway   bool            `json:"hostAway,omitempty"`
 	Players    []string        `json:"players,omitempty"`
 	Online     bool            `json:"online,omitempty"`
 	Country    string          `json:"country,omitempty"`

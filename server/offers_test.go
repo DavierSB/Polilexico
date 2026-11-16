@@ -21,6 +21,7 @@ func TestLiveDuplicateShowsItsRound(t *testing.T) {
 	ana.send(message{T: "create", Mode: modeDuplicate, TurnMs: 30_000})
 	code := ana.mySeeks(1)[0].ID
 	beto.send(message{T: "join", Code: code})
+	beto.waitFor("room")
 	ana.send(message{T: "start", Code: code})
 	beto.waitFor("table")
 	games := srv.hub.liveGames()

@@ -36,6 +36,7 @@ import { READY_ROUTES } from "./screens/menu.js";
 import { offerDownload } from "./screens/download.js";
 import { watchMessages } from "./online/messages.js";
 import { watchInvites } from "./online/invites.js";
+import { watchRejoin } from "./online/rejoin.js";
 
 apply();
 ensureFlags();
@@ -83,6 +84,7 @@ start({
 
 watchMessages();
 watchInvites();
+watchRejoin();
 offerDownload();
 screen.orientation?.lock?.("portrait").catch(() => {});
 window.addEventListener("load", () => setTimeout(startEngine, 300));
