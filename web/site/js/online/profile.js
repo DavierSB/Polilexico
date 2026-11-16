@@ -9,9 +9,10 @@ import { countryName, countries } from "./countries.js";
 import { online } from "./client.js";
 import { writeMessage, messagesButton } from "./messages.js";
 import { onlineBlock } from "../games/stats.js";
+import { zoomable } from "./photoZoom.js";
 
-const PHOTO_SIDE = 256;
-const MAX_BYTES = 60000;
+const PHOTO_SIDE = 512;
+const MAX_BYTES = 150000;
 let photoVersion = Date.now();
 
 export function photoUrl(name, country) {
@@ -59,7 +60,7 @@ export function profileDialog(person, inGame = !!online.room) {
   const me = account();
   const self = me && me.name === person.name && me.country === person.country;
   openDialog((close) => [
-    h("div.dialog-icon", {}, photoAvatar(person.name, person.country, 72)),
+    h("div.dialog-icon", {}, zoomable(photoAvatar(person.name, person.country, 72), person.name, person.country)),
     h("h2.center", {}, `${person.name}  ${flag(person.country)}`),
     body,
     actions(

@@ -44,7 +44,7 @@ private val SEAT_COUNTRY = Regex("^(.*) \\(([A-Z]{2})\\)$")
 fun PlayerProfileDialog(name: String, country: String, sections: List<StatsSection>?, error: String?, buttons: ProfileButtons, close: () -> Unit) {
   AlertDialog(
     onDismissRequest = close,
-    icon = { PersonAvatar(name, country, size = 72.dp) },
+    icon = { ZoomableAvatar(name, country, size = 72.dp) },
     title = { Text("$name  ${flagOf(country)}") },
     text = { ProfileStats(sections, error) },
     confirmButton = { MainAction(buttons, close) },

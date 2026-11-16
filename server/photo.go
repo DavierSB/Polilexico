@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	maxPhotoBytes   = 64 << 10
-	maxPhotoRequest = 96 << 10
+	maxPhotoBytes   = 160 << 10
+	maxPhotoRequest = 240 << 10
 )
 
 const (

@@ -11,8 +11,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
-private const val PHOTO_SIDE = 128
-private const val PHOTO_QUALITY = 80
+private const val PHOTO_SIDE = 512
+private const val MAX_BYTES = 150_000
+private val QUALITIES = listOf(85, 75, 65, 55, 45)
 
 suspend fun shrunkPhoto(context: Context, uri: Uri): String? = withContext(Dispatchers.IO) {
   runCatching { square(decode(context, uri)) }.getOrNull()?.let(::jpegBase64)
@@ -43,8 +44,11 @@ private fun square(bitmap: Bitmap): Bitmap {
   return Bitmap.createScaledBitmap(cropped, PHOTO_SIDE, PHOTO_SIDE, true)
 }
 
-private fun jpegBase64(bitmap: Bitmap): String {
+private fun jpegBase64(bitmap: Bitmap): String? =
+  QUALITIES.asSequence().map { jpeg(bitmap, it) }.firstOrNull { it.size < MAX_BYTES }?.let { Base64.encodeToString(it, Base64.NO_WRAP) }
+
+private fun jpeg(bitmap: Bitmap, quality: Int): ByteArray {
   val out = ByteArrayOutputStream()
-  bitmap.compress(Bitmap.CompressFormat.JPEG, PHOTO_QUALITY, out)
-  return Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
+  bitmap.compress(Bitmap.CompressFormat.JPEG, quality, out)
+  return out.toByteArray()
 }

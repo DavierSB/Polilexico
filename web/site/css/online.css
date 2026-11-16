@@ -266,6 +266,10 @@
 
 .resume-title { text-align: center; }
 .dialog-icon { font-size: 26px; text-align: center; }
+.avatar.zoomable { cursor: zoom-in; }
+.photo-zoom { z-index: 30; background: rgb(0 0 0 / .85); align-content: center; gap: 16px; cursor: zoom-out; }
+.photo-zoom-img { width: min(80vw, 80vh, 420px); aspect-ratio: 1; border-radius: 50%; object-fit: cover; }
+.photo-zoom-name { margin: 0; color: #fff; font-size: 20px; font-weight: 600; text-align: center; }
 .efficiency-box { display: flex; width: 100%; height: 170px; }
 .efficiency-axis { position: relative; flex: 0 0 24px; }
 .efficiency-axis span { position: absolute; left: 0; transform: translateY(-50%); font-size: 9px; font-weight: 600; color: var(--on-surface-variant); }
