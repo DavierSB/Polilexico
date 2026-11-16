@@ -6,6 +6,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.edit
+import androidx.work.WorkManager
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -39,10 +41,27 @@ class Updates(private val ctx: Context, private val current: String) {
   }
 
   suspend fun install() {
+    val release = available ?: return
     if (progress != null) return
+    val ready = readyApk(ctx, release.version)
+    if (ready != null) return installReady(ready)
     progress = 0f
-    val apk = withContext(Dispatchers.IO) { runCatching { downloadApk(ctx) { progress = it } }.getOrNull() }
-    apk?.let { withContext(Dispatchers.IO) { installApk(ctx, it) } }
+    enqueueDownload(ctx, release.version)
+  }
+
+  suspend fun watch() {
+    settlePending()
+    WorkManager.getInstance(ctx).getWorkInfosForUniqueWorkFlow(UPDATE_WORK).collect { progress = downloadProgress(ctx, it.firstOrNull()) }
+  }
+
+  private suspend fun settlePending() {
+    val release = available ?: return withContext(Dispatchers.IO) { discardUpdates(ctx) }
+    readyApk(ctx, release.version)?.let { installReady(it) }
+  }
+
+  private suspend fun installReady(apk: File) {
+    progress = 1f
+    withContext(Dispatchers.IO) { installApk(ctx, apk) }
     progress = null
   }
 

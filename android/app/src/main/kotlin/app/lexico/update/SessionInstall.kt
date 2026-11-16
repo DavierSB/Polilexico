@@ -5,7 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.os.Build
+import androidx.core.content.FileProvider
 import java.io.File
+
+private const val APK_TYPE = "application/vnd.android.package-archive"
 
 internal fun installApk(ctx: Context, apk: File) {
   runCatching { commitSession(ctx, apk) }.onFailure { openInstaller(ctx, apk) }
@@ -13,6 +16,12 @@ internal fun installApk(ctx: Context, apk: File) {
 
 internal fun openInstaller(ctx: Context, apk: File) {
   ctx.startActivity(installIntent(ctx, apk))
+}
+
+private fun installIntent(ctx: Context, apk: File): Intent {
+  val uri = FileProvider.getUriForFile(ctx, "${ctx.packageName}.updates", apk)
+  return Intent(Intent.ACTION_VIEW).setDataAndType(uri, APK_TYPE)
+    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
 }
 
 private fun commitSession(ctx: Context, apk: File) {

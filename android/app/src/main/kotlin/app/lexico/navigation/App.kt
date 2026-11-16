@@ -54,6 +54,7 @@ fun App(lexico: Lexico, settings: Settings, updates: Updates, version: String) {
   BackHandler(enabled = nav.canGoBack, onBack = nav::back)
   ReturnToOnlineGame(nav)
   LaunchedEffect(updates) { updates.check() }
+  LaunchedEffect(updates) { updates.watch() }
   Themed(themes.current) {
     Surface(Modifier.fillMaxSize()) {
       Box(Modifier.fillMaxSize()) {
