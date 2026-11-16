@@ -184,7 +184,7 @@ class DuplicateView {
     const p = this.placer;
     const s = this.state;
     if (s.phase === "confirming") return replace(this.buttons, confirming(s, () => this.session.cancel()));
-    if (s.phase === "finished") return replace(this.buttons, h("div.row.end-buttons", {}, endButtons({ recorded: () => this.session.recorded, words: playedWords(s), menu: () => this.options.exit() })));
+    if (s.phase === "finished") return replace(this.buttons, h("div.end-buttons", {}, endButtons({ recorded: () => this.session.recorded, words: playedWords(s), menu: () => this.options.exit() })));
     if (s.phase !== "playing") return replace(this.buttons);
     replace(this.buttons, moveButtons(
       h("button.btn", { disabled: !this.canPlay() || !p.pending.size, onclick: () => this.play() }, "Jugar"),

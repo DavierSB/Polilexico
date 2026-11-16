@@ -2,10 +2,8 @@ package app.lexico.ui.classic
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,10 +24,7 @@ fun ResultPanel(
   Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
     Text("${resultTitle(view, end)}   ${view.myScore} – ${view.opponentScore}",
       style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-      EndButtons(onAnalyze, onMenu, onAnalyzeEndgame.takeIf { view.bag == 0 }, onExport, playedWords(view))
-      TextButton(onClick = { charting = true }) { Text("Ventaja") }
-    }
+    EndButtons(onAnalyze, onMenu, onAnalyzeEndgame.takeIf { view.bag == 0 }, onExport, playedWords(view)) { charting = true }
   }
   if (charting) SpreadDialog(spread(view), close = { charting = false })
 }

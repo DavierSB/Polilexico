@@ -20,19 +20,19 @@ export function announceEnd(state, names, who, tools) {
 export function resultPanel(state, names, who, tools) {
   return h("div.stack.result-panel", {},
     h("b.result-title", {}, `${resultTitle(state, names, who)}   ${state.myScore} – ${state.opponentScore}`),
-    h("div.row.end-buttons", {},
-      endButtons({ recorded: tools.recorded, endgame: state.bag === 0, words: playedWords(state, names), picture: picture(state, names), menu: tools.menu }),
-      h("button.text-btn", { onclick: () => spreadDialog(classicSpread(state, names)) }, "Ventaja"),
+    h("div.end-buttons", {},
+      endButtons({ recorded: tools.recorded, endgame: state.bag === 0, words: playedWords(state, names), picture: picture(state, names), spread: () => spreadDialog(classicSpread(state, names)), menu: tools.menu }),
     ),
   );
 }
 
-export function endButtons({ recorded, endgame = false, words = [], picture = null, menu }) {
+export function endButtons({ recorded, endgame = false, words = [], picture = null, spread = null, menu }) {
   return [
     h("button.btn.small", { onclick: () => withRecord(recorded, (id) => go("partida-revision/" + id)) }, "Analizar"),
     endgame ? h("button.btn.small", { onclick: () => withRecord(recorded, (id) => go(`partida-revision/${id}/final`)) }, "Analizar final") : null,
     words.some((s) => s.words.length) ? h("button.btn.small.outlined", { onclick: () => wordsDialog(words) }, "Palabras") : null,
     h("button.btn.small.outlined", { onclick: () => withRecord(recorded, async (id) => exportDialog(picture, await getRecord(id))) }, "Exportar"),
+    spread ? h("button.btn.small.outlined", { onclick: spread }, "Ventaja") : null,
     h("button.btn.small.outlined", { onclick: menu }, "Menú"),
   ];
 }
