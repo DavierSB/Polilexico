@@ -8,8 +8,6 @@ import (
 	"lexico/engine/modes/duplicate"
 )
 
-const maxDuplicatePlayers = 12
-
 type duplicateRoom struct {
 	mu       sync.Mutex
 	hub      *hub
@@ -185,12 +183,8 @@ func (r *duplicateRoom) listing() (listing, bool) {
 }
 
 func (r *duplicateRoom) admit(c *client) *seat {
-	switch {
-	case r.table != nil:
+	if r.table != nil {
 		c.send(notice("error", "La partida de esa sala ya empezó."))
-		return nil
-	case len(r.seats) >= maxDuplicatePlayers:
-		c.send(notice("error", "La sala ya está completa."))
 		return nil
 	}
 	s := &seat{player: c.player, name: displayName(c.player, r.names())}
