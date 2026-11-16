@@ -10,7 +10,6 @@ import (
 const (
 	waitingTTL  = 30 * time.Minute
 	finishedTTL = 10 * time.Minute
-	idleTTL     = 24 * time.Hour
 )
 
 type classicRoom struct {
@@ -278,22 +277,7 @@ func (r *classicRoom) changed() {
 	r.sendSpectatorState()
 	if r.match.Game().Status().Over {
 		r.finish()
-	} else if r.untimed {
-		r.forfeitIdleIn(idleTTL)
 	}
-}
-
-func (r *classicRoom) forfeitIdleIn(d time.Duration) {
-	if r.timer != nil {
-		r.timer.Stop()
-	}
-	r.timer = time.AfterFunc(d, func() {
-		r.mu.Lock()
-		defer r.mu.Unlock()
-		if status := r.match.Game().Status(); !status.Over {
-			r.match.Forfeit(status.HumanToMove)
-		}
-	})
 }
 
 func (r *classicRoom) play(s *seat, input string) {
