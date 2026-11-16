@@ -1,7 +1,7 @@
 import { BLANK, LETTERS, SIZE } from "../tiles.js";
 import { placementText, writePlacement } from "../placement.js";
 
-const DIGRAPH_OF = { C: "CH", L: "LL", R: "RR" };
+const STAND_IN = { C: "CH", L: "LL", R: "RR", N: "Ñ" };
 
 export class Placer {
   constructor(onChange) {
@@ -145,7 +145,7 @@ export class Placer {
 
   slotFor(letter) {
     const free = this.freeSlots();
-    return free.find((s) => s.letter === letter) ?? free.find((s) => s.letter === DIGRAPH_OF[letter]) ?? free.find((s) => s.letter === BLANK);
+    return free.find((s) => s.letter === letter) ?? free.find((s) => s.letter === STAND_IN[letter]) ?? free.find((s) => s.letter === BLANK);
   }
 
   backspace() {
