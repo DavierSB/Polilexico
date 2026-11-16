@@ -117,6 +117,10 @@ class DuplicateView {
     return !!this.state && this.state.phase === "playing" && !this.state.paused;
   }
 
+  canArrange() {
+    return this.canPlay();
+  }
+
   tick() {
     const clock = this.panel.querySelector(".round-clock");
     if (clock) {
