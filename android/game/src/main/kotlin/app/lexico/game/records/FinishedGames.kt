@@ -7,8 +7,12 @@ import app.lexico.game.storage.Mode
 import app.lexico.go.review.Game
 import app.lexico.go.review.Review
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private const val WATCHED = "watched-"
+private const val STAMP = "yyyyMMdd-HHmmss"
 
 class FinishedGames internal constructor(private val dir: File) {
   suspend fun list(): List<FinishedGame> = engine {
@@ -32,6 +36,13 @@ class FinishedGames internal constructor(private val dir: File) {
   suspend fun preEndgame(path: String, turn: Int): PreEndgameAnalyzer = engine {
     val t = Review.open(path).turnAt(turn.toLong())
     PreEndgameAnalyzer(t.analyzePreEndgame(), parseBoard(t.board))
+  }
+
+  fun keep(log: String, gcg: String, watched: Boolean): String {
+    dir.mkdirs()
+    val base = File(dir, (if (watched) WATCHED else "") + "duplicate-" + SimpleDateFormat(STAMP, Locale.US).format(Date())).path
+    File("$base.gcg").writeText(gcg)
+    return File("$base-log.json").apply { writeText(log) }.path
   }
 
   private fun logFiles(): List<File> =

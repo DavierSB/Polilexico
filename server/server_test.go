@@ -451,11 +451,11 @@ func TestChatWaitsForAnAnswer(t *testing.T) {
 		relayChat(from, seats, "hola")
 	}
 	from.chat.last = time.Time{}
-	if chatRefusal(from, "hola") != chatWaitAnswer {
+	if chatRefusal(&from.chat, "hola") != chatWaitAnswer {
 		t.Fatal("no espera respuesta")
 	}
 	relayChat(other, seats, "dime")
-	if chatRefusal(from, "hola") != "" {
+	if chatRefusal(&from.chat, "hola") != "" {
 		t.Fatal("la respuesta no desbloquea")
 	}
 }

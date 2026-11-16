@@ -15,9 +15,10 @@ import app.lexico.ui.duplicate.SeatView
 @Composable
 internal fun ExportableSeat(
   view: SeatView, style: BoardStyle, actions: SeatActions, onAdjourn: (() -> Unit)? = null, onAbandon: (() -> Unit)? = null, online: Boolean = false,
+  onAnalyze: (() -> Unit)? = null,
 ) {
   var exporting by remember { mutableStateOf(false) }
-  SeatScreen(view, style, actions, { exporting = true }, onAdjourn, onAbandon, online)
+  SeatScreen(view, style, actions, { exporting = true }, onAdjourn, onAbandon, online, onAnalyze)
   SeatCues(view)
   if (exporting) TableExport(view, style) { exporting = false }
 }

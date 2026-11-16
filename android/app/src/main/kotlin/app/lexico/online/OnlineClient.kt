@@ -46,6 +46,8 @@ class OnlineClient internal constructor(private val online: Online, private val 
   val game: StateFlow<ClassicGame?> = _game.asStateFlow()
   private val _table = MutableStateFlow<String?>(null)
   val table: StateFlow<String?> = _table.asStateFlow()
+  private val _record = MutableStateFlow<String?>(null)
+  val record: StateFlow<String?> = _record.asStateFlow()
   private val _notice = MutableStateFlow<String?>(null)
   val notice: StateFlow<String?> = _notice.asStateFlow()
   private val _rivalOnline = MutableStateFlow(true)
@@ -200,11 +202,22 @@ class OnlineClient internal constructor(private val online: Online, private val 
     forget()
   }
 
+  private fun keepRecord(e: OnlineEvent.Record) {
+    val watching = _room.value?.watching ?: return
+    if (_record.value != null || e.log.isEmpty()) return
+    scope.launch(Dispatchers.IO) { _record.value = keptRecord(e, watching) }
+  }
+
+  private fun keptRecord(e: OnlineEvent.Record, watching: Boolean): String? = runCatching {
+    lexico.finishedGames.keep(e.log, e.gcg, watching).also { if (!watching) lexico.onlineRecords.add(it) }
+  }.getOrNull()
+
   fun forget() {
     _game.value?.close()
     _room.value = null
     _game.value = null
     _table.value = null
+    _record.value = null
     _notice.value = null
     _ended.value = null
     _rivalOnline.value = true
@@ -283,6 +296,7 @@ class OnlineClient internal constructor(private val online: Online, private val 
       is OnlineEvent.Room -> seated(e.info)
       is OnlineEvent.State -> { mirror(e); rejoinIfLive() }
       is OnlineEvent.Table -> { _table.value = e.view; rejoinIfLive() }
+      is OnlineEvent.Record -> keepRecord(e)
       is OnlineEvent.Rejected -> flash(e.reason)
       is OnlineEvent.Rival -> rival(e)
       is OnlineEvent.AdjournAsk -> _adjournAsk.value = e.name

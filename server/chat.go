@@ -22,7 +22,7 @@ type chatState struct {
 
 func relayChat(from *seat, seats []*seat, text string) {
 	text = strings.TrimSpace(text)
-	if reason := chatRefusal(from, text); reason != "" {
+	if reason := chatRefusal(&from.chat, text); reason != "" {
 		from.send(notice("error", reason))
 		return
 	}
@@ -35,13 +35,13 @@ func relayChat(from *seat, seats []*seat, text string) {
 	}
 }
 
-func chatRefusal(from *seat, text string) string {
+func chatRefusal(from *chatState, text string) string {
 	switch {
 	case text == "" || utf8.RuneCountInString(text) > chatMaxRunes:
 		return chatEmptyOrLong
-	case time.Since(from.chat.last) < chatGap:
+	case time.Since(from.last) < chatGap:
 		return chatTooSoon
-	case from.chat.unanswered >= chatUnanswered:
+	case from.unanswered >= chatUnanswered:
 		return chatWaitAnswer
 	}
 	return ""

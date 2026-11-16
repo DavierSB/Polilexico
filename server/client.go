@@ -25,6 +25,7 @@ type client struct {
 	room    room
 	version int
 	tells   chatState
+	chat    chatState
 }
 
 func newClient(conn *websocket.Conn) *client {

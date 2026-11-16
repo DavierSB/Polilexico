@@ -27,6 +27,11 @@ export async function keepRecord(path, online = false, watched = false) {
   const text = await readFile(path);
   if (!text) return null;
   const gcg = await readFile(path.replace(/-log\.json$/, ".gcg"));
+  return keepTextRecord(text, gcg, online, watched);
+}
+
+export async function keepTextRecord(text, gcg, online = false, watched = false) {
+  await whenReady();
   const game = await call("reviewOpen", text);
   const { Turns, ...summary } = game;
   const id = String(Date.now());

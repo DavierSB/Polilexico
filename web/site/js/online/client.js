@@ -4,6 +4,7 @@ import { readTable } from "./table.js";
 import { load, save } from "../store.js";
 import { involvedDialog } from "./involved.js";
 import { recordChat } from "./chatLog.js";
+import { keepTextRecord } from "../records.js";
 import { setting } from "../settings.js";
 
 const NOTICE_MS = 5000;
@@ -38,6 +39,7 @@ class OnlineClient {
     this.session?.close();
     this.session = null;
     this.table = null;
+    this.record = null;
     this.room = null;
     this.notice = null;
     this.ended = null;
@@ -313,6 +315,7 @@ const HANDLERS = {
   tell: (c, e) => !c.ignoringAll() && !c.ignored().includes(key(e)) && c.heard({ from: e.name, country: e.country, text: e.text, private: true }),
   watchers: (c, e) => (c.watchers = e.people ?? []),
   table: (c, e) => c.room && (c.table = readTable(e.view, c.room.watching ? "" : c.room.me)),
+  record: (c, e) => c.room && (c.record ??= keepTextRecord(e.record, e.gcg, true, c.room.watching).catch(() => null)),
   duplicateOffer: (c, e) => (c.offer = e.code),
   involved: () => involvedDialog(),
 };

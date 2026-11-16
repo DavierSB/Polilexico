@@ -53,9 +53,7 @@ func (r *duplicateRoom) handle(c *client, m message) {
 	defer r.mu.Unlock()
 	s := r.seatOf(c.player.ID)
 	if s == nil || s.client != c {
-		if m.T == "leave" && r.watchers.remove(c) {
-			r.watchers.countFor(r.seats)
-		}
+		r.handleWatcher(c, m)
 		return
 	}
 	switch m.T {
@@ -66,7 +64,7 @@ func (r *duplicateRoom) handle(c *client, m message) {
 	case "ready":
 		r.ready(s)
 	case "chat":
-		relayChat(s, r.seats, m.Text)
+		r.tableChat(c, &s.chat, s.name, m.Text)
 	case "leave":
 		r.leave(s)
 	case "adjourn":
@@ -219,6 +217,9 @@ func (r *duplicateRoom) attach(s *seat, c *client) {
 	r.awayChanged(s)
 	r.sendPresence()
 	s.send(message{T: "watchers", Watchers: len(r.watchers.list)})
+	if r.recorded {
+		r.sendRecord(s.client, s.name)
+	}
 }
 
 func (r *duplicateRoom) start(s *seat) {
@@ -300,6 +301,7 @@ func (r *duplicateRoom) finish(final tableSummary) {
 	}
 	r.recorded = true
 	record(r.hub.store, duplicateResult(r, final))
+	r.sendRecords()
 	r.expireIn(finishedTTL)
 	r.hub.changed()
 }

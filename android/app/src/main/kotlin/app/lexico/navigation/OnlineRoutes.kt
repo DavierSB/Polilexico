@@ -174,7 +174,7 @@ internal fun OnlinePlayRoute(lexico: Lexico, nav: Navigator, themes: ThemeState)
       OnlineWaitScreen("En línea", ended ?: "Entrando…", ended != null) { client.forget(); nav.back() }
     }
     current.watching -> Disconnected(status != null && ended == null, nav::home, note = null) {
-      ProvidePhotos(rememberOnline(), client.lobby.collectAsState().value) { Watch(client, current, nav, themes) }
+      ProvidePhotos(rememberOnline(), client.lobby.collectAsState().value) { Watch(client, current, nav, themes, lexico.finishedGames) }
     }
     else -> GoneCover(ended == GAME_GONE, { client.forget(); nav.home() }) {
       AdjournedCover(ended == ADJOURNED, { client.forget(); nav.back() }) {
@@ -330,6 +330,7 @@ private fun DuplicateOnline(client: OnlineClient, info: RoomInfo, nav: Navigator
   val status by client.status.collectAsState()
   val ended by client.ended.collectAsState()
   val watchers by client.watchers.collectAsState()
+  val record by client.record.collectAsState()
   var adjourning by remember { mutableStateOf(false) }
   var state by remember { mutableStateOf<TableState?>(null) }
   LaunchedEffect(json) { json?.let { state = read(it) } }
@@ -341,6 +342,7 @@ private fun DuplicateOnline(client: OnlineClient, info: RoomInfo, nav: Navigator
       ExportableSeat(
         seatView(table, info.me, notice, status ?: ended).copy(watchers = watchers.map(::personItem)), themes.board, actions,
         onAdjourn = { adjourning = true }.takeIf { info.players.size == 2 }, onAbandon = leave, online = true,
+        onAnalyze = record?.let { path -> { nav.replace(Screen.Review(path)) } },
       )
       if (info.players.size == 2) AdjournDialogs(client, info, ended != null, adjourning) { adjourning = false }
     }

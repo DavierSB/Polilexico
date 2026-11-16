@@ -3,7 +3,7 @@ package app.lexico.online
 import org.json.JSONArray
 import org.json.JSONObject
 
-internal const val ONLINE_PROTOCOL = 5
+internal const val ONLINE_PROTOCOL = 6
 
 data class RoomInfo(
   val id: String, val duplicate: Boolean, val me: String, val host: String, val players: List<String>, val first: Boolean,
@@ -47,6 +47,7 @@ internal sealed interface OnlineEvent {
   data class Room(val info: RoomInfo) : OnlineEvent
   data class State(val save: String, val first: Boolean) : OnlineEvent
   data class Table(val view: String) : OnlineEvent
+  data class Record(val log: String, val gcg: String) : OnlineEvent
   data class Rejected(val reason: String) : OnlineEvent
   data class Chat(val from: String, val text: String) : OnlineEvent
   data class Watchers(val people: List<Person>) : OnlineEvent
@@ -101,6 +102,7 @@ private fun event(o: JSONObject): OnlineEvent? = when (o.getString("t")) {
   "room" -> OnlineEvent.Room(roomInfo(o))
   "state" -> OnlineEvent.State(o.getString("save"), o.optBoolean("first"))
   "table" -> OnlineEvent.Table(o.getString("view"))
+  "record" -> OnlineEvent.Record(o.optString("record"), o.optString("gcg"))
   "rejected" -> OnlineEvent.Rejected(o.optString("reason"))
   "chat" -> OnlineEvent.Chat(o.optString("name"), o.optString("text"))
   "tell" -> OnlineEvent.Tell(o.optString("name"), o.optString("country"), o.optString("text"))

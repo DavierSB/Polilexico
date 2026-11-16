@@ -1,10 +1,11 @@
 package main
 
 const (
-	protocolVersion = 5
+	protocolVersion = 6
 	minProtocol     = 3
 	tellProtocol    = 4
 	claimProtocol   = 5
+	recordProtocol  = 6
 )
 
 const (
@@ -46,6 +47,8 @@ type message struct {
 	AwayMs     int64           `json:"awayMs,omitempty"`
 	Adjourned  []adjournedItem `json:"adjourned,omitempty"`
 	Resume     bool            `json:"resume,omitempty"`
+	Record     string          `json:"record,omitempty"`
+	GCG        string          `json:"gcg,omitempty"`
 }
 
 const involvedReason = "Termina la partida en la que estás involucrado primero."

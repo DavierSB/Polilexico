@@ -3,6 +3,7 @@ package app.lexico.ui.duplicate
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
@@ -41,7 +42,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun SeatScreen(
   view: SeatView, style: BoardStyle, actions: SeatActions, onExport: (() -> Unit)? = null, onAdjourn: (() -> Unit)? = null, onAbandon: (() -> Unit)? = null,
-  online: Boolean = false,
+  online: Boolean = false, onAnalyze: (() -> Unit)? = null,
 ) {
   val c = rememberTilePlacer(RackRenewal.MASTER_PLAYS)
   LaunchedEffect(view.board, view.rack) { c.reset(view.board, view.rack) }
@@ -56,7 +57,7 @@ fun SeatScreen(
   val openStandings = { if (online && !view.watching) standings = true else chart = true }
   val bar: @Composable () -> Unit = {
     GameBar(bag = view.bag, onExit = actions::exit, onMoves = { moves = true }, onBag = { bag = true }, onResign = { abandoning = true }.takeIf { canAbandon },
-      onStandings = openStandings.takeIf { !view.watching && view.phase != SeatPhase.PLAYING }, watchers = view.watchers,
+      onStandings = openStandings.takeIf { !view.watching && view.phase == SeatPhase.FINISHED }, watchers = view.watchers,
       onAdjourn = onAdjourn.takeIf { view.phase != SeatPhase.FINISHED && !view.watching },
       onChat = LocalChat.current?.onOpen?.takeIf { view.watching },
       onChart = if (view.watching) ({ chart = true }) else ({ coloredChart = true }).takeIf { online },
@@ -66,7 +67,7 @@ fun SeatScreen(
   BoardColumn(
     top = { bar() },
     board = { PlacingBoard(c, style, enabled = view.phase == SeatPhase.PLAYING && !view.watching, lookUpWhenIdle = view.phase == SeatPhase.FINISHED || view.watching) },
-    bottom = { SeatBottom(view, c, style, actions, message, onExport, { results = true }) { message = it } },
+    bottom = { SeatBottom(view, c, style, actions, message, EndActions(onExport, onAnalyze), RoundButtons({ results = true }, openStandings)) { message = it } },
     footer = {
       if (view.phase == SeatPhase.PLAYING && !view.watching) {
         PlayingButtons(c, onPlay = { c.placement()?.let(actions::propose) ?: run { message = NOT_IN_A_LINE } }, onStandings = openStandings)
@@ -85,15 +86,15 @@ fun SeatScreen(
 
 @Composable
 private fun SeatBottom(
-  view: SeatView, c: TilePlacer, style: BoardStyle, actions: SeatActions, message: String?, onExport: (() -> Unit)?, onShowResults: () -> Unit,
+  view: SeatView, c: TilePlacer, style: BoardStyle, actions: SeatActions, message: String?, end: EndActions, round: RoundButtons,
   onNotice: (String) -> Unit,
 ) {
   view.status?.let { Notice(it, bold = true) }
   when {
     view.phase == SeatPhase.PLAYING && view.watching -> WatchingRound(view, c, style)
     view.phase == SeatPhase.PLAYING -> Playing(view, c, style, actions, message, onNotice)
-    view.phase == SeatPhase.FINISHED -> Finished(view, actions, onExport)
-    else -> RoundEnd(view, actions, onShowResults)
+    view.phase == SeatPhase.FINISHED -> Finished(view, actions, end)
+    else -> RoundEnd(view, actions, round)
   }
 }
 
@@ -113,9 +114,10 @@ private fun WatchingRound(view: SeatView, c: TilePlacer, style: BoardStyle) {
 }
 
 @Composable
-private fun RoundEnd(view: SeatView, actions: SeatActions, onShow: () -> Unit) {
+private fun RoundEnd(view: SeatView, actions: SeatActions, round: RoundButtons) {
   Text("Resultados de la ronda ${view.round}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-  OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = onShow) { Text("Ver resultados") }
+  OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = round.results) { Text("Ver resultados") }
+  if (!view.watching) OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = round.standings) { Text("Posiciones") }
   when {
     view.watching -> Unit
     view.iAmReady -> Text("Esperando la nueva ronda: ${view.ready} de ${view.waiting} listos", style = MaterialTheme.typography.titleSmall)
@@ -160,10 +162,24 @@ private fun StandingsDialog(view: SeatView, close: () -> Unit) {
   )
 }
 
+private class RoundButtons(val results: () -> Unit, val standings: () -> Unit)
+
+private class EndActions(val export: (() -> Unit)?, val analyze: (() -> Unit)?)
+
 @Composable
-private fun Finished(view: SeatView, actions: SeatActions, onExport: (() -> Unit)?) {
+private fun Finished(view: SeatView, actions: SeatActions, end: EndActions) {
   Text("Partida terminada", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
   Table(view)
+  val analyze = end.analyze ?: return PlainEnd(actions, end.export)
+  Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
+    Button(modifier = Modifier.weight(1f), onClick = analyze) { Text("Analizar") }
+    end.export?.let { OutlinedButton(modifier = Modifier.weight(1f), onClick = it) { Text("Exportar") } }
+  }
+  OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = actions::exit) { Text("Salir") }
+}
+
+@Composable
+private fun PlainEnd(actions: SeatActions, onExport: (() -> Unit)?) {
   onExport?.let { OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = it) { Text("Exportar") } }
   Button(modifier = Modifier.fillMaxWidth(), onClick = actions::exit) { Text("Salir") }
 }

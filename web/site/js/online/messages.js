@@ -53,7 +53,7 @@ function contacts(c) {
   const watching = (p) => (c.watchers ?? []).some((w) => w.name === p.name && w.country === p.country);
   const people = c.lobby.people.filter((p) => !(p.name === me?.name && p.country === me?.country))
     .map((p) => ({ ...p, group: rivals.has(p.name) ? "rivals" : watching(p) ? "watchers" : "others" }));
-  const room = c.room?.duplicate && rivals.size && !c.room.watching ? [ROOM_CONTACT] : [];
+  const room = c.room?.duplicate && rivals.size ? [ROOM_CONTACT] : [];
   const order = (g) => GROUPS.findIndex(([k]) => k === g);
   return [...room, ...people.sort((a, b) => order(a.group) - order(b.group) || a.name.toLowerCase().localeCompare(b.name.toLowerCase()))];
 }

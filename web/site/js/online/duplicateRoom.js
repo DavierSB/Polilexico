@@ -113,6 +113,10 @@ class RoomView {
     return !!this.t && this.t.phase === "playing" && !this.watching;
   }
 
+  canArrange() {
+    return this.canPlay();
+  }
+
   renderAll() {
     this.renderBar();
     this.renderBoard();
@@ -154,7 +158,7 @@ class RoomView {
       watchersButton(watchers),
       this.watching ? chatButton(() => writeMessage()) : null,
       h("button.icon-btn", { "aria-label": "Evolución", onclick: () => percentChartDialog(t, t.me, true) }, icon("chart")),
-      t.phase !== "playing" && !this.watching ? h("button.text-btn", { onclick: () => this.standingsDialog() }, "Posiciones") : null,
+      t.phase === "finished" && !this.watching ? h("button.text-btn", { onclick: () => this.standingsDialog() }, "Posiciones") : null,
       adjourn ? h("button.icon-btn", { "aria-label": "Movidas", onclick: moves }, icon("moves")) : h("button.text-btn.moves-btn", { onclick: moves }, "Movidas"),
       h("button.bag-btn", { "aria-label": "Quedan en la bolsa", onclick: () => duplicateBagDialog(t.unseen) }, bagIcon(t.unseen.length)),
     );
@@ -181,10 +185,12 @@ class RoomView {
       return replace(this.panel, h("div.round-bar", {}, h("span.grow", {}, `Ronda ${t.round}`), h("span.round-clock", {}, formatClock(leftMs(t) ?? 0))), proposal);
     }
     if (t.phase === "finished") return replace(this.panel, h("b.phase-title", {}, "Partida terminada"), this.watching ? leaderboard(t) : standingsTable(t),
-      h("button.btn.outlined.block", { onclick: () => this.exportTable() }, "Exportar"), h("button.btn.block", { onclick: () => this.exit() }, "Salir"));
+      h("div.row.end-buttons", {}, h("button.btn.grow", { onclick: () => this.analyze() }, "Analizar"), h("button.btn.outlined.grow", { onclick: () => this.exportTable() }, "Exportar")),
+      h("button.btn.outlined.block", { onclick: () => this.exit() }, "Salir"));
     replace(this.panel,
       h("b.phase-title", {}, `Resultados de la ronda ${t.round}`),
       h("button.btn.outlined.block", { onclick: () => this.resultsDialog() }, "Ver resultados"),
+      this.watching ? null : h("button.btn.outlined.block", { onclick: () => this.standingsDialog() }, "Posiciones"),
       this.watching ? null : t.iAmReady ? h("span.muted", {}, `Esperando la nueva ronda: ${t.ready} de ${t.waiting} listos`) : h("button.btn.block", { onclick: () => online.ready() }, "Comenzar nueva ronda"),
     );
   }
@@ -202,6 +208,12 @@ class RoomView {
 
   renderSide() {
     replace(this.side, this.watching && this.t.phase === "playing" && this.t.live ? leaderboard(this.t) : null);
+  }
+
+  async analyze() {
+    const id = await online.record;
+    if (!id) return toast("El análisis no está disponible.");
+    go("partida-revision/" + id);
   }
 
   exportTable() {

@@ -44,9 +44,13 @@ func writeJSON(path string, v any) error {
 const gcgDescription = "Poliléxico"
 
 func writeGCG(path string, g *game.Game) {
-	h := g.History()
-	h.Description = gcgDescription
-	if gcg, err := gcgio.GameHistoryToGCG(h, true); err == nil {
+	if gcg, err := GCG(g); err == nil {
 		_ = os.WriteFile(path, []byte(gcg), 0o644)
 	}
+}
+
+func GCG(g *game.Game) (string, error) {
+	h := g.History()
+	h.Description = gcgDescription
+	return gcgio.GameHistoryToGCG(h, true)
 }

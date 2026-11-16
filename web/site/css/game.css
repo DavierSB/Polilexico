@@ -223,6 +223,11 @@ table.moves tr.mine td:nth-child(2) { color: var(--primary); }
 
   .game-side { height: 100%; }
 
+  .game:has(.watch-panel) { grid-template-rows: auto auto auto auto 1fr auto auto; }
+  .game-buttons:has(.watch-panel) { display: flex; align-self: stretch; }
+  .game-buttons .watch-panel { flex: 1 1 auto; min-height: 0; }
+  .game-buttons .watch-moves { flex: 1 1 0; min-height: 150px; max-height: none; contain: size; }
+
   .rack { gap: 6px; }
 
   .rack-tile { flex-basis: calc((var(--side) - 36px) / 7); }
