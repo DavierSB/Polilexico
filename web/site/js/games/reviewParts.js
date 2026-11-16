@@ -81,12 +81,16 @@ export function candidatesTable(moves, selected, choose) {
   const column = valueColumn(moves);
   return h("table.moves.ranked", {},
     h("thead", {}, h("tr", {}, h("th", {}, "#"), h("th", {}, "Jugada"), h("th.num", {}, "Puntos"), column ? h("th.num", {}, h("span.row.value-th", {}, column.title, infoButton(column.title, column.info))) : null)),
-    h("tbody", {}, moves.map((m, n) => h("tr", { class: selected?.text === m.text ? "active" : "", onclick: () => choose(m) },
+    h("tbody", {}, moves.map((m, n) => h("tr", { class: rowClass(m, selected), onclick: () => choose(m) },
       h("td.muted", {}, n + 1),
-      h("td", {}, h("span.row.move-with-tags", {}, h("span", {}, m.text), m.note ? h("span.move-note", {}, m.note) : null, m.playedBy ? h("span.played-by", {}, m.playedBy) : null)),
+      h("td", {}, h("span.row.move-with-tags", {}, h("span", {}, m.text), m.note ? h("span.move-note", {}, m.note) : null)),
       h("td.num", {}, m.score),
       column ? h("td.num", {}, valueText(m)) : null))),
   );
+}
+
+function rowClass(m, selected) {
+  return [selected?.text === m.text ? "active" : "", m.playedBy ? "played" : ""].join(" ").trim();
 }
 
 export function turnTitle(t, count) {

@@ -1,6 +1,7 @@
 package app.lexico.ui.common
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -89,7 +90,7 @@ private fun HeaderCell(text: String, modifier: Modifier = Modifier, align: TextA
 @Composable
 private fun MoveRow(rank: Int, m: RankedMove, withValue: Boolean, active: Boolean, select: () -> Unit) {
   Row(
-    Modifier.fillMaxWidth().padding(vertical = 1.dp).highlight(active).clickable(onClick = select).padding(horizontal = 8.dp, vertical = 7.dp),
+    Modifier.fillMaxWidth().padding(vertical = 1.dp).highlight(active, m.playedBy.isNotEmpty()).clickable(onClick = select).padding(horizontal = 8.dp, vertical = 7.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Cell("$rank", RankWidth, cellStyle(FontWeight.SemiBold, muted = true))
@@ -108,7 +109,6 @@ private fun RowScope.MoveCell(m: RankedMove) {
       autoSize = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 15.sp, stepSize = 0.5.sp),
     )
     if (m.note.isNotEmpty()) MoveNote(m.note)
-    if (m.playedBy.isNotEmpty()) PlayedBy(m.playedBy)
   }
 }
 
@@ -123,14 +123,6 @@ private fun MoveNote(note: String) {
 @Composable
 private fun Cell(text: String, width: Dp, style: TextStyle, align: TextAlign = TextAlign.Start) {
   Text(text, Modifier.width(width), style = style, textAlign = align)
-}
-
-@Composable
-private fun PlayedBy(who: String) {
-  Text(
-    who, Modifier.padding(start = 8.dp).background(MaterialTheme.colorScheme.primary, RoundedCornerShape(50)).padding(horizontal = 7.dp),
-    style = TextStyle(fontFamily = Mulish, fontWeight = FontWeight.ExtraBold, fontSize = 11.sp, color = MaterialTheme.colorScheme.onPrimary),
-  )
 }
 
 const val EQUITY_INFO = "El valor de la jugada, considerando su puntuación y lo que queda en la mano."
@@ -151,5 +143,15 @@ private fun cellStyle(weight: FontWeight, muted: Boolean = false): TextStyle = T
 )
 
 @Composable
-private fun Modifier.highlight(active: Boolean): Modifier =
-  background(if (active) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent, RoundedCornerShape(10.dp))
+private fun Modifier.highlight(active: Boolean, played: Boolean): Modifier {
+  val colors = MaterialTheme.colorScheme
+  val fill = when {
+    played -> colors.primaryContainer
+    active -> colors.secondaryContainer
+    else -> Color.Transparent
+  }
+  val ring = if (active && played) border(2.dp, colors.primary, RowShape) else this
+  return ring.background(fill, RowShape)
+}
+
+private val RowShape = RoundedCornerShape(10.dp)
