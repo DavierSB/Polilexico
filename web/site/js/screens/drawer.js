@@ -6,6 +6,7 @@ import { themeDialog } from "../dialogs.js";
 import { optionsDialog } from "./options.js";
 import { aboutDialog } from "./about.js";
 import { DOWNLOAD_URL } from "./download.js";
+import { COMMUNITY_URL } from "./community.js";
 
 const layer = () => document.getElementById("layer");
 
@@ -33,6 +34,7 @@ export function drawerItems(close = () => {}) {
     item("Tema", themeDialog),
     item("Opciones", optionsDialog),
     h("hr.drawer-rule"),
+    h("a.drawer-item.drawer-community", { href: COMMUNITY_URL, target: "_blank", rel: "noopener", onclick: close }, icon("whatsapp", 22), "Comunidad"),
     item("Acerca de", aboutDialog),
     h("a.drawer-item.drawer-download", { href: DOWNLOAD_URL }, "Descargar APK para Android"),
   ];

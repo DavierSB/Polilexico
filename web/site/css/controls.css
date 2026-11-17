@@ -593,6 +593,10 @@ hr.thick { width: 100%; border: 0; border-top: 2px solid var(--on-surface); marg
 
 .drawer-item:hover { background: var(--c3); }
 
+.drawer-community { gap: 12px; }
+
+.drawer-community svg { color: #25D366; flex: none; }
+
 .drawer-rule { width: 100%; margin: 8px 0; border: 0; border-top: 1px solid var(--outline-variant); }
 
 @keyframes slide-in { from { transform: translateX(-100%); } }
