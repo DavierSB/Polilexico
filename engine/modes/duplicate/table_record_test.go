@@ -64,3 +64,18 @@ func tableLog(t *testing.T, table *Table, player string) gameLog {
 	}
 	return log
 }
+
+func TestTableRecordCarriesThePlayer(t *testing.T) {
+	table := finishedTestTable(t)
+	rec, err := table.RecordFor("Ana", "CU", "a-1")
+	var log gameLog
+	if err != nil || json.Unmarshal([]byte(rec.Log), &log) != nil {
+		t.Fatal(err)
+	}
+	if log.HumanName != "Ana" || log.Countries[0] != "CU" || log.IDs[0] != "a-1" {
+		t.Fatalf("%+v", log)
+	}
+	if master := tableLog(t, table, ""); master.HumanName != "" || master.IDs != nil {
+		t.Fatalf("Máster: %+v", master)
+	}
+}

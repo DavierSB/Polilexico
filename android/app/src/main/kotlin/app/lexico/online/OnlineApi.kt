@@ -55,13 +55,19 @@ class OnlineApi(private val server: () -> String, private val http: OkHttpClient
   suspend fun savePhoto(token: String, base64: String): Result<Unit> =
     call("PUT", "/photo", JSONObject().put("data", base64), token).map { }
 
-  suspend fun photo(name: String, country: String, etag: String?): PhotoReply = withContext(Dispatchers.IO) {
-    runCatching { http.newCall(photoRequest(name, country, etag)).execute() }.fold({ r -> r.use(::photoReply) }) { PhotoReply.Unreachable }
+  suspend fun photo(name: String, country: String, etag: String?): PhotoReply = photo(mapOf("name" to name, "country" to country), etag)
+
+  suspend fun photoById(id: String, etag: String?): PhotoReply = photo(mapOf("id" to id), etag)
+
+  private suspend fun photo(query: Map<String, String>, etag: String?): PhotoReply = withContext(Dispatchers.IO) {
+    runCatching { http.newCall(photoRequest(query, etag)).execute() }.fold({ r -> r.use(::photoReply) }) { PhotoReply.Unreachable }
   }
 
-  private fun photoRequest(name: String, country: String, etag: String?): Request =
-    Request.Builder().url("${server()}/photo".toHttpUrl().newBuilder().addQueryParameter("name", name).addQueryParameter("country", country).build())
-      .apply { etag?.let { header("If-None-Match", it) } }.build()
+  private fun photoRequest(query: Map<String, String>, etag: String?): Request =
+    Request.Builder().url(photoUrl(query)).apply { etag?.let { header("If-None-Match", it) } }.build()
+
+  private fun photoUrl(query: Map<String, String>) =
+    "${server()}/photo".toHttpUrl().newBuilder().apply { query.forEach { (k, v) -> addQueryParameter(k, v) } }.build()
 
   private fun photoReply(r: Response): PhotoReply = when (r.code) {
     200 -> PhotoReply.Fresh(r.body?.bytes() ?: ByteArray(0), r.header("ETag"))

@@ -31,6 +31,9 @@ interface PhotoSource {
 
   @Composable
   fun ofSeat(seatName: String): ImageBitmap?
+
+  @Composable
+  fun ofPlayer(name: String, country: String, id: String): ImageBitmap? = if (country.isEmpty()) ofSeat(name) else of(name, country)
 }
 
 val LocalPhotos = compositionLocalOf<PhotoSource?> { null }

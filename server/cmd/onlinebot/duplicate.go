@@ -41,7 +41,7 @@ func (b *bot) tableStep(v tableView) {
 	case v.Phase == "playing":
 		b.proposeIfDue(v.Round)
 		b.progress.mine++
-		b.playLater(b.choose(v.Board, v.Rack))
+		b.playLater(b.duplicateMove(v.Board, v.Rack))
 	case v.Phase == "results" && !v.IAmReady:
 		report(v)
 		go func() { time.Sleep(b.o.delay); b.link.send(message{T: "ready"}) }()

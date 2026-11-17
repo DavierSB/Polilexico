@@ -58,6 +58,9 @@ func classicMirror(args []json.RawMessage) (any, error) {
 		if flag(args, 2) {
 			return classic.LoadWatch(text(args, 0), flag(args, 1), l)
 		}
+		if flag(args, 3) {
+			return classic.LoadGuestMirror(text(args, 0), flag(args, 1), l)
+		}
 		return classic.LoadMirror(text(args, 0), flag(args, 1), l)
 	})
 }

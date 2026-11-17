@@ -1,5 +1,6 @@
 import { h } from "../dom.js";
 import { openDialog, actions } from "../dialogs.js";
+import { layoutDots } from "./dotLayout.js";
 
 const STEPS = [10, 20, 25, 50, 100, 200, 250, 500];
 const MAX_TICKS = 5;
@@ -7,15 +8,20 @@ const NS = "http://www.w3.org/2000/svg";
 const SIDE = 300;
 const LEFT = 34;
 const BOTTOM = 22;
+const DOT_STEP = 18;
+const DOT_BOX = 22;
+const LABEL_HEIGHT = 16;
+const LABEL_LINE = 14;
 
 export function dotStrip(games, label, unit = "") {
   const scale = scaleOf(games.map((g) => g.value), unit === "%" ? 100 : null);
-  const x = (v) => fraction(scale, v) * 100;
-  const dot = (g, i) => h("button.strip-dot", { "aria-label": g.title, style: { left: x(g.value) + "%", top: `calc(${50 + jitter(i) * 30}% - 11px)` }, onclick: () => gameDialog(g) });
+  const dots = games.map((g) => h("button.strip-dot", { "aria-label": g.title, onclick: () => gameDialog(g) }));
+  const plot = h("div.strip-plot", {}, dots);
+  watchPlot(plot, () => placeDots(plot, dots, games, scale, unit));
   return h("div.stack.chart-box", {},
     h("div.strip", {},
-      h("div.strip-plot", {}, games.map(dot)),
-      h("div.strip-axis", {}, ticksOf(scale).map((v) => h("span.strip-tick", { style: { left: x(v) + "%" } }, `${v}${unit}`))),
+      plot,
+      h("div.strip-axis", {}, ticksOf(scale).map((v) => h("span.strip-tick", { style: { left: fraction(scale, v) * 100 + "%" } }, `${v}${unit}`))),
     ),
     h("span.chart-caption", {}, label),
   );
@@ -71,8 +77,27 @@ function fraction({ min, max }, v) {
   return (v - min) / (max - min);
 }
 
-function jitter(i) {
-  return (((i * 37) % 7) - 3) / 3;
+function watchPlot(plot, place) {
+  let shown = false;
+  const observer = new ResizeObserver(() => {
+    if (plot.isConnected) return (shown = true), place();
+    if (shown) observer.disconnect();
+  });
+  observer.observe(plot);
+}
+
+function placeDots(plot, dots, games, scale, unit) {
+  const width = plot.clientWidth;
+  const frame = { left: 0, right: width, bottom: plot.clientHeight, step: DOT_STEP, labelHeight: LABEL_HEIGHT };
+  const layout = layoutDots(games.map((g) => fraction(scale, g.value) * width), games.map((g) => g.value), frame);
+  dots.forEach((d, i) => Object.assign(d.style, { left: `${layout.spots[i].x}px`, top: `${layout.spots[i].y - DOT_BOX / 2}px` }));
+  plot.querySelectorAll(".strip-label").forEach((l) => l.remove());
+  plot.append(...layout.labels.map((l) => groupLabel(l, unit)));
+}
+
+function groupLabel({ low, high, x, bottom }, unit) {
+  const text = low === high ? `${low}${unit}` : `${low}–${high}${unit}`;
+  return h("span.strip-label", { style: { left: `${x}px`, top: `${bottom - LABEL_LINE}px` } }, text);
 }
 
 function el(name, attrs, ...children) {

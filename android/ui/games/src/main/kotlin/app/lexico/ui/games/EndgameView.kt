@@ -24,8 +24,9 @@ data class ExploredPosition(
   val over: Boolean,
   val path: List<StepView>,
   val ending: List<EndingRow>,
+  val bottom: String = ME,
 ) {
-  val me: Int get() = players.indexOf(ME).coerceAtLeast(0)
+  val me: Int get() = players.indexOf(bottom).coerceAtLeast(0)
 }
 
 data class LiveLines(val lines: List<LineView>, val depth: Int, val exact: Boolean) {

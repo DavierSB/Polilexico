@@ -29,7 +29,6 @@ import app.lexico.ui.board.BoardStyle
 import app.lexico.ui.board.WordTap
 import app.lexico.ui.board.RackTile
 import app.lexico.ui.board.ScrabbleBoard
-import app.lexico.ui.classic.OpponentPhoto
 import app.lexico.ui.classic.PlayerBar
 import app.lexico.ui.common.RankedMove
 
@@ -38,6 +37,7 @@ private const val FULL_RACK = 7
 private val RACK_TILE = 42.dp
 private val RACK_GAP = 4.dp
 private val RACK_FRAME = 8.dp
+private val BAR_PHOTO = 20.dp
 private val NAV_TEXT = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 14.sp, stepSize = 0.5.sp)
 
 @Composable
@@ -63,7 +63,7 @@ internal fun PlainPage(review: ReviewView, index: Int, turn: ReviewTurnView, sta
     height,
     top = { Stacked { TurnTitle(turn, review.turns.size); OpponentBar(review, turn) } },
     board = { ScrabbleBoard(turn.board, Modifier, style, pending = selected?.placement?.placed.orEmpty(), wordTap = WordTap.MENU) },
-    bottom = { Stacked { MyArea(turn, style); TurnNavigator(index, review.turns.size, go) { listing = true }; status?.let { Status(it) }; TurnMoves(turn, review.classic, selected, select) } },
+    bottom = { Stacked { MyArea(review, turn, style); TurnNavigator(index, review.turns.size, go) { listing = true }; status?.let { Status(it) }; TurnMoves(turn, review.classic, selected, select) } },
   )
   if (listing) CandidatesDialog(turn.candidates, selected, close = { listing = false }) { select(it); listing = false }
 }
@@ -79,8 +79,8 @@ internal fun Stacked(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun MyArea(turn: ReviewTurnView, style: BoardStyle) {
-  PlayerBar(name = "Tú", points = turn.myScore, clock = null, onTurn = turn.mine == true, framed = true)
+private fun MyArea(review: ReviewView, turn: ReviewTurnView, style: BoardStyle) {
+  PlayerBar(name = review.me, points = turn.myScore, clock = null, onTurn = turn.mine == true, framed = true, photo = review.photoOf(review.me, BAR_PHOTO))
   ReviewRack(turn.rack, style)
 }
 
@@ -92,8 +92,8 @@ internal fun TurnTitle(turn: ReviewTurnView, count: Int) {
 
 @Composable
 private fun OpponentBar(review: ReviewView, turn: ReviewTurnView) {
-  val photo: (@Composable () -> Unit)? = if (review.photo) ({ OpponentPhoto(review.opponent, 20.dp) }) else null
-  PlayerBar(name = review.opponent, points = turn.opponentScore, clock = null, onTurn = turn.mine == false, framed = true, photo = photo)
+  PlayerBar(name = review.opponent, points = turn.opponentScore, clock = null, onTurn = turn.mine == false, framed = true,
+    photo = review.photoOf(review.opponent, BAR_PHOTO))
 }
 
 @Composable

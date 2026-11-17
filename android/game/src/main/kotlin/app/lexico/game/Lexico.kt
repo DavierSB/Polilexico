@@ -42,9 +42,8 @@ class Lexico(private val context: Context) {
 
   val savedGames = SavedGames(File(context.filesDir, "in_progress"), AbandonedGames(File(context.filesDir, "abandoned.tsv")))
 
-  val finishedGames = FinishedGames(File(context.filesDir, "games"))
-
   val onlineRecords = OnlineRecords(File(context.filesDir, "online_records.txt"))
+  val finishedGames = FinishedGames(File(context.filesDir, "games"), onlineRecords)
 
   val analyst = EngineAnalyst()
 

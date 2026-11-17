@@ -14,12 +14,28 @@ type TableRecord struct {
 }
 
 func (t *Table) Record(player string) (TableRecord, error) {
+	return t.RecordFor(player, "", "")
+}
+
+func (t *Table) RecordFor(player, country, id string) (TableRecord, error) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	if t.phase != TableFinished {
 		return TableRecord{}, errNotFinished
 	}
-	return t.game.recordWith(t.playsOf(player))
+	plays := t.playsOf(player)
+	return t.game.recordWith(plays, identityOf(plays != nil, player, country, id))
+}
+
+type identity struct {
+	name, country, id string
+}
+
+func identityOf(playing bool, name, country, id string) identity {
+	if !playing {
+		return identity{}
+	}
+	return identity{name, country, id}
 }
 
 func (t *Table) playsOf(player string) map[int]core.Play {
@@ -41,10 +57,10 @@ func (p *TablePlay) play() core.Play {
 	return core.Play{Kind: p.Kind, Coords: p.Coords, Tiles: p.Tiles, TileCount: p.TileCount, Score: p.Points}
 }
 
-func (d *Game) recordWith(plays map[int]core.Play) (TableRecord, error) {
+func (d *Game) recordWith(plays map[int]core.Play, who identity) (TableRecord, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	log, err := core.JSON(d.logWith(plays))
+	log, err := core.JSON(d.logWith(plays).signed(who))
 	if err != nil {
 		return TableRecord{}, err
 	}
@@ -58,6 +74,19 @@ func (d *Game) logWith(plays map[int]core.Play) gameLog {
 		out.Turns = append(out.Turns, out.withPlay(r, playOrMaster(plays, r)))
 	}
 	return out
+}
+
+func (l gameLog) signed(who identity) gameLog {
+	l.HumanName = who.name
+	l.Countries, l.IDs = present(who.country), present(who.id)
+	return l
+}
+
+func present(value string) []string {
+	if value == "" {
+		return nil
+	}
+	return []string{value}
 }
 
 func playOrMaster(plays map[int]core.Play, r turnRecord) core.Play {

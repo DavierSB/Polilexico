@@ -222,7 +222,7 @@ func (r *duplicateRoom) attach(s *seat, c *client) {
 	r.sendPresence()
 	s.send(message{T: "watchers", Watchers: len(r.watchers.list)})
 	if r.recorded {
-		r.sendRecord(s.client, s.name)
+		r.sendRecord(s.client, s)
 	}
 }
 

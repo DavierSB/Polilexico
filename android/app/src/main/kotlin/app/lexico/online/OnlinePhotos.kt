@@ -17,21 +17,24 @@ class OnlinePhotos(private val dir: File, private val api: OnlineApi) {
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
   private val checkedAt = ConcurrentHashMap<String, Long>()
 
-  fun request(name: String, country: String) {
-    val key = key(name, country)
+  fun request(name: String, country: String) = request(key(name, country)) { api.photo(name, country, it) }
+
+  fun requestId(id: String) = request(idKey(id)) { api.photoById(id, it) }
+
+  private fun request(key: String, fetch: suspend (String?) -> PhotoReply) {
     val now = System.currentTimeMillis()
     if (now - (checkedAt[key] ?: 0L) < RECHECK_MS) return
     checkedAt[key] = now
-    scope.launch { refresh(key, name, country) }
+    scope.launch { refresh(key, fetch) }
   }
 
   fun forget(name: String, country: String) {
     checkedAt.remove(key(name, country))
   }
 
-  private suspend fun refresh(key: String, name: String, country: String) {
+  private suspend fun refresh(key: String, fetch: suspend (String?) -> PhotoReply) {
     if (key !in images) local(key)?.let { show(key, it) }
-    when (val reply = api.photo(name, country, etag(key))) {
+    when (val reply = fetch(etag(key))) {
       is PhotoReply.Fresh -> store(key, reply)
       PhotoReply.None -> erase(key)
       PhotoReply.Unreachable -> checkedAt.remove(key)
@@ -69,5 +72,7 @@ class OnlinePhotos(private val dir: File, private val api: OnlineApi) {
     private val UNSAFE = Regex("[^a-z0-9._-]")
 
     fun key(name: String, country: String): String = "${name.trim().lowercase()}_${country.uppercase()}".replace(UNSAFE, "_")
+
+    fun idKey(id: String): String = "id_${id.lowercase()}".replace(UNSAFE, "_")
   }
 }

@@ -23,6 +23,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 
+private val DOT_STEP = 16.dp
+private val GROUP_LABEL_HEIGHT = 16.dp
+
 @Composable
 internal fun DotStrip(games: List<ChartGame>, label: String, unit: String = "") {
   var selected by remember(games) { mutableStateOf<ChartGame?>(null) }
@@ -31,7 +34,7 @@ internal fun DotStrip(games: List<ChartGame>, label: String, unit: String = "") 
   val measurer = rememberTextMeasurer()
   Column {
     Canvas(Modifier.fillMaxWidth().height(110.dp).pointerInput(games) { onTap(games, scale) { selected = it } }) {
-      drawStrip(StripLayout(size.width, size.height, this, scale), games, scale, colors, measurer, unit)
+      drawStrip(StripLayout(size.width, size.height, this, scale, games), scale, colors, measurer, unit)
     }
     Text(label, Modifier.fillMaxWidth(), style = MaterialTheme.typography.labelSmall, color = colors.faint, textAlign = TextAlign.Center)
   }
@@ -40,15 +43,16 @@ internal fun DotStrip(games: List<ChartGame>, label: String, unit: String = "") 
 
 private suspend fun PointerInputScope.onTap(games: List<ChartGame>, scale: ChartScale, select: (ChartGame?) -> Unit) {
   detectTapGestures { tap ->
-    val layout = StripLayout(size.width.toFloat(), size.height.toFloat(), this, scale)
-    select(nearestGame(games, tap, TAP_RADIUS.toPx()) { i, g -> layout.point(i, g.value) })
+    val layout = StripLayout(size.width.toFloat(), size.height.toFloat(), this, scale, games)
+    select(nearestGame(games, tap, TAP_RADIUS.toPx()) { i, _ -> layout.point(i) })
   }
 }
 
-private fun DrawScope.drawStrip(layout: StripLayout, games: List<ChartGame>, scale: ChartScale, colors: ChartColors, measurer: TextMeasurer, unit: String) {
+private fun DrawScope.drawStrip(layout: StripLayout, scale: ChartScale, colors: ChartColors, measurer: TextMeasurer, unit: String) {
   drawLine(colors.grid, Offset(layout.left, layout.bottom), Offset(size.width, layout.bottom), strokeWidth = 1.dp.toPx())
   scale.ticks.forEach { drawTick(layout, it, colors, measurer, unit) }
-  games.forEachIndexed { i, g -> drawDot(layout.point(i, g.value), colors) }
+  layout.dots.spots.forEach { drawDot(Offset(it.x, it.y), colors) }
+  layout.dots.labels.forEach { drawGroupLabel(it, colors, measurer, unit) }
 }
 
 private fun DrawScope.drawTick(layout: StripLayout, value: Int, colors: ChartColors, measurer: TextMeasurer, unit: String) {
@@ -57,15 +61,22 @@ private fun DrawScope.drawTick(layout: StripLayout, value: Int, colors: ChartCol
   drawCenteredLabel(measurer, "$value$unit", colors.axisText, x, layout.bottom + 5.dp.toPx())
 }
 
-private class StripLayout(width: Float, height: Float, density: Density, private val scale: ChartScale) {
+private fun DrawScope.drawGroupLabel(label: GroupLabel, colors: ChartColors, measurer: TextMeasurer, unit: String) {
+  val text = if (label.low == label.high) "${label.low}$unit" else "${label.low}–${label.high}$unit"
+  val height = measurer.measure(text, colors.axisText).size.height
+  drawCenteredLabel(measurer, text, colors.axisText, label.x, label.bottom - height)
+}
+
+private class StripLayout(width: Float, height: Float, density: Density, private val scale: ChartScale, games: List<ChartGame>) {
   val left = with(density) { LEFT_MARGIN.toPx() } * 0.3f
   val bottom = height - with(density) { BOTTOM_MARGIN.toPx() }
   private val plotWidth = width - left
-  private val middle = bottom / 2
+  val dots = layoutDots(games.map { x(it.value) }, games.map { it.value }, frame(width, density))
 
   fun x(value: Int): Float = left + plotWidth * scale.fraction(value)
 
-  fun point(i: Int, value: Int): Offset = Offset(x(value), middle + jitter(i) * middle * 0.6f)
+  fun point(i: Int): Offset = dots.spots[i].let { Offset(it.x, it.y) }
 
-  private fun jitter(i: Int): Float = ((i * 37) % 7 - 3) / 3f
+  private fun frame(width: Float, density: Density): StripFrame =
+    with(density) { StripFrame(left, width, bottom, DOT_STEP.toPx(), GROUP_LABEL_HEIGHT.toPx()) }
 }

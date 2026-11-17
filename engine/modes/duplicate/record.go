@@ -16,6 +16,9 @@ type gameLog struct {
 	FinalMaster int          `json:"final_master"`
 	FinalHuman  int          `json:"final_human"`
 	FinalHits   int          `json:"final_aciertos"`
+	HumanName   string       `json:"human_name,omitempty"`
+	Countries   []string     `json:"countries,omitempty"`
+	IDs         []string     `json:"ids,omitempty"`
 }
 
 type turnRecord struct {

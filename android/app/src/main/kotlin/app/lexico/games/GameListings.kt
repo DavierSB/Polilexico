@@ -50,10 +50,12 @@ fun reviewView(review: GameReview): ReviewView {
   val equity = hasEquity(review)
   val title = "${modeName(review.game.mode)} · ${review.game.myScore}–${review.game.opponentScore}"
   val opponent = alias(review.game.opponent)
+  val me = review.game.bottomName
   val turns = review.turns.map { turnView(review, it) }
   return ReviewView(
-    title, turns, review.startTurn, opponent, spread(review, opponent),
-    classic = equity, efficiency = efficiency(review), moves = movesTable(review, opponent),
+    title, turns, review.startTurn, opponent, spread(review, me, opponent),
+    classic = equity, efficiency = efficiency(review), moves = movesTable(review, me, opponent),
+    me = me, myFace = review.game.myFace(), opponentFace = review.game.opponentFace(),
   )
 }
 
@@ -62,7 +64,7 @@ fun turnView(review: GameReview, turn: ReviewTurn): ReviewTurnView = turnView(tu
 private fun hasEquity(review: GameReview): Boolean = review.game.mode != Mode.DUPLICATE
 
 fun positionView(turn: ReviewTurn): ReviewView =
-  ReviewView("Análisis", listOf(turnView(turn, equity = true, opponent = RIVAL)), opponent = RIVAL, classic = true, photo = false)
+  ReviewView("Análisis", listOf(turnView(turn, equity = true, opponent = RIVAL)), opponent = RIVAL, classic = true, opponentFace = null)
 
 private fun efficiency(review: GameReview): Efficiency? {
   if (review.game.mode != Mode.DUPLICATE) return null
@@ -70,9 +72,9 @@ private fun efficiency(review: GameReview): Efficiency? {
   return Efficiency.of(points(ME), points(MASTER))
 }
 
-private fun spread(review: GameReview, opponent: String): Spread {
+private fun spread(review: GameReview, me: String, opponent: String): Spread {
   val totals = review.turns.map { it.myScore to it.opponentScore } + (review.game.myScore to review.game.opponentScore)
-  return Spread.of(review.game.host ?: ME, opponent, review.humanStarts, totals)
+  return Spread.of(me, opponent, review.humanStarts, totals)
 }
 
 private fun savedAt(saved: SavedGame): String = "Guardada el " + SAVED_AT.format(Date(saved.updatedAt))

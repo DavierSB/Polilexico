@@ -96,7 +96,8 @@ class EndgamePage {
   sideBar(player) {
     const p = this.x.position;
     const onTurn = !p.over && p.onTurn === player;
-    return scoreBar(this.x.players[player], p.scores[player], onTurn ? null : p.racks[player], onTurn);
+    const name = this.x.players[player];
+    return scoreBar(name, p.scores[player], onTurn ? null : p.racks[player], onTurn, this.ui.photoOf?.(name));
   }
 
   drawBoard() {
@@ -193,7 +194,7 @@ class EndgamePage {
   plan(line) {
     if (!line) return;
     const fresh = () => this.x.lines?.lines.find((l) => l.move.text === line.move.text) ?? line;
-    planDialog(this.x.position, this.x.players, fresh);
+    planDialog(this.x.position, this.x.players, fresh, this.ui.photoOf);
   }
 
   dragPending(e) {
@@ -213,7 +214,7 @@ function endgameResult(p, players) {
   return h("div.stack.endgame-result", {},
     h("span.review-header-text", {}, "Fin de la partida"),
     p.ending.map(endingLine),
-    outcomeLine(margin > 0 ? players[p.me] : players[1 - p.me], Math.abs(margin), players[p.me]),
+    outcomeLine(margin > 0 ? players[p.me] : players[1 - p.me], Math.abs(margin), null),
   );
 }
 

@@ -505,6 +505,7 @@ button.word-row { cursor: pointer; }
 .review-side { grid-area: side; min-width: 0; }
 
 .review-bar { min-height: 44px; }
+.review-bar > .avatar, .review-bar > .initial { width: 22px; height: 22px; margin-right: 8px; flex: none; }
 
 .review-rack { padding: 4px 0; }
 

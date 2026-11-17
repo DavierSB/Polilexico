@@ -14,7 +14,9 @@ data class ReviewView(
   val classic: Boolean = false,
   val efficiency: Efficiency? = null,
   val moves: MovesTable = MovesTable("", "", emptyList()),
-  val photo: Boolean = classic,
+  val me: String = ME,
+  val myFace: Face? = null,
+  val opponentFace: Face? = Face.Bot.takeIf { classic },
 )
 
 data class ReviewTurnView(

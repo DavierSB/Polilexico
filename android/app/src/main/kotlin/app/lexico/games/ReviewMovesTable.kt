@@ -10,15 +10,15 @@ import app.lexico.ui.games.PlayedMove
 
 private const val ME = "Tú"
 
-internal fun movesTable(review: GameReview, opponent: String): MovesTable =
-  if (review.game.mode == Mode.DUPLICATE) duplicateTable(review) else classicTable(review, opponent)
+internal fun movesTable(review: GameReview, me: String, opponent: String): MovesTable =
+  if (review.game.mode == Mode.DUPLICATE) duplicateTable(review) else classicTable(review, me, opponent)
 
 private fun duplicateTable(review: GameReview): MovesTable = MovesTable(ME, review.game.opponent, review.turns.mapIndexed { i, t ->
   MovesRow(i, t.marks.find { it.who == ME }?.let { played(it, t.myScore) }, t.marks.find { it.who != ME }?.let { played(it, t.opponentScore) })
 })
 
-private fun classicTable(review: GameReview, opponent: String): MovesTable {
-  val names = if (review.humanStarts) ME to opponent else opponent to ME
+private fun classicTable(review: GameReview, me: String, opponent: String): MovesTable {
+  val names = if (review.humanStarts) me to opponent else opponent to me
   val rows = review.turns.foldIndexed(mutableListOf<MovesRow>()) { i, rows, t -> rows.apply { place(i, t, review) } }
   return MovesTable(names.first, names.second, rows)
 }

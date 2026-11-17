@@ -42,5 +42,10 @@ fun alias(name: String): String = BOTS.find { it.name == name }?.alias ?: name
 @Composable
 fun OpponentPhoto(name: String, size: Dp) {
   if (LocalPhotos.current != null) return Box(Modifier.opensSeatProfile(name)) { SeatAvatar(name, size) }
+  BotPhoto(name, size)
+}
+
+@Composable
+fun BotPhoto(name: String, size: Dp) {
   Image(painterResource(bot(name).photo), alias(name), Modifier.size(size).clip(CircleShape))
 }

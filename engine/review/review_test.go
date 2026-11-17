@@ -89,3 +89,26 @@ func TestWordThroughBoardLettersAndBingo(t *testing.T) {
 		t.Fatalf("scrabble: %d fichas", placed)
 	}
 }
+
+func TestIdentityOfBothSides(t *testing.T) {
+	text := strings.Replace(classicLog, `"winner"`, `"countries":["CU","ES"],"ids":["a-1","b-2"],"winner"`, 1)
+	g := mustParse(t, text)
+	if g.MeCountry != "CU" || g.OpponentCountry != "ES" || g.MeID != "a-1" || g.OpponentID != "b-2" {
+		t.Fatalf("%+v", *g)
+	}
+}
+
+func TestOldLogsHaveNoIdentity(t *testing.T) {
+	c, d := mustParse(t, classicLog), mustParse(t, duplicateLog)
+	if c.MeID != "" || c.OpponentCountry != "" || d.MeID != "" || d.Me != "" {
+		t.Fatalf("%+v %+v", *c, *d)
+	}
+}
+
+func TestDuplicateLogWithItsPlayer(t *testing.T) {
+	text := strings.Replace(duplicateLog, `"final_master"`, `"human_name":"Ana","countries":["CU"],"ids":["a-1"],"final_master"`, 1)
+	g := mustParse(t, text)
+	if g.Me != "Ana" || g.MeCountry != "CU" || g.MeID != "a-1" || g.OpponentID != "" {
+		t.Fatalf("%+v", *g)
+	}
+}

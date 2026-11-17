@@ -6,6 +6,7 @@ import { call, whenReady } from "../engine.js";
 import { encodeGif } from "./gif.js";
 import { alias } from "./list.js";
 import { LABELS } from "../theme.js";
+import { reviewPlayers } from "./reviewFaces.js";
 
 const WIDTH = 1080;
 const MARGIN = 60;
@@ -112,7 +113,8 @@ async function stillsOf(record) {
   if (!turns.length) throw new Error("vacía");
   const duplicate = game.Mode === "duplicate";
   const opponent = duplicate ? "Máster" : alias(game.Opponent);
-  const score = (mine, theirs) => `Tú ${mine} – ${theirs} ${opponent}`;
+  const { me } = reviewPlayers(game, record, opponent);
+  const score = (mine, theirs) => `${me} ${mine} – ${theirs} ${opponent}`;
   const title = duplicate ? "Duplicada" : `Partida contra ${opponent}`;
   const first = parseBoard(turns[0].Board);
   return [{ cells: first, score: score(turns[0].MyScore, turns[0].OpponentScore), caption: title }, ...turns.map((t, i) => {

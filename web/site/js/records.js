@@ -39,9 +39,9 @@ export async function keepTextRecord(text, gcg, online = false, watched = false)
   return id;
 }
 
-export async function keepMirrorRecord(save, watched = false) {
+export async function keepMirrorRecord(save, watched = false, guest = false) {
   await whenReady();
-  const match = await call("classicMirror", save, true, false);
+  const match = await call("classicMirror", save, true, false, guest && !watched);
   const raw = await call("classicRead", match).catch(() => null);
   call("classicClose", match).catch(() => {});
   return raw?.Result?.RecordPath ? keepRecord(raw.Result.RecordPath, true, watched) : null;

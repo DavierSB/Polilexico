@@ -14,7 +14,7 @@ import java.util.Locale
 private const val WATCHED = "watched-"
 private const val STAMP = "yyyyMMdd-HHmmss"
 
-class FinishedGames internal constructor(private val dir: File) {
+class FinishedGames internal constructor(private val dir: File, private val online: OnlineRecords? = null) {
   suspend fun list(): List<FinishedGame> = engine {
     logFiles().mapNotNull { f -> runCatching { summary(f.path, Review.open(f.path)).copy(finishedAt = f.lastModified()) }.getOrNull() }
   }
@@ -54,6 +54,8 @@ class FinishedGames internal constructor(private val dir: File) {
     outcome = Outcome.of(g.outcome), hits = g.hits.toInt(), bingos = g.bingos.toInt(), bestWord = g.bestWord,
     bestWordScore = g.bestWordScore.toInt(), longestWord = g.longestWord, turns = g.turnCount().toInt(),
     humanStarts = g.humanStarts, host = g.me.takeIf { g.local },
+    me = RecordSeat(g.me, g.meCountry, g.meID), rival = RecordSeat(g.opponent, g.opponentCountry, g.opponentID),
+    watched = File(path).name.startsWith(WATCHED), online = online?.contains(path) == true || g.opponentID.isNotEmpty(),
   )
 
   private fun mode(mode: String): Mode = when (mode) {

@@ -22,9 +22,15 @@ data class FinishedGame(
   val finishedAt: Long = 0,
   val humanStarts: Boolean = true,
   val host: String? = null,
+  val me: RecordSeat = RecordSeat(),
+  val rival: RecordSeat = RecordSeat(),
+  val watched: Boolean = false,
+  val online: Boolean = false,
 ) {
   val efficiency: Double get() = if (opponentScore > 0) myScore * 100.0 / opponentScore else 0.0
 }
+
+data class RecordSeat(val name: String = "", val country: String = "", val id: String = "")
 
 data class GameReview(val game: FinishedGame, val turns: List<ReviewTurn>, val startTurn: Int = 0) {
   val humanStarts: Boolean get() = game.humanStarts

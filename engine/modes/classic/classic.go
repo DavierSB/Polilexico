@@ -41,6 +41,7 @@ type Game struct {
 	recordPath       string
 	watched          bool
 	mirrored         bool
+	guest            bool
 }
 
 func Bots() string {

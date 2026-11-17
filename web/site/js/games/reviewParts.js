@@ -102,8 +102,9 @@ export function turnTitle(t, count) {
   return h("b.turn-title.ellipsis", {}, `Turno ${t.Number}/${count}${t.Player ? " · " + alias(t.Player) : ""}`);
 }
 
-export function scoreBar(name, score, rack, active) {
+export function scoreBar(name, score, rack, active, photo = null) {
   return h("div", { class: "player-card review-bar" + (active ? " active" : "") },
+    photo,
     h("span.player-name.ellipsis", {}, name),
     rack ? h("div.mini-tiles.bar-tiles", {}, rack.map((l) => h("span.mini-tile.face-up", {}, l === BLANK ? "" : l))) : null,
     h("span.grow"),

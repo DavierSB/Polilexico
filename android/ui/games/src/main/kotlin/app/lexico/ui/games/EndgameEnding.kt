@@ -30,7 +30,7 @@ internal fun EndgameResult(position: ExploredPosition) {
     Text("FIN DE LA PARTIDA", style = headerStyle())
     position.ending.forEach { EndingLine(it) }
     val margin = position.scores[position.me] - position.scores[1 - position.me]
-    Outcome(if (margin > 0) ME else position.players[1 - position.me], abs(margin))
+    Outcome(position.players[if (margin > 0) position.me else 1 - position.me], abs(margin))
   }
 }
 

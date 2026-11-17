@@ -45,10 +45,10 @@ func (c *Game) markMirrored() {
 	c.mirrored = true
 }
 
-func (c *Game) keepRecord(watched bool) {
+func (c *Game) keepRecord(as viewer) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.watched = watched
+	c.watched, c.guest = as == watcher, as == guest
 	if c.over() && !core.RecordExists(c.recordPath) {
 		c.finish()
 	}
@@ -61,15 +61,27 @@ func engineBot(botName string, local bool) string {
 	return botName
 }
 
+type viewer int
+
+const (
+	host viewer = iota
+	guest
+	watcher
+)
+
 func LoadMirror(text string, paused bool, l events.Listener) (*Match, error) {
-	return loadMirror(text, paused, l, false)
+	return loadMirror(text, paused, l, host)
+}
+
+func LoadGuestMirror(text string, paused bool, l events.Listener) (*Match, error) {
+	return loadMirror(text, paused, l, guest)
 }
 
 func LoadWatch(text string, paused bool, l events.Listener) (*Match, error) {
-	return loadMirror(text, paused, l, true)
+	return loadMirror(text, paused, l, watcher)
 }
 
-func loadMirror(text string, paused bool, l events.Listener, watched bool) (*Match, error) {
+func loadMirror(text string, paused bool, l events.Listener, as viewer) (*Match, error) {
 	m, err := LoadMatch(text, l)
 	if err != nil {
 		return nil, err
@@ -77,7 +89,7 @@ func loadMirror(text string, paused bool, l events.Listener, watched bool) (*Mat
 	m.mu.Lock()
 	m.mirror = true
 	m.mu.Unlock()
-	m.game.keepRecord(watched)
+	m.game.keepRecord(as)
 	m.game.markMirrored()
 	if !paused {
 		m.Resume()

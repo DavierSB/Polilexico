@@ -8,12 +8,12 @@ import { scoreBar } from "./reviewParts.js";
 
 const STEP_MS = 1400;
 
-export function planDialog(position, players, lineNow) {
+export function planDialog(position, players, lineNow, photoOf = () => null) {
   const state = { step: 0, playing: true, timer: null };
   const board = createBoard();
   const top = h("div.stack.plan-top");
   const bottom = h("div.stack.plan-bottom");
-  const draw = () => drawPlan({ position, players, line: lineNow(), board, top, bottom, state, draw, close });
+  const draw = () => drawPlan({ position, players, line: lineNow(), board, top, bottom, state, draw, close, photoOf });
   const close = openDialog((done) => [
     h("div.row.plan-title", {}, h("button.icon-btn", { "aria-label": "Volver", onclick: done }, icon("back")), h("h2.ellipsis", {}, `Plan: ${lineNow().move.text}`)),
     h("div.stack.plan", {}, top, h("div.plan-board", {}, board.el), bottom),
@@ -31,7 +31,7 @@ function drawPlan(v) {
   const p = step.move.placement;
   if (p) p.tiles.forEach((t, i) => t && !step.board[at(p, i)] && pending.set(at(p, i), t));
   v.board.render({ cells: step.board, pending });
-  const bar = (player) => scoreBar(v.players[player], tally.scores[player], tally.racks[player], step.who === v.players[player]);
+  const bar = (player) => scoreBar(v.players[player], tally.scores[player], tally.racks[player], step.who === v.players[player], v.photoOf(v.players[player]));
   replace(v.top, bar(1 - v.position.me));
   replace(v.bottom, bar(v.position.me), controls(v, shown, last), line.steps.map((s, i) => stepRow(v, s, i, i === shown)), ending(line));
   clearTimeout(state.timer);

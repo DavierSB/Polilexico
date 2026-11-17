@@ -245,6 +245,13 @@ func (r *classicRoom) start() {
 	r.match, r.started = m, time.Now()
 	r.timer.Stop()
 	m.SetClaims(r.claimsAllowed())
+	r.identify(m)
+}
+
+func (r *classicRoom) identify(m *classic.Match) {
+	for _, s := range r.seats {
+		m.SetIdentity(r.first(s), s.player.Country, s.player.ID)
+	}
 }
 
 func (r *classicRoom) claimsAllowed() bool {

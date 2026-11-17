@@ -23,6 +23,7 @@ type store interface {
 	Account(ctx context.Context, p player) (accountView, error)
 	UpdateAccount(ctx context.Context, p player, a account) (accountView, error)
 	Photo(ctx context.Context, name, country string) (photo, error)
+	PhotoByID(ctx context.Context, id string) (photo, error)
 	Ping(ctx context.Context) error
 	SaveAdjourned(ctx context.Context, a adjourned) error
 	Adjourned(ctx context.Context, playerID string) ([]adjourned, error)

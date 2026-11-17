@@ -18,11 +18,11 @@ import app.lexico.ui.games.StepView
 
 private const val ME = "Tú"
 
-fun endgameSession(explorer: EndgameExplorer, turn: ReviewTurnView, opponent: String): EndgameSession =
-  ExplorerSession(explorer, if (turn.mine == false) listOf(opponent, ME) else listOf(ME, opponent))
+fun endgameSession(explorer: EndgameExplorer, turn: ReviewTurnView, opponent: String, me: String = ME): EndgameSession =
+  ExplorerSession(explorer, if (turn.mine == false) listOf(opponent, me) else listOf(me, opponent), me)
 
-private class ExplorerSession(private val explorer: EndgameExplorer, private val players: List<String>) : EndgameSession {
-  override suspend fun position(): ExploredPosition = positionView(explorer.position(), players)
+private class ExplorerSession(private val explorer: EndgameExplorer, private val players: List<String>, private val me: String) : EndgameSession {
+  override suspend fun position(): ExploredPosition = positionView(explorer.position(), players, me)
 
   override suspend fun play(move: String?): String? = explorer.play(move)
 
@@ -34,8 +34,8 @@ private class ExplorerSession(private val explorer: EndgameExplorer, private val
   }
 }
 
-private fun positionView(p: ExplorerPosition, players: List<String>): ExploredPosition =
-  ExploredPosition(p.board, players, p.racks, p.scores, p.onTurn, p.over, steps(p.path, players, 0), endingRows(p.ending, players))
+private fun positionView(p: ExplorerPosition, players: List<String>, me: String): ExploredPosition =
+  ExploredPosition(p.board, players, p.racks, p.scores, p.onTurn, p.over, steps(p.path, players, 0), endingRows(p.ending, players), me)
 
 private fun liveLines(r: EndgameReview, players: List<String>, mover: Int): LiveLines =
   LiveLines(r.lines.map { lineView(it, players, mover) }, r.depth, r.exact)

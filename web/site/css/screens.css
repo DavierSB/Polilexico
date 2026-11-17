@@ -105,6 +105,7 @@
 .strip-dot::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 2px var(--surface, var(--c1)); }
 .strip-axis { position: absolute; left: 10px; right: 0; bottom: 0; height: 22px; }
 .strip-tick { position: absolute; top: 5px; transform: translateX(-50%); font-size: 11px; color: var(--on-surface-variant); }
+.strip-label { position: absolute; transform: translateX(-50%); font-size: 11px; line-height: 14px; color: var(--on-surface-variant); white-space: nowrap; pointer-events: none; }
 .scatter { width: 100%; height: auto; display: block; }
 .chart-grid { stroke: var(--outline-variant); stroke-width: .6; }
 .chart-diagonal { stroke: var(--on-surface-variant); stroke-width: 1.5; stroke-dasharray: 8 6; }

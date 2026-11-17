@@ -18,6 +18,7 @@ import { efficiencyOf, efficiencyDialog } from "./efficiency.js";
 import { exportDialog } from "./export.js";
 import { icon, bagIcon } from "../icons.js";
 import { showBag } from "../classic/moves.js";
+import { reviewPlayers, facePhoto } from "./reviewFaces.js";
 import { movesTable, reviewMovesDialog, turnBag, moveOf, pageOf, candidatesTable, turnTitle, scoreBar } from "./reviewParts.js";
 
 let pendingPosition = null;
@@ -59,7 +60,7 @@ async function openRecord(holder, id, ui, atEndgame) {
   loading.stop();
   ui.classic = ui.game.Mode !== "duplicate";
   ui.opponent = ui.game.Mode === "duplicate" ? "Máster" : alias(ui.game.Opponent);
-  ui.me = ui.game.Local ? ui.game.Me : "Tú";
+  Object.assign(ui, reviewPlayers(ui.game, record, ui.opponent));
   const endgame = ui.game.Turns.findIndex((t) => t.Endgame);
   ui.index = Math.max(0, atEndgame && endgame >= 0 ? endgame : (ui.game.StartTurn ?? 0));
   ui.explore = { open: "exploreReview", args: (i) => [ui.text, i] };
@@ -93,6 +94,7 @@ function mount(holder, ui) {
   ui.goTo = (i) => goTo(ui, i);
   ui.moveOf = moveOf;
   ui.nameOf = (name) => (name === "Tú" ? ui.me : alias(name));
+  ui.photoOf = (name) => facePhoto(ui.faces?.get(name), name);
   ui.top = h("div.stack.review-top");
   ui.bottom = h("div.stack.review-bottom");
   ui.head = h("div.review-head");
@@ -157,9 +159,9 @@ function draw(ui) {
   const pending = new Map();
   if (p) p.tiles.forEach((tile, i) => tile && !t.cells[at(p, i)] && pending.set(at(p, i), tile));
   ui.board.render({ cells: t.cells, pending });
-  replace(ui.top, turnTitle(t, ui.game.Turns.length), scoreBar(ui.opponent, t.OpponentScore, null, t.Player && !mine(ui, t)));
+  replace(ui.top, turnTitle(t, ui.game.Turns.length), scoreBar(ui.opponent, t.OpponentScore, null, t.Player && !mine(ui, t), ui.photoOf(ui.opponent)));
   replace(ui.bottom,
-    scoreBar(ui.me, t.MyScore, null, mine(ui, t)),
+    scoreBar(ui.me, t.MyScore, null, mine(ui, t), ui.photoOf(ui.me)),
     h("div.tile-line.review-rack", {}, tokens(t.Rack).map((l) => h("div.rack-tile.line-tile", {}, face(l)))),
     h("div.row.turn-nav", {},
       h("button.btn.small.outlined", { disabled: ui.index === 0, onclick: () => move(ui, -1) }, "‹"),

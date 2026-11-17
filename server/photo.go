@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/base64"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -59,18 +60,41 @@ func photoKey(name, country string) string {
 }
 
 func (c *photoCache) get(ctx context.Context, st store, name, country string) (photo, error) {
-	key := photoKey(name, country)
+	return c.fetch(photoKey(name, country), func() (photo, error) { return st.Photo(ctx, name, country) })
+}
+
+func (c *photoCache) byID(ctx context.Context, st store, id string) (photo, error) {
+	if !validID(id) {
+		return photo{}, errNoPhoto
+	}
+	return c.fetch(idKey(id), func() (photo, error) { return st.PhotoByID(ctx, id) })
+}
+
+func (c *photoCache) fetch(key string, load func() (photo, error)) (photo, error) {
 	c.mu.Lock()
 	hit, ok := c.items[key]
 	c.mu.Unlock()
 	if ok && time.Since(hit.at) < photoCacheTTL {
 		return hit.photo, nil
 	}
-	ph, err := st.Photo(ctx, name, country)
+	ph, err := load()
 	if err == nil {
 		c.put(key, ph)
 	}
 	return ph, err
+}
+
+func idKey(id string) string {
+	return "#" + id
+}
+
+const maxIDLength = 64
+
+func validID(id string) bool {
+	if id == "" || len(id) > maxIDLength {
+		return false
+	}
+	return strings.Trim(id, "0123456789abcdefABCDEF-") == ""
 }
 
 func (c *photoCache) put(key string, ph photo) {
@@ -83,6 +107,7 @@ func (c *photoCache) forget(p player) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	delete(c.items, photoKey(p.Name, p.Country))
+	delete(c.items, idKey(p.ID))
 }
 
 func savePhoto(st store, cache *photoCache) playerHandler {
@@ -104,13 +129,20 @@ func savePhoto(st store, cache *photoCache) playerHandler {
 
 func servePhoto(st store, cache *photoCache) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ph, err := cache.get(r.Context(), st, r.URL.Query().Get("name"), r.URL.Query().Get("country"))
+		ph, err := lookupPhoto(r.Context(), st, cache, r.URL.Query())
 		if err != nil || ph.Data == "" {
 			http.NotFound(w, r)
 			return
 		}
 		writePhoto(w, r, ph)
 	}
+}
+
+func lookupPhoto(ctx context.Context, st store, cache *photoCache, q url.Values) (photo, error) {
+	if id := q.Get("id"); id != "" {
+		return cache.byID(ctx, st, id)
+	}
+	return cache.get(ctx, st, q.Get("name"), q.Get("country"))
 }
 
 func writePhoto(w http.ResponseWriter, r *http.Request, ph photo) {
@@ -151,6 +183,12 @@ func (s *memoryStore) Photo(_ context.Context, name, country string) (photo, err
 	return s.photos[id], nil
 }
 
+func (s *memoryStore) PhotoByID(_ context.Context, id string) (photo, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.photos[id], nil
+}
+
 func (s *supabaseStore) SavePhoto(ctx context.Context, p player, data string) error {
 	if data == "" {
 		return s.call(ctx, request{method: "DELETE", path: "/rest/v1/photos?user_id=" + eq(p.ID)}, nil)
@@ -164,8 +202,12 @@ func (s *supabaseStore) Photo(ctx context.Context, name, country string) (photo,
 	if err != nil || prof == nil {
 		return photo{}, errorOr(err, errNoPhoto)
 	}
+	return s.PhotoByID(ctx, prof.ID)
+}
+
+func (s *supabaseStore) PhotoByID(ctx context.Context, id string) (photo, error) {
 	var rows []photo
-	err = s.call(ctx, request{method: "GET", path: "/rest/v1/photos?select=data,updated_at&user_id=" + eq(prof.ID)}, &rows)
+	err := s.call(ctx, request{method: "GET", path: "/rest/v1/photos?select=data,updated_at&user_id=" + eq(id)}, &rows)
 	if err != nil || len(rows) == 0 {
 		return photo{}, err
 	}

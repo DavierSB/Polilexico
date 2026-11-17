@@ -19,6 +19,8 @@ type gameLog struct {
 	Mode        string       `json:"mode,omitempty"`
 	StartTurn   int          `json:"start_turn,omitempty"`
 	Local       bool         `json:"local,omitempty"`
+	Countries   []string     `json:"countries,omitempty"`
+	IDs         []string     `json:"ids,omitempty"`
 }
 
 type turnRecord struct {
@@ -54,7 +56,7 @@ func (c *Game) finishIfOver() {
 func (c *Game) finish() {
 	c.log.FinalScores = [2]int{c.score(true), c.score(false)}
 	c.log.Winner = c.winnerName()
-	c.recordPath = core.WriteRecord(c.recordPrefix(), c.log, c.g)
+	c.recordPath = core.WriteRecord(c.recordPrefix(), c.log.seenBy(c.guest), c.g)
 }
 
 func (c *Game) recordPrefix() string {

@@ -17,6 +17,7 @@ import app.lexico.game.modes.duplicate.DuplicateGame
 import app.lexico.game.storage.Mode
 import app.lexico.games.endgameSession
 import app.lexico.games.finishedItem
+import app.lexico.games.needsPhotos
 import app.lexico.games.folderOf
 import app.lexico.games.inProgressItem
 import app.lexico.games.preEndgameRanking
@@ -103,13 +104,15 @@ internal fun ReviewRoute(screen: Screen.Review, lexico: Lexico, nav: Navigator, 
   WhenReady(rememberCreated(screen) { lexico.finishedGames.open(screen.path) }, "Abriendo la partida…") { review ->
     GameTheme(review, themes, if (review.game.mode == Mode.DUPLICATE || review.game.host != null) themes.appTheme else bot(review.game.opponent).theme)
     val view = remember(review) { reviewView(review) }
-    val sessions: EndgameSessions = remember(view) { { i -> endgameSession(lexico.finishedGames.explore(screen.path, i), view.turns[i], view.opponent) } }
+    val sessions: EndgameSessions = remember(view) { { i -> endgameSession(lexico.finishedGames.explore(screen.path, i), view.turns[i], view.opponent, view.me) } }
     val preEndgames: PreEndgameAnalyses = remember(view) {
       { i, update -> preEndgameRanking(lexico.finishedGames.preEndgame(screen.path, i), view.turns[i], update) }
     }
     val rankings = rememberRankings(review) { i -> lexico.finishedGames.ranked(screen.path, i) }
     var exporting by remember { mutableStateOf(false) }
-    ReviewScreen(view, themes.board, sessions, preEndgames, rankings, screen.atEndgame, nav::back, { exporting = true }) { themes.picking = true }
+    ProvideRecordPhotos(review.game.needsPhotos) {
+      ReviewScreen(view, themes.board, sessions, preEndgames, rankings, screen.atEndgame, nav::back, { exporting = true }) { themes.picking = true }
+    }
     if (exporting) GameExport(screen.path, lexico.finishedGames, themes.board) { exporting = false }
   }
 }

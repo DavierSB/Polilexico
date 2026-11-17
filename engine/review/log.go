@@ -20,6 +20,8 @@ type gameLog struct {
 	Mode        string    `json:"mode"`
 	StartTurn   int       `json:"start_turn"`
 	Local       bool      `json:"local"`
+	Countries   []string  `json:"countries"`
+	IDs         []string  `json:"ids"`
 }
 
 type turnLog struct {
@@ -37,6 +39,7 @@ func classicGame(log gameLog) *Game {
 	g := &Game{Mode: classicMode(log), StartedAt: log.StartedAt, Opponent: log.BotName,
 		MyScore: log.FinalScores[0], OpponentScore: log.FinalScores[1], Outcome: classicOutcome(log),
 		StartTurn: log.StartTurn, HumanStarts: humanStarts(log), Local: log.Mode == localMode || log.Local, Me: log.HumanName}
+	g.identify(log)
 	board, scores, drawn := newGrid(), &tally{}, 0
 	for i, t := range log.Turns {
 		mine := t.PlayerName == log.HumanName
@@ -66,7 +69,9 @@ func classicMode(log gameLog) string {
 
 func duplicateGame(log gameLog) *Game {
 	g := &Game{Mode: ModeDuplicate, StartedAt: log.StartedAt, Opponent: "Máster", MyScore: log.FinalHuman,
-		OpponentScore: log.FinalMaster, Outcome: core.Outcome(log.FinalHuman, log.FinalMaster), Hits: log.FinalHits, HumanStarts: true}
+		OpponentScore: log.FinalMaster, Outcome: core.Outcome(log.FinalHuman, log.FinalMaster), Hits: log.FinalHits, HumanStarts: true,
+		Me: log.HumanName}
+	g.identify(log)
 	board, scores := newGrid(), &tally{}
 	for _, t := range log.Turns {
 		g.turns = append(g.turns, duplicateTurn(t, board, scores))

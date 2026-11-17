@@ -4,6 +4,7 @@ import app.lexico.game.records.GameReview
 import app.lexico.game.records.ReviewMark
 import app.lexico.game.records.ReviewTurn
 import app.lexico.game.storage.Mode
+import app.lexico.games.bottomName
 import app.lexico.model.Board
 import app.lexico.ui.classic.alias
 
@@ -29,7 +30,7 @@ private fun played(review: GameReview, turn: ReviewTurn): ReviewMark? =
 
 private fun moveText(mark: ReviewMark): String = "${alias(mark.who)}: ${mark.move.text} (${mark.move.score})"
 
-private fun score(review: GameReview, mine: Int, theirs: Int): String = "$ME $mine – $theirs ${alias(review.game.opponent)}"
+private fun score(review: GameReview, mine: Int, theirs: Int): String = "${review.game.bottomName} $mine – $theirs ${alias(review.game.opponent)}"
 
 private fun title(review: GameReview): String =
   if (review.game.mode == Mode.DUPLICATE) "Duplicada" else "Partida contra ${alias(review.game.opponent)}"

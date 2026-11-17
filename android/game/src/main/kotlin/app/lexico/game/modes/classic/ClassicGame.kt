@@ -16,6 +16,18 @@ import kotlinx.coroutines.CoroutineScope
 
 enum class Seat { SHARED, HOST, GUEST }
 
+private enum class MirrorSide {
+  HOST, GUEST, WATCHER;
+
+  companion object {
+    fun of(seat: Seat, watching: Boolean): MirrorSide = when {
+      watching -> WATCHER
+      seat == Seat.GUEST -> GUEST
+      else -> HOST
+    }
+  }
+}
+
 interface ClassicRemote {
   fun move(input: String)
   fun pause()
@@ -51,7 +63,7 @@ class ClassicGame private constructor(
 
   suspend fun mirror(text: String, paused: Boolean) {
     val listener = EngineListener()
-    val fresh = engine { loadMirror(text, paused, watching, listener) }
+    val fresh = engine { loadMirror(text, paused, MirrorSide.of(seat, watching), listener) }
     val old = match
     match = fresh
     listener.target = listen()
@@ -101,10 +113,13 @@ class ClassicGame private constructor(
     suspend fun joinGuest(
       text: String, paused: Boolean, remote: ClassicRemote, id: String, saves: SavedGames, scope: CoroutineScope, seat: Seat = Seat.GUEST,
       watching: Boolean = false,
-    ): ClassicGame = open(id, null, saves, scope, seat, remote, watching) { loadMirror(text, paused, watching, it) }
+    ): ClassicGame = open(id, null, saves, scope, seat, remote, watching) { loadMirror(text, paused, MirrorSide.of(seat, watching), it) }
 
-    private fun loadMirror(text: String, paused: Boolean, watching: Boolean, listener: EngineListener): Match =
-      if (watching) Classic.loadWatch(text, paused, listener) else Classic.loadMirror(text, paused, listener)
+    private fun loadMirror(text: String, paused: Boolean, side: MirrorSide, listener: EngineListener): Match = when (side) {
+      MirrorSide.WATCHER -> Classic.loadWatch(text, paused, listener)
+      MirrorSide.GUEST -> Classic.loadGuestMirror(text, paused, listener)
+      MirrorSide.HOST -> Classic.loadMirror(text, paused, listener)
+    }
 
     suspend fun startEndgame(setup: EndgameSetup, id: String, saves: SavedGames, scope: CoroutineScope): ClassicGame =
       searchEndgame(setup) { search -> open(id, Mode.ENDGAME, saves, scope) { endgameMatch(search, setup, it) } }

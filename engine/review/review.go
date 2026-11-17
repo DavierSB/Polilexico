@@ -12,22 +12,26 @@ const (
 )
 
 type Game struct {
-	Mode          string
-	StartedAt     string
-	Opponent      string
-	MyScore       int
-	OpponentScore int
-	Outcome       string
-	StartTurn     int
-	Hits          int
-	Bingos        int
-	BestWord      string
-	BestWordScore int
-	LongestWord   string
-	HumanStarts   bool
-	Local         bool
-	Me            string
-	turns         []*Turn
+	Mode            string
+	StartedAt       string
+	Opponent        string
+	MyScore         int
+	OpponentScore   int
+	Outcome         string
+	StartTurn       int
+	Hits            int
+	Bingos          int
+	BestWord        string
+	BestWordScore   int
+	LongestWord     string
+	HumanStarts     bool
+	Local           bool
+	Me              string
+	MeCountry       string
+	MeID            string
+	OpponentCountry string
+	OpponentID      string
+	turns           []*Turn
 }
 
 func Open(path string) (*Game, error) {

@@ -37,7 +37,7 @@ export class RemoteSession {
 
   refresh() {
     this.state = normalize(readSave(this.saved, this.guest, performance.now() - this.receivedAt, this.watching), this.guest);
-    if (this.state.result && !this.watching) this.recorded ??= keepMirrorRecord(this.text).catch(() => null);
+    if (this.state.result && !this.watching) this.recorded ??= keepMirrorRecord(this.text, false, this.guest).catch(() => null);
     this.listeners.forEach((fn) => fn(this.state));
     this.tickWhileRunning();
   }
