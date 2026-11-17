@@ -5,6 +5,7 @@ import { brand } from "../parts.js";
 import { themeDialog } from "../dialogs.js";
 import { optionsDialog } from "./options.js";
 import { aboutDialog } from "./about.js";
+import { contactDialog } from "./contact.js";
 import { DOWNLOAD_URL } from "./download.js";
 import { COMMUNITY_URL } from "./community.js";
 
@@ -35,6 +36,7 @@ export function drawerItems(close = () => {}) {
     item("Opciones", optionsDialog),
     h("hr.drawer-rule"),
     h("a.drawer-item.drawer-community", { href: COMMUNITY_URL, target: "_blank", rel: "noopener", onclick: close }, icon("whatsapp", 22), "Comunidad"),
+    h("button.drawer-item.drawer-contact", { onclick: () => (close(), contactDialog()) }, icon("chat", 22), "Escríbenos"),
     item("Acerca de", aboutDialog),
     h("a.drawer-item.drawer-download", { href: DOWNLOAD_URL }, "Descargar APK para Android"),
   ];

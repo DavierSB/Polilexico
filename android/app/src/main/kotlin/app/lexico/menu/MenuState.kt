@@ -24,6 +24,8 @@ fun rememberMenuState(): MenuState {
 class MenuState(val drawer: DrawerState, private val scope: CoroutineScope) {
   var showOptions by mutableStateOf(false)
 
+  var showContact by mutableStateOf(false)
+
   var showAbout by mutableStateOf(false)
 
   fun open() {

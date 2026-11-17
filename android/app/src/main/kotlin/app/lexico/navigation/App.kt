@@ -25,6 +25,7 @@ import app.lexico.game.Lexico
 import app.lexico.home.HomeLogo
 import app.lexico.menu.AboutDialog
 import app.lexico.menu.COMMUNITY_URL
+import app.lexico.menu.ContactDialog
 import app.lexico.menu.MenuState
 import app.lexico.menu.OptionsDialog
 import app.lexico.menu.Settings
@@ -91,6 +92,7 @@ private fun Drawer(nav: Navigator, menu: MenuState, drawer: @Composable () -> Un
 @Composable
 private fun Dialogs(settings: Settings, themes: ThemeState, menu: MenuState, version: String) {
   if (menu.showOptions) OptionsDialog(settings) { menu.showOptions = false }
+  if (menu.showContact) ContactDialog(version) { menu.showContact = false }
   if (menu.showAbout) AboutDialog(version) { menu.showAbout = false }
   if (themes.picking) ThemeDialog(themes.current, themes.look, themes::choose, themes::chooseLook) { themes.picking = false }
 }
@@ -150,6 +152,7 @@ private fun AppMenu(nav: Navigator, menu: MenuState, themes: ThemeState, updates
     onTheme = { click(); themes.picking = true; menu.close() },
     onOptions = { click(); menu.showOptions = true; menu.close() },
     onCommunity = { click(); uri.openUri(COMMUNITY_URL); menu.close() },
+    onContact = { click(); menu.showContact = true; menu.close() },
     onAbout = { click(); menu.showAbout = true; menu.close() },
     onUpdate = { click(); scope.launch { updates.install() } },
   )

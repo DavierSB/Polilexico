@@ -21,7 +21,7 @@ import app.lexico.home.Logo
 @Composable
 fun SideMenu(
   atHome: Boolean, hasUpdate: Boolean, progress: Float?, onHome: () -> Unit, onStats: () -> Unit, onTheme: () -> Unit, onOptions: () -> Unit,
-  onCommunity: () -> Unit, onAbout: () -> Unit, onUpdate: () -> Unit,
+  onCommunity: () -> Unit, onContact: () -> Unit, onAbout: () -> Unit, onUpdate: () -> Unit,
 ) {
   ModalDrawerSheet {
     Logo(Modifier.padding(16.dp), scale = 0.8f)
@@ -32,6 +32,7 @@ fun SideMenu(
     MenuItem("Opciones", selected = false, onOptions)
     HorizontalDivider(Modifier.padding(vertical = 8.dp))
     CommunityItem(onCommunity)
+    ContactItem(onContact)
     MenuItem("Acerca de", selected = false, onAbout)
     UpdateItem(hasUpdate, progress, onUpdate)
   }
@@ -49,6 +50,16 @@ private fun CommunityItem(onClick: () -> Unit) {
     selected = false,
     onClick = onClick,
     icon = { Icon(painterResource(R.drawable.ic_whatsapp), contentDescription = null, tint = WHATSAPP_GREEN) },
+  )
+}
+
+@Composable
+private fun ContactItem(onClick: () -> Unit) {
+  NavigationDrawerItem(
+    label = { Text("Escríbenos") },
+    selected = false,
+    onClick = onClick,
+    icon = { Icon(painterResource(R.drawable.ic_chat), contentDescription = null) },
   )
 }
 

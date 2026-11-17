@@ -597,6 +597,26 @@ hr.thick { width: 100%; border: 0; border-top: 2px solid var(--on-surface); marg
 
 .drawer-community svg { color: #25D366; flex: none; }
 
+.drawer-contact { gap: 12px; }
+
+.drawer-contact svg { flex: none; }
+
+.contact-options { gap: 4px; }
+
+.contact-row { display: flex; align-items: center; gap: 16px; padding: 12px; border-radius: 12px; color: var(--on-surface); text-decoration: none; }
+
+.contact-row:hover { background: var(--c3); }
+
+.contact-row svg { flex: none; }
+
+.contact-whatsapp svg { color: #25D366; }
+
+.contact-mail svg { color: var(--primary); }
+
+.contact-text { gap: 2px; }
+
+.contact-label { font-weight: 600; }
+
 .drawer-rule { width: 100%; margin: 8px 0; border: 0; border-top: 1px solid var(--outline-variant); }
 
 @keyframes slide-in { from { transform: translateX(-100%); } }
