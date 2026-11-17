@@ -2,6 +2,7 @@ package app.lexico.menu
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
@@ -11,14 +12,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import app.lexico.R
 import app.lexico.update.UPDATE_YELLOW
 import app.lexico.home.Logo
 
 @Composable
 fun SideMenu(
   atHome: Boolean, hasUpdate: Boolean, progress: Float?, onHome: () -> Unit, onStats: () -> Unit, onTheme: () -> Unit, onOptions: () -> Unit,
-  onAbout: () -> Unit, onUpdate: () -> Unit,
+  onCommunity: () -> Unit, onAbout: () -> Unit, onUpdate: () -> Unit,
 ) {
   ModalDrawerSheet {
     Logo(Modifier.padding(16.dp), scale = 0.8f)
@@ -28,6 +31,7 @@ fun SideMenu(
     MenuItem("Tema", selected = false, onTheme)
     MenuItem("Opciones", selected = false, onOptions)
     HorizontalDivider(Modifier.padding(vertical = 8.dp))
+    CommunityItem(onCommunity)
     MenuItem("Acerca de", selected = false, onAbout)
     UpdateItem(hasUpdate, progress, onUpdate)
   }
@@ -36,6 +40,16 @@ fun SideMenu(
 @Composable
 private fun MenuItem(text: String, selected: Boolean, onClick: () -> Unit) {
   NavigationDrawerItem(label = { Text(text) }, selected = selected, onClick = onClick)
+}
+
+@Composable
+private fun CommunityItem(onClick: () -> Unit) {
+  NavigationDrawerItem(
+    label = { Text("Comunidad") },
+    selected = false,
+    onClick = onClick,
+    icon = { Icon(painterResource(R.drawable.ic_whatsapp), contentDescription = null, tint = WHATSAPP_GREEN) },
+  )
 }
 
 @Composable

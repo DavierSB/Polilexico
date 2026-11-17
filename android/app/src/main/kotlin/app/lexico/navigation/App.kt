@@ -19,10 +19,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import app.lexico.game.Lexico
 import app.lexico.home.HomeLogo
 import app.lexico.menu.AboutDialog
+import app.lexico.menu.COMMUNITY_URL
 import app.lexico.menu.MenuState
 import app.lexico.menu.OptionsDialog
 import app.lexico.menu.Settings
@@ -137,6 +139,7 @@ private fun rememberCuePlayer(settings: Settings): CuePlayer {
 @Composable
 private fun AppMenu(nav: Navigator, menu: MenuState, themes: ThemeState, updates: Updates, click: () -> Unit) {
   val scope = rememberCoroutineScope()
+  val uri = LocalUriHandler.current
   LaunchedEffect(menu.drawer.isOpen) { if (menu.drawer.isOpen) updates.refresh() }
   SideMenu(
     atHome = nav.current == Screen.Home,
@@ -146,6 +149,7 @@ private fun AppMenu(nav: Navigator, menu: MenuState, themes: ThemeState, updates
     onStats = { nav.go(Screen.Stats); menu.close() },
     onTheme = { click(); themes.picking = true; menu.close() },
     onOptions = { click(); menu.showOptions = true; menu.close() },
+    onCommunity = { click(); uri.openUri(COMMUNITY_URL); menu.close() },
     onAbout = { click(); menu.showAbout = true; menu.close() },
     onUpdate = { click(); scope.launch { updates.install() } },
   )
