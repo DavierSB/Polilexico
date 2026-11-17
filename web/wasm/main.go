@@ -12,6 +12,7 @@ type handler func(args []json.RawMessage) (any, error)
 var handlers = map[string]handler{}
 
 func main() {
+	registerPause()
 	registerEngine()
 	registerClassic()
 	registerDuplicate()

@@ -108,7 +108,7 @@ class EndgamePage {
 
   drawBottom() {
     const p = this.x.position;
-    if (!p) return replace(this.ui.bottom, this.linesTable([]));
+    if (!p) return replace(this.ui.bottom, h("p.notice-line", {}, this.x.failed ? "No se pudo abrir este final." : "Calculando el final…"));
     replace(this.ui.bottom,
       this.sideBar(p.me),
       p.over ? null : this.turnRack(p),

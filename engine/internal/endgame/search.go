@@ -98,6 +98,7 @@ func (s *searcher) checkTime() error {
 }
 
 func (s *searcher) expired() bool {
+	pause()
 	return s.halted() || !s.deadline.IsZero() && time.Now().After(s.deadline)
 }
 
