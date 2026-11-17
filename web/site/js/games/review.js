@@ -147,7 +147,7 @@ function turn(ui) {
 
 function draw(ui) {
   const t = turn(ui);
-  replace(ui.head, screenHead(titleOf(ui, t), ui.back, headActions(ui, t)));
+  replace(ui.head, screenHead(titleOf(ui, t), ui.back, bagButton(ui, t)), ui.position ? null : headTools(ui));
   if (t.Endgame) return drawEndgame(ui, t);
   closeExplorer(ui);
   const page = pageFor(ui, t);
@@ -251,16 +251,21 @@ function mine(ui, t) {
   return t.Player === "Tú" || t.Player === ui.game.Me;
 }
 
-function headActions(ui, t) {
+function bagButton(ui, t) {
   const bag = turnBag(t, ui.classic);
-  const bagButton = h("button.bag-btn", { "aria-label": "Bolsa", onclick: () => showBag(bag.count, bag.rival, bag.tiles) }, bagIcon(bag.count));
-  if (ui.position) return h("div.row.review-actions", {}, bagButton);
-  return h("div.row.review-actions", {},
-    h("button.text-btn", { onclick: () => reviewMovesDialog(ui, (i) => goTo(ui, i)) }, "Movidas"),
-    h("button.icon-btn", { "aria-label": "Tema", onclick: themeDialog }, icon("palette")),
-    h("button.icon-btn", { "aria-label": ui.classic ? "Ventaja" : "Eficiencia", onclick: () => chartDialog(ui) }, icon("chart")),
-    h("button.bag-btn", { "aria-label": "Bolsa", onclick: () => showBag(bag.count, bag.rival, bag.tiles) }, bagIcon(bag.count)),
+  return h("button.bag-btn", { "aria-label": "Bolsa", onclick: () => showBag(bag.count, bag.rival, bag.tiles) }, bagIcon(bag.count));
+}
+
+function headTools(ui) {
+  return h("div.row.review-tools", {},
+    toolButton("moves", "Movidas", () => reviewMovesDialog(ui, (i) => goTo(ui, i))),
+    toolButton("chart", ui.classic ? "Ventaja" : "Eficiencia", () => chartDialog(ui)),
+    toolButton("palette", "Tema", themeDialog),
   );
+}
+
+function toolButton(name, label, onclick) {
+  return h("button.review-tool", { onclick }, icon(name, 18), label);
 }
 
 function select(ui, m) {
