@@ -23,7 +23,7 @@ func TestUpheldClaimWithdrawsThePlay(t *testing.T) {
 		t.Fatal(err)
 	}
 	m, claim := c.MoveAt(0), c.LastClaim()
-	if m.Kind != core.KindInvalid || m.HumanTotal != 0 || !claim.Upheld || claim.ByHuman || claim.Invalid != "TPN" {
+	if m.Kind != core.KindInvalid || m.HumanTotal != 0 || !claim.Upheld || claim.ByHuman || claim.Invalid != claim.Words {
 		t.Fatalf("%+v %+v", m, claim)
 	}
 	if c.Status().HumanToMove || c.Claimable() || core.RackText(c.g, 0) != core.RackText(rackGame(t).g, 0) {

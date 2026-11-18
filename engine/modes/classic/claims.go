@@ -108,13 +108,13 @@ func (c *Game) claim() (*Move, error) {
 	if !c.claimable() {
 		return nil, errNothingToClaim
 	}
-	words, invalid := core.LastWords(c.g)
+	words, _ := core.LastWords(c.g)
 	last, byHuman := c.moves[len(c.moves)-1], c.humanToMove()
 	legal, err := c.g.ChallengeEvent(0, 0)
 	if err != nil {
 		return nil, err
 	}
-	c.noteClaim(!legal, byHuman, last.Score, words, invalid)
+	c.noteClaim(!legal, byHuman, last.Score, words)
 	if !legal {
 		c.withdrawLast(words)
 	}
@@ -123,13 +123,20 @@ func (c *Game) claim() (*Move, error) {
 	return c.moves[len(c.moves)-1], nil
 }
 
-func (c *Game) noteClaim(upheld, byHuman bool, score int, words, invalid []string) {
+func (c *Game) noteClaim(upheld, byHuman bool, score int, words []string) {
 	seq := 1
 	if c.lastClaim != nil {
 		seq = c.lastClaim.Seq + 1
 	}
 	c.lastClaim = &Claim{Seq: seq, Upheld: upheld, ByHuman: byHuman, Score: score,
-		Words: strings.Join(words, " "), Invalid: strings.Join(invalid, " ")}
+		Words: strings.Join(words, " "), Invalid: struckWords(upheld, words)}
+}
+
+func struckWords(upheld bool, words []string) string {
+	if !upheld {
+		return ""
+	}
+	return strings.Join(words, " ")
 }
 
 func (c *Game) withdrawLast(words []string) {
