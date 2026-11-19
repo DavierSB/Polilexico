@@ -98,7 +98,15 @@ export class Placer {
     if (this.exchanging) return this.toggleExchange(id);
     if (this.usedSlots().has(id)) return;
     if (this.arrow) return this.put(id, this.arrow.index);
+    if (this.selected !== null && this.selected !== id) return this.swap(this.selected, id);
     this.selected = this.selected === id ? null : id;
+    this.changed();
+  }
+
+  swap(a, b) {
+    const [i, j] = [a, b].map((id) => this.slots.findIndex((s) => s.id === id));
+    [this.slots[i], this.slots[j]] = [this.slots[j], this.slots[i]];
+    this.selected = null;
     this.changed();
   }
 

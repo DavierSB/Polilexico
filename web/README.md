@@ -70,6 +70,7 @@ Las pruebas usan `build/site` (hay que compilar antes) y comparan con el motor r
 node test/score.test.mjs 5      # puntuación: las mejores jugadas del motor y colocaciones al azar
 node test/mirror.test.mjs 6     # lectura en línea: cada turno, desde los dos asientos
 node test/penalty.test.mjs      # descuento por tiempo en los bordes de cada minuto
+node test/placer.test.mjs       # atril: dos toques intercambian fichas, como en la APK
 ```
 
 ## Publicar
