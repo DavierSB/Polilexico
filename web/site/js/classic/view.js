@@ -21,6 +21,7 @@ import { floatScore, landTiles } from "../motion.js";
 import { recall, remember } from "../tabMemory.js";
 import { invalidDialog } from "./invalid.js";
 import { claimDialog } from "./claim.js";
+import { BagOutPopup } from "./bagOut.js";
 
 const BANNER_MS = 2200;
 const RESIGN_TEXT = "¿Abandonar la partida? Se borra de partidas en curso y cuenta como abandonada en tus estadísticas.";
@@ -47,6 +48,7 @@ class GameView {
     this.el.append(this.cover);
     this.board.el.addEventListener("pointerdown", (e) => this.dragPending(e));
     this.unbindKeys = bindKeys(this);
+    this.bagOut = new BagOutPopup({ accept: () => this.acceptLast(), claim: () => this.claim() });
     this.unsubscribe = session.subscribe((s) => this.show(s));
   }
 
@@ -73,6 +75,7 @@ class GameView {
     this.stopFit?.();
     this.unsubscribe();
     this.unbindKeys();
+    this.bagOut.close();
   }
 
   show(raw) {
@@ -82,6 +85,7 @@ class GameView {
     const claimed = !first && this.state.claim?.seq !== state.claim?.seq;
     const turnChanged = moved || claimed || this.state?.result !== state.result || this.state?.claimable !== state.claimable;
     this.state = state;
+    this.bagOut.update(state, this.options.watching);
     this.updateCards();
     this.handOff();
     if (!first && !turnChanged && this.state.paused === this.lastPaused) return;
@@ -328,6 +332,11 @@ class GameView {
   async pass() {
     const [question, yes] = this.finalPass() ? ["¿Aceptar la jugada y terminar?", "Aceptar"] : ["¿Pasar el turno?", "Pasar"];
     if (!(await confirm(question, yes))) return;
+    const error = await this.session.play("pasar");
+    if (error) toast(error);
+  }
+
+  async acceptLast() {
     const error = await this.session.play("pasar");
     if (error) toast(error);
   }

@@ -1,11 +1,12 @@
 package main
 
 const (
-	protocolVersion = 6
+	protocolVersion = 7
 	minProtocol     = 3
 	tellProtocol    = 4
 	claimProtocol   = 5
 	recordProtocol  = 6
+	finalProtocol   = 7
 )
 
 const (
@@ -46,6 +47,7 @@ type message struct {
 	Watchers   int             `json:"watchers,omitempty"`
 	Accept     bool            `json:"accept,omitempty"`
 	AwayMs     int64           `json:"awayMs,omitempty"`
+	FinalMs    int64           `json:"finalMs,omitempty"`
 	Adjourned  []adjournedItem `json:"adjourned,omitempty"`
 	Resume     bool            `json:"resume,omitempty"`
 	Record     string          `json:"record,omitempty"`

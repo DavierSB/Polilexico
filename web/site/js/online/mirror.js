@@ -38,7 +38,12 @@ export function readSave(saved, guest, elapsedMs = 0, watching = false) {
     Moves: moves, Clocks: clocks?.view ?? null, Paused: false,
     Result: over ? result(game, scores, penalties) : null, BotError: "",
     Claimable: claimable(game, moves, over), FinalPass: !over && !!game.FinalPass, Claim: game.LastClaim ?? null,
+    FinalWords: game.FinalPass ? lastWords(history) : [],
   };
+}
+
+function lastWords(history) {
+  return (history.events?.at(-1)?.wordsFormed ?? []).map((w) => w.replace(/[[\]]/g, ""));
 }
 
 function claimable(game, moves, over) {

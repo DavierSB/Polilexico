@@ -578,3 +578,13 @@ button.word-row { cursor: pointer; }
 .invalid-words { display: flex; flex-wrap: wrap; gap: 6px 14px; font-weight: 700; font-size: 18px; letter-spacing: .04em; }
 
 .still-tile { cursor: default; }
+
+.bag-out-ring { --left: 1; position: relative; display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto; border-radius: 50%; background: conic-gradient(var(--primary) calc(var(--left) * 1turn), var(--surface-variant) 0); }
+.bag-out-ring::before { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: var(--c3); }
+.bag-out-ring span { position: relative; font-size: 22px; font-weight: 800; }
+.dialog .bag-out-title { text-align: center; font-weight: 800; }
+.bag-out-lead { margin: 0; text-align: center; color: var(--on-surface-variant); }
+.bag-out-words { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.bag-out-word { padding: 6px 14px; border-radius: var(--pill); background: var(--surface-variant); font-size: 17px; font-weight: 800; letter-spacing: .06em; }
+.bag-out-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.bag-out-buttons .btn { padding-inline: 8px; white-space: nowrap; }

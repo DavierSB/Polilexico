@@ -12,6 +12,7 @@ export function normalize(raw, flipped) {
     paused: raw.Paused, result: result(raw.Result), botError: raw.BotError || null,
     opponent: raw.Opponent, host: raw.Host, local: raw.Local, over: raw.Status.Over,
     claimable: !!raw.Claimable, finalPass: !!raw.FinalPass, claim: claim(raw.Claim),
+    finalWords: raw.FinalWords ?? [],
   };
   return flipped ? flip(state) : state;
 }

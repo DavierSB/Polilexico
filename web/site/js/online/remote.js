@@ -6,8 +6,9 @@ import { keepMirrorRecord } from "../records.js";
 const TICK_MS = 250;
 
 export class RemoteSession {
-  constructor(text, { guest, watching, remote }) {
+  constructor(text, { guest, watching, remote, finalMs }) {
     this.guest = guest;
+    this.finalMs = finalMs ?? 0;
     this.watching = watching;
     this.remote = remote;
     this.setup = {};
@@ -21,6 +22,7 @@ export class RemoteSession {
     this.saved = parseSave(text);
     this.text = text;
     this.receivedAt = performance.now();
+    this.finalDeadline = this.finalMs ? this.receivedAt + this.finalMs : null;
     this.refresh();
     if (before) this.cue(before, this.state);
   }
@@ -36,7 +38,7 @@ export class RemoteSession {
   }
 
   refresh() {
-    this.state = normalize(readSave(this.saved, this.guest, performance.now() - this.receivedAt, this.watching), this.guest);
+    this.state = { ...normalize(readSave(this.saved, this.guest, performance.now() - this.receivedAt, this.watching), this.guest), finalDeadline: this.finalDeadline };
     if (this.state.result && !this.watching) this.recorded ??= keepMirrorRecord(this.text, false, this.guest).catch(() => null);
     this.listeners.forEach((fn) => fn(this.state));
     this.tickWhileRunning();

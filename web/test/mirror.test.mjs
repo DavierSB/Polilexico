@@ -32,6 +32,7 @@ async function compare(m, first, label) {
   for (const k of Object.keys(a)) if (a[k] !== b[k]) fails.push({ label, first, k, engine: a[k], js: b[k] });
   if (engine.clocks && Math.abs(engine.clocks.myMs - js.clocks.myMs) > 2000) fails.push({ label, first, k: "clocks" });
   if (sorted(js.unseen) !== sorted(unseenOf(js))) fails.push({ label, first, k: "unseen", js: sorted(js.unseen) });
+  if (js.finalPass && !js.finalWords.includes(js.moves.at(-1).word)) fails.push({ label, first, k: "finalWords", js: js.finalWords.join(" ") });
 }
 
 function unseenOf(s) {

@@ -270,8 +270,9 @@ class OnlineClient {
 
   mirror(e) {
     if (!this.room) return;
+    if (this.session) this.session.finalMs = e.finalMs ?? 0;
     if (this.session) return this.session.state?.result ? null : this.session.replace(e.save);
-    this.session = new RemoteSession(e.save, { guest: !e.first, watching: this.room.watching, remote: this });
+    this.session = new RemoteSession(e.save, { guest: !e.first, watching: this.room.watching, remote: this, finalMs: e.finalMs });
   }
 
   closed(reason) {

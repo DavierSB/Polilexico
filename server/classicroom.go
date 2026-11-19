@@ -33,6 +33,7 @@ type classicRoom struct {
 	askTimer    *time.Timer
 	vacantTimer *time.Timer
 	resumed     *adjourned
+	final       finalPass
 }
 
 type listener func()
@@ -229,6 +230,7 @@ func (r *classicRoom) attach(s *seat, c *client) {
 	c.send(r.roomMessage(s))
 	r.keepClaimsFor(c)
 	if r.match != nil {
+		r.watchFinalPass()
 		r.sendState(s)
 		r.awayChanged(s)
 	}
@@ -278,6 +280,7 @@ func (r *classicRoom) changed() {
 	if r.match == nil {
 		return
 	}
+	r.watchFinalPass()
 	for _, s := range r.seats {
 		r.sendState(s)
 	}
@@ -347,6 +350,7 @@ func (r *classicRoom) expireIn(d time.Duration) {
 func (r *classicRoom) closeAll(reason string) {
 	stopTimer(r.askTimer)
 	stopTimer(r.vacantTimer)
+	r.stopFinalPass()
 	for _, s := range r.seats {
 		if reason != "" {
 			s.send(notice("closed", reason))
@@ -366,7 +370,7 @@ func (r *classicRoom) closeAll(reason string) {
 func (r *classicRoom) sendState(s *seat) {
 	view, err := r.match.ViewFor(r.first(s))
 	if err == nil {
-		s.send(message{T: "state", Save: view, First: r.first(s)})
+		s.send(message{T: "state", Save: view, First: r.first(s), FinalMs: r.finalMsFor(s)})
 	}
 }
 
